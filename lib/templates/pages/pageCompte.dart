@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oficihome/model/utilisateur.dart';
-import 'package:oficihome/services/bdd.dart';
-import 'package:oficihome/services/authentification.dart';
+import 'package:oficihome/services/database.dart';
+import 'package:oficihome/services/auth.dart';
 import 'package:provider/provider.dart';
 
 class PageCompte extends StatefulWidget {
@@ -12,7 +12,6 @@ class PageCompte extends StatefulWidget {
 class _PageCompteState extends State<PageCompte> {
   @override
   Widget build(BuildContext context) {
-    final donneesUtil = Provider.of<DonneesUtil>(context);
 
     return SafeArea(
       child: CustomScrollView(
@@ -83,7 +82,7 @@ class _PageCompteState extends State<PageCompte> {
                   alignment: Alignment.centerRight,
                   child: MaterialButton(
                     onPressed: () {
-                      ServiceAuth _auth = ServiceAuth();
+                      AuthMethods _auth = AuthMethods();
                       _auth.signOut();
                     },
                     shape: RoundedRectangleBorder(

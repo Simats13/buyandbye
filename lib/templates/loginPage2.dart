@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oficihome/services/authentification.dart';
+import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/templates/widgets/chargement.dart';
 import 'package:oficihome/templates/widgets/onBoardingImageCliper2.dart';
 
@@ -86,8 +86,8 @@ class _LoginPage2State extends State<LoginPage2> {
                           setState(() {
                             enCoursChargement = true;
                           });
-                          ServiceAuth _auth = ServiceAuth();
-                          dynamic result = await _auth.signInWithGoogle();
+                          AuthMethods _auth = AuthMethods();
+                          dynamic result = await _auth.signInWithGoogle(context);
                           if (result == null) {
                             setState(() {
                               enCoursChargement = false;

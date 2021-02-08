@@ -1,4 +1,4 @@
-package com.example.oficihome
+package com.oficihome.off
 
 import io.flutter.embedding.android.FlutterActivity
 
