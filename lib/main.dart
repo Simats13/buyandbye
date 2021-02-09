@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Oficium',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: OficihomeAppTheme.orange,
+        primaryColor: OficihomeAppTheme.black_electrik,
       ),
       home: FutureBuilder(
           future: AuthMethods().getCurrentUser(),
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
             if (snapshot.hasData) {
               return Accueil();
             } else {
-              return LoginPage2();
+              return LoginPage1();
             }
           }),
     );

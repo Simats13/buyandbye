@@ -56,19 +56,18 @@ class _ChatScreenState extends State<ChatScreen> {
       DatabaseMethods()
           .addMessage(chatRoomId, messageId, messageInfoMap)
           .then((value) {
-        Map<String, dynamic> lastMessageinfoMap = {
+        Map<String, dynamic> lastMessageInfoMap = {
           "lastMessage": message,
           "lastMessageSendTs": lastMessageTs,
           "lastMessageSendBy": myUserName
         };
 
-        DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageinfoMap);
+        DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
 
         if (sendClicked) {
-          //remove the text in the message input field
+          // remove the text in the message input field
           messageTextEdittingController.text = "";
-
-          //make message id blank to get regenerated on next message send
+          // make message id blank to get regenerated on next message send
           messageId = "";
         }
       });
@@ -77,24 +76,28 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget chatMessageTile(String message, bool sendByMe) {
     return Row(
-      mainAxisAlignment: sendByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment:
+          sendByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(18),
-            topRight: Radius.circular(18),
-            bottomLeft: sendByMe ? Radius.circular(18) : Radius.circular(0),
-            bottomRight: sendByMe ? Radius.circular(0) : Radius.circular(18),
-          ),
-          color: OficihomeAppTheme.orange),
-          padding: EdgeInsets.all(16),
-          child: Text(
-          message, 
-          style: TextStyle(
-            color: OficihomeAppTheme.white),
-            )
+        Flexible(
+          child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  bottomRight:
+                      sendByMe ? Radius.circular(0) : Radius.circular(24),
+                  topRight: Radius.circular(24),
+                  bottomLeft:
+                      sendByMe ? Radius.circular(24) : Radius.circular(0),
+                ),
+                color: sendByMe ? OficihomeAppTheme.orange : OficihomeAppTheme.white_grey,
+              ),
+              padding: EdgeInsets.all(16),
+              child: Text(
+                message,
+                style: TextStyle(color: sendByMe ? OficihomeAppTheme.white : OficihomeAppTheme.black_electrik),
+              )),
         ),
       ],
     );
@@ -111,7 +114,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 reverse: true,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data.docs[index];
-                  return chatMessageTile(ds['message'], myUserName == ds['sendBy']);
+                  return chatMessageTile(
+                      ds["message"], myUserName == ds["sendBy"]);
                 })
             : Center(child: CircularProgressIndicator());
       },
@@ -123,14 +127,14 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {});
   }
 
-  doThisOnLauch() async {
+  doThisOnLaunch() async {
     await getMyInfoFromSharedPreference();
     getAndSetMessages();
   }
 
   @override
   void initState() {
-    doThisOnLauch();
+    doThisOnLaunch();
     super.initState();
   }
 
@@ -146,32 +150,40 @@ class _ChatScreenState extends State<ChatScreen> {
             chatMessages(),
             Container(
               alignment: Alignment.bottomCenter,
+              margin: EdgeInsets.symmetric(horizontal: 7, vertical: 8),
               child: Container(
-                color: Colors.black.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                ),
+                color: Colors.black.withOpacity(0.8),),
                 child: Row(
                   children: [
                     Expanded(
                         child: TextField(
                       controller: messageTextEdittingController,
-                      onChanged: (value) {
-                        addMessage(false);
-                      },
+                      // onChanged: (value) {
+                      //   addMessage(false);
+                      // },
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "écrivez un message",
+                          hintText: "tapez votre message",
                           hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.6))),
+                              TextStyle(color: OficihomeAppTheme.white.withOpacity(0.6))),
                     )),
                     GestureDetector(
+                      child: Icon(
+                        Icons.send,
+                        color: OficihomeAppTheme.white,
+                      ),
                       onTap: () {
                         addMessage(true);
                       },
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                      ),
                     )
                   ],
                 ),

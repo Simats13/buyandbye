@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:oficihome/model/utilisateur.dart';
 import 'package:oficihome/services/database.dart';
 import 'package:oficihome/services/auth.dart';
+import 'package:oficihome/templates/loginPage1.dart';
 import 'package:provider/provider.dart';
 import 'package:oficihome/screens/signin.dart';
+import 'package:oficihome/helperfun/sharedpref_helper.dart';
+
 
 class PageCompte extends StatefulWidget {
   @override
@@ -12,8 +15,22 @@ class PageCompte extends StatefulWidget {
 
 class _PageCompteState extends State<PageCompte> {
   @override
-  Widget build(BuildContext context) {
 
+  String myName, myProfilePic, myUserName, myEmail;
+  Stream usersStream, chatRoomsStream;
+
+  TextEditingController searchUsernameEditingController =
+      TextEditingController();
+
+  getMyInfoFromSharedPreference() async {
+    myName = await SharedPreferenceHelper().getDisplayName();
+    myProfilePic = await SharedPreferenceHelper().getUserProfileUrl();
+    myUserName = await SharedPreferenceHelper().getUserName();
+    myEmail = await SharedPreferenceHelper().getUserEmail();
+    setState(() {});
+  }
+
+  Widget build(BuildContext context) {
     return SafeArea(
       child: CustomScrollView(
         slivers: <Widget>[
@@ -85,7 +102,7 @@ class _PageCompteState extends State<PageCompte> {
                     onPressed: () {
                       AuthMethods().signOut().then((s) {
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => SignIn()));
+                    context, MaterialPageRoute(builder: (context) => LoginPage1()));
               });
                     },
                     shape: RoundedRectangleBorder(
