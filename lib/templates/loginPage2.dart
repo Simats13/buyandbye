@@ -30,7 +30,7 @@ class _LoginPage2State extends State<LoginPage2> {
                           top: 0,
                           bottom: 0,
                           child: Image.asset(
-                            'assets/logo2.jpg',
+                            'assets/images/logo2.jpg',
                             fit: BoxFit.fitWidth,
                           ),
                         ),

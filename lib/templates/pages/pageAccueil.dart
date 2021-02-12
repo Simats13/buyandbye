@@ -116,7 +116,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         child: Row(
                           children: [
                             SvgPicture.asset(
-                              "assets/pin_icon.svg",
+                              "assets/icons/pin_icon.svg",
                               width: 20,
                             ),
                             SizedBox(
@@ -145,7 +145,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               child: Row(
                                 children: [
                                   SvgPicture.asset(
-                                    "assets/time_icon.svg",
+                                    "assets/icons/time_icon.svg",
                                     width: 20,
                                   ),
                                   SizedBox(
@@ -170,7 +170,7 @@ class _PageAccueilState extends State<PageAccueil> {
                 ),
                 Expanded(
                   child: Container(
-                    child: SvgPicture.asset("assets/filter_icon.svg"),
+                    child: SvgPicture.asset("assets/icons/filter_icon.svg"),
                   ),
                 ),
               ],
@@ -180,9 +180,9 @@ class _PageAccueilState extends State<PageAccueil> {
             ),
             CustomSliderWidget(
               items: [
-                "assets/logo.jpg",
-                "assets/logo.jpg",
-                "assets/logo.jpg",
+                "assets/images/logo.jpg",
+                "assets/images/logo.jpg",
+                "assets/images/logo.jpg",
               ],
             ),
             Container(
@@ -265,8 +265,8 @@ class _PageAccueilState extends State<PageAccueil> {
                             right: 15.0,
                             child: SvgPicture.asset(
                               firstMenu[0]['is_liked']
-                                  ? "assets/loved_icon.svg"
-                                  : "assets/love_icon.svg",
+                                  ? "assets/icons/loved_icon.svg"
+                                  : "assets/icons/love_icon.svg",
                               width: 20,
                               color: Colors.white,
                             ),
@@ -422,8 +422,8 @@ class _PageAccueilState extends State<PageAccueil> {
                                                 right: 15.0,
                                                 child: SvgPicture.asset(
                                                   exploreMenu[index]['is_liked']
-                                                      ? "assets/loved_icon.svg"
-                                                      : "assets/love_icon.svg",
+                                                      ? "assets/icons/loved_icon.svg"
+                                                      : "assets/icons/love_icon.svg",
                                                   width: 20,
                                                   color: Colors.white,
                                                 ),
@@ -614,8 +614,8 @@ class _PageAccueilState extends State<PageAccueil> {
                                                 right: 15.0,
                                                 child: SvgPicture.asset(
                                                   popluarNearYou[index]['is_liked']
-                                                      ? "assets/loved_icon.svg"
-                                                      : "assets/love_icon.svg",
+                                                      ? "assets/icons/loved_icon.svg"
+                                                      : "assets/icons/love_icon.svg",
                                                   width: 20,
                                                   color: Colors.white,
                                                 ),

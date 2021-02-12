@@ -24,7 +24,7 @@ class _LoginPage1State extends State<LoginPage1> {
                     left: 0,
                     top: 0,
                     bottom: 0,
-                    child: Image.asset('assets/logo.jpg'),
+                    child: Image.asset('assets/images/logo.jpg'),
                   ),
                   Positioned(
                     left: 0,

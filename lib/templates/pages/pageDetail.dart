@@ -230,7 +230,7 @@ class _PageDetailState extends State<PageDetail> {
                         child: Row(
                           children: [
                             SvgPicture.asset(
-                              "assets/pin_icon.svg",
+                              "assets/icons/pin_icon.svg",
                               width: 15,
                               color: black.withOpacity(0.5),
                             ),
