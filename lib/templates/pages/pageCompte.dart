@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oficihome/services/auth.dart';
 import 'package:provider/provider.dart';
-import 'package:oficihome/screens/signin.dart';
 import 'package:oficihome/helperfun/sharedpref_helper.dart';
 import 'package:oficihome/templates/pages/pageBienvenue.dart';
 
@@ -12,7 +11,6 @@ class PageCompte extends StatefulWidget {
 
 class _PageCompteState extends State<PageCompte> {
   @override
-
   Widget build(BuildContext context) {
     return SafeArea(
       child: CustomScrollView(
@@ -84,9 +82,11 @@ class _PageCompteState extends State<PageCompte> {
                   child: MaterialButton(
                     onPressed: () {
                       AuthMethods().signOut().then((s) {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => PageBievenue()));
-              });
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageBievenue()));
+                      });
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0)),

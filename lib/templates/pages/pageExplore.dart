@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PageExplore extends StatefulWidget {
   @override
@@ -8,8 +9,16 @@ class PageExplore extends StatefulWidget {
 class _PageExploreState extends State<PageExplore> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: new Center(child: Text('Page Explore'),)
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Explorer'),
+      ),
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(43.834670, 4.359501),
+          zoom: 15,
+        ),
+      ),
     );
   }
 }

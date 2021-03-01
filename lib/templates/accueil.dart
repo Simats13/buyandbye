@@ -6,12 +6,14 @@ import 'package:oficihome/templates/pages/pageExplore.dart';
 import 'package:oficihome/templates/pages/pageMessagerie.dart';
 import 'package:oficihome/templates/pages/pageSearch.dart';
 
+
 class Accueil extends StatefulWidget {
   @override
   _AccueilState createState() => _AccueilState();
 }
 
 class _AccueilState extends State<Accueil> {
+
 
   int pageIndex = 0;
 

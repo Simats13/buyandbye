@@ -11,7 +11,7 @@ class PageMessagerie extends StatefulWidget {
 
 class _PageMessagerieState extends State<PageMessagerie> {
   bool isSearching = false;
-  String myName, myProfilePic, myUserName, myEmail;
+  String myName, myProfilePic, myUserName, myEmail,selectedUserToken;
   Stream usersStream, chatRoomsStream;
 
   TextEditingController searchUsernameEditingController =
@@ -70,7 +70,7 @@ class _PageMessagerieState extends State<PageMessagerie> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ChatScreen(username, name)));
+                builder: (context) => ChatScreen(username, name,selectedUserToken)));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
@@ -207,7 +207,7 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "", name = "", username = "";
+  String profilePicUrl = "", name = "", username = "", token="";
 
   getThisUserInfo() async {
     username =
@@ -215,6 +215,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
     name = "${querySnapshot.docs[0]["name"]}";
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
+    token = "${querySnapshot.docs[0]["FCMToken"]}";
     setState(() {});
   }
 
@@ -231,7 +232,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ChatScreen(username, name)));
+                builder: (context) => ChatScreen(username, name,token)));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
