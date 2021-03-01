@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:oficihome/helperfun/sharedpref_helper.dart';
 import 'package:oficihome/services/database.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
+import 'package:oficihome/templates/widgets/notificationControllers.dart';
 import 'package:random_string/random_string.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String chatWithUsername, name;
-  ChatScreen(this.chatWithUsername, this.name);
+  final String chatWithUsername, name, token;
+  ChatScreen(this.chatWithUsername, this.name, this.token);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -63,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
         };
 
         DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+        NotificationController.instance.sendNotificationMessage(message,myUserName,widget.token);
 
         if (sendClicked) {
           // remove the text in the message input field

@@ -25,7 +25,7 @@ class Body extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "BIENVENUE SUR OFICIHOME",
+              "BIENVENUE SUR OFICI'HOME",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(
