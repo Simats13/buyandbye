@@ -23,12 +23,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_auth:
-  cloud_firestore:
-  firebase_storage:
   google_sign_in:
   provider:
-  firebase_core:
+  firebase_core: "^0.7.0"
+  firebase_auth: "^0.20.1"
+  cloud_firestore: "^0.16.0+1"
+  firebase_storage: "^7.0.0"
+  firebase_messaging: "^8.0.0-dev.14"
+  flutter_local_notifications:
   curved_navigation_bar:
   get_it:
   shared_preferences:
@@ -39,7 +41,17 @@ dependencies:
   animate_do:
   flutter_svg:
   flutter_launcher_icons:
-  firebase_messaging:
+  line_awesome_flutter:
+  flutter_screenutil: 
+  flutter_app_badger:
+  flutter_widgets:
+  apple_sign_in:
+  sign_in_with_apple:
+  google_maps_flutter:
+  geolocator:
+  clippy_flutter:
+
+  
 
 
   # The following adds the Cupertino Icons font to your application.
