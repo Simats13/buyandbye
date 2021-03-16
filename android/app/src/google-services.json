@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "731468105971",
+    "firebase_url": "https://oficium-11bf9-default-rtdb.firebaseio.com",
+    "project_id": "oficium-11bf9",
+    "storage_bucket": "oficium-11bf9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731468105971:android:c9a86e5b67fdffe4034f86",
+        "android_client_info": {
+          "package_name": "com.oficihome.off"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "731468105971-cqofh69kel4ig979686atm5dt1ie6qna.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oficihome.off",
+            "certificate_hash": "5dc89a76c14d3087a6c6c127a79200498f303e1f"
+          }
+        },
+        {
+          "client_id": "731468105971-damnslig57t4lq7qpp0q9jbb1g1i39nh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDulLvB415_SqiQgFoKVvFlPmMRWwui1xA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "731468105971-damnslig57t4lq7qpp0q9jbb1g1i39nh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "731468105971-en4b879ii5mqk8ovvqsghpq9tk886fcg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oficihome.off"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
