@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:oficihome/templates/Compte/constants.dart';
-import 'package:oficihome/templates/Compte/help.dart';
-import 'package:oficihome/templates/Compte/settings.dart';
-import 'package:oficihome/templates/Compte/user_history.dart';
-import 'package:oficihome/templates/Compte/editProfile.dart';
+import 'package:oficihome/templates/compte/constants.dart';
+import 'package:oficihome/templates/compte/help.dart';
+import 'package:oficihome/templates/compte/settings.dart';
+import 'package:oficihome/templates/compte/user_history.dart';
+import 'package:oficihome/templates/compte/editProfile.dart';
 import 'package:oficihome/templates/pages/pageBienvenue.dart';
 import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/templates/widgets/profile_list_item.dart';
@@ -135,7 +135,7 @@ class ProfileScreen extends StatelessWidget {
             header,
             Expanded(
               child: ListView(
-                // physics: const NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   SizedBox(height: kSpacingUnit.w * 2),
                   ProfileListItem(
@@ -162,19 +162,19 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         );
                       }),
-                  // ProfileListItem(
-                  //     icon: LineAwesomeIcons.cog,
-                  //     text: 'Paramètres',
-                  //     press: () {
-                  //       Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //           builder: (context) {
-                  //             return Settings();
-                  //           },
-                  //         ),
-                  //       );
-                  //     }),
+                  ProfileListItem(
+                      icon: LineAwesomeIcons.cog,
+                      text: 'Paramètres',
+                      press: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return Settings();
+                            },
+                          ),
+                        );
+                      }),
                   ProfileListItem(
                       icon: LineAwesomeIcons.question_circle,
                       text: 'Aide / Support',
