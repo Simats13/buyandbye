@@ -9,8 +9,6 @@ const kLightPrimaryColor = Color(0xFFFFFFFF);
 const kLightSecondaryColor = Color(0xFFF3F7FB);
 const kAccentColor = Color(0xFFFFC107);
 
-
-
 final kTitleTextStyle = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w600,
