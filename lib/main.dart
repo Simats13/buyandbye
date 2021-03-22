@@ -9,7 +9,6 @@ import 'package:oficihome/model/infowindow.dart';
 import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/templates/accueil.dart';
 import 'package:oficihome/templates/pages/pageBienvenue.dart';
-import 'package:oficihome/templates/oficihome_app_theme.dart';
 import 'package:oficihome/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +25,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp();
   runApp(
-  ChangeNotifierProvider(
+    ChangeNotifierProvider(
       create: (context) => InfoWindowsModel(),
       child: MyApp(),
     ),
@@ -88,26 +87,24 @@ class _MyAppState extends State<MyApp> {
       //     primaryColor: OficihomeAppTheme.black_electrik,
       //     scaffoldBackgroundColor: Colors.white),
       theme: ThemeData(
-    brightness: Brightness.light,
-    // primaryColor: Colors.red,
-  ),
-  darkTheme: ThemeData(
-    brightness: Brightness.dark,
-    // additional settings go here
-  ),
+        brightness: Brightness.light,
+        // primaryColor: Colors.red,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        // additional settings go here
+      ),
       home: FutureBuilder(
           future: AuthMethods().getCurrentUser(),
           builder: (context, AsyncSnapshot<dynamic> snapshot) {
             // Once complete, show your application
-              User user = snapshot.data;
-              if (user != null) {
-                return Accueil();
-              } else {
-                return PageBievenue();
-              }
+            User user = snapshot.data;
+            if (user != null) {
+              return Accueil();
+            } else {
+              return PageBievenue();
+            }
           }),
     );
   }
-  
 }
-

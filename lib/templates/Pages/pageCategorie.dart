@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:oficihome/json/menu_json.dart';
-import 'package:oficihome/templates/Connexion/Login/background_login.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
-import 'package:oficihome/theme/colors.dart';
-import 'package:oficihome/theme/styles.dart';
-import 'package:oficihome/services/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PageCategorie extends StatefulWidget {
   const PageCategorie(

@@ -1,13 +1,10 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:oficihome/json/menu_json.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
 import 'package:oficihome/templates/pages/pageDetail.dart';
 import 'package:oficihome/theme/colors.dart';
-import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/theme/styles.dart';
 import 'package:oficihome/services/database.dart';
 import 'package:oficihome/templates/widgets/custom_slider.dart';

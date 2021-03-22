@@ -1,55 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:oficihome/templates/oficihome_app_theme.dart';
+import 'package:oficihome/templates/pages/pageCompte.dart';
 
 void main() => runApp(Help());
 
 class Help extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final title = 'Aide / Support';
-
     return MaterialApp(
-      title: title,
-      home: MyHomePage(title: title),
+      debugShowCheckedModeBanner: false,
+      title: "Aide / Support",
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final String title;
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  MyHomePage({Key key, this.title}) : super(key: key);
-
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(child: MyButton()),
-    );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // The GestureDetector wraps the button.
-    return GestureDetector(
-      // When the child is tapped, show a snackbar.
-      onTap: () {
-        final snackBar = SnackBar(content: Text("Tap"));
-
-        Scaffold.of(context).showSnackBar(snackBar);
-      },
-      // The custom button
-      child: Container(
-        padding: EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).buttonColor,
-          borderRadius: BorderRadius.circular(8.0),
+        title: Text("Aide / Support", style: TextStyle(color: Colors.black)),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 1,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: OficihomeAppTheme.orange,
+          ),
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => PageCompte()));
+          },
         ),
-        child: Text('My Button'),
       ),
+      body: Container(),
     );
   }
 }

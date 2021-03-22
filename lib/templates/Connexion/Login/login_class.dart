@@ -1,18 +1,12 @@
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oficihome/templates/accueil.dart';
 import 'package:provider/provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/templates/Connexion/Inscription/inscription_class.dart';
 
 import 'package:oficihome/templates/widgets/chargement.dart';
-import 'package:oficihome/templates/pages/pageInscription.dart';
 
 import 'package:oficihome/templates/Connexion/Login/background_login.dart';
 import 'package:oficihome/templates/Connexion/Tools/bouton.dart';
@@ -77,10 +71,11 @@ class _LoginState extends State<Login> {
                               await AuthMethods.instanace.signInWithApple();
                           if (user != null) {
                             Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (BuildContext context) =>Accueil() ),
-                              (Route<dynamic> route) => false
-                            );
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        Accueil()),
+                                (Route<dynamic> route) => false);
                           }
                         },
                       ),
@@ -102,10 +97,11 @@ class _LoginState extends State<Login> {
                             });
                           } else {
                             Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (BuildContext context) =>Accueil() ),
-                              (Route<dynamic> route) => false
-                            );
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        Accueil()),
+                                (Route<dynamic> route) => false);
                           }
                         },
                       ),

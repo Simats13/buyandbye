@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:oficihome/helperfun/sharedpref_helper.dart';
 
 class DatabaseMethods {
-
   static DatabaseMethods get instanace => DatabaseMethods();
 
   Future addUserInfoToDB(
@@ -80,9 +79,14 @@ class DatabaseMethods {
         .get();
   }
 
-    Future<QuerySnapshot> getStoreInfo() async {
-    return await FirebaseFirestore.instance
+  Future<QuerySnapshot> getStoreInfo() async {
+    return await FirebaseFirestore.instance.collection("magasins").get();
+  }
+
+  Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
+    return FirebaseFirestore.instance
         .collection("magasins")
-        .get();
+        .where("name", isEqualTo: name)
+        .snapshots();
   }
 }

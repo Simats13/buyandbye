@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:oficihome/json/menu_json.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
 import 'package:oficihome/services/database.dart';
@@ -21,19 +20,26 @@ class _PageSearchState extends State<PageSearch> {
   bool isExecuted = false;
   int activeMenu = 0;
 
-  Widget searchedData({String photoUrl, name, description, adresse, clickAndCollect, livraison}) {
+  Widget searchedData(
+      {String photoUrl,
+      name,
+      description,
+      adresse,
+      clickAndCollect,
+      livraison}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => PageDetail(
-                  img: photoUrl,
-                  name: name,
-                  description: description,
-                  adresse: adresse,
-                  clickAndCollect: clickAndCollect,
-                  livraison: livraison,)),
+                    img: photoUrl,
+                    name: name,
+                    description: description,
+                    adresse: adresse,
+                    clickAndCollect: clickAndCollect,
+                    livraison: livraison,
+                  )),
         );
       },
       child: ListTile(

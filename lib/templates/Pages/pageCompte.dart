@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:oficihome/templates/Compte/constants.dart';
 import 'package:oficihome/templates/Compte/help.dart';
-import 'package:oficihome/templates/Compte/settings.dart';
 import 'package:oficihome/templates/Compte/user_history.dart';
 import 'package:oficihome/templates/Compte/editProfile.dart';
 import 'package:oficihome/templates/pages/pageBienvenue.dart';

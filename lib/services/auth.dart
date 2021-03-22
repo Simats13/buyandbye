@@ -124,6 +124,11 @@ class AuthMethods {
   Future signOut() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
+    final User user = auth.currentUser;
+    final uid = user.uid;
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'FCMToken': 'NoToken',
+    });
     await auth.signOut();
   }
 

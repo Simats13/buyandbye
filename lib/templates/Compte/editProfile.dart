@@ -31,7 +31,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           if (snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
-                title: Text("Mes informations"),
+                title: Text("Mes informations",
+                    style: TextStyle(color: Colors.black)),
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 elevation: 1,
                 leading: IconButton(

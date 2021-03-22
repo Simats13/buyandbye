@@ -1,18 +1,14 @@
-import 'package:clippy_flutter/clippy_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ndialog/ndialog.dart';
-import 'package:oficihome/model/magasin_model.dart';
 import 'package:oficihome/services/auth.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
-import 'package:location/location.dart';
-
 
 class PageExplore extends StatefulWidget {
   @override
@@ -62,9 +58,7 @@ class _PageExploreState extends State<PageExplore> {
       });
     });
     geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(
-        latitude: 43.604636,
-        longitude: 3.877017);
+    GeoFirePoint center = geo.point(latitude: 43.604636, longitude: 3.877017);
     stream = radius.switchMap((rad) {
       var collectionReference = _firestore.collection('magasins');
       return geo.collection(collectionRef: collectionReference).within(
