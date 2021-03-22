@@ -139,7 +139,7 @@ class _PageMessagerieState extends State<PageMessagerie> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Messagerie"),
+        title: Text("Ofici'Home"),
         automaticallyImplyLeading: false,
         backgroundColor: OficihomeAppTheme.black_electrik,
       ),
