@@ -1,8 +1,6 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:clippy_flutter/arc.dart';
 import 'package:flutter/material.dart';
-import 'package:oficihome/theme/colors.dart';
 
 /*
  * for slider home page
@@ -28,14 +26,15 @@ class _CustomSliderWidgetState extends State<CustomSliderWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.none, children: <Widget>[
+      clipBehavior: Clip.none,
+      children: <Widget>[
         Container(
           width: MediaQuery.of(context).size.width,
           child: CarouselSlider(
             options: CarouselOptions(
-              enableInfiniteScroll: true,
-              // autoPlayCurve: Curves.fastLinearToSlowEaseIn,
-              // autoPlayAnimationDuration: Duration(seconds: 2),
+              enableInfiniteScroll: false,
+              autoPlayCurve: Curves.fastLinearToSlowEaseIn,
+              autoPlayAnimationDuration: Duration(seconds: 2),
               // autoPlay: true,
               viewportFraction: 1.0,
             ),
@@ -48,7 +47,6 @@ class _CustomSliderWidgetState extends State<CustomSliderWidget> {
                           width: MediaQuery.of(context).size.width,
                           child: Card(
                             child: item,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           )),
                     ],
                   );
