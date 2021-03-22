@@ -1,10 +1,9 @@
 const List menu = ["Livraison", "Click and Collect"];
 const List peopleFeedback = [
-  "Lieu agréable (12)",
-  "Bon service (11)",
-  "Facile d'accès (14)"
+  "Fast & reliable (12)",
+  "Well packed (11)",
+  "Follow order notes (11)"
 ];
-const List test = ["test 1", "test 2", "test 3"];
 const List categories = [
   {"img": "assets/icons/pickup.svg", "name": "Achat"},
   {"img": "assets/icons/essentials.svg", "name": "Essentiels"},
@@ -16,18 +15,12 @@ const List categories = [
 const List firstMenu = [
   {
     "img":
-        "https://img.check.fm/venue/11467/images/tvfuglrv5ba3f8cdbd1e7.jpg?w=300&h=300",
+        "https://vivrenimes.fr/wp-content/uploads/2019/08/GRANDE-BRADERIE-NIMES.jpg",
     "is_liked": true,
-    "name": "Bar Joe",
-    "description": "Le meilleur ami de votre féria",
-    "location": "44 Boulevard Victor Hugo",
-    "clickAndCollect": true,
-    "rate": "4.5",
-    "comments": {
-      "Très bel endroit, je recommande",
-      "J'ai été très bien accueillie",
-      "Rien à reprocher"
-    }
+    "name": "Coeur de Nîmes",
+    "description": "Les meilleurs commerçants de Nîmes",
+    "time": "45-55 Min",
+    "delivery_fee": "\€1.00 Livraison",
   }
 ];
 const List exploreMenu = [
@@ -35,46 +28,34 @@ const List exploreMenu = [
     "img":
         "https://images.unsplash.com/photo-1530016555861-3d1f3f5ca94b?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mnx8Zm9vZCUyMGRvbnV0fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     "is_liked": true,
-    "name": "Dunkin'",
+    "name": "Dunkin' (122 Fulton St)",
     "description": "Breakfast and Brunch - Donuts",
-    "location": "122 Fulton St",
-    "clickAndCollect": false,
-    "rate": "4.0",
-    "comments": {
-      "Très bel endroit, je recommande",
-      "J'ai été très bien accueillie",
-      "Rien à reprocher"
-    }
+    "time": "15-25 Min",
+    "delivery_fee": "\€1.00 Livraison",
+    "rate": "4.5",
+    "rate_number": "105"
   },
   {
     "img":
         "https://images.unsplash.com/photo-1552895638-f7fe08d2f7d5?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZCUyMG1jZG9uYWxkfGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     "is_liked": false,
-    "name": "McDonald's",
+    "name": "McDonald's - LES (Delancey St)",
     "description": "American - Fast Food - Burgers",
-    "location": "Delancey St",
-    "clickAndCollect": true,
-    "rate": "3.6",
-    "comments": {
-      "Très bel endroit, je recommande",
-      "J'ai été très bien accueillie",
-      "Rien à reprocher"
-    }
+    "time": "20-30 Min",
+    "delivery_fee": "\€1.00 Livraison",
+    "rate": "4.5",
+    "rate_number": "500+"
   },
   {
     "img":
         "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTR8fGZvb2R8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     "is_liked": true,
-    "name": "Subway",
+    "name": "Subway (30 BROAD ST)",
     "description": "Fast Food - Sandwich - American",
-    "location": "30 Broad St",
-    "clickAndCollect": false,
-    "rate": "3.8",
-    "comments": {
-      "Très bel endroit, je recommande",
-      "J'ai été très bien accueillie",
-      "Rien à reprocher"
-    }
+    "time": "40-50 Min",
+    "delivery_fee": "\€1.00 Livraison",
+    "rate": "4.5",
+    "rate_number": "133"
   },
 ];
 
@@ -85,29 +66,21 @@ const List popluarNearYou = [
     "is_liked": false,
     "name": "Village Breakfast Snob",
     "description": "Breakfast and Brunch - American - Sandwich",
-    "location": "New-York",
-    "clickAndCollect": false,
-    "rate": "3.0",
-    "comments": {
-      "Très bel endroit, je recommande",
-      "J'ai été très bien accueillie",
-      "Rien à reprocher"
-    }
+    "time": "20-30 Min",
+    "delivery_fee": "\$1.49 Delivery Fee",
+    "rate": "4.3",
+    "rate_number": "273"
   },
   {
     "img":
         "https://images.unsplash.com/photo-1467453678174-768ec283a940?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mjd8fGZvb2R8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     "is_liked": false,
     "name": "Soho Finest Market",
-    "description": "Breakfast and Brunch - Juice and Smoothies",
-    "location": "Los Angeles",
-    "clickAndCollect": true,
-    "rate": "2.1",
-    "comments": {
-      "Très bel endroit, je recommande",
-      "J'ai été très bien accueillie",
-      "Rien à reprocher"
-    }
+    "description": "Breakfast aand Brunch - Juice and Smoothies",
+    "time": "15-25 Min",
+    "delivery_fee": "\$2.49 Delivery Fee",
+    "rate": "4.4",
+    "rate_number": "22"
   },
 ];
 
