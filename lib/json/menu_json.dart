@@ -4,6 +4,11 @@ const List peopleFeedback = [
   "Well packed (11)",
   "Follow order notes (11)"
 ];
+const List comments = [
+  "Très bel endroit, je recommande",
+  "J'ai été très bien accueillie",
+  "Rien à reprocher"
+];
 const List categories = [
   {"img": "assets/icons/pickup.svg", "name": "Achat"},
   {"img": "assets/icons/essentials.svg", "name": "Essentiels"},

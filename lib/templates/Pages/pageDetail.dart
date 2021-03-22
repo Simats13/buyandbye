@@ -48,7 +48,9 @@ class _PageDetailState extends State<PageDetail> {
             Text(
               "PRIX DE L'ARTICLE ET DE LA LIVRAISON",
               style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w500, color: OficihomeAppTheme.orange),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: OficihomeAppTheme.orange),
             )
           ],
         ),
@@ -343,7 +345,8 @@ class _PageDetailState extends State<PageDetail> {
                           child: Container(
                             height: 40,
                             decoration: BoxDecoration(
-                                color: OficihomeAppTheme.orange.withOpacity(0.2),
+                                color:
+                                    OficihomeAppTheme.orange.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(30)),
                             child: Center(
                               child: Padding(
@@ -389,42 +392,6 @@ class _PageDetailState extends State<PageDetail> {
                           SizedBox(
                             height: 15,
                           ),
-                          // Container(
-                          //   child: Column(
-                          //     children: List.generate(comments.length, (index) {
-                          //       return Padding(
-                          //         padding: const EdgeInsets.only(
-                          //           bottom: 15,
-                          //         ),
-                          //         child: Container(
-                          //           height: 40,
-                          //           child: Center(
-                          //             child: Padding(
-                          //               padding: const EdgeInsets.only(
-                          //                   left: 15, right: 15),
-                          //               child: Row(
-                          //                 children: [
-                          //                   Icon(
-                          //                     Icons.person_pin,
-                          //                     size: 17,
-                          //                   ),
-                          //                   SizedBox(
-                          //                     width: 15,
-                          //                   ),
-                          //                   Text(
-                          //                     comments[index],
-                          //                     style: TextStyle(
-                          //                         fontSize: 14, height: 1.5),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       );
-                          //     }),
-                          //   ),
-                          // ),
                           Text(
                             "Voir plus ...",
                             style: TextStyle(
