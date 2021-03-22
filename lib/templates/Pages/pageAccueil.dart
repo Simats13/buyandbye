@@ -1,16 +1,16 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:oficihome/json/menu_json.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
 import 'package:oficihome/templates/pages/pageDetail.dart';
 import 'package:oficihome/theme/colors.dart';
-import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/theme/styles.dart';
 import 'package:oficihome/services/database.dart';
 import 'package:oficihome/templates/widgets/custom_slider.dart';
+
+import '../../json/menu_json.dart';
+import '../../theme/colors.dart';
 
 // import 'package:oficihome/templates/widgets/custom_slider.dart';
 // import 'package:oficihome/templates/compte/constants.dart';
@@ -34,6 +34,7 @@ class _PageAccueilState extends State<PageAccueil> {
             SizedBox(
               height: 15,
             ),
+            //Livraison / Click&Collect
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(menu.length, (index) {
@@ -105,6 +106,7 @@ class _PageAccueilState extends State<PageAccueil> {
             SizedBox(
               height: 15,
             ),
+            //Localisation
             Row(
               children: [
                 Container(
@@ -149,13 +151,60 @@ class _PageAccueilState extends State<PageAccueil> {
             SizedBox(
               height: 15,
             ),
-            Text("     Les Bons Plans du moment", style: customTitle),
-            Container(
+            Padding(
               padding: EdgeInsets.all(20),
               child: CustomSliderWidget(
-                items: [SliderAccueil1()],
+                items: [Item4()],
               ),
             ),
+            // Container(
+            //   width: size.width,
+            //   decoration: BoxDecoration(
+            //     color: textFieldColor,
+            //   ),
+            //   child: Padding(
+            //     padding: EdgeInsets.only(bottom: 10, top: 10),
+            //     child: Container(
+            //       decoration: BoxDecoration(color: white),
+            //       child: Padding(
+            //         padding: EdgeInsets.only(
+            //           top: 15,
+            //           bottom: 15,
+            //         ),
+            //         child: SingleChildScrollView(
+            //           scrollDirection: Axis.horizontal,
+            //           child: Container(
+            //             margin: EdgeInsets.only(
+            //               left: 30,
+            //             ),
+            //             child: Row(
+            //               children: List.generate(categories.length, (index) {
+            //                 return Padding(
+            //                   padding: const EdgeInsets.only(right: 30),
+            //                   child: Column(
+            //                     children: [
+            //                       SvgPicture.asset(
+            //                         categories[index]['img'],
+            //                         width: 40,
+            //                       ),
+            //                       SizedBox(
+            //                         height: 15,
+            //                       ),
+            //                       Text(
+            //                         categories[index]['name'],
+            //                         style: customContent,
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 );
+            //               }),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             //trait gris de séparation rajouté après avoir désactivé le code au dessus.
             Container(
@@ -166,51 +215,640 @@ class _PageAccueilState extends State<PageAccueil> {
             SizedBox(
               height: 15,
             ),
-            Text(
-              "     Près de chez vous",
-              style: customTitle,
-            ),
             Container(
-              padding: EdgeInsets.all(20),
-              child: CustomSliderWidget(
-                items: [SliderAccueil2()],
+              margin: EdgeInsets.only(top: 12, left: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Ce qui pourrait vous plaire",
+                    style: customTitle,
+                  ),
+                ],
               ),
             ),
-
-            //trait gris de séparation rajouté après avoir désactivé le code au dessus.
             Container(
               width: size.width,
-              height: 10,
-              decoration: BoxDecoration(color: textFieldColor),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Text("     Plus à Découvrir", style: customTitle),
-            Container(
-              padding: EdgeInsets.all(20),
-              child: CustomSliderWidget(
-                items: [SliderAccueil3()],
-              ),
-            ),
-
-            //trait gris de séparation rajouté après avoir désactivé le code au dessus.
-            Container(
-              width: size.width,
-              height: 10,
-              decoration: BoxDecoration(color: textFieldColor),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Text(
-              "    Vous avez acheté chez eux récemment",
-              style: customTitle,
-            ),
-            Container(
-              padding: EdgeInsets.all(20),
-              child: CustomSliderWidget(
-                items: [SliderAccueil4()],
+              margin: EdgeInsets.all(12),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PageDetail(
+                              img: firstMenu[0]['img'],
+                              name: firstMenu[0]['name'],
+                              description: firstMenu[0]['description'],
+                              clickAndCollect: firstMenu[0]['clickAndCollect'],
+                              location: firstMenu[0]['location'],
+                              rate: firstMenu[0]['rate'],
+                              //comments: firstMenu[0]['comments'],
+                            )),
+                  );
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    //Liste des magasins
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            width: size.width,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(firstMenu[0]['img'])),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16.0)),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 15.0,
+                            right: 15.0,
+                            child: SvgPicture.asset(
+                              firstMenu[0]['is_liked']
+                                  ? "assets/icons/loved_icon.svg"
+                                  : "assets/icons/love_icon.svg",
+                              width: 20,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        firstMenu[0]['name'],
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w400),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Sponsorisé",
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.info,
+                            size: 15,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        firstMenu[0]['description'],
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: textFieldColor,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    firstMenu[0]['rate'],
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    Icons.star,
+                                    color: yellowStar,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: textFieldColor,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Click and Collect",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    firstMenu[0]['clickAndCollect']
+                                        ? Icons.check_circle
+                                        : Icons.add_circle,
+                                    color: firstMenu[0]['clickAndCollect']
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      //Fin du premier magasin
+                      Container(
+                        width: size.width,
+                        height: 10,
+                        decoration: BoxDecoration(color: textFieldColor),
+                      ),
+                      //Plus à découvrir
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        margin:
+                            EdgeInsets.only(left: 15, right: 15, bottom: 30),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Plus à découvrir",
+                              style: customTitle,
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children:
+                                    List.generate(exploreMenu.length, (index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PageDetail(
+                                                  img: exploreMenu[index]
+                                                      ['img'],
+                                                  name: exploreMenu[index]
+                                                      ['name'],
+                                                  description:
+                                                      exploreMenu[index]
+                                                          ["description"],
+                                                  clickAndCollect:
+                                                      exploreMenu[index]
+                                                          ['clickAndCollect'],
+                                                  location: exploreMenu[index]
+                                                      ['location'],
+                                                  rate: exploreMenu[index]
+                                                      ['rate'],
+                                                  //comments: exploreMenu[index]
+                                                  //['comments'],
+                                                )),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 15),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                width: size.width,
+                                                height: 160,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    fit: BoxFit.cover,
+                                                    image: NetworkImage(
+                                                        exploreMenu[index]
+                                                            ['img']),
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              16.0)),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                bottom: 15.0,
+                                                right: 15.0,
+                                                child: SvgPicture.asset(
+                                                  exploreMenu[index]['is_liked']
+                                                      ? "assets/icons/loved_icon.svg"
+                                                      : "assets/icons/love_icon.svg",
+                                                  width: 20,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Text(
+                                            exploreMenu[index]['name'],
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Sponsorisé",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Icon(
+                                                Icons.info,
+                                                size: 15,
+                                                color: Colors.grey,
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text(
+                                            exploreMenu[index]['description'],
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: textFieldColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(3),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        exploreMenu[index]
+                                                            ['rate'],
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 3,
+                                                      ),
+                                                      Icon(
+                                                        Icons.star,
+                                                        color: yellowStar,
+                                                        size: 17,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: textFieldColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(3),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        "Click and Collect",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 3,
+                                                      ),
+                                                      Icon(
+                                                        exploreMenu[index][
+                                                                'clickAndCollect']
+                                                            ? Icons.check_circle
+                                                            : Icons.add_circle,
+                                                        color: exploreMenu[
+                                                                    index][
+                                                                'clickAndCollect']
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                        size: 17,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      //Fin Plus à découvrir
+                      Container(
+                        width: size.width,
+                        height: 10,
+                        decoration: BoxDecoration(color: textFieldColor),
+                      ),
+                      //Près de chez vous
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        margin:
+                            EdgeInsets.only(left: 15, right: 15, bottom: 30),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Près de chez vous",
+                              style: customTitle,
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(popluarNearYou.length,
+                                    (index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PageDetail(
+                                                  img: popluarNearYou[index]
+                                                      ['img'],
+                                                  name: popluarNearYou[index]
+                                                      ['name'],
+                                                  description:
+                                                      popluarNearYou[index]
+                                                          ['description'],
+                                                  clickAndCollect:
+                                                      popluarNearYou[index]
+                                                          ['clickAndCollect'],
+                                                  location:
+                                                      popluarNearYou[index]
+                                                          ['location'],
+                                                  rate: popluarNearYou[index]
+                                                      ['rate'],
+                                                  //comments: popluarNearYou[index]
+                                                  //['comments'],
+                                                )),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 15),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                width: size.width,
+                                                height: 160,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: NetworkImage(
+                                                          popluarNearYou[index]
+                                                              ['img'])),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              16.0)),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                bottom: 15.0,
+                                                right: 15.0,
+                                                child: SvgPicture.asset(
+                                                  popluarNearYou[index]
+                                                          ['is_liked']
+                                                      ? "assets/icons/loved_icon.svg"
+                                                      : "assets/icons/love_icon.svg",
+                                                  width: 20,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Text(
+                                            popluarNearYou[index]['name'],
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Sponsorisé",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Icon(
+                                                Icons.info,
+                                                size: 15,
+                                                color: Colors.grey,
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text(
+                                            popluarNearYou[index]
+                                                ['description'],
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: textFieldColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(3),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        popluarNearYou[index]
+                                                            ['rate'],
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 3,
+                                                      ),
+                                                      Icon(
+                                                        Icons.star,
+                                                        color: yellowStar,
+                                                        size: 17,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: textFieldColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(3),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        "Click and Collect",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 3,
+                                                      ),
+                                                      Icon(
+                                                        popluarNearYou[index][
+                                                                'clickAndCollect']
+                                                            ? Icons.check_circle
+                                                            : Icons.add_circle,
+                                                        color: popluarNearYou[
+                                                                    index][
+                                                                'clickAndCollect']
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                        size: 17,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: textFieldColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(3),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(5),
+                                                  child: Row(
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        "assets/icons/pin_icon.svg",
+                                                        width: 15,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 3,
+                                                      ),
+                                                      Text(
+                                                        "A 500m",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      //Fin Près de chez vous
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -227,12 +865,12 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 }
 
-class SliderAccueil1 extends StatefulWidget {
+class Item4 extends StatefulWidget {
   @override
-  _SliderAccueil1State createState() => _SliderAccueil1State();
+  _Item4State createState() => _Item4State();
 }
 
-class _SliderAccueil1State extends State<SliderAccueil1> {
+class _Item4State extends State<Item4> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -243,249 +881,31 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
               itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index) {
                 return Container(
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data.docs[index]
-                                            ['photoUrl'],
-                                        name: snapshot.data.docs[index]['name'],
-                                        description: snapshot.data.docs[index]
-                                            ['description'],
-                                        adresse: snapshot.data.docs[index]
-                                            ['adresse'],
-                                        clickAndCollect: snapshot.data
-                                            .docs[index]['ClickAndCollect'],
-                                        livraison: snapshot.data.docs[index]
-                                            ['livraison'],
-                                      )));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  snapshot.data.docs[index]['photoUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(snapshot.data.docs[index]['name'],
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.docs[index]['description'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17.0,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        )));
-              });
-        });
-  }
-}
-
-class SliderAccueil2 extends StatefulWidget {
-  @override
-  _SliderAccueil2State createState() => _SliderAccueil2State();
-}
-
-class _SliderAccueil2State extends State<SliderAccueil2> {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: DatabaseMethods().getStoreInfo(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return Text('chargement en cours...');
-          return PageView.builder(
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data.docs[index]
-                                            ['photoUrl'],
-                                        name: snapshot.data.docs[index]['name'],
-                                        description: snapshot.data.docs[index]
-                                            ['description'],
-                                        adresse: snapshot.data.docs[index]
-                                            ['adresse'],
-                                        clickAndCollect: snapshot.data
-                                            .docs[index]['ClickAndCollect'],
-                                        livraison: snapshot.data.docs[index]
-                                            ['livraison'],
-                                      )));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  snapshot.data.docs[index]['photoUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(snapshot.data.docs[index]['name'],
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.docs[index]['description'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17.0,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        )));
-              });
-        });
-  }
-}
-
-class SliderAccueil3 extends StatefulWidget {
-  @override
-  _SliderAccueil3State createState() => _SliderAccueil3State();
-}
-
-class _SliderAccueil3State extends State<SliderAccueil3> {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: DatabaseMethods().getStoreInfo(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return Text('chargement en cours...');
-          return PageView.builder(
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data.docs[index]
-                                            ['photoUrl'],
-                                        name: snapshot.data.docs[index]['name'],
-                                        description: snapshot.data.docs[index]
-                                            ['description'],
-                                        adresse: snapshot.data.docs[index]
-                                            ['adresse'],
-                                        clickAndCollect: snapshot.data
-                                            .docs[index]['ClickAndCollect'],
-                                        livraison: snapshot.data.docs[index]
-                                            ['livraison'],
-                                      )));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  snapshot.data.docs[index]['photoUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(snapshot.data.docs[index]['name'],
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.docs[index]['description'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17.0,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        )));
-              });
-        });
-  }
-}
-
-class SliderAccueil4 extends StatefulWidget {
-  @override
-  _SliderAccueil4State createState() => _SliderAccueil4State();
-}
-
-class _SliderAccueil4State extends State<SliderAccueil4> {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: DatabaseMethods().getStoreInfo(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return Text('chargement en cours...');
-          return PageView.builder(
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data.docs[index]
-                                            ['photoUrl'],
-                                        name: snapshot.data.docs[index]['name'],
-                                        description: snapshot.data.docs[index]
-                                            ['description'],
-                                        adresse: snapshot.data.docs[index]
-                                            ['adresse'],
-                                        clickAndCollect: snapshot.data
-                                            .docs[index]['ClickAndCollect'],
-                                        livraison: snapshot.data.docs[index]
-                                            ['livraison'],
-                                      )));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  snapshot.data.docs[index]['photoUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(snapshot.data.docs[index]['name'],
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(snapshot.data.docs[index]['description'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17.0,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        )));
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    image: DecorationImage(
+                      image:
+                          NetworkImage(snapshot.data.docs[index]['photoUrl']),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(snapshot.data.docs[index]['name'],
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold)),
+                      Text(snapshot.data.docs[index]['description'],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                );
               });
         });
   }

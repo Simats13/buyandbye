@@ -1,18 +1,14 @@
-import 'package:clippy_flutter/clippy_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ndialog/ndialog.dart';
-import 'package:oficihome/model/magasin_model.dart';
 import 'package:oficihome/services/auth.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
-import 'package:location/location.dart';
-
 
 class PageExplore extends StatefulWidget {
   @override
@@ -23,7 +19,6 @@ class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   Geoflutterfire geo;
   bool mapToggle = false;
-  Geolocator userLocation = Geolocator();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   int prevPage;
   final radius = BehaviorSubject<double>.seeded(1.0);
@@ -61,10 +56,9 @@ class _PageExploreState extends State<PageExplore> {
         mapToggle = true;
       });
     });
+
     geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(
-        latitude: 43.604636,
-        longitude: 3.877017);
+    GeoFirePoint center = geo.point(latitude: 43.837636, longitude: 4.359415);
     stream = radius.switchMap((rad) {
       var collectionReference = _firestore.collection('magasins');
       return geo.collection(collectionRef: collectionReference).within(
@@ -204,7 +198,11 @@ class _PageExploreState extends State<PageExplore> {
 
   moveCamera(double lat, double lng) {
     _mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(lat, lng), zoom: 14.0, bearing: 45.0, tilt: 45.0)));
+      target: LatLng(lat, lng),
+      zoom: 14.0,
+      bearing: 45.0,
+      tilt: 45.0,
+    )));
   }
 
   void _updateMarkers(List<DocumentSnapshot> documentList) {
@@ -258,7 +256,7 @@ class _PageExploreState extends State<PageExplore> {
                     initialCameraPosition: CameraPosition(
                         target: LatLng(currentLocation.latitude,
                             currentLocation.longitude),
-                        zoom: 10.0),
+                        zoom: 15.0),
                     markers: Set<Marker>.of(markers.values),
                     myLocationButtonEnabled: false,
                     myLocationEnabled: true,

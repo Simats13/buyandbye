@@ -4,27 +4,25 @@ import 'package:line_icons/line_icons.dart';
 import 'package:oficihome/json/menu_json.dart';
 import 'package:oficihome/theme/colors.dart';
 import 'package:oficihome/theme/styles.dart';
-import 'package:oficihome/templates/oficihome_app_theme.dart';
 
 class PageDetail extends StatefulWidget {
-  const PageDetail(
-      {Key key,
-      this.img,
-      this.name,
-      this.description,
-      this.adresse,
-      this.clickAndCollect,
-      this.livraison
-      //Sthis.comments
-      })
-      : super(key: key);
+  const PageDetail({
+    Key key,
+    this.img,
+    this.name,
+    this.description,
+    this.clickAndCollect,
+    this.location,
+    this.rate,
+    //Sthis.comments
+  }) : super(key: key);
 
   final String img;
   final String name;
   final String description;
-  final String adresse;
-  final bool livraison;
+  final String location;
   final bool clickAndCollect;
+  final String rate;
   //final List comments;
 
   @override
@@ -48,7 +46,7 @@ class _PageDetailState extends State<PageDetail> {
             Text(
               "PRIX DE L'ARTICLE ET DE LA LIVRAISON",
               style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w500, color: OficihomeAppTheme.orange),
+                  fontSize: 14, fontWeight: FontWeight.w500, color: primary),
             )
           ],
         ),
@@ -128,20 +126,9 @@ class _PageDetailState extends State<PageDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.name,
-                        style: TextStyle(
-                            fontSize: 21, fontWeight: FontWeight.bold),
-                      ),
-                      Icon(
-                        Icons.message,
-                        color: OficihomeAppTheme.orange,
-                        size: 25,
-                      ),
-                    ],
+                  Text(
+                    widget.name,
+                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 15,
@@ -162,40 +149,40 @@ class _PageDetailState extends State<PageDetail> {
                   ),
                   Row(
                     children: [
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     color: textFieldColor,
-                      //     borderRadius: BorderRadius.circular(3),
-                      //   ),
-                      //   child: Padding(
-                      //     padding: EdgeInsets.all(5),
-                      //     child: Row(
-                      //       children: [
-                      //         Text(
-                      //           widget.rate,
-                      //           style: TextStyle(
-                      //             fontSize: 14,
-                      //           ),
-                      //         ),
-                      //         SizedBox(
-                      //           width: 3,
-                      //         ),
-                      //         Icon(
-                      //           Icons.star,
-                      //           color: yellowStar,
-                      //           size: 17,
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: textFieldColor,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.rate,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: yellowStar,
+                                size: 17,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       SizedBox(
                         width: 8,
                       ),
                       Container(
                         decoration: BoxDecoration(
                           color: textFieldColor,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(5),
@@ -213,7 +200,7 @@ class _PageDetailState extends State<PageDetail> {
                               Icon(
                                 widget.clickAndCollect
                                     ? Icons.check_circle
-                                    : Icons.highlight_off,
+                                    : Icons.add_circle,
                                 color: widget.clickAndCollect
                                     ? Colors.green
                                     : Colors.red,
@@ -226,37 +213,6 @@ class _PageDetailState extends State<PageDetail> {
                       SizedBox(
                         width: 8,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: textFieldColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Livraison",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 3,
-                              ),
-                              Icon(
-                                widget.livraison
-                                    ? Icons.check_circle
-                                    : Icons.highlight_off,
-                                color: widget.livraison
-                                    ? Colors.green
-                                    : Colors.red,
-                                size: 17,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   SizedBox(
@@ -266,7 +222,7 @@ class _PageDetailState extends State<PageDetail> {
                     color: black.withOpacity(0.3),
                   ),
                   SizedBox(
-                    height: 15,
+                    height: 10,
                   ),
                   Text(
                     "Informations de la boutique",
@@ -290,7 +246,7 @@ class _PageDetailState extends State<PageDetail> {
                               width: 8,
                             ),
                             Text(
-                              widget.adresse,
+                              widget.location,
                               style: TextStyle(fontSize: 14),
                             )
                           ],
@@ -301,7 +257,7 @@ class _PageDetailState extends State<PageDetail> {
                           "Plus d'infos",
                           style: TextStyle(
                               fontSize: 13,
-                              color: OficihomeAppTheme.orange,
+                              color: primary,
                               fontWeight: FontWeight.bold),
                         ),
                       )
@@ -343,7 +299,7 @@ class _PageDetailState extends State<PageDetail> {
                           child: Container(
                             height: 40,
                             decoration: BoxDecoration(
-                                color: OficihomeAppTheme.orange.withOpacity(0.2),
+                                color: primary.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(30)),
                             child: Center(
                               child: Padding(
@@ -353,7 +309,7 @@ class _PageDetailState extends State<PageDetail> {
                                   peopleFeedback[index],
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: OficihomeAppTheme.orange,
+                                    color: primary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -365,7 +321,7 @@ class _PageDetailState extends State<PageDetail> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
                   Container(
                     width: size.width,
@@ -381,7 +337,7 @@ class _PageDetailState extends State<PageDetail> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Avis clients",
+                            "Commentaires",
                             style: TextStyle(
                               color: black.withOpacity(0.5),
                             ),
@@ -389,46 +345,46 @@ class _PageDetailState extends State<PageDetail> {
                           SizedBox(
                             height: 15,
                           ),
-                          // Container(
-                          //   child: Column(
-                          //     children: List.generate(comments.length, (index) {
-                          //       return Padding(
-                          //         padding: const EdgeInsets.only(
-                          //           bottom: 15,
-                          //         ),
-                          //         child: Container(
-                          //           height: 40,
-                          //           child: Center(
-                          //             child: Padding(
-                          //               padding: const EdgeInsets.only(
-                          //                   left: 15, right: 15),
-                          //               child: Row(
-                          //                 children: [
-                          //                   Icon(
-                          //                     Icons.person_pin,
-                          //                     size: 17,
-                          //                   ),
-                          //                   SizedBox(
-                          //                     width: 15,
-                          //                   ),
-                          //                   Text(
-                          //                     comments[index],
-                          //                     style: TextStyle(
-                          //                         fontSize: 14, height: 1.5),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       );
-                          //     }),
-                          //   ),
-                          // ),
+                          Container(
+                            child: Column(
+                              children: List.generate(test.length, (index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 15,
+                                  ),
+                                  child: Container(
+                                    height: 40,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.person_pin,
+                                              size: 17,
+                                            ),
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            Text(
+                                              test[index],
+                                              style: TextStyle(
+                                                  fontSize: 14, height: 1.5),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
                           Text(
                             "Voir plus ...",
                             style: TextStyle(
-                              color: OficihomeAppTheme.orange,
+                              color: Colors.green,
                             ),
                           ),
                         ],
@@ -436,7 +392,13 @@ class _PageDetailState extends State<PageDetail> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 15,
+                  ),
+                  Divider(
+                    color: black.withOpacity(0.3),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,8 +409,7 @@ class _PageDetailState extends State<PageDetail> {
                           Text(
                             "Produits disponibles",
                             style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
                           Icon(
@@ -456,6 +417,16 @@ class _PageDetailState extends State<PageDetail> {
                             size: 25,
                           ),
                         ],
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        "BLABLABLA",
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(
                         height: 30,
