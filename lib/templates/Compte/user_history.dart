@@ -22,6 +22,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //Initialisation de la DropDownList
   List<DropdownMenuItem<String>> duration = [];
   String def;
   void listDuration() {
@@ -81,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 30,
             ),
             //Historique des achats
+            //Achat 1
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -149,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 30,
             ),
             //Achat 2
+            //Article 1
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -287,6 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Divider(
                         color: black.withOpacity(0.3),
                       ),
+                      //Total
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Row(
