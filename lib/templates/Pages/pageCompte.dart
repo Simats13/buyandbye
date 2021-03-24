@@ -55,26 +55,6 @@ class ProfileScreen extends StatelessWidget {
                             snapshot.data.photoURL,
                           ),
                         ),
-                        // Align(
-                        //   alignment: Alignment.bottomRight,
-                        //   child: Container(
-                        //     height: kSpacingUnit.w * 2.5,
-                        //     width: kSpacingUnit.w * 2.5,
-                        //     decoration: BoxDecoration(
-                        //       color: OficihomeAppTheme.orange,
-                        //       shape: BoxShape.circle,
-                        //     ),
-                        //     child: Center(
-                        //       heightFactor: kSpacingUnit.w * 1.5,
-                        //       widthFactor: kSpacingUnit.w * 1.5,
-                        //       child: Icon(
-                        //         LineAwesomeIcons.pen,
-                        //         color: kDarkPrimaryColor,
-                        //         size: ScreenUtil().setSp(kSpacingUnit.w * 1.5),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
