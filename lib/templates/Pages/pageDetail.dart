@@ -163,34 +163,7 @@ class _PageDetailState extends State<PageDetail> {
                     height: 15,
                   ),
                   Row(
-                    children: [
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     color: textFieldColor,
-                      //     borderRadius: BorderRadius.circular(3),
-                      //   ),
-                      //   child: Padding(
-                      //     padding: EdgeInsets.all(5),
-                      //     child: Row(
-                      //       children: [
-                      //         Text(
-                      //           widget.rate,
-                      //           style: TextStyle(
-                      //             fontSize: 14,
-                      //           ),
-                      //         ),
-                      //         SizedBox(
-                      //           width: 3,
-                      //         ),
-                      //         Icon(
-                      //           Icons.star,
-                      //           color: yellowStar,
-                      //           size: 17,
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                    children:
                       SizedBox(
                         width: 8,
                       ),
