@@ -50,18 +50,6 @@ class AuthMethods {
       SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
       SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
 
-      // DatabaseMethods()
-      //     .addUserInfoToDB(
-      //         userID: userDetails.uid,
-      //         email: userDetails.email,
-      //         username: userDetails.email.replaceAll("@gmail.com", ""),
-      //         name: userDetails.displayName,
-      //         profileUrl: userDetails.photoURL)
-      //     .then(() {
-      //   Navigator.pushReplacement(
-      //       context, MaterialPageRoute(builder: (context) => HomePage()));
-      // });
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       Map<String, dynamic> userInfoMap = {
         "email": userDetails.email,
         "username": userDetails.email.replaceAll("@gmail.com", ""),
