@@ -83,6 +83,10 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance.collection("magasins").get();
   }
 
+  Future<QuerySnapshot> getFAQ() async {
+    return await FirebaseFirestore.instance.collection("FAQ").get();
+  }
+
   Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
     return FirebaseFirestore.instance
         .collection("magasins")
