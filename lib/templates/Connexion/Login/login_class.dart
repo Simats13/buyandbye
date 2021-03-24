@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
       final user = await authService.signInWithApple();
       print('uid: ${user.uid}');
     } catch (e) {
-      // TODO: Show alert here
+      //
       print(e);
     }
   }
