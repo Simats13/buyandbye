@@ -65,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text("Aide / Support", style: TextStyle(color: Colors.black)),
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -137,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Text(
                                     "Foire aux questions",
                                     style: TextStyle(
-                                        fontSize: 18, color: Colors.black),
+                                        fontSize: 20, color: Colors.black),
                                   ),
                                   Icon(
                                     //Si la suite est affichée, la flèche pointe vers le bas
@@ -214,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Text(
                                     "Ecrivez-nous",
                                     style: TextStyle(
-                                        fontSize: 18, color: Colors.black),
+                                        fontSize: 20, color: Colors.black),
                                   ),
                                   Icon(
                                     isVisible2
@@ -232,7 +233,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               },
                             ),
                             //Partie cachée
-                            Visibility(visible: isVisible2, child: Formulaire())
+                            Visibility(
+                                visible: isVisible2,
+                                child: Column(
+                                  children: [Formulaire()],
+                                ))
                           ],
                         ),
                       ),
@@ -289,7 +294,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Text(
                                     "Contactez le support",
                                     style: TextStyle(
-                                        fontSize: 18, color: Colors.black),
+                                        fontSize: 20, color: Colors.black),
                                   ),
                                   Icon(
                                     isVisible3
@@ -348,7 +353,7 @@ class _QuestionState extends State<Question> {
                     SizedBox(height: 25),
                     Text(snapshot.data.docs[index]['question'],
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500)),
+                            fontSize: 18, fontWeight: FontWeight.w500)),
                     SizedBox(height: 15),
                     Text(snapshot.data.docs[index]['answer'],
                         style: TextStyle(fontSize: 16)),
@@ -359,131 +364,242 @@ class _QuestionState extends State<Question> {
   }
 }
 
-//Classe pour le formulaire de suggestion
-class Formulaire extends StatefulWidget {
+class MyTextFormField extends StatelessWidget {
+  final Function validator;
+  final Function onSaved;
+
+  MyTextFormField({
+    this.validator,
+    this.onSaved,
+  });
+
   @override
-  FormulaireState createState() {
-    return FormulaireState();
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(15.0),
+          border: InputBorder.none,
+          filled: true,
+          fillColor: Colors.grey[200],
+        ),
+        validator: validator,
+        onSaved: onSaved,
+      ),
+    );
   }
 }
 
-class FormulaireState extends State<Formulaire> {
+//Classe pour le formulaire de suggestion
+
+class Formulaire extends StatefulWidget {
+  @override
+  _FormulaireState createState() => _FormulaireState();
+}
+
+class _FormulaireState extends State<Formulaire> {
   final _formKey = GlobalKey<FormState>();
+  String email;
+  String suggestion;
+
+  addData() {
+    Map<String, dynamic> userData = {
+      "email": email,
+      "message": suggestion,
+      "date": DateTime.now()
+    };
+
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection('suggestions');
+    collectionReference.add(userData);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 15),
-          Text("E-mail :",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez entrer votre e-mail';
-              }
-              if (!value.contains('@')) {
-                return 'Mail invalide';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 15),
-          Text("Votre suggestion",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez écrire un message';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 15),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Merci pour votre retour !')));
-              }
-            },
-            child: Text('Envoyer'),
-          ),
-        ],
-      ),
-    );
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 15),
+            Text("E-mail :",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            SizedBox(height: 10),
+            MyTextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez entrer votre e-mail';
+                }
+                if (!value.contains('@')) {
+                  return 'Mail invalide';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                email = value;
+              },
+            ),
+            SizedBox(height: 15),
+            Text("Votre suggestion :",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            SizedBox(height: 10),
+            MyTextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez écrire un message';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                suggestion = value;
+              },
+            ),
+            SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                  addData();
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                            content: Text("Merci pour votre retour !"));
+                      });
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => PageCompte()));
+                }
+              },
+              child: Text('Envoyer'),
+            ),
+          ],
+        ));
   }
 }
 
 //Classe pour le formulaire de support
+
 class Formulaire2 extends StatefulWidget {
   @override
-  Formulaire2State createState() {
-    return Formulaire2State();
-  }
+  _Formulaire2State createState() => _Formulaire2State();
 }
 
-class Formulaire2State extends State<Formulaire2> {
+class _Formulaire2State extends State<Formulaire2> {
   final _formKey = GlobalKey<FormState>();
+  String email;
+  String problemType;
+  String problem;
+
+  addData2() {
+    Map<String, dynamic> userData = {
+      "email": email,
+      "Numéro de problème": problemType,
+      "Problème": problem,
+      "date": DateTime.now()
+    };
+
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection('problems');
+    collectionReference.add(userData);
+  }
+
+  //Initialisation de la DropDownList
+  List<DropdownMenuItem<String>> problems = [];
+  String def;
+  void listProblems() {
+    problems.clear();
+    problems.add(DropdownMenuItem(
+        value: "1",
+        child: Text("Problème 1",
+            style: TextStyle(fontSize: 18, color: Colors.black))));
+    problems.add(DropdownMenuItem(
+        value: "2",
+        child: Text("Problème 2",
+            style: TextStyle(fontSize: 18, color: Colors.black))));
+    problems.add(DropdownMenuItem(
+        value: "3",
+        child: Text("Problème 3",
+            style: TextStyle(fontSize: 18, color: Colors.black))));
+  }
 
   @override
   Widget build(BuildContext context) {
+    listProblems();
     return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 15),
-          Text("E-mail :",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez entrer votre e-mail';
-              }
-              if (!value.contains('@')) {
-                return 'Mail invalide';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 20),
-          Text("Sur quelle page avez-vous rencontré un problème ?",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez écrire un message';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 20),
-          Text("Quel est votre problème ?",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez écrire un message';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 15),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Merci pour votre retour !')));
-              }
-            },
-            child: Text('Envoyer'),
-          ),
-        ],
-      ),
-    );
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 15),
+            Text("E-mail :",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            SizedBox(height: 10),
+            MyTextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez entrer votre e-mail';
+                }
+                if (!value.contains('@')) {
+                  return 'Mail invalide';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                email = value;
+              },
+            ),
+            SizedBox(height: 15),
+            Text("Quel type de problème ?",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            SizedBox(height: 15),
+            //Menu déroulant
+            DropdownButton(
+                value: def,
+                elevation: 2,
+                items: problems,
+                hint: Text("Nature du problème",
+                    style: TextStyle(fontSize: 18, color: Colors.black)),
+                onChanged: (value) {
+                  def = value;
+                  problemType = value;
+                  setState(() {});
+                }),
+            //
+            SizedBox(height: 15),
+            Text("Décrivez votre problème :",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            SizedBox(height: 10),
+            MyTextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez entrer un message';
+                }
+                return null;
+              },
+              onSaved: (String value) {
+                problem = value;
+              },
+            ),
+            SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                  addData2();
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                            content: Text("Merci pour votre retour !"));
+                      });
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => PageCompte()));
+                }
+              },
+              child: Text('Envoyer'),
+            ),
+          ],
+        ));
   }
 }
