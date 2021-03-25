@@ -21,11 +21,9 @@ class PageCompte extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
-        // primaryColor: Colors.red,
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        // additional settings go here
       ),
       home: ProfileScreen(),
     );
@@ -96,9 +94,6 @@ class ProfileScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(width: kSpacingUnit.w * 3),
-        // Icon(
-        //   size: ScreenUtil().setSp(kSpacingUnit.w * 3),
-        // ),
         SizedBox(width: ScreenUtil().setSp(kSpacingUnit.w * 3)),
         profileInfo,
         SizedBox(width: kSpacingUnit.w * 3),
@@ -107,14 +102,13 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.height,
         child: Column(
-          children: <Widget>[
+          children: [
             SizedBox(height: kSpacingUnit.w * 5),
             header,
             Expanded(
               child: ListView(
-                // physics: const NeverScrollableScrollPhysics(),
+                physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   SizedBox(height: kSpacingUnit.w * 2),
                   ProfileListItem(
@@ -141,19 +135,6 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         );
                       }),
-                  // ProfileListItem(
-                  //     icon: LineAwesomeIcons.cog,
-                  //     text: 'Paramètres',
-                  //     press: () {
-                  //       Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //           builder: (context) {
-                  //             return Settings();
-                  //           },
-                  //         ),
-                  //       );
-                  //     }),
                   ProfileListItem(
                       icon: LineAwesomeIcons.question_circle,
                       text: 'Aide / Support',
