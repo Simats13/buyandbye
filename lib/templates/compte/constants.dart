@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const kSpacingUnit = 10;
 
@@ -17,6 +16,11 @@ final kTitleTextStyle = TextStyle(
 final kCaptionTextStyle = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w100,
+);
+
+final kCaption2TextStyle = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
 );
 
 final kButtonTextStyle = TextStyle(

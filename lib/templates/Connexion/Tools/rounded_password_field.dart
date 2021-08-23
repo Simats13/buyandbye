@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:oficihome/templates/Compte/constants.dart';
 
-import 'package:oficihome/templates/widgets/constants.dart';
-
 import 'package:oficihome/templates/Connexion/Tools/text_field_container.dart';
 
 class RoundedPasswordField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   const RoundedPasswordField({
-    Key key, this.onChanged,
+    Key key,
+    this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    String _password;
     return TextFieldContainer(
-      child: TextField(
+      child: TextFormField(
         obscureText: true,
+        // ignore: missing_return
+        validator: (input) {
+          if (input.isEmpty) {
+            return "Veuillez rentrer une adresse mail";
+          }
+        },
         decoration: InputDecoration(
           hintText: "Votre mot de passe",
           icon: Icon(
@@ -28,6 +35,7 @@ class RoundedPasswordField extends StatelessWidget {
           ),
           border: InputBorder.none,
         ),
+        onSaved: (input) => _password = input,
       ),
     );
   }

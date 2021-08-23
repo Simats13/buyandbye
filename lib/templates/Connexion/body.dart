@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'package:oficihome/templates/widgets/constants.dart';
 
@@ -7,11 +6,7 @@ import 'package:oficihome/templates/pages/pageInscription.dart';
 import 'package:oficihome/templates/pages/pageLogin.dart';
 
 import 'package:oficihome/templates/Connexion/Tools/bouton.dart';
-import 'package:oficihome/templates/Connexion/Tools/background.dart';  
-
-
-
-
+import 'package:oficihome/templates/Connexion/Tools/background.dart';
 
 class Body extends StatelessWidget {
   const Body({Key key}) : super(key: key);
@@ -25,14 +20,14 @@ class Body extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "BIENVENUE SUR OFICI'HOME",
+              "BIENVENUE SUR BUY & BYE",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(
               height: size.height * 0.03,
             ),
-            SvgPicture.asset(
-              "assets/icons/chat.svg",
+            Image.asset(
+              "assets/icons/chat.png",
               height: size.height * 0.45,
             ),
             SizedBox(
@@ -41,7 +36,7 @@ class Body extends StatelessWidget {
             RoundedButton(
               text: "CONNEXION",
               press: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
@@ -56,7 +51,7 @@ class Body extends StatelessWidget {
               color: kPrimaryLightColor,
               textColor: Colors.black,
               press: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) {

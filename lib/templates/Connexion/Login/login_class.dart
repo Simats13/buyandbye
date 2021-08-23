@@ -1,27 +1,18 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:oficihome/main.dart';
+import 'package:oficihome/templates/Connexion/Tools/text_field_container.dart';
+import 'package:oficihome/templates/Pages/pageInscription.dart';
+
 import 'package:oficihome/templates/accueil.dart';
-import 'package:provider/provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:oficihome/templates/oficihome_app_theme.dart';
 
 import 'package:oficihome/services/auth.dart';
-import 'package:oficihome/templates/Connexion/Inscription/inscription_class.dart';
-
-import 'package:oficihome/templates/widgets/chargement.dart';
-import 'package:oficihome/templates/pages/pageInscription.dart';
 
 import 'package:oficihome/templates/Connexion/Login/background_login.dart';
-import 'package:oficihome/templates/Connexion/Tools/bouton.dart';
+
 import 'package:oficihome/templates/Connexion/Tools/or_divider.dart';
 import 'package:oficihome/templates/Connexion/Tools/social_icon.dart';
-
-import 'package:oficihome/templates/Connexion/Tools/rounded_input_field.dart';
-import 'package:oficihome/templates/Connexion/Tools/rounded_password_field.dart';
-import 'package:oficihome/templates/Connexion/Tools/already_have_accountCheck.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -31,115 +22,169 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  Future<void> _signInWithApple(BuildContext context) async {
-    try {
-      final authService = Provider.of<AuthMethods>(context, listen: false);
-      final user = await authService.signInWithApple();
-      print('uid: ${user.uid}');
-    } catch (e) {
-      // TODO: Show alert here
-      print(e);
-    }
-  }
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _email, _password;
 
   @override
   Widget build(BuildContext context) {
-    bool enCoursChargement = false;
     Size size = MediaQuery.of(context).size;
-    return enCoursChargement
-        ? Chargement()
-        : Background(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "CONNEXION",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  SvgPicture.asset(
-                    "assets/icons/login.svg",
-                    height: size.height * 0.30,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SocialIcon(
-                        iconSrc: "assets/icons/apple.svg",
-                        press: () async {
-                          dynamic user =
-                              await AuthMethods.instanace.signInWithApple();
-                          if (user != null) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (BuildContext context) =>Accueil() ),
-                              (Route<dynamic> route) => false
-                            );
-                          }
-                        },
+    return Background(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "CONNEXION UTILISATEUR",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: size.height * 0.03,
+            ),
+            Image.asset(
+              "assets/icons/login.png",
+              height: size.height * 0.30,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SocialIcon(
+                  iconSrc: "assets/icons/apple.svg",
+                  press: () async {
+                    dynamic user =
+                        await AuthMethods.instanace.signInWithApple();
+                    if (user != null) {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => Accueil()),
+                          (Route<dynamic> route) => false);
+                    }
+                  },
+                ),
+                SocialIcon(
+                  iconSrc: "assets/icons/facebook.svg",
+                  press: () {},
+                ),
+                SocialIcon(
+                  iconSrc: "assets/icons/google-plus.svg",
+                  press: () async {
+                    dynamic result =
+                        await AuthMethods.instanace.signInWithGoogle(context);
+                    if (result == null) {
+                    } else {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => Accueil()),
+                          (Route<dynamic> route) => false);
+                    }
+                  },
+                ),
+              ],
+            ),
+            OrDivider(),
+            TextFieldContainer(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      // ignore: missing_return
+                      validator: (input) {
+                        if (input.isEmpty) {
+                          return 'Veuillez rentrer une adresse email';
+                        }
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Votre adresse email',
+                          icon: Icon(
+                            Icons.person,
+                            color: OficihomeAppTheme.kLightPrimaryColor,
+                          )),
+                      onSaved: (input) => _email = input,
+                    ),
+                    TextFormField(
+                      // ignore: missing_return
+                      validator: (input) {
+                        if (input.length < 6) {
+                          return 'Mauvais mot de passe';
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Votre mot de passe",
+                        icon: Icon(
+                          Icons.lock,
+                          color: OficihomeAppTheme.kLightPrimaryColor,
+                        ),
+                        suffixIcon: Icon(
+                          Icons.visibility,
+                          color: OficihomeAppTheme.kLightPrimaryColor,
+                        ),
+                        border: InputBorder.none,
                       ),
-                      SocialIcon(
-                        iconSrc: "assets/icons/facebook.svg",
-                        press: () {},
-                      ),
-                      SocialIcon(
-                        iconSrc: "assets/icons/google-plus.svg",
-                        press: () async {
-                          setState(() {
-                            enCoursChargement = true;
-                          });
-                          dynamic result = await AuthMethods.instanace
-                              .signInWithGoogle(context);
-                          if (result == null) {
-                            setState(() {
-                              enCoursChargement = false;
-                            });
-                          } else {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (BuildContext context) =>Accueil() ),
-                              (Route<dynamic> route) => false
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  OrDivider(),
-                  RoundedInputField(
-                    hintText: "Votre adresse e-mail",
-                    onChanged: (value) {},
-                  ),
-                  RoundedPasswordField(
-                    onChanged: (value) {},
-                  ),
-                  RoundedButton(
-                    text: "CONNEXION",
-                    press: () {},
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  AlreadyHaveAnAccountCheck(
-                    press: () {
-                      Navigator.pop(context, MaterialPageRoute(
-                        builder: (context) {
-                          return BodyInscription(
-                            child: Column(),
-                          );
-                        },
-                      ));
-                    },
-                  ),
-                ],
+                      onSaved: (input) => _password = input,
+                      obscureText: true,
+                    ),
+                  ],
+                ),
               ),
             ),
-          );
+            TextButton(
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                  AuthMethods()
+                      .signInWithMail(_email, _password)
+                      .then((User user) {
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (_) => MyApp()));
+                  }).catchError((e) => print(e));
+                }
+              },
+              child: Text('CONNEXION'),
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Pas de compte ?",
+                  style: TextStyle(
+                    color: OficihomeAppTheme.kPrimaryColor,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return SignUpScreen();
+                        },
+                      ),
+                    );
+                  },
+                  child: Text(
+                    " Crée en un ! ",
+                    style: TextStyle(
+                      color: OficihomeAppTheme.kPrimaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: size.height * 0.03,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

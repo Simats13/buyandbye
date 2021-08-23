@@ -6,7 +6,10 @@ class SharedPreferenceHelper {
   static String displayNameKey = "USERDISPLAYNAME";
   static String userEmailKey = "USEREMAILKEY";
   static String userProfilePicKey = "USERPROFILEKEY";
-
+  static String userLocationLatitudeKey = "USERLATITUDEKEY";
+  static String userLocationLongitudeKey = "USERLONGITUDEKEY";
+  static String userAddressKey = "USERADDRESSKEY";
+  static String userSliderkey = "UserSliderKey";
   //save data
   Future<bool> saveUserName(String userName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -33,6 +36,26 @@ class SharedPreferenceHelper {
     return prefs.setString(userProfilePicKey, getUserProfile);
   }
 
+  Future<bool> saveUserLatitude(double getLatitude) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setDouble(userLocationLatitudeKey, getLatitude);
+  }
+
+  Future<bool> saveUserLongitude(double getLongitude) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setDouble(userLocationLongitudeKey, getLongitude);
+  }
+
+  Future<bool> saveUserAddress(String getAddress) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString(userAddressKey, getAddress);
+  }
+
+  Future<bool> saveUserSlider(double getSlider) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setDouble(userLocationLongitudeKey, getSlider);
+  }
+
   //get data
   Future<String> getUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -57,5 +80,25 @@ class SharedPreferenceHelper {
   Future<String> getUserProfileUrl() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userProfilePicKey);
+  }
+
+  Future<double> getUserLatitude() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(userLocationLatitudeKey);
+  }
+
+  Future<double> getUserLongitude() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(userLocationLongitudeKey);
+  }
+
+  Future<String> getUserAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(userAddressKey);
+  }
+
+  Future<double> getUserSlider() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(userSliderkey);
   }
 }

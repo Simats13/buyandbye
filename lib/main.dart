@@ -1,22 +1,25 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:oficihome/model/infowindow.dart';
 import 'package:oficihome/services/auth.dart';
+import 'package:oficihome/templates/Pages/pageDecouverte.dart';
+import 'package:oficihome/templates/Pages/pageLogin.dart';
 import 'package:oficihome/templates/accueil.dart';
-import 'package:oficihome/templates/pages/pageBienvenue.dart';
-import 'package:oficihome/templates/oficihome_app_theme.dart';
 import 'package:oficihome/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
+import 'templates_commercant/nav_bar.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  //await Firebase.initializeApp();
+  await Firebase.initializeApp();
 
   print("Handling a background message: ${message.messageId}");
 }
@@ -25,8 +28,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp();
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    badge: true,
+  );
   runApp(
-  ChangeNotifierProvider(
+    ChangeNotifierProvider(
       create: (context) => InfoWindowsModel(),
       child: MyApp(),
     ),
@@ -41,16 +48,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     NotificationController.instance.takeFCMTokenWhenAppLaunch();
+    NotificationController.instance.initLocalNotification();
     //NotificationController.instance.initLocalNotification();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _getFCMToken();
     super.initState();
+    Geolocator.getCurrentPosition();
   }
 
   Future<void> _getFCMToken() async {
@@ -82,32 +93,52 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Ofici'Home",
-      debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      //     primaryColor: OficihomeAppTheme.black_electrik,
-      //     scaffoldBackgroundColor: Colors.white),
-      theme: ThemeData(
-    brightness: Brightness.light,
-    // primaryColor: Colors.red,
-  ),
-  darkTheme: ThemeData(
-    brightness: Brightness.dark,
-    // additional settings go here
-  ),
-      home: FutureBuilder(
-          future: AuthMethods().getCurrentUser(),
-          builder: (context, AsyncSnapshot<dynamic> snapshot) {
-            // Once complete, show your application
-              User user = snapshot.data;
-              if (user != null) {
-                return Accueil();
-              } else {
-                return PageBievenue();
-              }
-          }),
-    );
+        title: "Buy & Bye",
+        debugShowCheckedModeBanner: false,
+        // theme: ThemeData(
+        //     primaryColor: OficihomeAppTheme.black_electrik,
+        //     scaffoldBackgroundColor: Colors.white),
+        theme: ThemeData(
+          brightness: Brightness.light,
+          // primaryColor: Colors.red,
+        ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          // additional settings go here
+        ),
+        home: MainScreen());
   }
-  
 }
 
+class MainScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: AuthMethods().getCurrentUser(),
+        builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(snapshot.data.uid)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  final userDoc = snapshot.data;
+                  final user = userDoc;
+                  if (user['admin'] == true) {
+                    return NavBar();
+                  } else {
+                    return Accueil();
+                  }
+                } else {
+                  return PageLogin();
+                }
+              },
+            );
+          }
+          return SplashScreen();
+        });
+  }
+}

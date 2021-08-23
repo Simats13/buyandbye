@@ -1,20 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:oficihome/templates/pages/pageCompte.dart';
+import 'package:oficihome/services/database.dart';
 import 'package:oficihome/templates/oficihome_app_theme.dart';
 import 'package:oficihome/services/auth.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:oficihome/templates/compte/constants.dart';
-
-class SettingsUI extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "informations",
-      home: EditProfilePage(),
-    );
-  }
-}
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -22,169 +11,239 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  bool showPassword = false;
+  String myID;
+  String myName, myUserName, myEmail;
+  String myProfilePic;
+  String myPhone;
+
   @override
+  void initState() {
+    super.initState();
+    getMyInfo();
+  }
+
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    myID = "${querySnapshot.docs[0]["id"]}";
+    myName = "${querySnapshot.docs[0]["name"]}";
+    myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
+    myEmail = "${querySnapshot.docs[0]["email"]}";
+    myPhone = "${querySnapshot.docs[0]["phone"]}";
+    setState(() {});
+  }
+
+  // Première classe qui affiche les informations du commerçant
+  bool isVisible = true;
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: AuthMethods().getCurrentUser(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text("Mes informations"),
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                elevation: 1,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: OficihomeAppTheme.orange,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => PageCompte()));
-                  },
-                ),
-                actions: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.settings,
-                      color: OficihomeAppTheme.orange,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) => PageCompte()));
-                    },
-                  ),
-                ],
-              ),
-              body: Container(
-                padding: EdgeInsets.only(left: 16, top: 25, right: 16),
+    // Affiche un chargement tant que l'image n'est pas chargée
+    if (myID == null) {
+      return CircularProgressIndicator();
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: OficihomeAppTheme.black_electrik,
+          title: Text("Mes informations"),
+          elevation: 1,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: OficihomeAppTheme.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            // Boutons pour modifier les informations du commerçant
+            Padding(
+                padding: EdgeInsets.only(right: 20),
                 child: GestureDetector(
                   onTap: () {
-                    FocusScope.of(context).unfocus();
+                    setState(() {
+                      isVisible = !isVisible;
+                    });
                   },
-                  child: ListView(
-                    children: [
-                      SizedBox(
-                        height: 15,
+                  child:
+                      Icon(Icons.edit_rounded, color: OficihomeAppTheme.orange),
+                ))
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.only(left: 16, top: 40, right: 16),
+            // Affiche les informations
+            child: Column(
+              children: [
+                Container(
+                  height: 100,
+                  width: 200,
+                  child: Stack(
+                    children: <Widget>[
+                      // Affiche l'image de profil
+                      Center(
+                        child: ClipRRect(
+                            child: Image.network(
+                          // S'il n'y a pas d'image on affiche celle par défaut
+                          myProfilePic ??
+                              "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
+                          height: MediaQuery.of(context).size.height,
+                        )),
                       ),
-                      Container(
-                        height: kSpacingUnit.w * 15,
-                        width: kSpacingUnit.w * 15,
-                        margin: EdgeInsets.only(left: kSpacingUnit.w * 14),
-                        child: Stack(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: Image.network(
-                                snapshot.data.photoURL,
-                                height: 97,
-                                width: 97,
-                              ),
-                            ),
-                            Positioned(
-                                bottom: kSpacingUnit.w * 3,
-                                right: kSpacingUnit.w * 13,
-                                child: Container(
-                                  height: kSpacingUnit.w * 5,
-                                  width: kSpacingUnit.w * 5,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      width: 3,
-                                      color: Theme.of(context)
-                                          .scaffoldBackgroundColor,
-                                    ),
-                                    color: OficihomeAppTheme.orange,
+                      // Boutons de changement d'image quand on est en mode modification
+                      isVisible
+                          ? SizedBox.shrink()
+                          : Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                height: 30,
+                                width: 30,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    width: 3,
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                   ),
-                                  child: Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                  ),
-                                )),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 35,
-                      ),
-                      buildTextField(
-                          "Nom Complet", snapshot.data.displayName, false),
-                      buildTextField("E-mail", snapshot.data.email, false),
-                      buildTextField("Mot de Passe", "********", true),
-                      buildTextField("Localisation", "Nimes", false),
-                      SizedBox(
-                        height: 1,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          OutlineButton(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          ProfileScreen()),
-                                  (Route<dynamic> route) => false);
-                            },
-                            child: Text("ANNULER",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    letterSpacing: 2.2,
-                                    color: Colors.black)),
-                          ),
-                          RaisedButton(
-                            onPressed: () {},
-                            color: OficihomeAppTheme.orange,
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Text(
-                              "ENREGISTRER",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  letterSpacing: 2.2,
-                                  color: Colors.white),
-                            ),
-                          )
-                        ],
-                      )
+                                  color: OficihomeAppTheme.orange,
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(Icons.edit,
+                                      color: Colors.white, size: 14),
+                                  onPressed: () {},
+                                ),
+                              )),
                     ],
                   ),
                 ),
-              ),
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
+                SizedBox(height: 50),
+                Divider(thickness: 0.5, color: Colors.black),
+                SizedBox(height: 20),
+                // De base, affiche les informations du commerçant
+                Visibility(
+                    visible: isVisible,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Nom :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text(myName),
+                            SizedBox(height: 20),
+                            Text("Prénom :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text(myName),
+                            SizedBox(height: 20),
+                            Text("E-mail :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text(myEmail),
+                            SizedBox(height: 20),
+                            Text("Numéro de téléphone :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text(myPhone),
+                            SizedBox(height: 20),
+                            Divider(thickness: 0.5, color: Colors.black),
+                            Text("Mes adresses"),
+                            Divider(thickness: 0.5, color: Colors.black),
+                            Text("Mes moyens de paiement"),
+                            Divider(thickness: 0.5, color: Colors.black),
+                          ]),
+                    )),
+                // Affiche les champs de texte pour modifier les informations
+                // lorsque le bouton est pressé
+                Visibility(
+                    visible: !isVisible,
+                    child: ModifyProfile(myName, myEmail, myPhone))
+              ],
+            ),
+            // ),
+          ),
+        ),
+      );
+    }
+  }
+}
+
+class ModifyProfile extends StatefulWidget {
+  ModifyProfile(this.myName, this.myEmail, this.myPhone);
+  final String myName, myEmail, myPhone;
+  _ModifyProfileState createState() => _ModifyProfileState();
+}
+
+// Afiche les champ de modification des informations
+class _ModifyProfileState extends State<ModifyProfile> {
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Appelle la fonction d'affiche des champs de texte
+        buildTextField("Nom", widget.myName),
+        buildTextField("Prénom", widget.myName),
+        buildTextField("E-mail", widget.myEmail),
+        buildTextField("Téléphone", widget.myPhone),
+        buildTextField("Mot de Passe", "********"),
+        // Affichage des boutons d'annulation et de confirmation
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                  height: 35,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: OficihomeAppTheme.orange,
+                  ),
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Annuler"),
+                  )),
+              Container(
+                  height: 35,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: OficihomeAppTheme.orangeFonce,
+                  ),
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Confirmer"),
+                  ))
+            ],
+          ),
+        ),
+        SizedBox(height: 20)
+      ],
+    );
   }
 
-  Widget buildTextField(
-      String labelText, String placeholder, bool isPasswordTextField) {
+  // Fonction d'affichage des champs de texte
+  Widget buildTextField(String labelText, String placeholder) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: TextField(
-        obscureText: isPasswordTextField ? showPassword : false,
         decoration: InputDecoration(
-            suffixIcon: isPasswordTextField
-                ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    icon: Icon(
-                      Icons.remove_red_eye,
-                      color: Colors.grey,
-                    ),
-                  )
-                : null,
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,
             floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -192,9 +251,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
             hintStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
             )),
       ),
     );
   }
 }
+
+// decoration: BoxDecoration(border:Border.all(color:Colors.black)),

@@ -1,7 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:oficihome/json/menu_json.dart';
+import 'package:oficihome/services/database.dart';
+import 'package:oficihome/templates/pages/pageCategorie.dart';
+import 'package:oficihome/templates/pages/pageDetail.dart';
 import 'package:oficihome/theme/styles.dart';
+
+import '../oficihome_app_theme.dart';
 
 class PageSearch extends StatefulWidget {
   @override
@@ -9,41 +16,186 @@ class PageSearch extends StatefulWidget {
 }
 
 class _PageSearchState extends State<PageSearch> {
+  final TextEditingController searchController = TextEditingController();
+  QuerySnapshot snapshotData;
+  Stream streamStore;
+  bool isExecuted = false;
   int activeMenu = 0;
-  Widget getBody() {
-    return Container(
-      color: Colors.white30,
-      child: GridView.count(
-        crossAxisCount: 3,
-        children: List.generate(categories.length, (index) {
-          return Column(
-            children: [
-              SizedBox(
-                height: 20,
-                width: 20,
-              ),
-              SvgPicture.asset(
-                categories[index]['img'],
-                width: 40,
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                categories[index]['name'],
-                style: customContent,
-              ),
-            ],
-          );
-        }),
+
+  Widget searchedData(
+      {String photoUrl,
+      name,
+      description,
+      adresse,
+      clickAndCollect,
+      livraison}) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PageDetail(
+                    img: photoUrl,
+                    name: name,
+                    description: description,
+                    adresse: adresse,
+                    clickAndCollect: clickAndCollect,
+                    livraison: livraison,
+                  )),
+        );
+      },
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(photoUrl),
+        ),
+        title: Text(
+          name,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+        ),
+        subtitle: Text(
+          adresse,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
       ),
     );
+  }
+
+  Widget searchStoreList() {
+    return StreamBuilder(
+      stream: streamStore,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                itemCount: snapshot.data.docs.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  return searchedData(
+                      photoUrl: ds["photoUrl"],
+                      name: ds["name"],
+                      adresse: ds["adresse"],
+                      description: ds["description"],
+                      clickAndCollect: ds["ClickAndCollect"],
+                      livraison: ds["livraison"]);
+                },
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              );
+      },
+    );
+  }
+
+  research() async {
+    isExecuted = true;
+    setState(() {});
+    streamStore =
+        await DatabaseMethods().searchBarGetStoreInfo(searchController.text);
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: getBody(),
-    );
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: AppBar(
+            title: Text('Rechercher'),
+            backwardsCompatibility: false, // 1
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+            backgroundColor: OficihomeAppTheme.black_electrik,
+            automaticallyImplyLeading: false,
+          ),
+        ),
+        body: Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(children: [
+              Row(children: [
+                isExecuted
+                    ? GestureDetector(
+                        onTap: () {
+                          isExecuted = false;
+                          searchController.text = "";
+                          setState(() {});
+                        },
+                        child: Padding(
+                            padding: EdgeInsets.only(right: 12),
+                            child: Icon(Icons.arrow_back)),
+                      )
+                    : Container(),
+                Expanded(
+                    child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                          style: BorderStyle.solid),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                              hintText: 'Rechercher un commerce'),
+                          controller: searchController,
+                        ),
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            if (searchController.text != "") {
+                              research();
+                            }
+                          },
+                          child: Icon(Icons.search))
+                    ],
+                  ),
+                ))
+              ]),
+              isExecuted ? searchStoreList() : CategoryStore()
+            ])));
+  }
+}
+
+class CategoryStore extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Container(
+            // color: Colors.white30,
+            child: GridView.count(
+      crossAxisCount: 3,
+      children: List.generate(
+        categories.length,
+        (index) {
+          return GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PageCategorie()));
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                    width: 20,
+                  ),
+                  SvgPicture.asset(
+                    categories[index]['img'],
+                    width: 40,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    categories[index]['name'],
+                    style: customContent,
+                  ),
+                ],
+              ));
+        },
+      ),
+    )));
   }
 }

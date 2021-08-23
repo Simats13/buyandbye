@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ndialog/ndialog.dart';
-import 'package:oficihome/services/auth.dart';
+import 'package:oficihome/services/database.dart';
+import 'package:oficihome/templates/Messagerie/subWidgets/common_widgets.dart';
+import 'package:oficihome/templates/Widgets/loader.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
@@ -17,16 +20,20 @@ class PageExplore extends StatefulWidget {
 
 class _PageExploreState extends State<PageExplore> {
   var currentLocation;
+  var position;
   Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   int prevPage;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  bool showContainer = false;
   Stream<List<DocumentSnapshot>> stream;
   BitmapDescriptor mapMaker;
-
+  double _value = 40.0;
   List magasins = [];
+
+  // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
+  static SharedPreferences _preferences;
+  static const _keySlider = "UserSliderKey";
 
   // firestore init
   final _firestore = FirebaseFirestore.instance;
@@ -49,6 +56,7 @@ class _PageExploreState extends State<PageExplore> {
     _latitudeController = TextEditingController();
     _longitudeController = TextEditingController();
     setCustomMarker();
+    // userID();
 
     Geolocator.getCurrentPosition().then((currloc) {
       setState(() {
@@ -57,12 +65,18 @@ class _PageExploreState extends State<PageExplore> {
       });
     });
 
-    geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: 43.837636, longitude: 4.359415);
-    stream = radius.switchMap((rad) {
-      var collectionReference = _firestore.collection('magasins');
-      return geo.collection(collectionRef: collectionReference).within(
-          center: center, radius: rad, field: 'position', strictMode: true);
+    Geolocator.getCurrentPosition().then((value) {
+      setState(() {
+        position = value;
+        geo = Geoflutterfire();
+        GeoFirePoint center = geo.point(
+            latitude: position.latitude, longitude: position.longitude);
+        stream = radius.switchMap((rad) {
+          var collectionReference = _firestore.collection('magasins');
+          return geo.collection(collectionRef: collectionReference).within(
+              center: center, radius: rad, field: 'position', strictMode: true);
+        });
+      });
     });
 
     _pageController = PageController(initialPage: 1, viewportFraction: 0.8)
@@ -78,9 +92,9 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   fetchDatabaseList() async {
-    dynamic result = await AuthMethods().getMagasin();
+    dynamic result = await DatabaseMethods().getMagasin();
     if (result == null) {
-      print('Impossible de retrouver les données');
+      showAlertDialog(context, "Erreur, veuillez réesayer ultérieurement");
     } else {
       setState(() {
         magasins = result;
@@ -108,71 +122,147 @@ class _PageExploreState extends State<PageExplore> {
     ));
   }
 
-  void _magasinAffichage(String name, double lat, double lng) {
+  // userID() async {
+  //   final User user = await AuthMethods().getCurrentUser();
+  //   _value = await SharedPreferenceHelper().getUserSlider();
+  // }
+
+  //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
+
+  void _magasinAffichage(double lat, double lng, String name, adresse, imgUrl,
+      description, List horaires, bool livraison, clickAndCollect) {
     slideDialog.showSlideDialog(
-        context: context,
-        child: Container(
-          child: Row(
-            children: [
-              Text(name),
-              TextButton(
-                  onPressed: () {
-                    moveCamera(lat, lng);
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Voir sur la carte"))
-            ],
-          ),
-        ));
+      context: context,
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Center(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 25,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              child: Image(
+                image: NetworkImage(imgUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Container(
+              child: Text("Adresse : " + adresse),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Container(
+              child: TextButton(
+                onPressed: () {
+                  moveCamera(lat, lng);
+                  Navigator.pop(context);
+                },
+                child: Center(
+                  child: Text(
+                    "Voir sur la map",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-//FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
-  _perimeterMap() {
-    double _value = 20.0;
+  //FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
+  void _perimeter() async {
     String _label = '';
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, innerSetState) {
-            return DialogBackground(
-              dialog: AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                elevation: 3,
-                title: Text("Changer de Périmètre"),
-                content: Container(
-                  width: double.infinity,
-                  height: 100,
-                  child: Slider(
-                    min: 1,
-                    max: 200,
-                    divisions: 10,
-                    value: _value,
-                    label: _label,
-                    activeColor: Colors.blue,
-                    inactiveColor: Colors.blue.withOpacity(0.2),
-                    onChanged: (double value) {
-                      innerSetState(() {
+    _preferences = await SharedPreferences.getInstance();
+
+    slideDialog.showSlideDialog(
+      context: context,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Changer de périmètre",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          StatefulBuilder(builder: (context, innerSetState) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Slider(
+                  min: 1,
+                  max: 200,
+                  divisions: 10,
+                  value: _value,
+                  label: _label,
+                  activeColor: Colors.blue,
+                  inactiveColor: Colors.blue.withOpacity(0.2),
+                  onChanged: (value) async {
+                    innerSetState(() {
+                      setState(() {
                         _value = value;
-                        _label = '${_value.toInt().toString()} km';
+
+                        _label = '${_value.toInt().toString()} kms';
                         markers.clear();
                       });
                       radius.add(value);
-                    },
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text("OK"))
-                ],
-              ),
+                    });
+                    await _preferences.setDouble(_keySlider, _value);
+                    _preferences.setDouble(_keySlider, _value);
+                  }),
             );
-          });
-        });
+          }),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: Card(
+                    elevation: 4,
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width - 30,
+                      height: MediaQuery.of(context).size.height * (1 / 3),
+                      child: GoogleMap(
+                        onMapCreated: _onMapCreated,
+                        initialCameraPosition: CameraPosition(
+                            target: LatLng(currentLocation.latitude,
+                                currentLocation.longitude),
+                            zoom: 15.0),
+                        markers: Set<Marker>.of(markers.values),
+                        myLocationButtonEnabled: false,
+                        myLocationEnabled: true,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void setCustomMarker() {
@@ -183,14 +273,17 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _addMarker(double lat, double lng, String name) {
+  void _addMarker(double lat, double lng, String name, adresse, imgUrl,
+      description, List horaires, bool livraison, clickAndCollect) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
-      markerId: id,
-      position: LatLng(lat, lng),
-      icon: mapMaker,
-      infoWindow: InfoWindow(title: '$name', snippet: '$lat,$lng'),
-    );
+        markerId: id,
+        position: LatLng(lat, lng),
+        icon: mapMaker,
+        onTap: () {
+          _magasinAffichage(lat, lng, name, adresse, imgUrl, description,
+              horaires, livraison, clickAndCollect);
+        });
     setState(() {
       markers[id] = _marker;
     });
@@ -198,240 +291,266 @@ class _PageExploreState extends State<PageExplore> {
 
   moveCamera(double lat, double lng) {
     _mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(lat, lng),
-      zoom: 14.0,
-      bearing: 45.0,
-      tilt: 45.0,
-    )));
+        target: LatLng(lat, lng), zoom: 14.0, bearing: 45.0, tilt: 45.0)));
   }
 
   void _updateMarkers(List<DocumentSnapshot> documentList) {
     documentList.forEach((DocumentSnapshot document) {
-      final GeoPoint point = document.data()['position']['geopoint'];
-      final name = document.data()['name'];
-      _addMarker(point.latitude, point.longitude, name);
+      final GeoPoint point = document.get('position')['geopoint'];
+      final name = document.get('name');
+      final clickAndCollect = document.get('ClickAndCollect');
+      final adresse = document.get('adresse');
+      final description = document.get('description');
+      final horaires = document.get('horaires');
+      final livraison = document.get('livraison');
+      final imgUrl = document.get('imgUrl');
+      _addMarker(point.latitude, point.longitude, name, adresse, imgUrl,
+          description, horaires, livraison, clickAndCollect);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: OficihomeAppTheme.black_electrik,
-        title: Text('Explorer'),
-        actions: <Widget>[
-          IconButton(
-            onPressed: _mapController == null
-                ? null
-                : () {
-                    _showHome();
-                  },
-            icon: Icon(
-              Icons.home,
-              color: OficihomeAppTheme.white,
+    return mapToggle
+        ? Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              backgroundColor: OficihomeAppTheme.black_electrik,
+              backwardsCompatibility: false, // 1
+              systemOverlayStyle: SystemUiOverlayStyle.light,
+              title: Text('Explorer'),
+              actions: <Widget>[
+                IconButton(
+                  onPressed: _mapController == null
+                      ? null
+                      : () {
+                          _showHome();
+                        },
+                  icon: Icon(
+                    Icons.home,
+                    color: OficihomeAppTheme.white,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.add_location_outlined,
+                    color: OficihomeAppTheme.white,
+                  ),
+                  onPressed: _mapController == null
+                      ? null
+                      : () {
+                          _perimeter();
+                        },
+                )
+              ],
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.add_location_outlined,
-              color: OficihomeAppTheme.white,
-            ),
-            onPressed: _mapController == null
-                ? null
-                : () {
-                    _perimeterMap();
-                  },
-          )
-        ],
-      ),
-      body: Stack(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height - 50.0,
-            width: MediaQuery.of(context).size.width,
-            child: mapToggle
-                ? GoogleMap(
+            body: Stack(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height - 50.0,
+                  width: MediaQuery.of(context).size.width,
+                  child: GoogleMap(
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
                         target: LatLng(currentLocation.latitude,
                             currentLocation.longitude),
-                        zoom: 15.0),
+                        zoom: 10.0),
                     markers: Set<Marker>.of(markers.values),
                     myLocationButtonEnabled: false,
                     myLocationEnabled: true,
-                  )
-                : Stack(children: [
-                    Container(
-                      child: Center(
-                        child: Text(
-                          "Chargement.... Veuillez Patienter",
-                          style: TextStyle(
-                            fontSize: 20.0,
+                  ),
+                ),
+                StreamBuilder(
+                    stream: stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: ColorLoader3(
+                            radius: 15.0,
+                            dotRadius: 6.0,
                           ),
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  ]),
-          ),
-          mapToggle
-              ? Positioned(
-                  bottom: 10.0,
-                  child: Container(
-                    height: 200.0,
-                    width: MediaQuery.of(context).size.width,
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: magasins.length,
-                      itemBuilder: (context, index) {
-                        double value = 1;
-                        return Container(
-                          height: 200,
+                        );
+                        //METTRE UN SHIMMER
+                      }
+                      if (!snapshot.hasData) return Container();
+                      return Positioned(
+                        bottom: 10.0,
+                        child: Container(
+                          height: 200.0,
                           width: MediaQuery.of(context).size.width,
-                          child: PageView.builder(
-                            controller: _pageController,
-                            itemCount: magasins.length,
-                            itemBuilder: (context, int index) {
-                              return AnimatedBuilder(
-                                animation: _pageController,
-                                builder: (context, widget) {
-                                  return Center(
-                                    child: SizedBox(
-                                      height:
-                                          Curves.easeInOut.transform(value) *
-                                              125.0,
-                                      width: Curves.easeInOut.transform(value) *
-                                          350.0,
-                                      child: widget,
-                                    ),
-                                  );
-                                },
-                                child: InkWell(
-                                  onTap: () {
-                                    GeoPoint geoPoint =
-                                        magasins[index]['position']['geopoint'];
-                                    _magasinAffichage(
-                                      magasins[index]['name'],
-                                      geoPoint.latitude,
-                                      geoPoint.longitude,
-                                    );
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Center(
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                            horizontal: 10.0,
-                                            vertical: 20.0,
+                          child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index) {
+                              double value = 1;
+
+                              return Container(
+                                height: 200,
+                                width: MediaQuery.of(context).size.width,
+                                child: PageView.builder(
+                                  controller: _pageController,
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder: (context, int index) {
+                                    return AnimatedBuilder(
+                                      animation: _pageController,
+                                      builder: (context, widget) {
+                                        return Center(
+                                          child: SizedBox(
+                                            height: Curves.easeInOut
+                                                    .transform(value) *
+                                                125.0,
+                                            width: Curves.easeInOut
+                                                    .transform(value) *
+                                                350.0,
+                                            child: widget,
                                           ),
-                                          height: 125.0,
-                                          width: 275.0,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black54,
-                                                offset: Offset(0.0, 4.0),
-                                                blurRadius: 4.0,
-                                              ),
-                                            ],
-                                          ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              color: Colors.white,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  height: 90.0,
-                                                  width: 90.0,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      bottomLeft:
-                                                          Radius.circular(10.0),
-                                                      topLeft:
-                                                          Radius.circular(10.0),
-                                                    ),
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(
-                                                          magasins[index]
-                                                              ['photoUrl']),
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                        );
+                                      },
+                                      child: InkWell(
+                                        onTap: () {
+                                          GeoPoint geoPoint = magasins[index]
+                                              ['position']['geopoint'];
+                                          _magasinAffichage(
+                                            geoPoint.latitude,
+                                            geoPoint.longitude,
+                                            snapshot.data[index]['name'],
+                                            snapshot.data[index]['adresse'],
+                                            snapshot.data[index]['imgUrl'],
+                                            snapshot.data[index]['description'],
+                                            snapshot.data[index]['horaires'],
+                                            snapshot.data[index]['livraison'],
+                                            snapshot.data[index]
+                                                ['ClickAndCollect'],
+                                          );
+                                        },
+                                        child: Stack(
+                                          children: [
+                                            Center(
+                                              child: Container(
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: 10.0,
+                                                  vertical: 20.0,
                                                 ),
-                                                SizedBox(
-                                                  width: 5.0,
-                                                ),
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      magasins[index]['name'],
-                                                      style: TextStyle(
-                                                          color: OficihomeAppTheme
-                                                              .black_electrik,
-                                                          fontSize: 12.5,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    Text(
-                                                      magasins[index]
-                                                          ['adresse'],
-                                                      style: TextStyle(
-                                                          color: OficihomeAppTheme
-                                                              .black_electrik,
-                                                          fontSize: 12.0,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                    Container(
-                                                      width: 170.0,
-                                                      child: Text(
-                                                        magasins[index]
-                                                            ['description'],
-                                                        style: TextStyle(
-                                                            color: OficihomeAppTheme
-                                                                .black_electrik,
-                                                            fontSize: 11.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w300),
-                                                      ),
+                                                height: 125.0,
+                                                width: 275.0,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black54,
+                                                      offset: Offset(0.0, 4.0),
+                                                      blurRadius: 4.0,
                                                     ),
                                                   ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
+                                                ),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    color: Colors.white,
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                        height: 90.0,
+                                                        width: 90.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    10.0),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10.0),
+                                                          ),
+                                                          image:
+                                                              DecorationImage(
+                                                            image: NetworkImage(
+                                                                snapshot.data[
+                                                                        index]
+                                                                    ['imgUrl']),
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5.0,
+                                                      ),
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            snapshot.data[index]
+                                                                ['name'],
+                                                            style: TextStyle(
+                                                                color: OficihomeAppTheme
+                                                                    .black_electrik,
+                                                                fontSize: 12.5,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                          Text(
+                                                            snapshot.data[index]
+                                                                ['adresse'],
+                                                            style: TextStyle(
+                                                                color: OficihomeAppTheme
+                                                                    .black_electrik,
+                                                                fontSize: 12.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                          Container(
+                                                            width: 170.0,
+                                                            child: Text(
+                                                              snapshot.data[
+                                                                      index][
+                                                                  'description'],
+                                                              style: TextStyle(
+                                                                  color: OficihomeAppTheme
+                                                                      .black_electrik,
+                                                                  fontSize:
+                                                                      11.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
                             },
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                )
-              : Center(),
-        ],
-      ),
-    );
+                        ),
+                      );
+                    }),
+              ],
+            ),
+          )
+        : Center(child: CircularProgressIndicator());
   }
 }
 

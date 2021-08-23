@@ -1,4 +1,6 @@
 const List menu = ["Livraison", "Click and Collect"];
+const List admin = ["Résumé", "Mes Commandes"];
+const List admin2 = ["En cours", "Effectuées"];
 const List peopleFeedback = [
   "Fast & reliable (12)",
   "Well packed (11)",

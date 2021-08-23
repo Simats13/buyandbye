@@ -1,222 +1,132 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:oficihome/helperfun/sharedpref_helper.dart';
+import 'package:flutter/services.dart';
+import 'package:oficihome/services/auth.dart';
 import 'package:oficihome/services/database.dart';
-import 'package:oficihome/screens/chatscreen.dart';
-import 'package:oficihome/templates/oficihome_app_theme.dart';
+import 'package:oficihome/templates/Widgets/loader.dart';
+
+import '../Messagerie/Controllers/fb_messaging.dart';
+import '../Messagerie/Controllers/image_controller.dart';
+import '../Messagerie/Controllers/utils.dart';
+import '../Pages/chatscreen.dart';
+import '../Messagerie/subWidgets/common_widgets.dart';
+import '../Messagerie/subWidgets/local_notification_view.dart';
+import '../oficihome_app_theme.dart';
 
 class PageMessagerie extends StatefulWidget {
   @override
   _PageMessagerieState createState() => _PageMessagerieState();
 }
 
-class _PageMessagerieState extends State<PageMessagerie> {
-  bool isSearching = false;
-  String myName, myProfilePic, myUserName, myEmail,selectedUserToken;
-  Stream usersStream, chatRoomsStream;
-
-  TextEditingController searchUsernameEditingController =
-      TextEditingController();
-
-  getMyInfoFromSharedPreference() async {
-    myName = await SharedPreferenceHelper().getDisplayName();
-    myProfilePic = await SharedPreferenceHelper().getUserProfileUrl();
-    myUserName = await SharedPreferenceHelper().getUserName();
-    myEmail = await SharedPreferenceHelper().getUserEmail();
-    setState(() {});
-  }
-
-  getChatRoomIdByUsernames(String a, String b) {
-    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
-      return "$b\_$a";
-    } else {
-      return "$a\_$b";
-    }
-  }
-
-  onSearchBtnClick() async {
-    isSearching = true;
-    setState(() {});
-    usersStream = await DatabaseMethods()
-        .getUserByUserName(searchUsernameEditingController.text);
-
-    setState(() {});
-  }
-
-  Widget chatRoomsList() {
-    return StreamBuilder(
-      stream: chatRoomsStream,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
-                  return ChatRoomListTile(ds["lastMessage"], ds.id, myUserName);
-                })
-            : Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Widget searchListUserTile({String profileUrl, name, username, email}) {
-    return GestureDetector(
-      onTap: () {
-        var chatRoomId = getChatRoomIdByUsernames(myUserName, username);
-        Map<String, dynamic> chatRoomInfoMap = {
-          "users": [myUserName, username]
-        };
-        DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen(username, name,selectedUserToken)));
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: Image.network(
-                profileUrl,
-                height: 40,
-                width: 40,
-              ),
-            ),
-            SizedBox(width: 12),
-            Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(name), Text(email)])
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget searchUsersList() {
-    return StreamBuilder(
-      stream: usersStream,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
-                  return searchListUserTile(
-                      profileUrl: ds["imgUrl"],
-                      name: ds["name"],
-                      email: ds["email"],
-                      username: ds["username"]);
-                },
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              );
-      },
-    );
-  }
-
-  getChatRooms() async {
-    chatRoomsStream = await DatabaseMethods().getChatRooms();
-    setState(() {});
-  }
-
-  onScreenLoaded() async {
-    await getMyInfoFromSharedPreference();
-    getChatRooms();
-  }
-
+class _PageMessagerieState extends State<PageMessagerie>
+    with LocalNotificationView {
+  String myID;
+  String myName, myUserName, myEmail;
+  String myProfilePic;
+  bool messageExist = false;
   @override
   void initState() {
-    onScreenLoaded();
     super.initState();
+    NotificationController.instance.updateTokenToServer();
+    getMyInfoFromSharedPreference();
+  }
+
+  getMyInfoFromSharedPreference() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    myID = userid;
+    myName = user.displayName;
+    myProfilePic = user.photoURL;
+    myUserName = user.displayName;
+    myEmail = user.email;
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Ofici'Home"),
-        automaticallyImplyLeading: false,
+        title: Text('Messagerie'),
         backgroundColor: OficihomeAppTheme.black_electrik,
+        automaticallyImplyLeading: false,
+        backwardsCompatibility: false, // 1
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        centerTitle: true,
       ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                isSearching
-                    ? GestureDetector(
-                        onTap: () {
-                          isSearching = false;
-                          searchUsernameEditingController.text = "";
-                          setState(() {});
+      body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('chatrooms')
+              .where("users", arrayContains: myID)
+              .snapshots(),
+          builder: (context, userSnapshot) {
+            if (!userSnapshot.hasData) return loadingCircleForFB();
+            return countChatListUsers(myUserName, userSnapshot) > 0
+                ? Stack(
+                    children: [
+                      ListView.builder(
+                        itemCount: userSnapshot.data.docs.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot ds = userSnapshot.data.docs[index];
+                          return ChatRoomListTile(ds["lastMessage"], ds.id,
+                              myUserName, ds["users"][1]);
                         },
-                        child: Padding(
-                            padding: EdgeInsets.only(right: 12),
-                            child: Icon(Icons.arrow_back)
-                            ),
-                      )
-                    : Container(),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 16),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: TextField(
-                          controller: searchUsernameEditingController,
-                          decoration: InputDecoration(
-                              border: InputBorder.none, hintText: "username"),
-                        )),
-                        GestureDetector(
-                            onTap: () {
-                              if (searchUsernameEditingController.text != "") {
-                                onSearchBtnClick();
-                              }
-                            },
-                            child: Icon(Icons.search))
+                      ),
+                    ],
+                  )
+                : Container(
+                    child: Center(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.forum,
+                          color: Colors.grey[700],
+                          size: 64,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Vous n\'avez aucun nouveau message.\n\nVous pouvez contacter n\'importe quel commerçant depuis sa page magasin.',
+                            style: TextStyle(
+                                fontSize: 18, color: Colors.grey[700]),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            isSearching ? searchUsersList() : chatRoomsList()
-          ],
-        ),
-      ),
+                    )),
+                  );
+          }),
     );
   }
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername;
-  ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername);
+  final String lastMessage, chatRoomId, myUsername, nameOther;
+  ChatRoomListTile(
+      this.lastMessage, this.chatRoomId, this.myUsername, this.nameOther);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "", name = "", username = "", token="";
+  String profilePicUrl = "",
+      name = "",
+      username = "",
+      token = "",
+      userid,
+      idTest;
 
   getThisUserInfo() async {
-    username =
-        widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+    username = widget.nameOther;
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
     name = "${querySnapshot.docs[0]["name"]}";
+    idTest = "${querySnapshot.docs[0]["id"]}";
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
     token = "${querySnapshot.docs[0]["FCMToken"]}";
     setState(() {});
@@ -230,40 +140,123 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen(username, name,token)));
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: Image.network(
-                profilePicUrl,
-                height: 40,
-                width: 40,
+    if (profilePicUrl == null) {
+      ColorLoader3(
+        radius: 15.0,
+        dotRadius: 6.0,
+      );
+    } else {
+      final size = MediaQuery.of(context).size;
+      return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userid)
+            .collection('chatlist')
+            .where('chatWith', isEqualTo: userid)
+            .snapshots(),
+        builder: (context, chatListSnapshot) {
+          if (chatListSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: ColorLoader3(
+                radius: 15.0,
+                dotRadius: 6.0,
               ),
+            );
+            //METTRE UN SHIMMER
+          }
+          return ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: ImageController.instance.cachedImage(profilePicUrl),
             ),
-            SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 3),
-                Text(widget.lastMessage)
-              ],
-            )
-          ],
-        ),
-      ),
-    );
+            title: Text(name),
+            subtitle: Text(widget.lastMessage),
+            trailing: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
+              child: (chatListSnapshot.hasData &&
+                      chatListSnapshot.data.docs.length > 0)
+                  ? Container(
+                      width: 60,
+                      height: 50,
+                      child: Column(
+                        children: [
+                          Text(
+                            (chatListSnapshot.hasData &&
+                                    chatListSnapshot.data.docs.length > 0)
+                                ? readTimestamp(
+                                    chatListSnapshot.data.docs[0]['timestamp'])
+                                : '',
+                            style: TextStyle(fontSize: size.width * 0.03),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                            child: CircleAvatar(
+                              radius: 9,
+                              child: Text(
+                                chatListSnapshot.data.docs[0]
+                                            .get('badgeCount') ==
+                                        null
+                                    ? ''
+                                    : ((chatListSnapshot.data.docs[0]
+                                                .get('badgeCount') !=
+                                            0
+                                        ? '${chatListSnapshot.data.docs[0].get('badgeCount')}'
+                                        : '')),
+                                style: TextStyle(fontSize: 10),
+                              ),
+                              backgroundColor: chatListSnapshot.data.docs[0]
+                                          .get('badgeCount') ==
+                                      null
+                                  ? Colors.transparent
+                                  : (chatListSnapshot.data.docs[0]
+                                              ['badgeCount'] !=
+                                          0
+                                      ? Colors.red[400]
+                                      : Colors.transparent),
+                              foregroundColor: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  : Text(''),
+            ),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatRoom(
+                          userid, //ID DE L'UTILISATEUR
+                          widget.myUsername, // NOM DE L'UTILISATEUR
+                          token,
+                          idTest, // ID DU CORRESPONDANT
+                          widget.chatRoomId, //ID DE LA CONV
+                          name, // NOM DU CORRESPONDANT
+                          profilePicUrl, // IMAGE DU CORRESPONDANT
+                        ))),
+          );
+        },
+      );
+    }
+    return Container(width: 0.0, height: 0.0);
   }
+
+// Inutilisé
+//   Future<void> _moveTochatRoom() async {
+//     try {
+//       Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//               builder: (context) => ChatRoom(
+//                     userid, //ID DE L'UTILISATEUR
+//                     widget.myUsername, // NOM DE L'UTILISATEUR
+//                     token,
+//                     idTest, // TOKEN DU CORRESPONDANT
+//                     widget.chatRoomId, //ID DE LA CONV
+//                     widget.nameOther, // NOM DU CORRESPONDANT
+//                     profilePicUrl,
+//                   )));
+//     } catch (e) {
+//       print(e.message);
+//     }
+//   }
 }

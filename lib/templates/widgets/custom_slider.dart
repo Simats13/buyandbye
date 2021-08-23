@@ -32,9 +32,9 @@ class _CustomSliderWidgetState extends State<CustomSliderWidget> {
           width: MediaQuery.of(context).size.width,
           child: CarouselSlider(
             options: CarouselOptions(
-              enableInfiniteScroll: false,
-              autoPlayCurve: Curves.fastLinearToSlowEaseIn,
-              autoPlayAnimationDuration: Duration(seconds: 2),
+              enableInfiniteScroll: true,
+              // autoPlayCurve: Curves.fastLinearToSlowEaseIn,
+              // autoPlayAnimationDuration: Duration(seconds: 2),
               // autoPlay: true,
               viewportFraction: 1.0,
             ),
@@ -47,6 +47,8 @@ class _CustomSliderWidgetState extends State<CustomSliderWidget> {
                           width: MediaQuery.of(context).size.width,
                           child: Card(
                             child: item,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
                           )),
                     ],
                   );
