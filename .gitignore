@@ -43,6 +43,7 @@ app.*.map.json
 # On souhaite upload que les dossiers lib et assets pour pouvoir travailler à plusieurs sur le même dossier
 android/
 ios/
+.metadata
 buyandbye.iml
 pubspec.lock
 README.md
