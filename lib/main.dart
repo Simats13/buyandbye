@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
     ]);
     NotificationController.instance.takeFCMTokenWhenAppLaunch();
     NotificationController.instance.initLocalNotification();
-    //NotificationController.instance.initLocalNotification();
+    NotificationController.instance.initLocalNotification();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _getFCMToken();
     super.initState();

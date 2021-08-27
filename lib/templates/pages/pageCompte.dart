@@ -17,8 +17,9 @@ class PageCompte extends StatefulWidget {
 
 class _PageCompteState extends State<PageCompte> {
   String myID;
-  String myName, myUserName, myEmail;
+  String myFirstName, myLastName, myUserName, myEmail;
   String myProfilePic;
+  String myName;
 
   @override
   void initState() {
@@ -31,9 +32,11 @@ class _PageCompteState extends State<PageCompte> {
     final userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
-    myName = "${querySnapshot.docs[0]["name"]}";
+    myFirstName = "${querySnapshot.docs[0]["fname"]}";
+    myLastName = "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
+    myName = myFirstName + " " + myLastName;
 
     setState(() {});
   }
@@ -251,11 +254,11 @@ class _PageCompteState extends State<PageCompte> {
                           onPressed: () {
                             AuthMethods().signOut().then((s) {
                               AuthMethods.toogleNavBar();
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageBievenue()));
                             });
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PageBievenue()));
                           },
                           child: Row(
                             children: <Widget>[

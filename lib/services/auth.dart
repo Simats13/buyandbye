@@ -40,31 +40,41 @@ class AuthMethods {
         await _firebaseAuth.signInWithCredential(credential);
     User userDetails = result.user;
 
+    bool docExists = await DatabaseMethods().checkIfDocExists(userDetails.uid);
+    print("doc exists");
+    print(docExists);
     if (result == null) {
     } else {
-      SharedPreferenceHelper().saveUserEmail(userDetails.email);
-      SharedPreferenceHelper().saveUserId(userDetails.uid);
-      SharedPreferenceHelper()
-          .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
-      SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
-      SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
-      Map<String, dynamic> userInfoMap = {
-        "id": userDetails.uid,
-        "email": userDetails.email,
-        "username": userDetails.email.replaceAll("@gmail.com", ""),
-        "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL,
-        "admin": false,
-        'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
-            vapidKey:
-                "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-      };
-      DatabaseMethods()
-          .addUserInfoToDB(userDetails.uid, userInfoMap)
-          .then((value) {
+      if (docExists == false) {
+        SharedPreferenceHelper().saveUserEmail(userDetails.email);
+        SharedPreferenceHelper().saveUserId(userDetails.uid);
+        SharedPreferenceHelper()
+            .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
+        SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
+        SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
+        Map<String, dynamic> userInfoMap = {
+          "id": userDetails.uid,
+          "email": userDetails.email,
+          "username": userDetails.email.replaceAll("@gmail.com", ""),
+          "fname": userDetails.displayName.split(" ")[0],
+          "lname": userDetails.displayName.split(" ")[1],
+          "imgUrl": userDetails.photoURL,
+          "admin": false,
+          "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+              vapidKey:
+                  "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+          "phone": "01 02 03 04 05"
+        };
+        DatabaseMethods()
+            .addUserInfoToDB(userDetails.uid, userInfoMap)
+            .then((value) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => MyApp()));
+        });
+      } else {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MyApp()));
-      });
+      }
     }
     isconnected = true;
   }

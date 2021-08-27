@@ -141,7 +141,9 @@ class _PageAccueilState extends State<PageAccueil> {
             );
           }
 
-          if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData)
+            return Container(
+                child: Center(child: Text("Localisation désactivée")));
 
           if (snapshot.data.length > 0) {
             return ListView(

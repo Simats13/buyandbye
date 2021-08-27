@@ -11,10 +11,13 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  String myID;
-  String myName, myUserName, myEmail;
-  String myProfilePic;
-  String myPhone;
+  String myID,
+      myFirstName,
+      myLastName,
+      myUserName,
+      myEmail,
+      myProfilePic,
+      myPhone;
 
   @override
   void initState() {
@@ -27,7 +30,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
-    myName = "${querySnapshot.docs[0]["name"]}";
+    myFirstName = "${querySnapshot.docs[0]["fname"]}";
+    myLastName = "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
@@ -135,13 +139,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w700)),
                             SizedBox(height: 20),
-                            Text(myName),
+                            Text(myFirstName),
                             SizedBox(height: 20),
                             Text("Prénom :",
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w700)),
                             SizedBox(height: 20),
-                            Text(myName),
+                            Text(myLastName),
                             SizedBox(height: 20),
                             Text("E-mail :",
                                 style: TextStyle(
@@ -166,7 +170,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 // lorsque le bouton est pressé
                 Visibility(
                     visible: !isVisible,
-                    child: ModifyProfile(myName, myEmail, myPhone))
+                    child: ModifyProfile(
+                        myFirstName, myLastName, myEmail, myPhone))
               ],
             ),
             // ),
@@ -178,8 +183,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 }
 
 class ModifyProfile extends StatefulWidget {
-  ModifyProfile(this.myName, this.myEmail, this.myPhone);
-  final String myName, myEmail, myPhone;
+  ModifyProfile(this.myFirstName, this.myLastName, this.myEmail, this.myPhone);
+  final String myFirstName, myLastName, myEmail, myPhone;
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
@@ -190,8 +195,8 @@ class _ModifyProfileState extends State<ModifyProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Appelle la fonction d'affiche des champs de texte
-        buildTextField("Nom", widget.myName),
-        buildTextField("Prénom", widget.myName),
+        buildTextField("Nom", widget.myFirstName),
+        buildTextField("Prénom", widget.myLastName),
         buildTextField("E-mail", widget.myEmail),
         buildTextField("Téléphone", widget.myPhone),
         buildTextField("Mot de Passe", "********"),
