@@ -293,7 +293,7 @@ class _PageAccueilState extends State<PageAccueil> {
                       height: 15,
                     ),
 
-                    Text("     Les Bons Plans du moment", style: customTitle),
+                    Text("Les Bons Plans du moment", style: customTitle),
                     Container(
                       padding: EdgeInsets.all(20),
                       child: CustomSliderWidget(
@@ -326,9 +326,7 @@ class _PageAccueilState extends State<PageAccueil> {
                     ),
                     Container(
                       padding: EdgeInsets.all(20),
-                      child: CustomSliderWidget(
-                        items: [SliderAccueil2(latitude, longitude)],
-                      ),
+                      child: SliderAccueil2(latitude, longitude),
                     ),
 
                     //trait gris de séparation rajouté après avoir désactivé le code au dessus.
@@ -343,9 +341,7 @@ class _PageAccueilState extends State<PageAccueil> {
                     Text("     Plus à Découvrir", style: customTitle),
                     Container(
                       padding: EdgeInsets.all(20),
-                      child: CustomSliderWidget(
-                        items: [SliderAccueil3(latitude, longitude)],
-                      ),
+                      child: SliderAccueil3(latitude, longitude),
                     ),
 
                     //trait gris de séparation rajouté après avoir désactivé le code au dessus.
@@ -357,19 +353,19 @@ class _PageAccueilState extends State<PageAccueil> {
                     SizedBox(
                       height: 15,
                     ),
-                    Text(
-                      "    Vous avez acheté chez eux récemment",
-                      style: customTitle,
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      child: CustomSliderWidget(
-                        items: [SliderAccueil4()],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    // Text(
+                    //   "    Vous avez acheté chez eux récemment",
+                    //   style: customTitle,
+                    // ),
+                    // Container(
+                    //   padding: EdgeInsets.all(20),
+                    //   child: CustomSliderWidget(
+                    //     items: [SliderAccueil4()],
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
                     Container(
                       width: size.width,
                       height: 10,
@@ -589,10 +585,23 @@ class _PageAccueilState extends State<PageAccueil> {
                           ),
                           padding: EdgeInsets.only(top: 5),
                           child: Row(children: [
-                            Icon(Icons.search),
-                            Text(
-                              "Saisir une nouvelle adresse",
-                              textAlign: TextAlign.left,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.search),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Saisir une nouvelle adresse",
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
                             ),
                           ]),
                         ),
@@ -613,7 +622,13 @@ class _PageAccueilState extends State<PageAccueil> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
                         child: Container(
-                          child: Text("Proche de vous"),
+                          child: Text(
+                            "Proche de vous",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -686,7 +701,13 @@ class _PageAccueilState extends State<PageAccueil> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: Container(
-                          child: Text("Mes adresses enregistrées"),
+                          child: Text(
+                            "Mes adresses enregistrées",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -698,7 +719,7 @@ class _PageAccueilState extends State<PageAccueil> {
                           .collection("Address")
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.hasData) {
+                        if (snapshot.data.docs.length > 0) {
                           return ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
@@ -706,113 +727,123 @@ class _PageAccueilState extends State<PageAccueil> {
                               itemBuilder: (context, index) {
                                 return Row(
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                                      child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width -
-                                                50,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            setState(() {
-                                              latitude = snapshot
-                                                  .data.docs[index]["latitude"];
-                                              longitude = snapshot.data
-                                                  .docs[index]["longitude"];
-                                              _currentAddressLocation = snapshot
-                                                  .data.docs[index]["address"];
+                                    InkWell(
+                                      onTap: () async {
+                                        setState(() {
+                                          latitude = snapshot.data.docs[index]
+                                              ["latitude"];
+                                          longitude = snapshot.data.docs[index]
+                                              ["longitude"];
+                                          _currentAddressLocation = snapshot
+                                              .data.docs[index]["address"];
 
-                                              print(position);
+                                          print(position);
 
-                                              geo = Geoflutterfire();
-                                              GeoFirePoint center = geo.point(
-                                                  latitude: snapshot.data
-                                                      .docs[index]["latitude"],
-                                                  longitude:
-                                                      snapshot.data.docs[index]
-                                                          ["longitude"]);
-                                              stream = radius.switchMap((rad) {
-                                                var collectionReference =
-                                                    FirebaseFirestore.instance
-                                                        .collection('magasins');
-                                                return geo
-                                                    .collection(
-                                                        collectionRef:
-                                                            collectionReference)
-                                                    .within(
-                                                        center: center,
-                                                        radius: 100,
-                                                        field: 'position',
-                                                        strictMode: true);
-                                              });
-                                            });
+                                          geo = Geoflutterfire();
+                                          GeoFirePoint center = geo.point(
+                                              latitude: snapshot
+                                                  .data.docs[index]["latitude"],
+                                              longitude: snapshot.data
+                                                  .docs[index]["longitude"]);
+                                          stream = radius.switchMap((rad) {
+                                            var collectionReference =
+                                                FirebaseFirestore.instance
+                                                    .collection('magasins');
+                                            return geo
+                                                .collection(
+                                                    collectionRef:
+                                                        collectionReference)
+                                                .within(
+                                                    center: center,
+                                                    radius: 100,
+                                                    field: 'position',
+                                                    strictMode: true);
+                                          });
+                                        });
 
-                                            _preferences =
-                                                await SharedPreferences
-                                                    .getInstance();
+                                        _preferences = await SharedPreferences
+                                            .getInstance();
 
-                                            await _preferences.setDouble(
-                                                _keyLatitude,
-                                                snapshot.data.docs[index]
-                                                    ["latitude"]);
+                                        await _preferences.setDouble(
+                                            _keyLatitude,
+                                            snapshot.data.docs[index]
+                                                ["latitude"]);
 
-                                            await _preferences.setDouble(
-                                                _keyLongitude,
-                                                snapshot.data.docs[index]
-                                                    ["longitude"]);
+                                        await _preferences.setDouble(
+                                            _keyLongitude,
+                                            snapshot.data.docs[index]
+                                                ["longitude"]);
 
-                                            await _preferences.setString(
-                                                _keyAddress,
-                                                snapshot.data.docs[index]
-                                                    ["address"]);
+                                        await _preferences.setString(
+                                            _keyAddress,
+                                            snapshot.data.docs[index]
+                                                ["address"]);
 
-                                            SharedPreferenceHelper()
-                                                .saveUserAddress(snapshot.data
-                                                    .docs[index]["address"]);
+                                        SharedPreferenceHelper()
+                                            .saveUserAddress(snapshot
+                                                .data.docs[index]["address"]);
 
-                                            SharedPreferenceHelper()
-                                                .saveUserLatitude(snapshot.data
-                                                    .docs[index]["latitude"]);
+                                        SharedPreferenceHelper()
+                                            .saveUserLatitude(snapshot
+                                                .data.docs[index]["latitude"]);
 
-                                            SharedPreferenceHelper()
-                                                .saveUserLongitude(snapshot.data
-                                                    .docs[index]["longitude"]);
+                                        SharedPreferenceHelper()
+                                            .saveUserLongitude(snapshot
+                                                .data.docs[index]["longitude"]);
 
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Row(
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Icon(Icons.place_rounded),
-                                              SizedBox(width: 10),
-                                              Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(height: 30),
-                                                    Container(
-                                                      child: Text(
-                                                        snapshot.data
-                                                                .docs[index]
-                                                            ["addressName"],
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      child: Text(truncate(
-                                                          snapshot.data
-                                                                  .docs[index]
-                                                              ["address"],
-                                                          35,
-                                                          omission: "...",
-                                                          position:
-                                                              TruncatePosition
-                                                                  .end)),
-                                                    ),
-                                                    SizedBox(height: 30),
-                                                  ]),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 0, 0, 0),
+                                                child:
+                                                    Icon(Icons.place_rounded),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(width: 20),
+                                          Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(height: 30),
+                                                Container(
+                                                  child: Text(
+                                                    snapshot.data.docs[index]
+                                                        ["addressName"],
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                Center(
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            120,
+                                                    child: Text(snapshot
+                                                            .data.docs[index]
+                                                        ["address"]),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 30),
+                                              ]),
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
                                               IconButton(
                                                 icon: Icon(Icons.edit),
                                                 onPressed: () {
@@ -865,15 +896,20 @@ class _PageAccueilState extends State<PageAccueil> {
                                               ),
                                             ],
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 );
                               });
                         } else {
-                          return Container(
-                              child: Text("Pas d'adresses enregistrées"));
+                          return Column(
+                            children: [
+                              SizedBox(height: 20),
+                              Container(
+                                  child: Text("Pas d'adresses enregistrées")),
+                            ],
+                          );
                         }
                       }),
                 ],
@@ -1002,22 +1038,22 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
             return Container(
               child: Center(
                   child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Image.asset(
                     'assets/images/splash_2.png',
-                    width: 300,
-                    height: 300,
+                    width: 50,
+                    height: 50,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Text(
-                      "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                      "Aucun commerce n'est disponible près de chez vous pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
                       style: TextStyle(
                         fontSize: 18,
+
                         // color: Colors.grey[700]
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.justify,
                     ),
                   ),
                 ],
@@ -1093,43 +1129,49 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
-            return PageView.builder(
-                itemCount: documents.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PageDetail(
-                                          img: documents[index]['imgUrl'],
-                                          name: documents[index]['name'],
-                                          description: documents[index]
-                                              ['description'],
-                                          adresse: documents[index]['adresse'],
-                                          clickAndCollect: documents[index]
-                                              ['ClickAndCollect'],
-                                          livraison: documents[index]
-                                              ['livraison'],
-                                        )));
-                          },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 2),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              image: DecorationImage(
-                                image: NetworkImage(documents[index]['imgUrl']),
-                                fit: BoxFit.cover,
+            return CustomSliderWidget(
+              items: [
+                PageView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PageDetail(
+                                            img: documents[index]['imgUrl'],
+                                            name: documents[index]['name'],
+                                            description: documents[index]
+                                                ['description'],
+                                            adresse: documents[index]
+                                                ['adresse'],
+                                            clickAndCollect: documents[index]
+                                                ['ClickAndCollect'],
+                                            livraison: documents[index]
+                                                ['livraison'],
+                                          )));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                  image:
+                                      NetworkImage(documents[index]['imgUrl']),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                          )));
-                });
+                            )),
+                      );
+                    })
+              ],
+            );
           } else {
             return Container(
               child: Center(
                   child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Image.asset(
                     'assets/images/splash_2.png',
@@ -1139,12 +1181,13 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Text(
-                      "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                      "Aucun commerce n'est disponible près de chez vous pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
                       style: TextStyle(
                         fontSize: 18,
+
                         // color: Colors.grey[700]
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.justify,
                     ),
                   ),
                 ],
@@ -1218,38 +1261,71 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
               highlightColor: Colors.grey[100],
             );
           final documents = snapshot.data..shuffle();
-          return PageView.builder(
-              itemCount: documents.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: documents[index]['imgUrl'],
-                                        name: documents[index]['name'],
-                                        description: documents[index]
-                                            ['description'],
-                                        adresse: documents[index]['adresse'],
-                                        clickAndCollect: documents[index]
-                                            ['ClickAndCollect'],
-                                        livraison: documents[index]
-                                            ['livraison'],
-                                      )));
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(documents[index]['imgUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        )));
-              });
+          if (documents.length > 0) {
+            return CustomSliderWidget(
+              items: [
+                PageView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                          child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PageDetail(
+                                              img: documents[index]['imgUrl'],
+                                              name: documents[index]['name'],
+                                              description: documents[index]
+                                                  ['description'],
+                                              adresse: documents[index]
+                                                  ['adresse'],
+                                              clickAndCollect: documents[index]
+                                                  ['ClickAndCollect'],
+                                              livraison: documents[index]
+                                                  ['livraison'],
+                                            )));
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 2),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                        documents[index]['imgUrl']),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )));
+                    })
+              ],
+            );
+          } else {
+            return Container(
+              child: Center(
+                  child: Column(
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/splash_2.png',
+                    width: 50,
+                    height: 50,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Aucun commerce n'est disponible près de chez vous pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                      style: TextStyle(
+                        fontSize: 18,
+
+                        // color: Colors.grey[700]
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                ],
+              )),
+            );
+          }
         });
   }
 }

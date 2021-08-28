@@ -1,7 +1,9 @@
+import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'detailCommande.dart';
 
@@ -130,7 +132,26 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                   ]),
                 );
               } else {
-                return CircularProgressIndicator();
+                return Shimmer.fromColors(
+                  child: Container(
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  baseColor: Colors.grey[300],
+                  highlightColor: Colors.grey[100],
+                );
               }
             }));
   }
@@ -244,7 +265,26 @@ class _CommandState extends State<Command> {
             },
           );
         } else {
-          return CircularProgressIndicator();
+          return Shimmer.fromColors(
+            child: Container(
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            baseColor: Colors.grey[300],
+            highlightColor: Colors.grey[100],
+          );
         }
       },
     );

@@ -1,15 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:buyandbye/helperfun/sharedpref_helper.dart';
-import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/fb_messaging.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/image_controller.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/utils.dart';
-import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/local_notification_view.dart';
 import 'package:buyandbye/templates/Pages/chatscreen.dart';
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/templates/Widgets/loader.dart';
 
 class MessagerieCommercant extends StatefulWidget {
   @override
@@ -21,34 +22,23 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
   String myID;
   String myName, myUserName, myEmail;
   String myProfilePic;
+  bool messageExist = false;
   @override
   void initState() {
     super.initState();
     NotificationController.instance.updateTokenToServer();
-    if (mounted) {
-      checkLocalNotification(localNotificationAnimation, "");
-    }
     getMyInfoFromSharedPreference();
-  }
-
-  void localNotificationAnimation(List<dynamic> data) {
-    if (mounted) {
-      setState(() {
-        if (data[1] == 1.0) {
-          localNotificationData = data[0];
-        }
-        localNotificationAnimationOpacity = data[1] as double;
-      });
-    }
   }
 
   getMyInfoFromSharedPreference() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(userid);
     myID = userid;
-    myUserName = "${querySnapshot.docs[0]["name"]}";
-    myProfilePic = await SharedPreferenceHelper().getUserProfileUrl();
+    myName = user.displayName;
+    myProfilePic = user.photoURL;
+    myUserName = user.displayName;
+    myEmail = user.email;
+
     setState(() {});
   }
 
@@ -56,19 +46,32 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messagerie Commerçant'),
-        centerTitle: true,
+        title: Text('Messagerie Commercant'),
+        backgroundColor: BuyandByeAppTheme.black_electrik,
         automaticallyImplyLeading: false,
+        backwardsCompatibility: false, // 1
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        centerTitle: true,
       ),
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('chatrooms')
               .where("users", arrayContains: myID)
+              .orderBy("timestamp", descending: true)
               .snapshots(),
           builder: (context, userSnapshot) {
-            if (!userSnapshot.hasData) return loadingCircleForFB();
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: ColorLoader3(
+                  radius: 15.0,
+                  dotRadius: 6.0,
+                ),
+              );
+              //METTRE UN SHIMMER
+            }
+            if (!userSnapshot.hasData) return ColorLoader3();
             return countChatListUsers(myUserName, userSnapshot) > 0
-                ? Column(
+                ? Stack(
                     children: [
                       ListView.builder(
                         itemCount: userSnapshot.data.docs.length,
@@ -76,7 +79,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = userSnapshot.data.docs[index];
                           return ChatRoomListTile(ds["lastMessage"], ds.id,
-                              myUserName, ds["users"][0]);
+                              myUserName, ds["users"][0], index);
                         },
                       ),
                     ],
@@ -94,7 +97,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
-                            'Vous n\'avez aucun nouveau message.',
+                            'Vous n\'avez aucun nouveau message.\n\nVous pouvez contacter n\'importe quel utilisateur depuis la page commande.',
                             style: TextStyle(
                                 fontSize: 18, color: Colors.grey[700]),
                             textAlign: TextAlign.center,
@@ -110,8 +113,9 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
 
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage, chatRoomId, myUsername, nameOther;
-  ChatRoomListTile(
-      this.lastMessage, this.chatRoomId, this.myUsername, this.nameOther);
+  final int index;
+  ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
+      this.nameOther, this.index);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
@@ -125,20 +129,16 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       userid,
       idTest;
 
+  bool isActive;
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
     username = widget.nameOther;
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
     name = "${querySnapshot.docs[0]["name"]}";
-    name = "test";
-    print("Name :" + name);
     idTest = "${querySnapshot.docs[0]["id"]}";
-    print("idTest :" + idTest);
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
-    print("profilePicUrl :" + profilePicUrl);
     token = "${querySnapshot.docs[0]["FCMToken"]}";
-
     setState(() {});
   }
 
@@ -150,86 +150,135 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Container(
-        child: StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(userid)
-          .collection('chatlist')
-          .where('id', isEqualTo: userid)
-          .snapshots(),
-      builder: (context, chatListSnapshot) {
-        return ListTile(
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: ImageController.instance.cachedImage(profilePicUrl),
-          ),
-          title: Text(name),
-          subtitle: Text(widget.lastMessage),
-          trailing: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
-            child: (chatListSnapshot.hasData &&
-                    chatListSnapshot.data.docs.length > 0)
-                ? Container(
-                    width: 60,
-                    height: 50,
-                    child: Column(
-                      children: [
-                        Text(
-                          (chatListSnapshot.hasData &&
-                                  chatListSnapshot.data.docs.length > 0)
-                              ? readTimestamp(
-                                  chatListSnapshot.data.docs[0]['timestamp'])
-                              : '',
-                          style: TextStyle(fontSize: size.width * 0.03),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                          child: CircleAvatar(
-                            radius: 9,
-                            child: Text(
-                              chatListSnapshot.data.docs[0].get('badgeCount') ==
-                                      null
-                                  ? ''
-                                  : ((chatListSnapshot.data.docs[0]
-                                              .get('badgeCount') !=
-                                          0
-                                      ? '${chatListSnapshot.data.docs[0].get('badgeCount')}'
-                                      : '')),
-                              style: TextStyle(fontSize: 10),
-                            ),
-                            backgroundColor: chatListSnapshot.data.docs[0]
-                                        .get('badgeCount') ==
-                                    null
-                                ? Colors.transparent
-                                : (chatListSnapshot.data.docs[0]
-                                            ['badgeCount'] !=
-                                        0
-                                    ? Colors.red[400]
-                                    : Colors.transparent),
-                            foregroundColor: Colors.white,
+    if (profilePicUrl == null) {
+      ColorLoader3(
+        radius: 15.0,
+        dotRadius: 6.0,
+      );
+    } else {
+      final size = MediaQuery.of(context).size;
+      return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userid)
+            .collection('chatlist')
+            .orderBy("timestamp", descending: true)
+            .snapshots(),
+        builder: (context, chatListSnapshot) {
+          if (chatListSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: ColorLoader3(
+                radius: 15.0,
+                dotRadius: 6.0,
+              ),
+            );
+            //METTRE UN SHIMMER
+          }
+          if (chatListSnapshot.data.docs[widget.index].get('badgeCount') != 0) {
+            isActive = true;
+          } else {
+            isActive = false;
+          }
+
+          return ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: ImageController.instance.cachedImage(profilePicUrl),
+            ),
+            title: Text(name),
+            subtitle: Text(
+              widget.lastMessage,
+              style: isActive == true
+                  ? TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
+                  : TextStyle(),
+            ),
+            trailing: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
+              child: (chatListSnapshot.hasData &&
+                      chatListSnapshot.data.docs.length > 0)
+                  ? Container(
+                      width: 80,
+                      height: 50,
+                      child: Column(
+                        children: [
+                          Text(
+                            (chatListSnapshot.hasData &&
+                                    chatListSnapshot.data.docs.length > 0)
+                                ? readTimestamp(chatListSnapshot
+                                    .data.docs[widget.index]['timestamp'])
+                                : '',
+                            style: TextStyle(fontSize: size.width * 0.03),
                           ),
-                        )
-                      ],
-                    ),
-                  )
-                : Text('Nothing to see here'),
-          ),
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatRoom(
-                        userid, //ID DE L'UTILISATEUR
-                        widget.myUsername, // NOM DE L'UTILISATEUR
-                        token,
-                        idTest, // ID DU CORRESPONDANT
-                        widget.chatRoomId, //ID DE LA CONV
-                        name, // NOM DU CORRESPONDANT
-                        profilePicUrl, // IMAGE DU CORRESPONDANT
-                      ))),
-        );
-      },
-    ));
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                            child: CircleAvatar(
+                              radius: 9,
+                              child: Text(
+                                chatListSnapshot.data.docs[widget.index]
+                                            .get('badgeCount') ==
+                                        null
+                                    ? ''
+                                    : ((chatListSnapshot.data.docs[widget.index]
+                                                .get('badgeCount') !=
+                                            0
+                                        ? '${chatListSnapshot.data.docs[widget.index].get('badgeCount')}'
+                                        : '')),
+                                style: TextStyle(fontSize: 10),
+                              ),
+                              backgroundColor: chatListSnapshot
+                                          .data.docs[widget.index]
+                                          .get('badgeCount') ==
+                                      null
+                                  ? Colors.transparent
+                                  : (chatListSnapshot.data.docs[widget.index]
+                                              ['badgeCount'] !=
+                                          0
+                                      ? Colors.red[400]
+                                      : Colors.transparent),
+                              foregroundColor: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  : '',
+            ),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatRoom(
+                          userid, //ID DE L'UTILISATEUR
+                          widget.myUsername, // NOM DE L'UTILISATEUR
+                          token,
+                          idTest, // ID DU CORRESPONDANT
+                          widget.chatRoomId, //ID DE LA CONV
+                          name, // NOM DU CORRESPONDANT
+                          profilePicUrl, // IMAGE DU CORRESPONDANT
+                        ))),
+          );
+        },
+      );
+    }
+    return Container(width: 0.0, height: 0.0);
   }
+
+// Inutilisé
+//   Future<void> _moveTochatRoom() async {
+//     try {
+//       Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//               builder: (context) => ChatRoom(
+//                     userid, //ID DE L'UTILISATEUR
+//                     widget.myUsername, // NOM DE L'UTILISATEUR
+//                     token,
+//                     idTest, // TOKEN DU CORRESPONDANT
+//                     widget.chatRoomId, //ID DE LA CONV
+//                     widget.nameOther, // NOM DU CORRESPONDANT
+//                     profilePicUrl,
+//                   )));
+//     } catch (e) {
+//       print(e.message);
+//     }
+//   }
 }

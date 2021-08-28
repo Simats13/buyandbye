@@ -59,6 +59,7 @@ class _PageMessagerieState extends State<PageMessagerie>
           stream: FirebaseFirestore.instance
               .collection('chatrooms')
               .where("users", arrayContains: myID)
+              .orderBy("timestamp", descending: true)
               .snapshots(),
           builder: (context, userSnapshot) {
             if (userSnapshot.connectionState == ConnectionState.waiting) {
@@ -70,7 +71,7 @@ class _PageMessagerieState extends State<PageMessagerie>
               );
               //METTRE UN SHIMMER
             }
-            if (!userSnapshot.hasData) return loadingCircleForFB();
+            if (!userSnapshot.hasData) return ColorLoader3();
             return countChatListUsers(myUserName, userSnapshot) > 0
                 ? Stack(
                     children: [
@@ -80,7 +81,7 @@ class _PageMessagerieState extends State<PageMessagerie>
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = userSnapshot.data.docs[index];
                           return ChatRoomListTile(ds["lastMessage"], ds.id,
-                              myUserName, ds["users"][1]);
+                              myUserName, ds["users"][1], index);
                         },
                       ),
                     ],
@@ -114,8 +115,9 @@ class _PageMessagerieState extends State<PageMessagerie>
 
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage, chatRoomId, myUsername, nameOther;
-  ChatRoomListTile(
-      this.lastMessage, this.chatRoomId, this.myUsername, this.nameOther);
+  final int index;
+  ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
+      this.nameOther, this.index);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
@@ -147,6 +149,8 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     super.initState();
   }
 
+  bool isActive;
+
   @override
   Widget build(BuildContext context) {
     if (profilePicUrl == null) {
@@ -161,7 +165,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             .collection('users')
             .doc(userid)
             .collection('chatlist')
-            .where('chatWith', isEqualTo: userid)
+            .orderBy("timestamp", descending: true)
             .snapshots(),
         builder: (context, chatListSnapshot) {
           if (chatListSnapshot.connectionState == ConnectionState.waiting) {
@@ -173,27 +177,39 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             );
             //METTRE UN SHIMMER
           }
+
+          if (chatListSnapshot.data.docs[widget.index].get('badgeCount') != 0) {
+            isActive = true;
+          } else {
+            isActive = false;
+          }
+
           return ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: ImageController.instance.cachedImage(profilePicUrl),
             ),
             title: Text(name),
-            subtitle: Text(widget.lastMessage),
+            subtitle: Text(
+              widget.lastMessage,
+              style: isActive == true
+                  ? TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
+                  : TextStyle(),
+            ),
             trailing: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
               child: (chatListSnapshot.hasData &&
                       chatListSnapshot.data.docs.length > 0)
                   ? Container(
-                      width: 60,
+                      width: 80,
                       height: 50,
                       child: Column(
                         children: [
                           Text(
                             (chatListSnapshot.hasData &&
                                     chatListSnapshot.data.docs.length > 0)
-                                ? readTimestamp(
-                                    chatListSnapshot.data.docs[0]['timestamp'])
+                                ? readTimestamp(chatListSnapshot
+                                    .data.docs[widget.index]['timestamp'])
                                 : '',
                             style: TextStyle(fontSize: size.width * 0.03),
                           ),
@@ -202,18 +218,19 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                             child: CircleAvatar(
                               radius: 9,
                               child: Text(
-                                chatListSnapshot.data.docs[0]
+                                chatListSnapshot.data.docs[widget.index]
                                             .get('badgeCount') ==
                                         null
                                     ? ''
-                                    : ((chatListSnapshot.data.docs[0]
+                                    : ((chatListSnapshot.data.docs[widget.index]
                                                 .get('badgeCount') !=
                                             0
-                                        ? '${chatListSnapshot.data.docs[0].get('badgeCount')}'
+                                        ? '${chatListSnapshot.data.docs[widget.index].get('badgeCount')}'
                                         : '')),
                                 style: TextStyle(fontSize: 10),
                               ),
-                              backgroundColor: chatListSnapshot.data.docs[0]
+                              backgroundColor: chatListSnapshot
+                                          .data.docs[widget.index]
                                           .get('badgeCount') ==
                                       null
                                   ? Colors.transparent
@@ -222,7 +239,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                           0
                                       ? Colors.red[400]
                                       : Colors.transparent),
-                              foregroundColor: Colors.white,
+                              foregroundColor: Colors.black,
                             ),
                           )
                         ],

@@ -47,15 +47,6 @@ class _PageResumeState extends State<PageResume> {
         .collection('commands')
         .doc(widget.idCommand)
         .get();
-
-    // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-    //     .collection('commandes')
-    //     .doc(id)
-    //     .collection('commands')
-    //     .doc(widget.idCommand)
-    //     .get();
-
-    // print(livraison);
   }
 
   getThisUserInfo() async {
@@ -341,7 +332,8 @@ class _DetailState extends State<Detail> {
 }
 
 class MapStyle {
-  static String mapStyle = ''' [
+  static String mapStyle =
+      ''' [
   {
     "elementType": "geometry",
     "stylers": [

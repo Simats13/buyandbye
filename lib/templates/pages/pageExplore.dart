@@ -24,19 +24,22 @@ class PageExplore extends StatefulWidget {
 class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   var position;
+  var radius = BehaviorSubject<double>.seeded(10);
   Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   int prevPage;
-  final radius = BehaviorSubject<double>.seeded(1.0);
+
   Stream<List<DocumentSnapshot>> stream;
   BitmapDescriptor mapMaker;
   double _value = 40.0;
   List magasins = [];
+  String _label = 'kms';
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
   static SharedPreferences _preferences;
   static const _keySlider = "UserSliderKey";
+  static const _keyLabel = "UserSliderLabelKey";
 
   // firestore init
   final _firestore = FirebaseFirestore.instance;
@@ -56,6 +59,7 @@ class _PageExploreState extends State<PageExplore> {
   @override
   void initState() {
     super.initState();
+
     _latitudeController = TextEditingController();
     _longitudeController = TextEditingController();
     setCustomMarker();
@@ -116,7 +120,7 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _showHome() {
+  void _showHome() async {
     _mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(currentLocation.latitude, currentLocation.longitude),
@@ -127,15 +131,15 @@ class _PageExploreState extends State<PageExplore> {
 
   userID() async {
     final User user = await AuthMethods().getCurrentUser();
-    _value = await SharedPreferenceHelper().getUserSlider();
+    _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
+    _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
 
-    String userid = user.uid;
+    //String userid = user.uid;
   }
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
 
-  void _magasinAffichage(double lat, double lng, String name, adresse, imgUrl,
-      description, List horaires, bool livraison, clickAndCollect) {
+  void _magasinAffichage(double lat, double lng, String name) {
     slideDialog.showSlideDialog(
       context: context,
       child: Container(
@@ -155,20 +159,20 @@ class _PageExploreState extends State<PageExplore> {
             SizedBox(
               height: 25,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 200,
-              child: Image(
-                image: NetworkImage(imgUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
+            // Container(
+            //   width: MediaQuery.of(context).size.width,
+            //   height: 200,
+            //   child: Image(
+            //     image: NetworkImage(imgUrl),
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
             SizedBox(
               height: 5,
             ),
-            Container(
-              child: Text("Adresse : " + adresse),
-            ),
+            // Container(
+            //   child: Text("Adresse : " + adresse),
+            // ),
             SizedBox(
               height: 5,
             ),
@@ -194,7 +198,6 @@ class _PageExploreState extends State<PageExplore> {
 
   //FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
   void _perimeter() async {
-    String _label = '';
     _preferences = await SharedPreferences.getInstance();
 
     slideDialog.showSlideDialog(
@@ -233,8 +236,10 @@ class _PageExploreState extends State<PageExplore> {
                       });
                       radius.add(value);
                     });
-                    await _preferences.setDouble(_keySlider, _value);
+                    // await _preferences.setString(_keyLabel, _label);
+                    // await _preferences.setDouble(_keySlider, _value);
                     _preferences.setDouble(_keySlider, _value);
+                    _preferences.setString(_keyLabel, _label);
                   }),
             );
           }),
@@ -278,16 +283,22 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _addMarker(double lat, double lng, String name, adresse, imgUrl,
-      description, List horaires, bool livraison, clickAndCollect) {
+  void _addMarker(
+    double lat,
+    double lng,
+    String name,
+  ) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
         markerId: id,
         position: LatLng(lat, lng),
         icon: mapMaker,
         onTap: () {
-          _magasinAffichage(lat, lng, name, adresse, imgUrl, description,
-              horaires, livraison, clickAndCollect);
+          _magasinAffichage(
+            lat,
+            lng,
+            name,
+          );
         });
     setState(() {
       markers[id] = _marker;
@@ -303,14 +314,13 @@ class _PageExploreState extends State<PageExplore> {
     documentList.forEach((DocumentSnapshot document) {
       final GeoPoint point = document.get('position')['geopoint'];
       final name = document.get('name');
-      final clickAndCollect = document.get('ClickAndCollect');
-      final adresse = document.get('adresse');
-      final description = document.get('description');
-      final horaires = document.get('horaires');
-      final livraison = document.get('livraison');
-      final imgUrl = document.get('imgUrl');
-      _addMarker(point.latitude, point.longitude, name, adresse, imgUrl,
-          description, horaires, livraison, clickAndCollect);
+      // final clickAndCollect = document.get('ClickAndCollect');
+      // final adresse = document.get('adresse');
+      // final description = document.get('description');
+
+      // final livraison = document.get('livraison');
+      // final photoUrl = document.get('photoUrl');
+      _addMarker(point.latitude, point.longitude, name);
     });
   }
 
@@ -420,13 +430,12 @@ class _PageExploreState extends State<PageExplore> {
                                             geoPoint.latitude,
                                             geoPoint.longitude,
                                             snapshot.data[index]['name'],
-                                            snapshot.data[index]['adresse'],
-                                            snapshot.data[index]['imgUrl'],
-                                            snapshot.data[index]['description'],
-                                            snapshot.data[index]['horaires'],
-                                            snapshot.data[index]['livraison'],
-                                            snapshot.data[index]
-                                                ['ClickAndCollect'],
+                                            // snapshot.data[index]['adresse'],
+                                            // snapshot.data[index]['imgUrl'],
+                                            // snapshot.data[index]['description'],
+                                            // snapshot.data[index]['livraison'],
+                                            // snapshot.data[index]
+                                            //     ['ClickAndCollect'],
                                           );
                                         },
                                         child: Stack(
@@ -560,7 +569,8 @@ class _PageExploreState extends State<PageExplore> {
 }
 
 class MapStyle {
-  static String mapStyle = ''' [
+  static String mapStyle =
+      ''' [
   {
     "elementType": "geometry",
     "stylers": [

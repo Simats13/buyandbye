@@ -1,9 +1,11 @@
+import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
+import 'package:truncate/truncate.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -43,7 +45,141 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     // Affiche un chargement tant que les informations de l'utilisateur ne son pas charhées
     if (myID == null) {
-      return CircularProgressIndicator();
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: BuyandByeAppTheme.black_electrik,
+          title: Text("Mes informations"),
+          elevation: 1,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: BuyandByeAppTheme.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            // Boutons pour modifier les informations du commerçant
+            Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isVisible = !isVisible;
+                    });
+                  },
+                  child:
+                      Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+                ))
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.only(left: 16, top: 40, right: 16),
+            // Affiche les informations
+            child: Column(
+              children: [
+                Container(
+                  height: 100,
+                  width: 200,
+                  child: Stack(
+                    children: <Widget>[
+                      // Affiche l'image de profil
+                      Center(
+                        child: ClipRRect(
+                            child: Image.network(
+                          // S'il n'y a pas d'image on affiche celle par défaut
+                          myProfilePic ??
+                              "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
+                          height: MediaQuery.of(context).size.height,
+                        )),
+                      ),
+                      // Boutons de changement d'image quand on est en mode modification
+                      isVisible
+                          ? SizedBox.shrink()
+                          : Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                height: 30,
+                                width: 30,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    width: 3,
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                  ),
+                                  color: BuyandByeAppTheme.orange,
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(Icons.edit,
+                                      color: Colors.white, size: 14),
+                                  onPressed: () {},
+                                ),
+                              )),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 50),
+                Divider(thickness: 0.5, color: Colors.black),
+                SizedBox(height: 20),
+                // De base, affiche les informations du commerçant
+                Visibility(
+                    visible: isVisible,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Nom :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text("Chargement"),
+                            SizedBox(height: 20),
+                            Text("Prénom :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text("Chargement"),
+                            SizedBox(height: 20),
+                            Text("E-mail :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text("Chargement"),
+                            SizedBox(height: 20),
+                            Text("Numéro de téléphone :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 20),
+                            Text("Chargement"),
+                            SizedBox(height: 20),
+                            Divider(thickness: 0.5, color: Colors.black),
+                            Text("Mes adresses"),
+                            Text("Chargement"),
+                            Divider(thickness: 0.5, color: Colors.black),
+                            Text("Mes moyens de paiement"),
+                            Text("Chargement"),
+                            Divider(thickness: 0.5, color: Colors.black),
+                          ]),
+                    )),
+                // Affiche les champs de texte pour modifier les informations
+                // lorsque le bouton est pressé
+                Visibility(
+                    visible: !isVisible,
+                    child: ModifyProfile(
+                        myFirstName, myLastName, myEmail, myPhone))
+              ],
+            ),
+            // ),
+          ),
+        ),
+      );
     } else {
       return Scaffold(
         appBar: AppBar(
@@ -157,10 +293,122 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w700)),
                             SizedBox(height: 20),
-                            Text(myPhone),
+                            Text(myPhone ?? ""),
                             SizedBox(height: 20),
                             Divider(thickness: 0.5, color: Colors.black),
                             Text("Mes adresses"),
+                            StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(myID)
+                                    .collection("Address")
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.data.docs.length > 0) {
+                                    return ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: snapshot.data.docs.length,
+                                        itemBuilder: (context, index) {
+                                          return Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width -
+                                                    50,
+                                                child: InkWell(
+                                                  onTap: () async {},
+                                                  child: Row(
+                                                    children: [
+                                                      Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            SizedBox(
+                                                                height: 30),
+                                                            Container(
+                                                              child: Text(
+                                                                snapshot.data
+                                                                            .docs[
+                                                                        index][
+                                                                    "addressName"],
+                                                              ),
+                                                            ),
+                                                            SizedBox(height: 5),
+                                                            Container(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width -
+                                                                    100,
+                                                                child: Text(snapshot
+                                                                            .data
+                                                                            .docs[
+                                                                        index][
+                                                                    "address"])),
+                                                            SizedBox(
+                                                                height: 30),
+                                                          ]),
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          IconButton(
+                                                            icon: Icon(
+                                                                Icons.edit),
+                                                            onPressed: () {
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          PageAddressEdit(
+                                                                            adresse:
+                                                                                snapshot.data.docs[index]["address"],
+                                                                            adressTitle:
+                                                                                snapshot.data.docs[index]["addressName"],
+                                                                            buildingDetails:
+                                                                                snapshot.data.docs[index]["buildingDetails"],
+                                                                            buildingName:
+                                                                                snapshot.data.docs[index]["buildingName"],
+                                                                            familyName:
+                                                                                snapshot.data.docs[index]["familyName"],
+                                                                            lat:
+                                                                                snapshot.data.docs[index]["latitude"],
+                                                                            long:
+                                                                                snapshot.data.docs[index]["longitude"],
+                                                                            iD: snapshot.data.docs[index]["idDoc"],
+                                                                          )));
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    return Column(
+                                      children: [
+                                        SizedBox(height: 20),
+                                        Container(
+                                            child: Text(
+                                                "Pas d'adresses enregistrées")),
+                                      ],
+                                    );
+                                  }
+                                }),
                             Divider(thickness: 0.5, color: Colors.black),
                             Text("Mes moyens de paiement"),
                             Divider(thickness: 0.5, color: Colors.black),

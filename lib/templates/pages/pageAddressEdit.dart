@@ -42,6 +42,8 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   Geoflutterfire geo;
   bool mapToggle = false;
 
+  Set<Marker> _markers = Set<Marker>();
+  BitmapDescriptor mapMarker;
   String buildingDetailsEdit;
   String buildingNameEdit;
   String adressTitleEdit;
@@ -61,6 +63,14 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     });
   }
 
+  void setCustomMarker() {
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(), '../assets/images/shop.png')
+        .then((value) {
+      mapMarker = value;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -73,6 +83,15 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     familyNameController = TextEditingController(text: widget.familyName);
 
     addressTitleController = TextEditingController(text: widget.adressTitle);
+
+    final idMarker = MarkerId(widget.lat.toString() + widget.long.toString());
+    _markers.add(Marker(
+      markerId: idMarker,
+      position: LatLng(widget.lat, widget.long),
+      //icon: mapMarker,
+    ));
+
+    setState(() {});
   }
 
   @override
@@ -94,230 +113,235 @@ class _PageAddressEditState extends State<PageAddressEdit> {
       ),
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Card(
-              elevation: 4,
-              margin: EdgeInsets.symmetric(vertical: 8),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width - 30,
-                height: MediaQuery.of(context).size.height * (1 / 5),
-                child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: CameraPosition(
-                      target: LatLng(widget.lat, widget.long), zoom: 15.0),
-                  myLocationButtonEnabled: false,
-                  myLocationEnabled: true,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Card(
+                elevation: 4,
+                margin: EdgeInsets.symmetric(vertical: 8),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width - 30,
+                  height: MediaQuery.of(context).size.height * (1 / 5),
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(widget.lat, widget.long), zoom: 15.0),
+                    myLocationButtonEnabled: false,
+                    markers: _markers,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 5),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
+                    child: Container(
+                      child: Text(widget.adresse,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          )),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 5),
+              Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                child: SizedBox(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width - 50,
                   child: Container(
-                    child: Text(widget.adresse,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        )),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 5),
-            Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-              child: SizedBox(
-                height: 40,
-                width: MediaQuery.of(context).size.width - 50,
-                child: Container(
-                  child: TextFormField(
-                    controller: buildingDetailsController,
-                    autofocus: false,
-                    style: TextStyle(fontSize: 15.0, color: Colors.black),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      filled: true,
-                      suffixIcon: IconButton(
-                        onPressed: buildingDetailsController.clear,
-                        icon: Icon(Icons.clear),
+                    child: TextFormField(
+                      controller: buildingDetailsController,
+                      autofocus: false,
+                      style: TextStyle(
+                        fontSize: 15.0,
                       ),
-                      hintText: "Numéro d'appartement, porte, étage",
-                      fillColor: Colors.grey.withOpacity(0.15),
-                      contentPadding: const EdgeInsets.only(
-                          left: 14.0, bottom: 6.0, top: 8.0),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        filled: true,
+                        suffixIcon: IconButton(
+                          onPressed: buildingDetailsController.clear,
+                          icon: Icon(Icons.clear),
+                        ),
+                        hintText: "Numéro d'appartement, porte, étage",
+                        fillColor: Colors.grey.withOpacity(0.15),
+                        contentPadding: const EdgeInsets.only(
+                            left: 14.0, bottom: 6.0, top: 8.0),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-              child: SizedBox(
-                height: 40,
-                width: MediaQuery.of(context).size.width - 50,
-                child: Container(
-                  child: TextFormField(
-                    controller: buildingNameController,
-                    autofocus: false,
-                    style: TextStyle(fontSize: 15.0, color: Colors.black),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      suffixIcon: IconButton(
-                        onPressed: buildingNameController.clear,
-                        icon: Icon(Icons.clear),
-                      ),
-                      filled: true,
-                      hintText: "Nom de l'entreprise ou de l'immeuble",
-                      fillColor: Colors.grey.withOpacity(0.15),
-                      contentPadding: const EdgeInsets.only(
-                          left: 14.0, bottom: 6.0, top: 8.0),
-                    ),
-                  ),
-                ),
+              SizedBox(
+                height: 10,
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-              child: SizedBox(
-                height: 40,
-                width: MediaQuery.of(context).size.width - 50,
-                child: Container(
-                  child: TextFormField(
-                    controller: familyNameController,
-                    autofocus: false,
-                    style: TextStyle(fontSize: 15.0, color: Colors.black),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      filled: true,
-                      suffixIcon: IconButton(
-                        onPressed: familyNameController.clear,
-                        icon: Icon(Icons.clear),
-                      ),
-                      hintText: "Code porte et nom de famille",
-                      fillColor: Colors.grey.withOpacity(0.15),
-                      contentPadding: const EdgeInsets.only(
-                          left: 14.0, bottom: 6.0, top: 8.0),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Divider(
-              color: Colors.black,
-              thickness: 2,
-              indent: 10,
-              endIndent: 10,
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
+              Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                child: SizedBox(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width - 50,
                   child: Container(
-                    child: Text("Intitulé de l'adresse",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        )),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-              child: SizedBox(
-                height: 40,
-                width: MediaQuery.of(context).size.width - 50,
-                child: Container(
-                  child: TextFormField(
-                    autofocus: false,
-                    controller: addressTitleController,
-                    style: TextStyle(fontSize: 15.0, color: Colors.black),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      suffixIcon: IconButton(
-                        onPressed: addressTitleController.clear,
-                        icon: Icon(Icons.clear),
+                    child: TextFormField(
+                      controller: buildingNameController,
+                      autofocus: false,
+                      style: TextStyle(fontSize: 15.0),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                          onPressed: buildingNameController.clear,
+                          icon: Icon(Icons.clear),
+                        ),
+                        filled: true,
+                        hintText: "Nom de l'entreprise ou de l'immeuble",
+                        fillColor: Colors.grey.withOpacity(0.15),
+                        contentPadding: const EdgeInsets.only(
+                            left: 14.0, bottom: 6.0, top: 8.0),
                       ),
-                      hintText: "Ajouter un intitulé (p. ex : Maison)",
-                      filled: true,
-                      fillColor: Colors.grey.withOpacity(0.15),
-                      contentPadding: const EdgeInsets.only(
-                          left: 14.0, bottom: 6.0, top: 8.0),
                     ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    primary: Colors.black,
-                    textStyle:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  // Si un champ est vide, on envoi la valeur déjà présente
-
-                  var buildingDetailsEdit = buildingDetailsController.text == ""
-                      ? ""
-                      : buildingDetailsController.text;
-                  var buildingNameEdit = buildingNameController.text == ""
-                      ? ""
-                      : buildingNameController.text;
-                  var familyNameEdit = familyNameController.text == ""
-                      ? ""
-                      : familyNameController.text;
-                  var adressTitleEdit = addressTitleController.text == ""
-                      ? ""
-                      : addressTitleController.text;
-
-                  // Validate returns true if the form is valid, or false otherwise.
-
-                  final isValid = _formKey.currentState.validate();
-
-                  if (isValid) {
-                    _formKey.currentState.save();
-
-                    // final message =
-                    //     "$buildingDetailsEdit, $buildingNameEdit, $familyNameEdit, $adressTitleEdit";
-
-                    // final snackBar = SnackBar(content: Text(message));
-                    // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                    editToDatabaseAddress(
-                        buildingDetailsEdit,
-                        buildingNameEdit,
-                        familyNameEdit,
-                        adressTitleEdit,
-                        widget.long,
-                        widget.lat,
-                        widget.adresse,
-                        widget.iD);
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text('Enregistrer et continuer'),
+              SizedBox(
+                height: 10,
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                child: SizedBox(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width - 50,
+                  child: Container(
+                    child: TextFormField(
+                      controller: familyNameController,
+                      autofocus: false,
+                      style: TextStyle(fontSize: 15.0),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        filled: true,
+                        suffixIcon: IconButton(
+                          onPressed: familyNameController.clear,
+                          icon: Icon(Icons.clear),
+                        ),
+                        hintText: "Code porte et nom de famille",
+                        fillColor: Colors.grey.withOpacity(0.15),
+                        contentPadding: const EdgeInsets.only(
+                            left: 14.0, bottom: 6.0, top: 8.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Divider(
+                color: Colors.black,
+                thickness: 2,
+                indent: 10,
+                endIndent: 10,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
+                    child: Container(
+                      child: Text("Intitulé de l'adresse",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          )),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                child: SizedBox(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width - 50,
+                  child: Container(
+                    child: TextFormField(
+                      autofocus: false,
+                      controller: addressTitleController,
+                      style: TextStyle(fontSize: 15.0),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                          onPressed: addressTitleController.clear,
+                          icon: Icon(Icons.clear),
+                        ),
+                        hintText: "Ajouter un intitulé (p. ex : Maison)",
+                        filled: true,
+                        fillColor: Colors.grey.withOpacity(0.15),
+                        contentPadding: const EdgeInsets.only(
+                            left: 14.0, bottom: 6.0, top: 8.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.black,
+                      textStyle:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    // Si un champ est vide, on envoi la valeur déjà présente
+
+                    var buildingDetailsEdit =
+                        buildingDetailsController.text == ""
+                            ? ""
+                            : buildingDetailsController.text;
+                    var buildingNameEdit = buildingNameController.text == ""
+                        ? ""
+                        : buildingNameController.text;
+                    var familyNameEdit = familyNameController.text == ""
+                        ? ""
+                        : familyNameController.text;
+                    var adressTitleEdit = addressTitleController.text == ""
+                        ? ""
+                        : addressTitleController.text;
+
+                    // Validate returns true if the form is valid, or false otherwise.
+
+                    final isValid = _formKey.currentState.validate();
+
+                    if (isValid) {
+                      _formKey.currentState.save();
+
+                      // final message =
+                      //     "$buildingDetailsEdit, $buildingNameEdit, $familyNameEdit, $adressTitleEdit";
+
+                      // final snackBar = SnackBar(content: Text(message));
+                      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                      editToDatabaseAddress(
+                          buildingDetailsEdit,
+                          buildingNameEdit,
+                          familyNameEdit,
+                          adressTitleEdit,
+                          widget.long,
+                          widget.lat,
+                          widget.adresse,
+                          widget.iD);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Enregistrer et continuer'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
