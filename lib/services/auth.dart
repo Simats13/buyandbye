@@ -46,12 +46,12 @@ class AuthMethods {
     if (result == null) {
     } else {
       if (docExists == false) {
-        SharedPreferenceHelper().saveUserEmail(userDetails.email);
-        SharedPreferenceHelper().saveUserId(userDetails.uid);
-        SharedPreferenceHelper()
-            .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
-        SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
-        SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
+        // SharedPreferenceHelper().saveUserEmail(userDetails.email);
+        // SharedPreferenceHelper().saveUserId(userDetails.uid);
+        // SharedPreferenceHelper()
+        //     .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
+        // SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
+        // SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
         Map<String, dynamic> userInfoMap = {
           "id": userDetails.uid,
           "email": userDetails.email,
@@ -206,7 +206,7 @@ class AuthMethods {
   }
 
   Future<void> updateUserToken(userID, token) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).set({
+    await FirebaseFirestore.instance.collection('users').doc(userID).update({
       'FCMToken': token,
     });
   }

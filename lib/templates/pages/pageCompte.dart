@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:buyandbye/services/database.dart';
@@ -10,6 +14,7 @@ import 'package:buyandbye/templates/compte/editProfile.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PageCompte extends StatefulWidget {
   _PageCompteState createState() => _PageCompteState();
@@ -251,14 +256,76 @@ class _PageCompteState extends State<PageCompte> {
                           color: BuyandByeAppTheme.orange,
                         ),
                         child: MaterialButton(
-                          onPressed: () {
-                            AuthMethods().signOut().then((s) {
-                              AuthMethods.toogleNavBar();
-                            });
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PageBievenue()));
+                          onPressed: () async {
+                            if (!Platform.isIOS) {
+                              return showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("Deconnexion"),
+                                  content: Text(
+                                      "Souhaitez-vous réellement vous deconnecter ?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text("Annuler"),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                    ),
+                                    TextButton(
+                                      child: Text("Deconnexion"),
+                                      onPressed: () async {
+                                        SharedPreferences preferences =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        await preferences.clear();
+                                        AuthMethods().signOut().then((s) {
+                                          AuthMethods.toogleNavBar();
+                                        });
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PageBievenue()));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            // todo : showDialog for ios
+                            return showCupertinoDialog(
+                                context: context,
+                                builder: (_) => CupertinoAlertDialog(
+                                      title: Text("Deconnexion"),
+                                      content: Text(
+                                          "Souhaitez-vous réellement vous deconnecter ?"),
+                                      actions: [
+                                        // Close the dialog
+                                        // You can use the CupertinoDialogAction widget instead
+                                        CupertinoButton(
+                                            child: Text('Annuler'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            }),
+                                        CupertinoButton(
+                                          child: Text('Deconnexion'),
+                                          onPressed: () async {
+                                            SharedPreferences preferences =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            await preferences.clear();
+                                            AuthMethods().signOut().then((s) {
+                                              AuthMethods.toogleNavBar();
+                                            });
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PageBievenue()));
+                                          },
+                                        )
+                                      ],
+                                    ));
                           },
                           child: Row(
                             children: <Widget>[
