@@ -8,7 +8,7 @@ class AddressSearch extends SearchDelegate<Suggestion> {
 
   final sessionToken;
   PlaceApiProvider apiClient;
-
+  String get searchFieldLabel => 'Rechercher une adresse';
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
