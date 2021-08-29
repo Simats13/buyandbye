@@ -452,9 +452,19 @@ class _PageAccueilState extends State<PageAccueil> {
                                       SizedBox(
                                         height: 30,
                                         width: size.width - 150,
-                                        child: InkWell(onTap: () async {
-                                          affichageAddress();
-                                        }),
+                                        child: InkWell(
+                                          onTap: () async {
+                                            affichageAddress();
+                                          },
+                                          child: Container(
+                                            width: size.width - 150,
+                                            padding: EdgeInsets.only(top: 5),
+                                            child: Text(
+                                              _currentAddressLocation,
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -480,14 +490,14 @@ class _PageAccueilState extends State<PageAccueil> {
                         height: 300,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: Text(
                           "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
                           style: TextStyle(
                             fontSize: 18,
                             // color: Colors.grey[700]
                           ),
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.justify,
                         ),
                       ),
                     ],
@@ -644,8 +654,50 @@ class _PageAccueilState extends State<PageAccueil> {
                               // affichageAdresse(latitude, longitude, adresseEntire);
 
                               setState(() {
+                                latitude = position.latitude;
+                                longitude = position.longitude;
                                 _currentAddressLocation = _currentAddress;
+
+                                geo = Geoflutterfire();
+                                GeoFirePoint center = geo.point(
+                                    latitude: latitude, longitude: longitude);
+                                stream = radius.switchMap((rad) {
+                                  var collectionReference = FirebaseFirestore
+                                      .instance
+                                      .collection('magasins');
+                                  return geo
+                                      .collection(
+                                          collectionRef: collectionReference)
+                                      .within(
+                                          center: center,
+                                          radius: 100,
+                                          field: 'position',
+                                          strictMode: true);
+                                });
                               });
+
+                              _preferences =
+                                  await SharedPreferences.getInstance();
+
+                              await _preferences.setDouble(
+                                  _keyLatitude, position.latitude);
+
+                              await _preferences.setDouble(
+                                  _keyLongitude, position.longitude);
+
+                              await _preferences.setString(
+                                  _keyAddress, _currentAddressLocation);
+
+                              SharedPreferenceHelper()
+                                  .saveUserAddress(_currentAddressLocation);
+
+                              SharedPreferenceHelper()
+                                  .saveUserLatitude(position.latitude);
+
+                              SharedPreferenceHelper()
+                                  .saveUserLongitude(position.longitude);
+
+                              Navigator.of(context).pop();
 
                               Navigator.push(
                                   context,
@@ -736,8 +788,6 @@ class _PageAccueilState extends State<PageAccueil> {
                                               ["longitude"];
                                           _currentAddressLocation = snapshot
                                               .data.docs[index]["address"];
-
-                                          print(position);
 
                                           geo = Geoflutterfire();
                                           GeoFirePoint center = geo.point(

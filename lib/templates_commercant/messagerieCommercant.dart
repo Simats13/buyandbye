@@ -46,7 +46,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messagerie Commercant'),
+        title: Text('Messagerie'),
         backgroundColor: BuyandByeAppTheme.black_electrik,
         automaticallyImplyLeading: false,
         backwardsCompatibility: false, // 1
