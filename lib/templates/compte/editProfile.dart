@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:truncate/truncate.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -43,267 +42,138 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
-    // Affiche un chargement tant que les informations de l'utilisateur ne son pas charhées
-    if (myID == null) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: BuyandByeAppTheme.black_electrik,
-          title: Text("Mes informations"),
-          elevation: 1,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: BuyandByeAppTheme.orange,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: BuyandByeAppTheme.black_electrik,
+        title: Text("Mes informations"),
+        elevation: 1,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: BuyandByeAppTheme.orange,
           ),
-          actions: [
-            // Boutons pour modifier les informations du commerçant
-            Padding(
-                padding: EdgeInsets.only(right: 20),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isVisible = !isVisible;
-                    });
-                  },
-                  child:
-                      Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
-                ))
-          ],
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(left: 16, top: 40, right: 16),
-            // Affiche les informations
-            child: Column(
-              children: [
-                Container(
-                  height: 100,
-                  width: 200,
-                  child: Stack(
-                    children: <Widget>[
-                      // Affiche l'image de profil
-                      Center(
-                        child: ClipRRect(
-                            child: Image.network(
-                          // S'il n'y a pas d'image on affiche celle par défaut
-                          myProfilePic ??
-                              "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                          height: MediaQuery.of(context).size.height,
-                        )),
-                      ),
-                      // Boutons de changement d'image quand on est en mode modification
-                      isVisible
-                          ? SizedBox.shrink()
-                          : Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    width: 3,
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                  ),
-                                  color: BuyandByeAppTheme.orange,
+        actions: [
+          // Boutons pour modifier les informations du commerçant
+          Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isVisible = !isVisible;
+                  });
+                },
+                child:
+                    Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+              ))
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(left: 16, top: 40, right: 16),
+          // Affiche les informations
+          child: Column(
+            children: [
+              Container(
+                height: 100,
+                width: 200,
+                child: Stack(
+                  children: <Widget>[
+                    // Affiche l'image de profil
+                    Center(
+                      child: ClipRRect(
+                          child: Image.network(
+                        // S'il n'y a pas d'image on affiche celle par défaut
+                        myProfilePic ??
+                            "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
+                        height: MediaQuery.of(context).size.height,
+                      )),
+                    ),
+                    // Boutons de changement d'image quand on est en mode modification
+                    isVisible
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  width: 3,
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
                                 ),
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(Icons.edit,
-                                      color: Colors.white, size: 14),
-                                  onPressed: () {},
-                                ),
-                              )),
-                    ],
-                  ),
+                                color: BuyandByeAppTheme.orange,
+                              ),
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: Icon(Icons.edit,
+                                    color: Colors.white, size: 14),
+                                onPressed: () {},
+                              ),
+                            )),
+                  ],
                 ),
-                SizedBox(height: 50),
-                Divider(thickness: 0.5, color: Colors.black),
-                SizedBox(height: 20),
-                // De base, affiche les informations du commerçant
-                Visibility(
-                    visible: isVisible,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Nom :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text("Chargement"),
-                            SizedBox(height: 20),
-                            Text("Prénom :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text("Chargement"),
-                            SizedBox(height: 20),
-                            Text("E-mail :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text("Chargement"),
-                            SizedBox(height: 20),
-                            Text("Numéro de téléphone :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text("Chargement"),
-                            SizedBox(height: 20),
-                            Divider(thickness: 0.5, color: Colors.black),
-                            Text("Mes adresses"),
-                            Text("Chargement"),
-                            Divider(thickness: 0.5, color: Colors.black),
-                            Text("Mes moyens de paiement"),
-                            Text("Chargement"),
-                            Divider(thickness: 0.5, color: Colors.black),
-                          ]),
-                    )),
-                // Affiche les champs de texte pour modifier les informations
-                // lorsque le bouton est pressé
-                Visibility(
-                    visible: !isVisible,
-                    child: ModifyProfile(
-                        myFirstName, myLastName, myEmail, myPhone))
-              ],
-            ),
-            // ),
-          ),
-        ),
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: BuyandByeAppTheme.black_electrik,
-          title: Text("Mes informations"),
-          elevation: 1,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: BuyandByeAppTheme.orange,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: [
-            // Boutons pour modifier les informations du commerçant
-            Padding(
-                padding: EdgeInsets.only(right: 20),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isVisible = !isVisible;
-                    });
-                  },
-                  child:
-                      Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
-                ))
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(left: 16, top: 40, right: 16),
-            // Affiche les informations
-            child: Column(
-              children: [
-                Container(
-                  height: 100,
-                  width: 200,
-                  child: Stack(
-                    children: <Widget>[
-                      // Affiche l'image de profil
-                      Center(
-                        child: ClipRRect(
-                            child: Image.network(
-                          // S'il n'y a pas d'image on affiche celle par défaut
-                          myProfilePic ??
-                              "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                          height: MediaQuery.of(context).size.height,
-                        )),
-                      ),
-                      // Boutons de changement d'image quand on est en mode modification
-                      isVisible
-                          ? SizedBox.shrink()
-                          : Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    width: 3,
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                  ),
-                                  color: BuyandByeAppTheme.orange,
-                                ),
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(Icons.edit,
-                                      color: Colors.white, size: 14),
-                                  onPressed: () {},
-                                ),
-                              )),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 50),
-                Divider(thickness: 0.5, color: Colors.black),
-                SizedBox(height: 20),
-                // De base, affiche les informations du commerçant
-                Visibility(
-                    visible: isVisible,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Nom :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text(myFirstName),
-                            SizedBox(height: 20),
-                            Text("Prénom :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text(myLastName),
-                            SizedBox(height: 20),
-                            Text("E-mail :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text(myEmail),
-                            SizedBox(height: 20),
-                            Text("Numéro de téléphone :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 20),
-                            Text(myPhone ?? ""),
-                            SizedBox(height: 20),
-                            Divider(thickness: 0.5, color: Colors.black),
-                            Text("Mes adresses"),
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(myID)
-                                    .collection("Address")
-                                    .snapshots(),
-                                builder: (context, snapshot) {
+              ),
+              SizedBox(height: 50),
+              Divider(thickness: 0.5, color: Colors.black),
+              SizedBox(height: 20),
+              // De base, affiche les informations du commerçant
+              Visibility(
+                  visible: isVisible,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Nom :",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                          SizedBox(height: 20),
+                          myFirstName == null
+                              ? CircularProgressIndicator()
+                              : Text(myFirstName),
+                          SizedBox(height: 20),
+                          Text("Prénom :",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                          SizedBox(height: 20),
+                          myLastName == null
+                              ? CircularProgressIndicator()
+                              : Text(myLastName),
+                          SizedBox(height: 20),
+                          Text("E-mail :",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                          SizedBox(height: 20),
+                          myEmail == null
+                              ? CircularProgressIndicator()
+                              : Text(myEmail),
+                          SizedBox(height: 20),
+                          Text("Numéro de téléphone :",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                          SizedBox(height: 20),
+                          myPhone == null
+                              ? CircularProgressIndicator()
+                              : Text(myPhone),
+                          SizedBox(height: 20),
+                          Divider(thickness: 0.5, color: Colors.black),
+                          Text("Mes adresses"),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(myID)
+                                  .collection("Address")
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
                                   if (snapshot.data.docs.length > 0) {
                                     return ListView.builder(
                                         physics:
@@ -408,25 +278,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ],
                                     );
                                   }
-                                }),
-                            Divider(thickness: 0.5, color: Colors.black),
-                            Text("Mes moyens de paiement"),
-                            Divider(thickness: 0.5, color: Colors.black),
-                          ]),
-                    )),
-                // Affiche les champs de texte pour modifier les informations
-                // lorsque le bouton est pressé
-                Visibility(
-                    visible: !isVisible,
-                    child: ModifyProfile(
-                        myFirstName, myLastName, myEmail, myPhone))
-              ],
-            ),
-            // ),
+                                } else {
+                                  return CircularProgressIndicator();
+                                }
+                              }),
+                          Divider(thickness: 0.5, color: Colors.black),
+                          Text("Mes moyens de paiement"),
+                          Divider(thickness: 0.5, color: Colors.black),
+                        ]),
+                  )),
+              // Affiche les champs de texte pour modifier les informations
+              // lorsque le bouton est pressé
+              Visibility(
+                  visible: !isVisible,
+                  child:
+                      ModifyProfile(myFirstName, myLastName, myEmail, myPhone))
+            ],
           ),
+          // ),
         ),
-      );
-    }
+      ),
+    );
   }
 }
 
