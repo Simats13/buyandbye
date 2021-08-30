@@ -308,7 +308,6 @@ class _PageCompteState extends State<PageCompte> {
                                             "Souhaitez-vous réellement vous déconnecter ?"),
                                         actions: [
                                           // Close the dialog
-                                          // You can use the CupertinoDialogAction widget instead
                                           CupertinoButton(
                                               child: Text('Annuler'),
                                               onPressed: () {
