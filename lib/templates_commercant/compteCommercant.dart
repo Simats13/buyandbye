@@ -63,7 +63,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
               width: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                color: BuyandByeAppTheme.orange,
+                border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
               ),
               child: Center(
                 child: Text(
@@ -94,7 +95,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
-                            color: BuyandByeAppTheme.orange,
+                            border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
                             onPressed: () {
@@ -140,7 +142,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
-                            color: BuyandByeAppTheme.orange,
+                            border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
                             onPressed: () {
@@ -186,7 +189,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
-                            color: BuyandByeAppTheme.orange,
+                            border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
                             onPressed: () {
@@ -262,7 +266,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 width: 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
-                  color: BuyandByeAppTheme.orange,
+                  border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                 ),
                 child: Center(
                   child: Text(
@@ -296,7 +301,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              color: BuyandByeAppTheme.orange,
+                              border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                             ),
                             child: MaterialButton(
                               onPressed: () {
@@ -342,7 +348,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              color: BuyandByeAppTheme.orange,
+                              border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                             ),
                             child: MaterialButton(
                               onPressed: () {
@@ -388,7 +395,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              color: BuyandByeAppTheme.orange,
+                              border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                             ),
                             child: MaterialButton(
                               onPressed: () {

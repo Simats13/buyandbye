@@ -1,3 +1,6 @@
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:buyandbye/templates/widgets/constants.dart';
+import 'package:buyandbye/theme/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +8,8 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates_commercant/newProduct.dart';
 import 'detailProduit.dart';
+import 'package:wave/wave.dart';
+import 'package:wave/config.dart';
 
 // Retourne la liste des catégories où le commerçant a entré au moins un produit
 List categoriesInDb(snapshot) {
@@ -49,6 +54,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
 
   // Cette première classe affiche l'image et le nom du commerçant
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     // Si l'image de profil n'est pas chargée
     if (myProfilePic == null) {
       return SingleChildScrollView(
@@ -71,44 +77,293 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
     } else {
       // Quand l'image est chargée
       return SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 50),
-            // Affiche le bouton d'ajout d'un produit
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              SizedBox(width: 10),
-              IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        // Amène l'utilisateur sur la page d'ajout d'un produit
-                        MaterialPageRoute(
-                            builder: (context) => NewProduct(myID)));
-                  },
-                  icon: Icon(Icons.add_rounded, size: 30))
-            ]),
-            // Affiche l'image de profil du magasin
-            Container(
-              height: 150,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.network(
-                    myProfilePic,
-                  )),
-            ),
-            SizedBox(height: 20),
-            // Affiche le nom du magasin
-            Text(myName,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-            SizedBox(height: 30),
-            // Appel de la 2e classe
-            DisplayCategorie(myID),
-          ],
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                height: size.height * 0.24,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: size.height * 0.24,
+                      decoration: BoxDecoration(
+                          // color: BuyandByeAppTheme.orangeMiFonce,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(36),
+                            bottomRight: Radius.circular(36),
+                          )),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 10, 16, 0),
+                      child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Card(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              // color: BuyandByeAppTheme.orange,
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                child: Container(
+                                  width: 60,
+                                  height: 60,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Image.network(
+                                    myProfilePic,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      // Amène l'utilisateur sur la page d'ajout d'un produit
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              NewProduct(myID)));
+                                },
+                                icon: Icon(
+                                  Icons.store,
+                                  size: 30,
+                                ))
+                            // IconButton(
+                            //     onPressed: () {
+                            //       Navigator.push(
+                            //           context,
+                            //           // Amène l'utilisateur sur la page d'ajout d'un produit
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   NewProduct(myID)));
+                            //     },
+                            //     icon: Icon(
+                            //       Icons.add_rounded,
+                            //       size: 30,
+                            //     ))
+                          ]),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
+                            child: Text('Bienvenue',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: BuyandByeAppTheme.orange)),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 120, 20, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                            child: Text(myName,
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700,
+                                )),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                            child: Image.asset(
+                              'assets/icons/main.png',
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15),
+              Container(
+                height: size.height * 0.24,
+                width: 380,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: size.height * 0.24,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
+                          borderRadius: BorderRadius.circular(36)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                            child: Text('Votre solde',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w700)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(50, 43, 20, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                                child: Text('380.16 €',
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                              Text(
+                                "Ce mois-ci",
+                                style: TextStyle(
+                                    // color: white,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(230, 43, 20, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                                child: Text('1527.61 €',
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                              Text(
+                                "Au Total",
+                                style: TextStyle(
+                                    // color: white,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15),
+              Container(
+                height: size.height * 0.35,
+                width: 380,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: size.height * 0.35,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
+                          borderRadius: BorderRadius.circular(36)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                            child: Text('Vos Statistiques',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w700)),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            child: Image.asset('assets/images/charts.png'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // SizedBox(height: 20),
+              // Text(
+              //   "Catégories",
+              //   style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+              // ),
+              // SizedBox(height: 10),
+              // // Appel de la 2e classe
+              // DisplayCategorie(myID),
+            ],
+          ),
         ),
       );
     }
   }
 }
+
+//   Column(
+//   children: [
+//     SizedBox(height: 50),
+//     // Affiche le bouton d'ajout d'un produit
+//     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+//       SizedBox(width: 10),
+//       IconButton(
+//           onPressed: () {
+//             Navigator.push(
+//                 context,
+//                 // Amène l'utilisateur sur la page d'ajout d'un produit
+//                 MaterialPageRoute(
+//                     builder: (context) => NewProduct(myID)));
+//           },
+//           icon: Icon(Icons.add_rounded, size: 30))
+//     ]),
+//     // Affiche l'image de profil du magasin
+//     Container(
+//       height: 150,
+//       child: ClipRRect(
+//           borderRadius: BorderRadius.circular(100),
+//           child: Image.network(
+//             myProfilePic,
+//           )),
+//     ),
+//     SizedBox(height: 20),
+//     // Affiche le nom du magasin
+//     Text(myName,
+//         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+//     SizedBox(height: 30),
+//     // Appel de la 2e classe
+//     DisplayCategorie(myID),
+//   ],
+// ),
 
 class DisplayCategorie extends StatefulWidget {
   const DisplayCategorie(this.uid);
@@ -163,7 +418,7 @@ class _DisplayCategorieState extends State<DisplayCategorie> {
                                       index, widget.uid));
                             },
                           ),
-                          Divider(thickness: 0.5, color: Colors.black)
+                          // Divider(thickness: 0.5, color: Colors.black)
                         ],
                       ),
               ],
@@ -193,37 +448,46 @@ class _CategorieState extends State<Categorie> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool darkModeOn = brightness == Brightness.dark;
     return Column(children: [
-      Divider(thickness: 0.5, color: Colors.black),
-      Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16),
-        child: Column(
-          children: [
-            // Permet de dérouler les produits d'une catégorie en cliquant dessus
-            TextButton(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Affiche le nom de la catégorie
-                  Text(widget.listOfCategories[widget.index],
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: darkModeOn ? Colors.white : Colors.black)),
-                  Icon(
-                    // Si la suite est visible, la flèche pointe vers le bas
-                    // Sinon elle pointe à droite
-                    isVisible ? Icons.arrow_drop_down : Icons.arrow_right,
-                    color: darkModeOn ? Colors.white : Colors.black,
-                  ),
-                ],
+      // Divider(thickness: 0.5, color: Colors.black),
+      SizedBox(height: 20),
+      Container(
+        width: 380,
+        height: 52,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+          child: Column(
+            children: [
+              // Permet de dérouler les produits d'une catégorie en cliquant dessus
+              TextButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Affiche le nom de la catégorie
+                    Text(widget.listOfCategories[widget.index],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: darkModeOn ? Colors.white : Colors.black)),
+                    Icon(
+                      // Si la suite est visible, la flèche pointe vers le bas
+                      // Sinon elle pointe à droite
+                      isVisible ? Icons.arrow_drop_down : Icons.arrow_right,
+                      color: darkModeOn ? Colors.white : Colors.black,
+                    ),
+                  ],
+                ),
+                // Change le booléen de visibilité à chaque clic sur le bouton
+                onPressed: () {
+                  setState(() {
+                    isVisible = !isVisible;
+                  });
+                },
               ),
-              // Change le booléen de visibilité à chaque clic sur le bouton
-              onPressed: () {
-                setState(() {
-                  isVisible = !isVisible;
-                });
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       // Si visible, affiche tous les produits de la catégorie cliquée
