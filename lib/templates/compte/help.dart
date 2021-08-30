@@ -309,7 +309,7 @@ class _QuestionState extends State<Question> {
     return FutureBuilder(
         future: DatabaseMethods().getFAQ(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Text('chargement en cours...');
+          if (!snapshot.hasData) return CircularProgressIndicator();
           return ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,

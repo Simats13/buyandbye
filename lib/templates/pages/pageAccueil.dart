@@ -27,7 +27,6 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/custom_slider.dart';
 
 import 'package:buyandbye/templates/Pages/place_service.dart';
-import 'package:truncate/truncate.dart';
 import 'package:uuid/uuid.dart';
 
 class PageAccueil extends StatefulWidget {
@@ -282,7 +281,7 @@ class _PageAccueilState extends State<PageAccueil> {
                       height: 15,
                     ),
 
-                    //trait gris de séparation rajouté après avoir désactivé le code au dessus.
+                    //trait gris de séparation
                     Container(
                       width: size.width,
                       height: 10,
@@ -310,7 +309,7 @@ class _PageAccueilState extends State<PageAccueil> {
                       child: SliderAccueil2(latitude, longitude),
                     ),
 
-                    //trait gris de séparation rajouté après avoir désactivé le code au dessus.
+                    //trait gris de séparation
                     Container(
                       width: size.width,
                       height: 10,
@@ -597,10 +596,10 @@ class _PageAccueilState extends State<PageAccueil> {
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.grey.withOpacity(0.15),
                           ),
-                          padding: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 10),
                           child: Row(children: [
                             Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.search),
                               ],
@@ -899,212 +898,232 @@ class _PageAccueilState extends State<PageAccueil> {
                             ),
                           );
                         }
-                        if (snapshot.data.docs.length > 0) {
-                          return ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: snapshot.data.docs.length,
-                              itemBuilder: (context, index) {
-                                return Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () async {
-                                        final coordinates =
-                                            new geocode.Coordinates(
-                                                snapshot.data.docs[index]
-                                                    ["latitude"],
-                                                snapshot.data.docs[index]
-                                                    ["longitude"]);
-                                        var addresses = await geocode
-                                            .Geocoder.local
-                                            .findAddressesFromCoordinates(
-                                                coordinates);
-                                        var first = addresses.first;
+                        if (snapshot.hasData) {
+                          if (snapshot.data.docs.length > 0) {
+                            return ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: snapshot.data.docs.length,
+                                itemBuilder: (context, index) {
+                                  return Row(
+                                    children: [
+                                      InkWell(
+                                        onTap: () async {
+                                          final coordinates =
+                                              new geocode.Coordinates(
+                                                  snapshot.data.docs[index]
+                                                      ["latitude"],
+                                                  snapshot.data.docs[index]
+                                                      ["longitude"]);
+                                          var addresses = await geocode
+                                              .Geocoder.local
+                                              .findAddressesFromCoordinates(
+                                                  coordinates);
+                                          var first = addresses.first;
 
-                                        setState(() {
-                                          _city = first.locality;
-                                          latitude = snapshot.data.docs[index]
-                                              ["latitude"];
-                                          longitude = snapshot.data.docs[index]
-                                              ["longitude"];
-                                          _currentAddressLocation =
-                                              "${first.featureName + ", " + first.locality}";
+                                          setState(() {
+                                            _city = first.locality;
+                                            latitude = snapshot.data.docs[index]
+                                                ["latitude"];
+                                            longitude = snapshot
+                                                .data.docs[index]["longitude"];
+                                            _currentAddressLocation =
+                                                "${first.featureName + ", " + first.locality}";
 
-                                          geo = Geoflutterfire();
-                                          GeoFirePoint center = geo.point(
-                                              latitude: snapshot
-                                                  .data.docs[index]["latitude"],
-                                              longitude: snapshot.data
-                                                  .docs[index]["longitude"]);
-                                          stream = radius.switchMap((rad) {
-                                            var collectionReference =
-                                                FirebaseFirestore.instance
-                                                    .collection('magasins');
-                                            return geo
-                                                .collection(
-                                                    collectionRef:
-                                                        collectionReference)
-                                                .within(
-                                                    center: center,
-                                                    radius: 100,
-                                                    field: 'position',
-                                                    strictMode: true);
+                                            geo = Geoflutterfire();
+                                            GeoFirePoint center = geo.point(
+                                                latitude: snapshot.data
+                                                    .docs[index]["latitude"],
+                                                longitude: snapshot.data
+                                                    .docs[index]["longitude"]);
+                                            stream = radius.switchMap((rad) {
+                                              var collectionReference =
+                                                  FirebaseFirestore.instance
+                                                      .collection('magasins');
+                                              return geo
+                                                  .collection(
+                                                      collectionRef:
+                                                          collectionReference)
+                                                  .within(
+                                                      center: center,
+                                                      radius: 100,
+                                                      field: 'position',
+                                                      strictMode: true);
+                                            });
                                           });
-                                        });
 
-                                        _preferences = await SharedPreferences
-                                            .getInstance();
+                                          _preferences = await SharedPreferences
+                                              .getInstance();
 
-                                        await _preferences.setDouble(
-                                            _keyLatitude,
-                                            snapshot.data.docs[index]
-                                                ["latitude"]);
+                                          await _preferences.setDouble(
+                                              _keyLatitude,
+                                              snapshot.data.docs[index]
+                                                  ["latitude"]);
 
-                                        await _preferences.setString(
-                                            _keyCity, _city);
+                                          await _preferences.setString(
+                                              _keyCity, _city);
 
-                                        await _preferences.setDouble(
-                                            _keyLongitude,
-                                            snapshot.data.docs[index]
-                                                ["longitude"]);
+                                          await _preferences.setDouble(
+                                              _keyLongitude,
+                                              snapshot.data.docs[index]
+                                                  ["longitude"]);
 
-                                        await _preferences.setString(
-                                            _keyAddress,
-                                            _currentAddressLocation);
+                                          await _preferences.setString(
+                                              _keyAddress,
+                                              _currentAddressLocation);
 
-                                        SharedPreferenceHelper()
-                                            .saveUserAddress(
-                                                _currentAddressLocation);
-                                        SharedPreferenceHelper()
-                                            .saveUserCity(_city);
+                                          SharedPreferenceHelper()
+                                              .saveUserAddress(
+                                                  _currentAddressLocation);
+                                          SharedPreferenceHelper()
+                                              .saveUserCity(_city);
 
-                                        SharedPreferenceHelper()
-                                            .saveUserLatitude(snapshot
-                                                .data.docs[index]["latitude"]);
+                                          SharedPreferenceHelper()
+                                              .saveUserLatitude(snapshot.data
+                                                  .docs[index]["latitude"]);
 
-                                        SharedPreferenceHelper()
-                                            .saveUserLongitude(snapshot
-                                                .data.docs[index]["longitude"]);
+                                          SharedPreferenceHelper()
+                                              .saveUserLongitude(snapshot.data
+                                                  .docs[index]["longitude"]);
 
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        10, 0, 0, 0),
-                                                child:
-                                                    Icon(Icons.place_rounded),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(width: 20),
-                                          Column(
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                SizedBox(height: 30),
-                                                Container(
-                                                  child: Text(
-                                                    snapshot.data.docs[index]
-                                                        ["addressName"],
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          10, 0, 0, 0),
+                                                  child:
+                                                      Icon(Icons.place_rounded),
                                                 ),
-                                                Center(
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width -
-                                                            120,
-                                                    child: Text(snapshot
-                                                            .data.docs[index]
-                                                        ["address"]),
-                                                  ),
+                                              ],
+                                            ),
+                                            SizedBox(width: 20),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          10, 0, 0, 0),
+                                                  child:
+                                                      Icon(Icons.place_rounded),
                                                 ),
-                                                SizedBox(height: 30),
-                                              ]),
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              IconButton(
-                                                icon: Icon(Icons.edit),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              PageAddressEdit(
-                                                                adresse: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index]
-                                                                    ["address"],
-                                                                adressTitle: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    "addressName"],
-                                                                buildingDetails: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    "buildingDetails"],
-                                                                buildingName: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    "buildingName"],
-                                                                familyName: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    "familyName"],
-                                                                lat: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    "latitude"],
-                                                                long: snapshot
-                                                                            .data
-                                                                            .docs[
-                                                                        index][
-                                                                    "longitude"],
-                                                                iD: snapshot.data
-                                                                            .docs[
-                                                                        index]
-                                                                    ["idDoc"],
-                                                              )));
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                              ],
+                                            ),
+                                            SizedBox(width: 20),
+                                            Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(height: 30),
+                                                  Container(
+                                                    child: Text(
+                                                      snapshot.data.docs[index]
+                                                          ["addressName"],
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  Center(
+                                                    child: Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              120,
+                                                      child: Text(snapshot
+                                                              .data.docs[index]
+                                                          ["address"]),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 30),
+                                                ]),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                IconButton(
+                                                  icon: Icon(Icons.edit),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PageAddressEdit(
+                                                                  adresse: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "address"],
+                                                                  adressTitle: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "addressName"],
+                                                                  buildingDetails: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "buildingDetails"],
+                                                                  buildingName: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "buildingName"],
+                                                                  familyName: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "familyName"],
+                                                                  lat: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "latitude"],
+                                                                  long: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      [
+                                                                      "longitude"],
+                                                                  iD: snapshot
+                                                                          .data
+                                                                          .docs[index]
+                                                                      ["idDoc"],
+                                                                )));
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              });
+                                    ],
+                                  );
+                                });
+                          } else {
+                            return Column(
+                              children: [
+                                SizedBox(height: 20),
+                                Container(
+                                    child: Text("Pas d'adresses enregistrées")),
+                              ],
+                            );
+                          }
                         } else {
-                          return Column(
-                            children: [
-                              SizedBox(height: 20),
-                              Container(
-                                  child: Text("Aucun adresses enregistrées")),
-                            ],
-                          );
+                          return CircularProgressIndicator();
                         }
                       }),
                 ],

@@ -13,7 +13,6 @@ import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';

@@ -10,7 +10,6 @@ import '../Messagerie/Controllers/fb_messaging.dart';
 import '../Messagerie/Controllers/image_controller.dart';
 import '../Messagerie/Controllers/utils.dart';
 import '../Pages/chatscreen.dart';
-import '../Messagerie/subWidgets/common_widgets.dart';
 import '../Messagerie/subWidgets/local_notification_view.dart';
 import '../buyandbye_app_theme.dart';
 
