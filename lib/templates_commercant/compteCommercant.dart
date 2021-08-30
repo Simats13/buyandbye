@@ -283,7 +283,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 width: MediaQuery.of(context).size.height,
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  SizedBox(height: 50),
+                  SizedBox(height: 20),
                   Flexible(
                     child: ListView(
                         shrinkWrap: true,
@@ -335,7 +335,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 15),
                           Container(
                             height: 55,
                             margin: EdgeInsets.symmetric(
@@ -382,7 +382,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 15),
                           Container(
                             height: 55,
                             margin: EdgeInsets.symmetric(

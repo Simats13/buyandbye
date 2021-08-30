@@ -158,7 +158,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                     // Affiche les informations de la commande
                     child: Column(
                   children: [
-                    SizedBox(height: 10),
+                    // SizedBox(height: 10),
                     SizedBox(height: 20),
                     Text("Commande n°" + widget.ref.toString(),
                         style: TextStyle(
@@ -168,7 +168,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                     defStatut(widget.statut, widget.livraisonNb),
                     SizedBox(height: 20),
                     Text(widget.date),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -258,7 +258,7 @@ class _DetailState extends State<Detail> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 50),
+                  SizedBox(width: 30),
                   // Affiche en colonne le prox et la quantité du produit
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -325,7 +325,7 @@ class _UserInfoState extends State<UserInfo> {
                             : widget.livraisonNb == 2
                                 ? Text("Click & Collect")
                                 : Text("Livraison à domicile"),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Row(
                           children: [
                             Text(snapshot.data.docs[0]["name"]),
@@ -349,10 +349,11 @@ class _UserInfoState extends State<UserInfo> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Text(snapshot.data.docs[0]["phone"]),
                         SizedBox(height: 20),
                         Text(snapshot.data.docs[0]["email"]),
+                        SizedBox(height: 10),
                       ],
                     ),
                   ],

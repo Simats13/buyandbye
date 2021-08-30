@@ -110,19 +110,16 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(40),
                               ),
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                child: Container(
-                                  width: 60,
-                                  height: 60,
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
+                              child: Container(
+                                  child: Container(
+                                    height: 60,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.network(
+                                        myProfilePic,
+                                      ),
+                                    ),
                                   ),
-                                  child: Image.network(
-                                    myProfilePic,
-                                  ),
-                                ),
                               ),
                             ),
                             IconButton(
@@ -314,14 +311,14 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                   ],
                 ),
               ),
-              // SizedBox(height: 20),
-              // Text(
-              //   "Catégories",
-              //   style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
-              // ),
-              // SizedBox(height: 10),
-              // // Appel de la 2e classe
-              // DisplayCategorie(myID),
+              SizedBox(height: 20),
+              Text(
+                "Catégories",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+              ),
+              SizedBox(height: 10),
+              // Appel de la 2e classe
+              DisplayCategorie(myID),
             ],
           ),
         ),
