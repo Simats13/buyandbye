@@ -267,7 +267,7 @@ class _PageCompteState extends State<PageCompte> {
                                 builder: (context) => AlertDialog(
                                   title: Text("Deconnexion"),
                                   content: Text(
-                                      "Souhaitez-vous réellement vous deconnecter ?"),
+                                      "Souhaitez-vous réellement vous deconnecter ? "),
                                   actions: <Widget>[
                                     TextButton(
                                       child: Text("Annuler"),
@@ -305,7 +305,7 @@ class _PageCompteState extends State<PageCompte> {
                                 builder: (_) => CupertinoAlertDialog(
                                       title: Text("Deconnexion"),
                                       content: Text(
-                                          "Souhaitez-vous réellement vous deconnecter ?"),
+                                          "Souhaitez-vous réellement vous deconnecter ? "),
                                       actions: [
                                         // Close the dialog
                                         // You can use the CupertinoDialogAction widget instead
