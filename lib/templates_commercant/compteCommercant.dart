@@ -63,8 +63,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
               width: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                border: Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
               ),
               child: Center(
                 child: Text(
@@ -96,7 +95,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                                color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
                             onPressed: () {
@@ -143,7 +142,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                                color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
                             onPressed: () {
@@ -190,16 +189,16 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                                color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
                             onPressed: () {
                               AuthMethods().signOut().then((s) {
                                 AuthMethods.toogleNavBar();
-                                Navigator.pushReplacement(
-                                    context,
+                                Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
-                                        builder: (context) => PageBievenue()));
+                                        builder: (context) => PageBievenue()),
+                                    (Route<dynamic> route) => false);
                               });
                             },
                             child: Row(
@@ -266,8 +265,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 width: 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                  border:
+                      Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
                 ),
                 child: Center(
                   child: Text(
@@ -302,7 +301,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                                  color: BuyandByeAppTheme.orange, width: 2.0),
                             ),
                             child: MaterialButton(
                               onPressed: () {
@@ -349,7 +348,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                                  color: BuyandByeAppTheme.orange, width: 2.0),
                             ),
                             child: MaterialButton(
                               onPressed: () {
@@ -396,17 +395,16 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                              color: BuyandByeAppTheme.orange, width: 2.0),
+                                  color: BuyandByeAppTheme.orange, width: 2.0),
                             ),
                             child: MaterialButton(
                               onPressed: () {
                                 AuthMethods().signOut().then((s) {
                                   AuthMethods.toogleNavBar();
-                                  Navigator.pushReplacement(
-                                      context,
+                                  Navigator.of(context).pushAndRemoveUntil(
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              PageBievenue()));
+                                          builder: (context) => PageBievenue()),
+                                      (Route<dynamic> route) => false);
                                 });
                               },
                               child: Row(

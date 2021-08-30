@@ -83,7 +83,7 @@ class _PageCompteState extends State<PageCompte> {
             width: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: BuyandByeAppTheme.orange,
+              border: Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
             ),
             child: Center(
               child: Text(
@@ -115,7 +115,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () {
@@ -161,7 +162,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () {
@@ -207,7 +209,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () {
@@ -253,7 +256,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () async {
@@ -321,13 +325,12 @@ class _PageCompteState extends State<PageCompte> {
                                               AuthMethods.toogleNavBar();
                                             });
                                             Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                                MaterialPageRoute(
-                                                    builder:
-                                                        (context) =>
+                                                .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
                                                             PageBievenue()),
-                                                (Route<dynamic> route) =>
-                                                    false);
+                                                    (Route<dynamic> route) =>
+                                                        false);
                                           },
                                         )
                                       ],
