@@ -246,6 +246,7 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                       ),
                       SizedBox(height: 10),
+                      // Bouton de déconnexion
                       Container(
                         height: 55,
                         margin: EdgeInsets.symmetric(
@@ -268,7 +269,7 @@ class _PageCompteState extends State<PageCompte> {
                                 builder: (context) => AlertDialog(
                                   title: Text("Deconnexion"),
                                   content: Text(
-                                      "Souhaitez-vous réellement vous deconnecter ?"),
+                                      "Souhaitez-vous réellement vous déconnecter ?"),
                                   actions: <Widget>[
                                     TextButton(
                                       child: Text("Annuler"),
@@ -276,7 +277,7 @@ class _PageCompteState extends State<PageCompte> {
                                           Navigator.of(context).pop(false),
                                     ),
                                     TextButton(
-                                      child: Text("Deconnexion"),
+                                      child: Text("Déconnexion"),
                                       onPressed: () async {
                                         SharedPreferences preferences =
                                             await SharedPreferences
@@ -295,42 +296,41 @@ class _PageCompteState extends State<PageCompte> {
                                   ],
                                 ),
                               );
+                            } else {
+                              return showCupertinoDialog(
+                                  context: context,
+                                  builder: (_) => CupertinoAlertDialog(
+                                        title: Text("Déconnexion"),
+                                        content: Text(
+                                            "Souhaitez-vous réellement vous déconnecter ?"),
+                                        actions: [
+                                          // Close the dialog
+                                          // You can use the CupertinoDialogAction widget instead
+                                          CupertinoButton(
+                                              child: Text('Annuler'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }),
+                                          CupertinoButton(
+                                            child: Text('Déconnexion'),
+                                            onPressed: () async {
+                                              SharedPreferences preferences =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              await preferences.clear();
+                                              AuthMethods().signOut().then((s) {
+                                                AuthMethods.toogleNavBar();
+                                              });
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PageBievenue()));
+                                            },
+                                          )
+                                        ],
+                                      ));
                             }
-
-                            // todo : showDialog for ios
-                            return showCupertinoDialog(
-                                context: context,
-                                builder: (_) => CupertinoAlertDialog(
-                                      title: Text("Deconnexion"),
-                                      content: Text(
-                                          "Souhaitez-vous réellement vous deconnecter ?"),
-                                      actions: [
-                                        // Close the dialog
-                                        // You can use the CupertinoDialogAction widget instead
-                                        CupertinoButton(
-                                            child: Text('Annuler'),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            }),
-                                        CupertinoButton(
-                                          child: Text('Deconnexion'),
-                                          onPressed: () async {
-                                            SharedPreferences preferences =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            await preferences.clear();
-                                            AuthMethods().signOut().then((s) {
-                                              AuthMethods.toogleNavBar();
-                                            });
-                                            Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PageBievenue()));
-                                          },
-                                        )
-                                      ],
-                                    ));
                           },
                           child: Row(
                             children: <Widget>[
