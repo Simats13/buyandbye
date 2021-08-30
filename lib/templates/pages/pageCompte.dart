@@ -63,15 +63,21 @@ class _PageCompteState extends State<PageCompte> {
             ),
           ),
           SizedBox(height: 20),
-          Text(
-            myName ?? "",
-            style: kTitleTextStyle,
-          ),
-          SizedBox(height: 5),
-          Text(
-            myEmail ?? "",
-            style: kCaption2TextStyle,
-          ),
+          myName == null || myEmail == null
+              ? CircularProgressIndicator()
+              : Column(
+                  children: [
+                    Text(
+                      myName,
+                      style: kTitleTextStyle,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      myEmail,
+                      style: kCaption2TextStyle,
+                    ),
+                  ],
+                ),
           SizedBox(height: 20),
           Container(
             height: 40,
@@ -82,7 +88,7 @@ class _PageCompteState extends State<PageCompte> {
             ),
             child: Center(
               child: Text(
-                'Utilisateur',
+                'Compte client',
                 style: kButtonTextStyle,
               ),
             ),
