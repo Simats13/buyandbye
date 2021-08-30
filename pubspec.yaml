@@ -84,6 +84,7 @@ dependencies:
   truncate:
   flutter_native_splash:
   flutter_launcher_name:
+  app_settings:
 
 
 
