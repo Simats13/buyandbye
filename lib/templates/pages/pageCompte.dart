@@ -286,11 +286,14 @@ class _PageCompteState extends State<PageCompte> {
                                         AuthMethods().signOut().then((s) {
                                           AuthMethods.toogleNavBar();
                                         });
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PageBievenue()));
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder:
+                                                        (context) =>
+                                                            PageBievenue()),
+                                                (Route<dynamic> route) =>
+                                                    false);
                                       },
                                     ),
                                   ],
@@ -321,11 +324,13 @@ class _PageCompteState extends State<PageCompte> {
                                               AuthMethods().signOut().then((s) {
                                                 AuthMethods.toogleNavBar();
                                               });
-                                              Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PageBievenue()));
+                                              Navigator.of(context)
+                                                  .pushAndRemoveUntil(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              PageBievenue()),
+                                                      (Route<dynamic> route) =>
+                                                          false);
                                             },
                                           )
                                         ],
