@@ -27,6 +27,20 @@ class DatabaseMethods {
         .get();
   }
 
+  Future checkIfDocExists(String docId) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(docId)
+        .get()
+        .then((DocumentSnapshot ds) {
+      if (ds.exists) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+
   Future addSellerInfoToDB(
       String _nomSeller, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance

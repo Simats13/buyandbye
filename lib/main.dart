@@ -57,7 +57,6 @@ class _MyAppState extends State<MyApp> {
     ]);
     NotificationController.instance.takeFCMTokenWhenAppLaunch();
     NotificationController.instance.initLocalNotification();
-    //NotificationController.instance.initLocalNotification();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _getFCMToken();
     super.initState();
@@ -85,7 +84,8 @@ class _MyAppState extends State<MyApp> {
         sound: true,
       );
 
-      print('User granted permission: ${settings.authorizationStatus}');
+      print(
+          "L'utilisateur a accepté les notifications : ${settings.authorizationStatus}");
     }
   }
 

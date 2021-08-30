@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -24,19 +28,22 @@ class PageExplore extends StatefulWidget {
 class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   var position;
+  var radius = BehaviorSubject<double>.seeded(10);
   Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   int prevPage;
-  final radius = BehaviorSubject<double>.seeded(1.0);
+  LocationPermission permission;
   Stream<List<DocumentSnapshot>> stream;
   BitmapDescriptor mapMaker;
   double _value = 40.0;
   List magasins = [];
-
+  String _label = 'kms';
+  bool localisation = false;
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
   static SharedPreferences _preferences;
   static const _keySlider = "UserSliderKey";
+  static const _keyLabel = "UserSliderLabelKey";
 
   // firestore init
   final _firestore = FirebaseFirestore.instance;
@@ -56,10 +63,12 @@ class _PageExploreState extends State<PageExplore> {
   @override
   void initState() {
     super.initState();
+
     _latitudeController = TextEditingController();
     _longitudeController = TextEditingController();
     setCustomMarker();
     userID();
+    _determinePosition();
 
     Geolocator.getCurrentPosition().then((currloc) {
       setState(() {
@@ -116,7 +125,7 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _showHome() {
+  void _showHome() async {
     _mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(currentLocation.latitude, currentLocation.longitude),
@@ -127,15 +136,54 @@ class _PageExploreState extends State<PageExplore> {
 
   userID() async {
     final User user = await AuthMethods().getCurrentUser();
-    _value = await SharedPreferenceHelper().getUserSlider();
+    _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
+    _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
 
-    String userid = user.uid;
+    //String userid = user.uid;
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      localisation = false;
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        localisation = false;
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      localisation = false;
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
 
-  void _magasinAffichage(double lat, double lng, String name, adresse, imgUrl,
-      description, List horaires, bool livraison, clickAndCollect) {
+  void _magasinAffichage(double lat, double lng, String name) {
     slideDialog.showSlideDialog(
       context: context,
       child: Container(
@@ -155,20 +203,20 @@ class _PageExploreState extends State<PageExplore> {
             SizedBox(
               height: 25,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 200,
-              child: Image(
-                image: NetworkImage(imgUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
+            // Container(
+            //   width: MediaQuery.of(context).size.width,
+            //   height: 200,
+            //   child: Image(
+            //     image: NetworkImage(imgUrl),
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
             SizedBox(
               height: 5,
             ),
-            Container(
-              child: Text("Adresse : " + adresse),
-            ),
+            // Container(
+            //   child: Text("Adresse : " + adresse),
+            // ),
             SizedBox(
               height: 5,
             ),
@@ -194,7 +242,6 @@ class _PageExploreState extends State<PageExplore> {
 
   //FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
   void _perimeter() async {
-    String _label = '';
     _preferences = await SharedPreferences.getInstance();
 
     slideDialog.showSlideDialog(
@@ -233,8 +280,10 @@ class _PageExploreState extends State<PageExplore> {
                       });
                       radius.add(value);
                     });
-                    await _preferences.setDouble(_keySlider, _value);
+                    // await _preferences.setString(_keyLabel, _label);
+                    // await _preferences.setDouble(_keySlider, _value);
                     _preferences.setDouble(_keySlider, _value);
+                    _preferences.setString(_keyLabel, _label);
                   }),
             );
           }),
@@ -278,16 +327,22 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _addMarker(double lat, double lng, String name, adresse, imgUrl,
-      description, List horaires, bool livraison, clickAndCollect) {
+  void _addMarker(
+    double lat,
+    double lng,
+    String name,
+  ) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
         markerId: id,
         position: LatLng(lat, lng),
         icon: mapMaker,
         onTap: () {
-          _magasinAffichage(lat, lng, name, adresse, imgUrl, description,
-              horaires, livraison, clickAndCollect);
+          _magasinAffichage(
+            lat,
+            lng,
+            name,
+          );
         });
     setState(() {
       markers[id] = _marker;
@@ -303,14 +358,13 @@ class _PageExploreState extends State<PageExplore> {
     documentList.forEach((DocumentSnapshot document) {
       final GeoPoint point = document.get('position')['geopoint'];
       final name = document.get('name');
-      final clickAndCollect = document.get('ClickAndCollect');
-      final adresse = document.get('adresse');
-      final description = document.get('description');
-      final horaires = document.get('horaires');
-      final livraison = document.get('livraison');
-      final imgUrl = document.get('imgUrl');
-      _addMarker(point.latitude, point.longitude, name, adresse, imgUrl,
-          description, horaires, livraison, clickAndCollect);
+      // final clickAndCollect = document.get('ClickAndCollect');
+      // final adresse = document.get('adresse');
+      // final description = document.get('description');
+
+      // final livraison = document.get('livraison');
+      // final photoUrl = document.get('photoUrl');
+      _addMarker(point.latitude, point.longitude, name);
     });
   }
 
@@ -371,10 +425,7 @@ class _PageExploreState extends State<PageExplore> {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
-                          child: ColorLoader3(
-                            radius: 15.0,
-                            dotRadius: 6.0,
-                          ),
+                          child: CupertinoActivityIndicator(),
                         );
                         //METTRE UN SHIMMER
                       }
@@ -420,13 +471,12 @@ class _PageExploreState extends State<PageExplore> {
                                             geoPoint.latitude,
                                             geoPoint.longitude,
                                             snapshot.data[index]['name'],
-                                            snapshot.data[index]['adresse'],
-                                            snapshot.data[index]['imgUrl'],
-                                            snapshot.data[index]['description'],
-                                            snapshot.data[index]['horaires'],
-                                            snapshot.data[index]['livraison'],
-                                            snapshot.data[index]
-                                                ['ClickAndCollect'],
+                                            // snapshot.data[index]['adresse'],
+                                            // snapshot.data[index]['imgUrl'],
+                                            // snapshot.data[index]['description'],
+                                            // snapshot.data[index]['livraison'],
+                                            // snapshot.data[index]
+                                            //     ['ClickAndCollect'],
                                           );
                                         },
                                         child: Stack(
@@ -555,7 +605,36 @@ class _PageExploreState extends State<PageExplore> {
               ],
             ),
           )
-        : Center(child: CircularProgressIndicator());
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                  child: Platform.isIOS
+                      ? CupertinoActivityIndicator(
+                          radius: 20,
+                        )
+                      : CircularProgressIndicator()),
+              SizedBox(height: 10),
+              Text("Chargement"),
+              localisation == false
+                  ? Column(
+                      children: [
+                        Text("Localisation desactivée"),
+                        Platform.isIOS
+                            ? CupertinoButton(
+                                child: Text('Activer la localisation'),
+                                onPressed: () {
+                                  AppSettings.openLocationSettings();
+                                })
+                            : TextButton(
+                                child: Text("Activer la localisation"),
+                                onPressed: () => AppSettings.openAppSettings(),
+                              ),
+                      ],
+                    )
+                  : Text("Locatlisation activé"),
+            ],
+          );
   }
 }
 

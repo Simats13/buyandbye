@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "CONNEXION UTILISATEUR",
+              "CONNEXION",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(

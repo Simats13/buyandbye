@@ -21,7 +21,13 @@ import '../Messagerie/subWidgets/local_notification_view.dart';
 class ChatRoom extends StatefulWidget {
   ChatRoom(this.myID, this.myName, this.selectedUserToken, this.selectedUserID,
       this.chatID, this.selectedUserName, this.selectedUserThumbnail);
-  final String myID, myName, selectedUserToken, selectedUserID, chatID, selectedUserName, selectedUserThumbnail;
+  final String myID,
+      myName,
+      selectedUserToken,
+      selectedUserID,
+      chatID,
+      selectedUserName,
+      selectedUserThumbnail;
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -243,7 +249,7 @@ class _ChatRoomState extends State<ChatRoom>
           .sendImageToUserInChatRoom(croppedFile, widget.chatID);
       _handleSubmitted(takeImageURL);
     } catch (e) {
-      showAlertDialog(context, 'Error add user image to storage');
+      showAlertDialog(context, "Impossible d'envoyer l'image");
     }
   }
 

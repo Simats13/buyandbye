@@ -85,6 +85,7 @@ dependencies:
   flutter_native_splash:
   flutter_launcher_name:
   wave: ^0.2.0
+  app_settings:
 
 
 

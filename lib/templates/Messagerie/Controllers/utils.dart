@@ -21,26 +21,26 @@ String readTimestamp(int timestamp) {
       diff.inMinutes > 0 && diff.inHours == 0 ||
       diff.inHours > 0 && diff.inDays == 0) {
     if (diff.inHours > 0) {
-      time = diff.inHours.toString() + 'h ago';
+      time = 'Il y a ' + diff.inHours.toString() + ' h';
     } else if (diff.inMinutes > 0) {
-      time = diff.inMinutes.toString() + 'm ago';
+      time = 'Il y a ' + diff.inMinutes.toString() + ' min';
     } else if (diff.inSeconds > 0) {
-      time = 'now';
+      time = 'Maintenant';
     } else if (diff.inMilliseconds > 0) {
-      time = 'now';
+      time = 'Maintenant';
     } else if (diff.inMicroseconds > 0) {
-      time = 'now';
+      time = 'Maintenant';
     } else {
-      time = 'now';
+      time = 'Maintenant';
     }
   } else if (diff.inDays > 0 && diff.inDays < 7) {
-    time = diff.inDays.toString() + 'j ago';
+    time = 'Il y a ' + diff.inDays.toString() + ' jours';
   } else if (diff.inDays > 6) {
-    time = (diff.inDays / 7).floor().toString() + 's ago';
+    time = 'Il y a ' + (diff.inDays / 7).floor().toString() + ' sec';
   } else if (diff.inDays > 29) {
-    time = (diff.inDays / 30).floor().toString() + 'm ago';
+    time = 'Il y a ' + (diff.inDays / 30).floor().toString() + ' min';
   } else if (diff.inDays > 365) {
-    time = '${date.month}-${date.day}-${date.year}';
+    time = '${date.day}-${date.month}-${date.year}';
   }
   return time;
 }

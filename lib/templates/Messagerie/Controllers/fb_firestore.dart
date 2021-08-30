@@ -138,6 +138,7 @@ class FBCloudStore {
         .doc(chatID)
         .update({
       'lastMessage': lastMessage,
+      'timestamp': DateTime.now().millisecondsSinceEpoch
     });
     await FirebaseFirestore.instance
         .collection('users')
