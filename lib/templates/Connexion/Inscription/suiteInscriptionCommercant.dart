@@ -47,6 +47,7 @@ class _SuiteInscriptionCommercantState
                           return 'Rentrez une adresse mail valide';
                         }
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                           labelText: 'Votre adresse email',
                           icon: Icon(
@@ -62,6 +63,7 @@ class _SuiteInscriptionCommercantState
                           return 'Rentrez un mot de passe \ncompris entre 6 et 20 carctères';
                         }
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                         hintText: "Votre mot de passe",
                         icon: Icon(
@@ -83,6 +85,7 @@ class _SuiteInscriptionCommercantState
                           return 'Les mots de passe ne sont pas les mêmes';
                         }
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                         hintText: "Répéter le mot de passe",
                         icon: Icon(
@@ -107,7 +110,8 @@ class _SuiteInscriptionCommercantState
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
                   try {
-                    AuthMethods().signUpWithMail(_email, _password, "fname", "lname");
+                    AuthMethods()
+                        .signUpWithMail(_email, _password, "fname", "lname");
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

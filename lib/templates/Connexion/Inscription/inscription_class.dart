@@ -58,6 +58,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         return 'Veuillez rentrer votre nom';
                       }
                     },
+                    autocorrect: false,
                     decoration: InputDecoration(
                         labelText: 'Votre nom',
                         icon: Icon(
@@ -74,6 +75,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         return 'Veuillez rentrer votre prénom';
                       }
                     },
+                    autocorrect: false,
                     decoration: InputDecoration(
                         labelText: 'Votre prénom',
                         icon: Icon(
@@ -90,6 +92,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         return 'Veuillez rentrer une adresse mail';
                       }
                     },
+                    autocorrect: false,
                     decoration: InputDecoration(
                         labelText: 'Votre adresse email',
                         icon: Text(
@@ -109,6 +112,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         return 'Veuillez rentrer un mot de passe de plus de 6 caractères';
                       }
                     },
+                    autocorrect: false,
                     decoration: InputDecoration(
                       hintText: "Votre mot de passe",
                       icon: Icon(

@@ -57,6 +57,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         }
                         return null;
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                           labelText: 'Nom de votre enseigne',
                           icon: Icon(
@@ -72,6 +73,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         }
                         return null;
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                           labelText: 'Votre adresse',
                           icon: Icon(
@@ -87,6 +89,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         }
                         return null;
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                           labelText: 'Votre adresse email',
                           icon: Icon(
@@ -102,6 +105,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         }
                         return null;
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                         hintText: "Votre mot de passe",
                         icon: Icon(
@@ -124,6 +128,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                     //     // }
                     //     // //return null;
                     //   },
+                    //   autocorrect: false,
                     //   decoration: InputDecoration(
                     //     hintText: "Répéter le mot de passe",
                     //     icon: Icon(

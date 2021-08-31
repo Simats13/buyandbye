@@ -332,11 +332,11 @@ class _ModifyProfileState extends State<ModifyProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Appelle les fonctions d'affichage des champs de texte
-        buildTextField("Nom", widget.myLastName, lnameField),
-        buildTextField("Prénom", widget.myFirstName, fnameField),
-        buildTextField("E-mail", widget.myEmail, emailField),
-        buildTextField("Téléphone", widget.myPhone, phoneField),
-        buildTextField("Mot de Passe", "********", passwordField),
+        buildTextField("Nom", widget.myLastName, lnameField, true),
+        buildTextField("Prénom", widget.myFirstName, fnameField, true),
+        buildTextField("E-mail", widget.myEmail, emailField, false),
+        buildTextField("Téléphone", widget.myPhone, phoneField, false),
+        buildTextField("Mot de Passe", "********", passwordField, false),
         // Affichage des boutons d'annulation et de confirmation
         Center(
           child: Row(
@@ -396,11 +396,16 @@ class _ModifyProfileState extends State<ModifyProfile> {
   }
 
   // Fonction d'affichage des champs de texte
-  Widget buildTextField(String labelText, String placeholder, fieldController) {
+  Widget buildTextField(String labelText, String placeholder, fieldController,
+      bool capitalization) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: TextField(
         controller: fieldController,
+        autocorrect: false,
+        textCapitalization: capitalization
+            ? TextCapitalization.sentences
+            : TextCapitalization.none,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,
