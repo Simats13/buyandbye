@@ -107,7 +107,7 @@ class _SuiteInscriptionCommercantState
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
                   try {
-                    AuthMethods().signUpWithMail(_email, _password);
+                    AuthMethods().signUpWithMail(_email, _password, "fname", "lname");
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

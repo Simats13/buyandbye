@@ -54,7 +54,6 @@ class AuthMethods {
         Map<String, dynamic> userInfoMap = {
           "id": userDetails.uid,
           "email": userDetails.email,
-          "username": userDetails.email.replaceAll("@gmail.com", ""),
           "fname": userDetails.displayName.split(" ")[0],
           "lname": userDetails.displayName.split(" ")[1],
           "imgUrl": userDetails.photoURL,
@@ -62,7 +61,7 @@ class AuthMethods {
           "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
               vapidKey:
                   "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-          "phone": "01 02 03 04 05"
+          "phone": ""
         };
         DatabaseMethods()
             .addUserInfoToDB(userDetails.uid, userInfoMap)
@@ -118,7 +117,8 @@ class AuthMethods {
     }
   }
 
-  Future<void> signUpWithMail(String _email, String _password) async {
+  Future<void> signUpWithMail(
+      String _email, String _password, String _fname, String _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
     final User user = await AuthMethods().getCurrentUser();
@@ -126,10 +126,11 @@ class AuthMethods {
     Map<String, dynamic> userInfoMap = {
       "id": user.uid,
       "email": _email,
-      "username": _email,
-      "name": _email,
+      "fname": _fname,
+      "lname": _lname,
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "admin": false,
+      "phone": "",
       'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
           vapidKey:
               "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
@@ -146,7 +147,7 @@ class AuthMethods {
     assert(user != null);
     assert(await user.getIdToken() != null);
     print(user.displayName);
-    print('Connexion réussi : $user');
+    print('Connexion réussie : $user');
     return user;
   }
 
@@ -160,12 +161,12 @@ class AuthMethods {
       "ClickAndCollect": true,
       "email": _email,
       "name": _nomSeller,
-      "username": _nomSeller,
       "livraison": false,
       "description": "description",
       "adresse": _adresseSeller,
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "admin": true,
+      "phone": "",
       'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
           vapidKey:
               "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
@@ -178,11 +179,11 @@ class AuthMethods {
       "id": userid,
       "email": _email,
       "name": _nomSeller,
-      "username": _nomSeller,
       "adresse": _adresseSeller,
       "imgUrl":
           "https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png",
       "admin": true,
+      "phone": "",
       'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
           vapidKey:
               "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
