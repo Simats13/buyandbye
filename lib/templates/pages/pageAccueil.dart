@@ -90,20 +90,31 @@ class _PageAccueilState extends State<PageAccueil> {
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      locationEnabled = false;
+      setState(() {
+        locationEnabled = false;
+      });
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        locationEnabled = false;
+        setState(() {
+          locationEnabled = false;
+        });
         return Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      locationEnabled = false;
+      setState(() {
+        locationEnabled = false;
+      });
+
       // Permissions are denied forever, handle appropriately.
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
+
+    setState(() {
+      locationEnabled = true;
+    });
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
@@ -113,29 +124,38 @@ class _PageAccueilState extends State<PageAccueil> {
   userID() async {
     final User user = await AuthMethods().getCurrentUser();
 
-    latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
-    longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
-    _currentAddressLocation =
-        await SharedPreferenceHelper().getUserAddress() ?? "Arènes de Nîmes";
-    _city = await SharedPreferenceHelper().getUserCity() ?? "Nîmes";
+    if (locationEnabled == false) {
+      latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
+      longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
+      _currentAddressLocation =
+          await SharedPreferenceHelper().getUserAddress() ?? "Arènes de Nîmes";
+
+      _city = await SharedPreferenceHelper().getUserCity() ?? "Nîmes";
+    } else {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      final coordinates =
+          new geocode.Coordinates(position.latitude, position.longitude);
+      var addresses = await geocode.Geocoder.local
+          .findAddressesFromCoordinates(coordinates);
+      var first = addresses.first;
+      latitude =
+          await SharedPreferenceHelper().getUserLatitude() ?? position.latitude;
+      longitude = await SharedPreferenceHelper().getUserLongitude() ??
+          position.longitude;
+
+      _currentAddress = "${first.featureName}, ${first.locality}";
+      _currentAddressLocation =
+          await SharedPreferenceHelper().getUserAddress() ??
+              "${first.featureName}, ${first.locality}";
+
+      _city =
+          await SharedPreferenceHelper().getUserCity() ?? "${first.locality}";
+    }
 
     userid = user.uid;
 
-    // Position position = await Geolocator.getCurrentPosition(
-    //     desiredAccuracy: LocationAccuracy.high);
-    final coordinates = new geocode.Coordinates(latitude, longitude);
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
-    var first = addresses.first;
     setState(() {
-      //_currentAddress = "${first.featureName}, ${first.locality}";
-      if (latitude == 0 && longitude == 0) {
-        latitude = position.latitude;
-        longitude = position.longitude;
-        _currentAddress = "${first.featureName}, ${first.locality}";
-        _currentAddressLocation = "${first.featureName}, ${first.locality}";
-        _city = first.locality;
-      }
       geo = Geoflutterfire();
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
@@ -647,7 +667,7 @@ class _PageAccueilState extends State<PageAccueil> {
                       ),
                     ],
                   ),
-                  locationEnabled == false
+                  locationEnabled
                       ? Row(
                           children: [
                             Padding(
@@ -752,7 +772,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             children: [
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
-                                              Text(_currentAddress)
+                                              Text(_currentAddressLocation)
                                             ]),
                                       ],
                                     ),
@@ -828,7 +848,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             ));
                                   },
                                   child: Container(
-                                    height: 50,
+                                    height: 100,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -845,7 +865,14 @@ class _PageAccueilState extends State<PageAccueil> {
                                             children: [
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
-                                              Text(_currentAddress)
+                                              Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width -
+                                                    100,
+                                                child: Text(
+                                                    "Vous devez activer la localisation sur votre téléphone"),
+                                              )
                                             ]),
                                       ],
                                     ),
