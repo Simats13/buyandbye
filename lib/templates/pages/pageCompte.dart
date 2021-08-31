@@ -307,7 +307,7 @@ class _PageCompteState extends State<PageCompte> {
                             } else {
                               return showCupertinoDialog(
                                   context: context,
-                                  builder: (_) => CupertinoAlertDialog(
+                                  builder: (context) => CupertinoAlertDialog(
                                         title: Text("Déconnexion"),
                                         content: Text(
                                             "Souhaitez-vous réellement vous déconnecter ?"),
@@ -316,7 +316,7 @@ class _PageCompteState extends State<PageCompte> {
                                           CupertinoButton(
                                               child: Text('Annuler'),
                                               onPressed: () {
-                                                Navigator.of(context).pop(false);
+                                                Navigator.of(context).pop();
                                               }),
                                           CupertinoButton(
                                             child: Text('Déconnexion',
