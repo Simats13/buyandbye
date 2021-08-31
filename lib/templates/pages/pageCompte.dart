@@ -316,7 +316,7 @@ class _PageCompteState extends State<PageCompte> {
                                           CupertinoButton(
                                               child: Text('Annuler'),
                                               onPressed: () {
-                                                Navigator.of(context).pop(false);
+                                                Navigator.of(context).pop();
                                               }),
                                           CupertinoButton(
                                             child: Text('Déconnexion',
