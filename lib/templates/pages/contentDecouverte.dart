@@ -74,7 +74,7 @@ class _ContentDecouverteState extends State<ContentDecouverte> {
                       press: () {
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
-                          return PageBievenue();
+                          return PageBienvenue();
                         }));
                       },
                     ),

@@ -276,9 +276,10 @@ class _PageCompteState extends State<PageCompte> {
                                       "Souhaitez-vous réellement vous déconnecter ?"),
                                   actions: <Widget>[
                                     TextButton(
-                                      child: Text("Annuler"),
+                                      child: Text("Annuler",
+                                          style: TextStyle(color: Colors.red)),
                                       onPressed: () =>
-                                          Navigator.of(context).pop(false),
+                                          Navigator.of(context).pop(),
                                     ),
                                     TextButton(
                                       child: Text("Déconnexion"),
@@ -295,7 +296,7 @@ class _PageCompteState extends State<PageCompte> {
                                                 MaterialPageRoute(
                                                     builder:
                                                         (context) =>
-                                                            PageBievenue()),
+                                                            PageBienvenue()),
                                                 (Route<dynamic> route) =>
                                                     false);
                                       },
@@ -318,7 +319,9 @@ class _PageCompteState extends State<PageCompte> {
                                                 Navigator.of(context).pop();
                                               }),
                                           CupertinoButton(
-                                            child: Text('Déconnexion'),
+                                            child: Text('Déconnexion',
+                                                style: TextStyle(
+                                                    color: Colors.red)),
                                             onPressed: () async {
                                               SharedPreferences preferences =
                                                   await SharedPreferences
@@ -331,7 +334,7 @@ class _PageCompteState extends State<PageCompte> {
                                                   .pushAndRemoveUntil(
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              PageBievenue()),
+                                                              PageBienvenue()),
                                                       (Route<dynamic> route) =>
                                                           false);
                                             },
@@ -339,43 +342,6 @@ class _PageCompteState extends State<PageCompte> {
                                         ],
                                       ));
                             }
-
-                            // todo : showDialog for ios
-                            return showCupertinoDialog(
-                                context: context,
-                                builder: (_) => CupertinoAlertDialog(
-                                      title: Text("Deconnexion"),
-                                      content: Text(
-                                          "Souhaitez-vous réellement vous deconnecter ? "),
-                                      actions: [
-                                        // Close the dialog
-                                        // You can use the CupertinoDialogAction widget instead
-                                        CupertinoButton(
-                                            child: Text('Annuler'),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            }),
-                                        CupertinoButton(
-                                          child: Text('Deconnexion'),
-                                          onPressed: () async {
-                                            SharedPreferences preferences =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            await preferences.clear();
-                                            AuthMethods().signOut().then((s) {
-                                              AuthMethods.toogleNavBar();
-                                            });
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            PageBievenue()),
-                                                    (Route<dynamic> route) =>
-                                                        false);
-                                          },
-                                        )
-                                      ],
-                                    ));
                           },
                           child: Row(
                             children: <Widget>[

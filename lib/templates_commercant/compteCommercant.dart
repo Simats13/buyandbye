@@ -197,7 +197,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 AuthMethods.toogleNavBar();
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
-                                        builder: (context) => PageBievenue()),
+                                        builder: (context) => PageBienvenue()),
                                     (Route<dynamic> route) => false);
                               });
                             },
@@ -403,7 +403,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                   AuthMethods.toogleNavBar();
                                   Navigator.of(context).pushAndRemoveUntil(
                                       MaterialPageRoute(
-                                          builder: (context) => PageBievenue()),
+                                          builder: (context) =>
+                                              PageBienvenue()),
                                       (Route<dynamic> route) => false);
                                 });
                               },
