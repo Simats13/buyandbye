@@ -292,7 +292,7 @@ class _PageCompteState extends State<PageCompte> {
                                                 .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PageBievenue()),
+                                                            PageBienvenue()),
                                                     (Route<dynamic> route) =>
                                                         false);
                                           },
@@ -331,7 +331,7 @@ class _PageCompteState extends State<PageCompte> {
                                                       .pushAndRemoveUntil(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PageBievenue()),
+                                                                  PageBienvenue()),
                                                           (Route<dynamic>
                                                                   route) =>
                                                               false);

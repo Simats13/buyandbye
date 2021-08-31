@@ -1,6 +1,6 @@
+import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
-import 'package:buyandbye/templates/Pages/pageBienvenue.dart';
 import 'package:buyandbye/templates/Widgets/splash_decouverte.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/Widgets/size_config.dart';
@@ -74,7 +74,7 @@ class _ContentDecouverteState extends State<ContentDecouverte> {
                       press: () {
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
-                          return PageBievenue();
+                          return PageBienvenue();
                         }));
                       },
                     ),
