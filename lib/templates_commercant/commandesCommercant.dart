@@ -22,9 +22,12 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
 
   // Première classe qui affiche les 3 boutons de statut des commandes
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: BuyandByeAppTheme.black_electrik,
           title: Text("Commandes"),
+          centerTitle: true,
           elevation: 1,
         ),
         body: FutureBuilder(
@@ -33,71 +36,113 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
               if (snapshot.hasData) {
                 return SingleChildScrollView(
                   child: Column(children: [
-                    SizedBox(height: 30),
-                    // Affichage des 3 boutons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        // En attente
-                        Container(
-                            height: 30,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
+                    Container(
+                      height: size.height * 0.08,
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: size.height * 0.08,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: clickedCategorie == 0
-                                  ? BuyandByeAppTheme.orange
-                                  : Colors.transparent,
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  clickedCategorie = 0;
-                                });
-                              },
-                              child: Text("En attente"),
-                            )),
-                        // En cours
-                        Container(
-                            height: 30,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: clickedCategorie == 1
-                                    ? BuyandByeAppTheme.orange
-                                    : Colors.transparent),
-                            child: MaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  clickedCategorie = 1;
-                                });
-                              },
-                              child: Text("En cours"),
-                            )),
-                        // Terminées
-                        Container(
-                            height: 30,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: clickedCategorie == 2
-                                  ? BuyandByeAppTheme.orange
-                                  : Colors.transparent,
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  clickedCategorie = 2;
-                                });
-                              },
-                              child: Text("Terminées"),
-                            )),
-                      ],
+                                color: BuyandByeAppTheme.black_electrik,
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(36),
+                                  bottomRight: Radius.circular(36),
+                                )),
+                          ),
+                          SizedBox(height: 30),
+                          // Affichage des 3 boutons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              // En attente
+                              Container(
+                                  height: 30,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        color: BuyandByeAppTheme.orange,
+                                        width: 2.0),
+                                    color: clickedCategorie == 0
+                                        ? BuyandByeAppTheme.orange
+                                        : Colors.transparent,
+                                  ),
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        clickedCategorie = 0;
+                                      });
+                                    },
+                                    child: Text(
+                                      "En attente",
+                                      style: TextStyle(
+                                        color: clickedCategorie == 0
+                                            ? BuyandByeAppTheme.black_electrik
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  )),
+                              // En cours
+                              Container(
+                                  height: 30,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                          color: BuyandByeAppTheme.orange,
+                                          width: 2.0),
+                                      color: clickedCategorie == 1
+                                          ? BuyandByeAppTheme.orange
+                                          : Colors.transparent),
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        clickedCategorie = 1;
+                                      });
+                                    },
+                                    child: Text("En cours",
+                                        style: TextStyle(
+                                          color: clickedCategorie == 1
+                                              ? BuyandByeAppTheme.black_electrik
+                                              : Colors.white,
+                                        )),
+                                  )),
+                              // Terminées
+                              Container(
+                                  height: 30,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        color: BuyandByeAppTheme.orange,
+                                        width: 2.0),
+                                    color: clickedCategorie == 2
+                                        ? BuyandByeAppTheme.orange
+                                        : Colors.transparent,
+                                  ),
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        clickedCategorie = 2;
+                                      });
+                                    },
+                                    child: Text("Terminées",
+                                        style: TextStyle(
+                                          color: clickedCategorie == 2
+                                              ? BuyandByeAppTheme.black_electrik
+                                              : Colors.white,
+                                        )),
+                                  )),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 30),
                     Stack(
@@ -208,7 +253,7 @@ class _CommandState extends State<Command> {
                           ),
                         );
                       },
-                      child: Stack(
+                      child: Column(
                         children: [
                           // Container coloré pour masquer le message "Aucune commande"
                           Container(
@@ -220,42 +265,52 @@ class _CommandState extends State<Command> {
                                     : Color.fromRGBO(48, 48, 48, 1)),
                           ),
                           // Affiche un résumé de chaque commande
-                          Column(
-                            children: [
-                              Divider(thickness: 0.5, color: Colors.black),
-                              // Affiche en ligne le numéro de commande et le prix total
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text("Commande n°" + reference.toString()),
-                                  SizedBox(width: 40),
-                                  Text(prix.toStringAsFixed(2) + "€"),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                              // Affiche en ligne la date de la commande et le nombre d'articles différents
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(Icons.arrow_forward_ios_rounded),
-                                  SizedBox(width: 10)
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text(date),
-                                  SizedBox(width: 40),
-                                  nbArticles <= 1
-                                      ? Text(nbArticles.toString() + " article")
-                                      : Text(
-                                          nbArticles.toString() + " articles")
-                                ],
-                              ),
-                            ],
+                          Container(
+                            width: 380,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                  color: BuyandByeAppTheme.orange, width: 2.0),
+                            ),
+                            child: Column(
+                              children: [
+                                SizedBox(height: 10),
+                                // Affiche en ligne le numéro de commande et le prix total
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 30),
+                                    Text("Commande n°" + reference.toString(), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                                    SizedBox(width: 100),
+                                    Text(prix.toStringAsFixed(2) + "€", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                                  ],
+                                ),
+                                // Affiche en ligne la date de la commande et le nombre d'articles différents
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(Icons.arrow_forward_ios_rounded),
+                                    SizedBox(width: 20)
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 30),
+                                    Text(date, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                                    SizedBox(width: 100),
+                                    nbArticles <= 1
+                                        ? Text(
+                                            nbArticles.toString() + " article", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))
+                                        : Text(
+                                            nbArticles.toString() + " articles", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
