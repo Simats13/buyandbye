@@ -22,7 +22,8 @@ class BodyInscription extends StatefulWidget {
 
 class _BodyInscriptionState extends State<BodyInscription> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _email, _password;
+  String _email, _password, _fname, _lname;
+  bool obscureText = true;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -49,6 +50,39 @@ class _BodyInscriptionState extends State<BodyInscription> {
               key: _formKey,
               child: Column(
                 children: [
+                  // Champ NOM
+                  TextFormField(
+                    // ignore: missing_return
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Veuillez rentrer votre nom';
+                      }
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Votre nom',
+                        icon: Icon(
+                          Icons.person,
+                          color: BuyandByeAppTheme.kLightPrimaryColor,
+                        )),
+                    onSaved: (input) => _lname = input,
+                  ),
+                  // Champ PRENOM
+                  TextFormField(
+                    // ignore: missing_return
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Veuillez rentrer votre prénom';
+                      }
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Votre prénom',
+                        icon: Icon(
+                          Icons.person,
+                          color: BuyandByeAppTheme.kLightPrimaryColor,
+                        )),
+                    onSaved: (input) => _fname = input,
+                  ),
+                  // Champ EMAIL
                   TextFormField(
                     // ignore: missing_return
                     validator: (input) {
@@ -58,12 +92,16 @@ class _BodyInscriptionState extends State<BodyInscription> {
                     },
                     decoration: InputDecoration(
                         labelText: 'Votre adresse email',
-                        icon: Icon(
-                          Icons.person,
-                          color: BuyandByeAppTheme.kLightPrimaryColor,
+                        icon: Text(
+                          "@",
+                          style: TextStyle(
+                              color: BuyandByeAppTheme.kLightPrimaryColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700),
                         )),
                     onSaved: (input) => _email = input,
                   ),
+                  // Champ MOT DE PASSE
                   TextFormField(
                     // ignore: missing_return
                     validator: (input) {
@@ -77,14 +115,19 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         Icons.lock,
                         color: BuyandByeAppTheme.kLightPrimaryColor,
                       ),
-                      suffixIcon: Icon(
-                        Icons.visibility,
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.visibility),
                         color: BuyandByeAppTheme.kLightPrimaryColor,
+                        onPressed: () {
+                          setState(() {
+                            obscureText = !obscureText;
+                          });
+                        },
                       ),
                       border: InputBorder.none,
                     ),
                     onSaved: (input) => _password = input,
-                    obscureText: true,
+                    obscureText: obscureText,
                   ),
                 ],
               ),
@@ -95,7 +138,8 @@ class _BodyInscriptionState extends State<BodyInscription> {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
                 try {
-                  AuthMethods().signUpWithMail(_email, _password);
+                  AuthMethods()
+                      .signUpWithMail(_email, _password, _fname, _lname);
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => Accueil()));
                 } catch (e) {

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -68,26 +67,32 @@ class _PageCompteState extends State<PageCompte> {
             ),
           ),
           SizedBox(height: 20),
-          Text(
-            myName ?? "",
-            style: kTitleTextStyle,
-          ),
-          SizedBox(height: 5),
-          Text(
-            myEmail ?? "",
-            style: kCaption2TextStyle,
-          ),
+          myName == null || myEmail == null
+              ? CircularProgressIndicator()
+              : Column(
+                  children: [
+                    Text(
+                      myName,
+                      style: kTitleTextStyle,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      myEmail,
+                      style: kCaption2TextStyle,
+                    ),
+                  ],
+                ),
           SizedBox(height: 20),
           Container(
             height: 40,
             width: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: BuyandByeAppTheme.orange,
+              border: Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
             ),
             child: Center(
               child: Text(
-                'Utilisateur',
+                'Compte client',
                 style: kButtonTextStyle,
               ),
             ),
@@ -115,7 +120,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () {
@@ -161,7 +167,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () {
@@ -207,7 +214,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () {
@@ -241,6 +249,7 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                       ),
                       SizedBox(height: 10),
+                      // Bouton de déconnexion
                       Container(
                         height: 55,
                         margin: EdgeInsets.symmetric(
@@ -253,7 +262,8 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: BuyandByeAppTheme.orange,
+                          border: Border.all(
+                              color: BuyandByeAppTheme.orange, width: 2.0),
                         ),
                         child: MaterialButton(
                           onPressed: () async {
@@ -263,7 +273,7 @@ class _PageCompteState extends State<PageCompte> {
                                 builder: (context) => AlertDialog(
                                   title: Text("Deconnexion"),
                                   content: Text(
-                                      "Souhaitez-vous réellement vous deconnecter ?"),
+                                      "Souhaitez-vous réellement vous déconnecter ?"),
                                   actions: <Widget>[
                                     TextButton(
                                       child: Text("Annuler"),
@@ -271,7 +281,7 @@ class _PageCompteState extends State<PageCompte> {
                                           Navigator.of(context).pop(false),
                                     ),
                                     TextButton(
-                                      child: Text("Deconnexion"),
+                                      child: Text("Déconnexion"),
                                       onPressed: () async {
                                         SharedPreferences preferences =
                                             await SharedPreferences
@@ -280,16 +290,54 @@ class _PageCompteState extends State<PageCompte> {
                                         AuthMethods().signOut().then((s) {
                                           AuthMethods.toogleNavBar();
                                         });
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PageBievenue()));
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder:
+                                                        (context) =>
+                                                            PageBievenue()),
+                                                (Route<dynamic> route) =>
+                                                    false);
                                       },
                                     ),
                                   ],
                                 ),
                               );
+                            } else {
+                              return showCupertinoDialog(
+                                  context: context,
+                                  builder: (_) => CupertinoAlertDialog(
+                                        title: Text("Déconnexion"),
+                                        content: Text(
+                                            "Souhaitez-vous réellement vous déconnecter ?"),
+                                        actions: [
+                                          // Close the dialog
+                                          CupertinoButton(
+                                              child: Text('Annuler'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }),
+                                          CupertinoButton(
+                                            child: Text('Déconnexion'),
+                                            onPressed: () async {
+                                              SharedPreferences preferences =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              await preferences.clear();
+                                              AuthMethods().signOut().then((s) {
+                                                AuthMethods.toogleNavBar();
+                                              });
+                                              Navigator.of(context)
+                                                  .pushAndRemoveUntil(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              PageBievenue()),
+                                                      (Route<dynamic> route) =>
+                                                          false);
+                                            },
+                                          )
+                                        ],
+                                      ));
                             }
 
                             // todo : showDialog for ios
@@ -298,7 +346,7 @@ class _PageCompteState extends State<PageCompte> {
                                 builder: (_) => CupertinoAlertDialog(
                                       title: Text("Deconnexion"),
                                       content: Text(
-                                          "Souhaitez-vous réellement vous deconnecter ?"),
+                                          "Souhaitez-vous réellement vous deconnecter ? "),
                                       actions: [
                                         // Close the dialog
                                         // You can use the CupertinoDialogAction widget instead
@@ -317,11 +365,13 @@ class _PageCompteState extends State<PageCompte> {
                                             AuthMethods().signOut().then((s) {
                                               AuthMethods.toogleNavBar();
                                             });
-                                            Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PageBievenue()));
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PageBievenue()),
+                                                    (Route<dynamic> route) =>
+                                                        false);
                                           },
                                         )
                                       ],

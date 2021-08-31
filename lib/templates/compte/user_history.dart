@@ -33,7 +33,6 @@ class _UserHistoryState extends State<UserHistory> {
     return FutureBuilder(
         future: DatabaseMethods().getPurchase(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: BuyandByeAppTheme.black_electrik,
@@ -67,7 +66,8 @@ class _UserHistoryState extends State<UserHistory> {
                     SizedBox(
                       height: 30,
                     ),
-                    ListView.builder(
+                    snapshot.hasData
+                    ? ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: snapshot.data.docs.length,
@@ -77,14 +77,12 @@ class _UserHistoryState extends State<UserHistory> {
                         // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
                         return UserCommand(user0, user1);
                       },
-                    ),
+                    )
+                    : CircularProgressIndicator()
                   ],
                 ),
               ),
             );
-          } else {
-            return CircularProgressIndicator();
-          }
         });
   }
 }

@@ -41,6 +41,7 @@ class _SuiteInscriptionCommercantState
                 child: Column(
                   children: [
                     TextFormField(
+                      // ignore: missing_return
                       validator: (input) {
                         if (input.isEmpty) {
                           return 'Rentrez une adresse mail valide';
@@ -55,6 +56,7 @@ class _SuiteInscriptionCommercantState
                       onSaved: (input) => _email = input,
                     ),
                     TextFormField(
+                      // ignore: missing_return
                       validator: (input) {
                         if (input.length < 6 && input.length > 20) {
                           return 'Rentrez un mot de passe \ncompris entre 6 et 20 carctères';
@@ -75,6 +77,7 @@ class _SuiteInscriptionCommercantState
                       obscureText: true,
                     ),
                     TextFormField(
+                      // ignore: missing_return
                       validator: (input) {
                         if (input != _password) {
                           return 'Les mots de passe ne sont pas les mêmes';
@@ -104,7 +107,7 @@ class _SuiteInscriptionCommercantState
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
                   try {
-                    AuthMethods().signUpWithMail(_email, _password);
+                    AuthMethods().signUpWithMail(_email, _password, "fname", "lname");
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

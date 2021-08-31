@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class BuyandByeAppTheme {
   BuyandByeAppTheme._();
   static const Color orangeFonce = Color(0xFFF54A19);
+  static const Color orangeMiFonce = Color(0xFFff6600);
   static const Color orange = Color(0xFFf4a261);
   static const Color orangeClair = Color(0xFFFFAA66);
   static const Color orangeTresClair = Color(0xFFFAB29E);
@@ -20,6 +21,7 @@ List<String> categorieNames = [
   'Électroménager',
   'Jeux-Vidéos',
   'High-tech',
+  'Alimentation',
   'Vêtements',
   'Livres',
   'Films & Séries',

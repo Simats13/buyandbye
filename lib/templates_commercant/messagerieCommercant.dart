@@ -112,10 +112,10 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername, nameOther;
+  final String lastMessage, chatRoomId, myUsername, clientID;
   final int index;
   ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
-      this.nameOther, this.index);
+      this.clientID, this.index);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
@@ -133,7 +133,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    username = widget.nameOther;
+    username = widget.clientID;
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
     name = "${querySnapshot.docs[0]["name"]}";
     idTest = "${querySnapshot.docs[0]["id"]}";
@@ -274,7 +274,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 //                     token,
 //                     idTest, // TOKEN DU CORRESPONDANT
 //                     widget.chatRoomId, //ID DE LA CONV
-//                     widget.nameOther, // NOM DU CORRESPONDANT
+//                     widget.clientID, // NOM DU CORRESPONDANT
 //                     profilePicUrl,
 //                   )));
 //     } catch (e) {
