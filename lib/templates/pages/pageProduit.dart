@@ -18,7 +18,6 @@ class PageProduit extends StatefulWidget {
       this.livraison,
       this.idCommercant,
       this.idProduit
-      //Sthis.comments
       })
       : super(key: key);
 
