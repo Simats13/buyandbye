@@ -111,4 +111,9 @@ class FBStorage {
       "images": FieldValue.arrayRemove([imageUrl])
     });
   }
+  
+  Future deleteProductImageFromStorage(url) {
+    return FirebaseStorage.instance.refFromURL(url).delete();
+  }
 }
+

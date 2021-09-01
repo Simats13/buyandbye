@@ -169,11 +169,36 @@ class _DetailProduitState extends State<DetailProduit> {
                                   IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                      FBStorage.instanace.deleteProductImage(
-                                          widget.uid,
-                                          widget.productId,
-                                          snapshot.data["images"]
-                                              [carouselItem]);
+                                      if (snapshot.data["images"].length > 1) {
+                                        FBStorage.instanace.deleteProductImage(
+                                            widget.uid,
+                                            widget.productId,
+                                            snapshot.data["images"]
+                                                [carouselItem]);
+                                        FBStorage.instanace
+                                            .deleteProductImageFromStorage(
+                                                snapshot.data["images"]
+                                                    [carouselItem]);
+                                      } else {
+                                        showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text(
+                                                    "Impossible de supprimer l'image"),
+                                                content: Text(
+                                                    "Un produit doit avoir au moins une image"),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text("Confirmer"))
+                                                ],
+                                              );
+                                            });
+                                      }
                                     },
                                   )
                                 ],
