@@ -91,6 +91,11 @@ class _BodyInscriptionState extends State<BodyInscription> {
                       if (input.isEmpty) {
                         return 'Veuillez rentrer une adresse mail';
                       }
+                      final regex = RegExp(
+                          r"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+                      if (!regex.hasMatch(input)) {
+                        return 'L\'adresse mail n\'est pas valide';
+                      }
                     },
                     autocorrect: false,
                     decoration: InputDecoration(
