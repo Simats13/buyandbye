@@ -8,6 +8,7 @@ import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 import 'package:buyandbye/services/auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:buyandbye/templates/Connexion/Login/background_login.dart';
 
@@ -66,7 +67,18 @@ class _LoginState extends State<Login> {
                 ),
                 SocialIcon(
                   iconSrc: "assets/icons/facebook.svg",
-                  press: () {},
+                  press: () async {
+                    dynamic result =
+                        await AuthMethods.instanace.signInWithFacebook();
+                    if (result == null) {
+                    } else {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => Accueil()),
+                          (Route<dynamic> route) => false);
+                    }
+                  },
                 ),
                 SocialIcon(
                   iconSrc: "assets/icons/google-plus.svg",

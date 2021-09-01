@@ -77,7 +77,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
               width: MediaQuery.of(context).size.height,
               child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                 SizedBox(height: 50),
-                Flexible(
+                Expanded(
                   child: ListView(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
