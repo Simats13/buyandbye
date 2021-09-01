@@ -218,6 +218,7 @@ class _ChatRoomState extends State<ChatRoom>
             ),
             new Flexible(
               child: new TextField(
+                textCapitalization: TextCapitalization.sentences,
                 controller: _msgTextController,
                 onSubmitted: _handleSubmitted,
                 minLines: 1,

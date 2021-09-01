@@ -27,6 +27,22 @@ class DatabaseMethods {
         .get();
   }
 
+  Stream getMyInfo2(userId) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .snapshots();
+  }
+
+// Stream getOneProduct(sellerId, productId) {
+//     return FirebaseFirestore.instance
+//         .collection("magasins")
+//         .doc(sellerId)
+//         .collection("produits")
+//         .doc(productId)
+//         .snapshots();
+//   }
+
   Future checkIfDocExists(String docId) async {
     return await FirebaseFirestore.instance
         .collection("users")
@@ -128,6 +144,11 @@ class DatabaseMethods {
         .collection("users")
         .where("id", isEqualTo: username)
         .get();
+  }
+
+  Future updateUserInfo(userId, lname, fname, email, phone) async {
+    return FirebaseFirestore.instance.collection("users").doc(userId).update(
+        {"lname": lname, "fname": fname, "email": email, "phone": phone});
   }
 
   Future<QuerySnapshot> getMagasinInfo(String username) async {

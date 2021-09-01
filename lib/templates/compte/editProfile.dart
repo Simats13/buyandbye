@@ -136,17 +136,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
                           SizedBox(height: 20),
-                          myFirstName == null
+                          myLastName == null
                               ? CircularProgressIndicator()
-                              : Text(myFirstName),
+                              : Text(myLastName),
                           SizedBox(height: 20),
                           Text("Prénom :",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
                           SizedBox(height: 20),
-                          myLastName == null
+                          myFirstName == null
                               ? CircularProgressIndicator()
-                              : Text(myLastName),
+                              : Text(myFirstName),
                           SizedBox(height: 20),
                           Text("E-mail :",
                               style: TextStyle(
@@ -162,7 +162,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           SizedBox(height: 20),
                           myPhone == null
                               ? CircularProgressIndicator()
-                              : Text(myPhone),
+                              : myPhone == ""
+                                  ? Text("Pas de numéro enregistré",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500))
+                                  : Text(myPhone),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),
@@ -274,7 +278,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         SizedBox(height: 20),
                                         Container(
                                             child: Text(
-                                                "Pas d'adresses enregistrées")),
+                                                "Pas d'adresse enregistrée",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w500))),
                                       ],
                                     );
                                   }
@@ -284,6 +291,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               }),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes moyens de paiement"),
+                          SizedBox(height: 20),
+                          Text("Pas de moyen de paiement enregistré",
+                              style: TextStyle(fontWeight: FontWeight.w500)),
                           Divider(thickness: 0.5, color: Colors.black),
                         ]),
                   )),
@@ -291,8 +301,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               // lorsque le bouton est pressé
               Visibility(
                   visible: !isVisible,
-                  child:
-                      ModifyProfile(myFirstName, myLastName, myEmail, myPhone))
+                  child: ModifyProfile(
+                      myFirstName, myLastName, myEmail, myPhone, myID))
             ],
           ),
           // ),
@@ -303,23 +313,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
 }
 
 class ModifyProfile extends StatefulWidget {
-  ModifyProfile(this.myFirstName, this.myLastName, this.myEmail, this.myPhone);
-  final String myFirstName, myLastName, myEmail, myPhone;
+  ModifyProfile(
+      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myId);
+  final String myFirstName, myLastName, myEmail, myPhone, myId;
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
 // Afiche les champ de modification des informations
 class _ModifyProfileState extends State<ModifyProfile> {
   Widget build(BuildContext context) {
+    // Déclaration des variables pour les champs de modification
+    final lnameField = TextEditingController();
+    final fnameField = TextEditingController();
+    final emailField = TextEditingController();
+    final phoneField = TextEditingController();
+    final passwordField = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Appelle la fonction d'affiche des champs de texte
-        buildTextField("Nom", widget.myFirstName),
-        buildTextField("Prénom", widget.myLastName),
-        buildTextField("E-mail", widget.myEmail),
-        buildTextField("Téléphone", widget.myPhone),
-        buildTextField("Mot de Passe", "********"),
+        // Appelle les fonctions d'affichage des champs de texte
+        buildTextField("Nom", widget.myLastName, lnameField, true),
+        buildTextField("Prénom", widget.myFirstName, fnameField, true),
+        buildTextField("E-mail", widget.myEmail, emailField, false),
+        buildTextField("Téléphone", widget.myPhone, phoneField, false),
+        buildTextField("Mot de Passe", "********", passwordField, false),
         // Affichage des boutons d'annulation et de confirmation
         Center(
           child: Row(
@@ -351,6 +368,21 @@ class _ModifyProfileState extends State<ModifyProfile> {
                   ),
                   child: MaterialButton(
                     onPressed: () {
+                      // Si un champ est vide, on envoi la valeur déjà présente
+                      var lname = lnameField.text == ""
+                          ? widget.myLastName
+                          : lnameField.text;
+                      var fname = fnameField.text == ""
+                          ? widget.myFirstName
+                          : fnameField.text;
+                      var email = emailField.text == ""
+                          ? widget.myEmail
+                          : emailField.text;
+                      var phone = phoneField.text == ""
+                          ? widget.myPhone
+                          : phoneField.text;
+                      DatabaseMethods().updateUserInfo(
+                          widget.myId, lname, fname, email, phone);
                       Navigator.pop(context);
                     },
                     child: Text("Confirmer"),
@@ -364,10 +396,16 @@ class _ModifyProfileState extends State<ModifyProfile> {
   }
 
   // Fonction d'affichage des champs de texte
-  Widget buildTextField(String labelText, String placeholder) {
+  Widget buildTextField(String labelText, String placeholder, fieldController,
+      bool capitalization) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: TextField(
+        controller: fieldController,
+        autocorrect: false,
+        textCapitalization: capitalization
+            ? TextCapitalization.sentences
+            : TextCapitalization.none,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,
@@ -381,5 +419,3 @@ class _ModifyProfileState extends State<ModifyProfile> {
     );
   }
 }
-
-// decoration: BoxDecoration(border:Border.all(color:Colors.black)),

@@ -110,6 +110,7 @@ class _LoginState extends State<Login> {
                           return 'Veuillez rentrer une adresse email';
                         }
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                           labelText: 'Votre adresse email',
                           icon: Icon(
@@ -125,6 +126,7 @@ class _LoginState extends State<Login> {
                           return 'Mauvais mot de passe';
                         }
                       },
+                      autocorrect: false,
                       decoration: InputDecoration(
                         hintText: "Votre mot de passe",
                         icon: Icon(
