@@ -1034,22 +1034,6 @@ class _PageAccueilState extends State<PageAccueil> {
                                             ),
                                             SizedBox(width: 20),
                                             Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          10, 0, 0, 0),
-                                                  child:
-                                                      Icon(Icons.place_rounded),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(width: 20),
-                                            Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 crossAxisAlignment:

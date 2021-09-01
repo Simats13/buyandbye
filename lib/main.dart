@@ -9,11 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Pages/pageDecouverte.dart';
+
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
+import 'templates/Pages/pageBienvenue.dart';
 import 'templates_commercant/nav_bar.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -138,7 +139,7 @@ class MainScreen extends StatelessWidget {
               },
             );
           }
-          return SplashScreen();
+          return PageBienvenue();
         });
   }
 }

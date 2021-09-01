@@ -84,8 +84,9 @@ dependencies:
   truncate:
   flutter_native_splash:
   flutter_launcher_name:
-  wave: ^0.2.0
+  wave: 
   app_settings:
+  flutter_facebook_auth: ^3.5.1
 
 
 
