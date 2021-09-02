@@ -79,14 +79,14 @@ dependencies:
   status_alert:
   flutter_add_to_cart_button:
   #flutter_stripe:
+  flutter_facebook_auth: ^3.5.0
   http:
   stripe_payment:
   truncate:
   flutter_native_splash:
-  flutter_launcher_name:
   wave: 
   app_settings:
-  flutter_facebook_auth: ^3.5.1
+  
 
 
 

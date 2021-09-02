@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
+  bool checkEmailVerification = false;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -62,6 +63,7 @@ class _MyAppState extends State<MyApp> {
     _getFCMToken();
     super.initState();
     Geolocator.getCurrentPosition();
+    AuthMethods.instanace.checkEmailVerification();
   }
 
   Future<void> _getFCMToken() async {
@@ -125,9 +127,12 @@ class MainScreen extends StatelessWidget {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                if (snapshot.hasData) {
                   final userDoc = snapshot.data;
                   final user = userDoc;
+                  if (user['emailVerified'] == false) {
+                    return PageLogin();
+                  }
                   if (user['admin'] == true) {
                     return NavBar();
                   } else {
@@ -139,7 +144,7 @@ class MainScreen extends StatelessWidget {
               },
             );
           }
-          return PageBienvenue();
+          return PageLogin();
         });
   }
 }
