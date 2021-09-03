@@ -133,11 +133,11 @@ class _LoginState extends State<Login> {
                           await AuthMethods.instanace.checkEmailVerification();
 
                       if (checkEmail == false) {
+                        showMessage("Vérification du mail",
+                            "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
                         isCreated = true;
                         await _preferences.setBool(_keyCreatedUser, isCreated);
                         SharedPreferenceHelper().saveUserCreated(isCreated);
-                        showMessage("Vérification du mail",
-                            "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
                       } else {
                         isCreated = false;
                         await _preferences.setBool(_keyCreatedUser, isCreated);

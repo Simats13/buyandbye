@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -292,7 +293,7 @@ class _PageCompteState extends State<PageCompte> {
                                                 .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PageBienvenue()),
+                                                            PageLogin()),
                                                     (Route<dynamic> route) =>
                                                         false);
                                           },
@@ -332,7 +333,7 @@ class _PageCompteState extends State<PageCompte> {
                                                       .pushAndRemoveUntil(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PageBienvenue()),
+                                                                  PageLogin()),
                                                           (Route<dynamic>
                                                                   route) =>
                                                               false);

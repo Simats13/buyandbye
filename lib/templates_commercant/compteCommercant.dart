@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:buyandbye/services/database.dart';
@@ -8,6 +12,7 @@ import 'package:buyandbye/templates/Compte/constants.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Compte/help.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'editProfileCommercant.dart';
 
@@ -176,6 +181,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                           ),
                         ),
                         SizedBox(height: 20),
+                        // Bouton de déconnexion
                         Container(
                           height: 55,
                           margin: EdgeInsets.symmetric(
@@ -192,14 +198,81 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
                           child: MaterialButton(
-                            onPressed: () {
-                              AuthMethods().signOut().then((s) {
-                                AuthMethods.toogleNavBar();
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) => PageBienvenue()),
-                                    (Route<dynamic> route) => false);
-                              });
+                            onPressed: () async {
+                              if (!Platform.isIOS) {
+                                return showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text("Deconnexion"),
+                                    content: Text(
+                                        "Souhaitez-vous réellement vous déconnecter ?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text("Annuler"),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                      ),
+                                      TextButton(
+                                        child: Text("Déconnexion"),
+                                        onPressed: () async {
+                                          SharedPreferences preferences =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          await preferences.clear();
+                                          AuthMethods().signOut().then((s) {
+                                            AuthMethods.toogleNavBar();
+                                          });
+                                          Navigator.of(context)
+                                              .pushAndRemoveUntil(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PageLogin()),
+                                                  (Route<dynamic> route) =>
+                                                      false);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return showCupertinoDialog(
+                                    context: context,
+                                    builder: (context) => CupertinoAlertDialog(
+                                          title: Text("Déconnexion"),
+                                          content: Text(
+                                              "Souhaitez-vous réellement vous déconnecter ?"),
+                                          actions: [
+                                            // Close the dialog
+                                            CupertinoButton(
+                                                child: Text('Annuler'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                }),
+                                            CupertinoButton(
+                                              child: Text('Déconnexion'),
+                                              onPressed: () async {
+                                                SharedPreferences preferences =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                await preferences.clear();
+                                                AuthMethods()
+                                                    .signOut()
+                                                    .then((s) {
+                                                  AuthMethods.toogleNavBar();
+                                                });
+                                                Navigator.of(context)
+                                                    .pushAndRemoveUntil(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PageLogin()),
+                                                        (Route<dynamic>
+                                                                route) =>
+                                                            false);
+                                              },
+                                            )
+                                          ],
+                                        ));
+                              }
                             },
                             child: Row(
                               children: <Widget>[
@@ -399,14 +472,82 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             ),
                             child: MaterialButton(
                               onPressed: () {
-                                AuthMethods().signOut().then((s) {
-                                  AuthMethods.toogleNavBar();
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              PageBienvenue()),
-                                      (Route<dynamic> route) => false);
-                                });
+                                if (!Platform.isIOS) {
+                                  return showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text("Deconnexion"),
+                                      content: Text(
+                                          "Souhaitez-vous réellement vous déconnecter ?"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text("Annuler"),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                        ),
+                                        TextButton(
+                                          child: Text("Déconnexion"),
+                                          onPressed: () async {
+                                            SharedPreferences preferences =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            await preferences.clear();
+                                            AuthMethods().signOut().then((s) {
+                                              AuthMethods.toogleNavBar();
+                                            });
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PageLogin()),
+                                                    (Route<dynamic> route) =>
+                                                        false);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  return showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          CupertinoAlertDialog(
+                                            title: Text("Déconnexion"),
+                                            content: Text(
+                                                "Souhaitez-vous réellement vous déconnecter ?"),
+                                            actions: [
+                                              // Close the dialog
+                                              CupertinoButton(
+                                                  child: Text('Annuler'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  }),
+                                              CupertinoButton(
+                                                child: Text('Déconnexion'),
+                                                onPressed: () async {
+                                                  SharedPreferences
+                                                      preferences =
+                                                      await SharedPreferences
+                                                          .getInstance();
+                                                  await preferences.clear();
+                                                  AuthMethods()
+                                                      .signOut()
+                                                      .then((s) {
+                                                    AuthMethods.toogleNavBar();
+                                                  });
+                                                  Navigator.of(context)
+                                                      .pushAndRemoveUntil(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  PageLogin()),
+                                                          (Route<dynamic>
+                                                                  route) =>
+                                                              false);
+                                                },
+                                              )
+                                            ],
+                                          ));
+                                }
                               },
                               child: Row(
                                 children: <Widget>[

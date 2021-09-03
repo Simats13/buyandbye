@@ -56,12 +56,12 @@ class AuthMethods {
             "fname": userDetails.displayName.split(" ")[0],
             "lname": userDetails.displayName.split(" ")[1],
             "imgUrl": userDetails.photoURL,
-            "providers": [
-              {'google': true}, //GOOGLE
-              {'facebook': false}, //FACEBOOK
-              {'apple': false}, //APPLE
-              {'mail': false}, // MAIL
-            ],
+            "providers": {
+              'Google': true, //GOOGLE
+              'Facebook': false, //FACEBOOK
+              'Apple': false, //APPLE
+              'Mail': false, // MAIL
+            },
             "admin": false,
             "emailVerified": true,
             "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
@@ -85,9 +85,7 @@ class AuthMethods {
                 .collection("users")
                 .doc(userDetails.uid)
                 .update({
-              "providers": [
-                {'google': true}, //GOOGLE
-              ],
+              "providers.Google": true, //Facebook
             });
 
             Navigator.pushReplacement(
@@ -126,14 +124,12 @@ class AuthMethods {
         .collection("users")
         .doc(existingUser.uid)
         .update({
-      "providers": [
-        {
-          'google': true,
-          'facebook': true,
-          'apple': false,
-          'email': false
-        }, //Facebook
-      ],
+      "providers": {
+        'Google': true, //GOOGLE
+        'Facebook': true, //FACEBOOK
+        'Apple': false, //APPLE
+        'Mail': false, // MAIL
+      },
     });
 
     return linkauthresult.user.displayName;
@@ -187,14 +183,12 @@ class AuthMethods {
                 "fname": userDetails.displayName.split(" ")[0],
                 "lname": userDetails.displayName.split(" ")[1],
                 "imgUrl": userDetails.photoURL,
-                "providers": [
-                  {
-                    'google': false,
-                    'facebook': true,
-                    'apple': false,
-                    'email': false
-                  }, //Facebook
-                ],
+                "providers": {
+                  'Google': false, //GOOGLE
+                  'Facebook': true, //FACEBOOK
+                  'Apple': false, //APPLE
+                  'Mail': false, // MAIL
+                },
                 "admin": false,
                 "emailVerified": false,
                 "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
@@ -216,9 +210,7 @@ class AuthMethods {
                     .collection("users")
                     .doc(userDetails.uid)
                     .update({
-                  "providers": [
-                    {'facebook': true}, //Facebook
-                  ],
+                  "providers.Facebook": true, //Facebook
                 });
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) => MyApp()));
