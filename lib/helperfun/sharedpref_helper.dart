@@ -12,6 +12,7 @@ class SharedPreferenceHelper {
   static String userSliderkey = "UserSliderKey";
   static String userSliderLabelkey = "UserSliderLabelKey";
   static String userCityKey = "UserCityKey";
+  static String userCreated = "UserCreated";
   //save data
   Future<bool> saveUserName(String userName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -51,6 +52,11 @@ class SharedPreferenceHelper {
   Future<bool> saveUserAddress(String getAddress) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(userAddressKey, getAddress);
+  }
+
+  Future<bool> saveUserCreated(bool getUserCreated) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(userAddressKey, getUserCreated);
   }
 
   Future<bool> saveUserCity(String getCity) async {
@@ -117,5 +123,10 @@ class SharedPreferenceHelper {
   Future<String> getLabelSliderUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userSliderLabelkey);
+  }
+
+  Future<bool> getUserCreated() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(userCreated);
   }
 }

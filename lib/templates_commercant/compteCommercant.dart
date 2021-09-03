@@ -197,7 +197,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 15),
+                        SizedBox(height: 20),
+                        // Bouton de déconnexion
                         Container(
                           height: 55,
                           margin: EdgeInsets.symmetric(

@@ -48,51 +48,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() {});
   }
 
-  showMessage(String erreur, FirebaseAuthException e) {
-    if (!Platform.isIOS) {
-      showDialog(
-          context: context,
-          builder: (BuildContext builderContext) {
-            return AlertDialog(
-              title: Text("Error"),
-              content: Text(erreur),
-              actions: [
-                TextButton(
-                  child: Text("Ok"),
-                  onPressed: () async {
-                    Navigator.of(builderContext).pop();
-                  },
-                )
-              ],
-            );
-          });
-    } else {
-      return showCupertinoDialog(
-          context: context,
-          builder: (context) => CupertinoAlertDialog(
-                title: Text("Erreur"),
-                content: Text(erreur),
-                actions: [
-                  // Close the dialog
-                  CupertinoButton(
-                      child: Text('OK'),
-                      onPressed: () async {
-                        if (e.code ==
-                            'account-exists-with-different-credential') {
-                          List<String> emailList = await FirebaseAuth.instance
-                              .fetchSignInMethodsForEmail(e.email);
-                          if (emailList.first == "google.com") {
-                            await AuthMethods.instanace
-                                .signInwithGoogle(context, true, e.credential);
-                            Navigator.of(context).pop();
-                          }
-                        }
-                      }),
-                ],
-              ));
-    }
-  }
-
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
@@ -231,21 +186,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 dynamic result = await AuthMethods.instanace
                                     .signInWithFacebook(context);
                               } catch (e) {
-                                if (e is FirebaseAuthException) {
-                                  if (e.code ==
-                                      'account-exists-with-different-credential') {
-                                    List<String> emailList = await FirebaseAuth
-                                        .instance
-                                        .fetchSignInMethodsForEmail(e.email);
-                                    print(emailList.first);
-                                    if (emailList.first == "google.com") {
-                                      await AuthMethods.instanace
-                                          .signInwithGoogle(
-                                              context, true, e.credential);
-                                      Navigator.of(context).pop();
-                                    }
-                                  }
-                                }
+                                if (e is FirebaseAuthException) {}
                               }
                             },
                           ),

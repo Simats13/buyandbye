@@ -23,8 +23,7 @@ class AuthMethods {
     return auth.currentUser;
   }
 
-  Future<String> signInwithGoogle(BuildContext context,
-      [bool link = false, AuthCredential authCredential]) async {
+  Future<String> signInwithGoogle(BuildContext context) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     try {
@@ -46,53 +45,49 @@ class AuthMethods {
       bool docExists =
           await DatabaseMethods().checkIfDocExists(userDetails.uid);
 
-      if (link == false) {
-        if (userCredential == null) {
+      if (userCredential == null) {
+      } else {
+        if (docExists == false) {
+          Map<String, dynamic> userInfoMap = {
+            "id": userDetails.uid,
+            "email": userDetails.email,
+            "fname": userDetails.displayName.split(" ")[0],
+            "lname": userDetails.displayName.split(" ")[1],
+            "imgUrl": userDetails.photoURL,
+            "providers": {
+              'Google': true, //GOOGLE
+              'Facebook': false, //FACEBOOK
+              'Apple': false, //APPLE
+              'Mail': false, // MAIL
+            },
+            "admin": false,
+            "emailVerified": true,
+            "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+                vapidKey:
+                    "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+            "phone": ""
+          };
+          DatabaseMethods()
+              .addUserInfoToDB(userDetails.uid, userInfoMap)
+              .then((value) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => MyApp()));
+          });
         } else {
-          if (docExists == false) {
-            Map<String, dynamic> userInfoMap = {
-              "id": userDetails.uid,
-              "email": userDetails.email,
-              "fname": userDetails.displayName.split(" ")[0],
-              "lname": userDetails.displayName.split(" ")[1],
-              "imgUrl": userDetails.photoURL,
-              "providers": [
-                {'google': true}, //GOOGLE
-                {'facebook': false}, //FACEBOOK
-                {'apple': false}, //APPLE
-                {'mail': false}, // MAIL
-              ],
-              "admin": false,
-              "emailVerified": true,
-              "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-                  vapidKey:
-                      "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-              "phone": ""
-            };
-            DatabaseMethods()
-                .addUserInfoToDB(userDetails.uid, userInfoMap)
-                .then((value) {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
+          //Verifie si l'adresse mail a été vérifiée
+          bool checkEmail =
+              await AuthMethods.instanace.checkEmailVerification();
+
+          if (checkEmail) {
+            FirebaseFirestore.instance
+                .collection("users")
+                .doc(userDetails.uid)
+                .update({
+              "providers.Google": true, //Facebook
             });
-          } else {
-            //Verifie si l'adresse mail a été vérifiée
-            bool checkEmail =
-                await AuthMethods.instanace.checkEmailVerification();
 
-            if (checkEmail) {
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(userDetails.uid)
-                  .update({
-                "providers": [
-                  {'google': true}, //GOOGLE
-                ],
-              });
-
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
-            }
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => MyApp()));
           }
         }
       }
@@ -127,14 +122,12 @@ class AuthMethods {
         .collection("users")
         .doc(existingUser.uid)
         .update({
-      "providers": [
-        {
-          'google': true,
-          'facebook': true,
-          'apple': false,
-          'email': false
-        }, //Facebook
-      ],
+      "providers": {
+        'Google': true, //GOOGLE
+        'Facebook': true, //FACEBOOK
+        'Apple': false, //APPLE
+        'Mail': false, // MAIL
+      },
     });
 
     return linkauthresult.user.displayName;
@@ -150,7 +143,6 @@ class AuthMethods {
 //Sinon il renvoie false
   Future checkEmailVerification() async {
     User user = await AuthMethods().getCurrentUser();
-    await user.reload();
 
     if (user.emailVerified) {
       FirebaseFirestore.instance.collection("users").doc(user.uid).update({
@@ -189,14 +181,12 @@ class AuthMethods {
                 "fname": userDetails.displayName.split(" ")[0],
                 "lname": userDetails.displayName.split(" ")[1],
                 "imgUrl": userDetails.photoURL,
-                "providers": [
-                  {
-                    'google': false,
-                    'facebook': true,
-                    'apple': false,
-                    'email': false
-                  }, //Facebook
-                ],
+                "providers": {
+                  'Google': false, //GOOGLE
+                  'Facebook': true, //FACEBOOK
+                  'Apple': false, //APPLE
+                  'Mail': false, // MAIL
+                },
                 "admin": false,
                 "emailVerified": false,
                 "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
@@ -209,19 +199,17 @@ class AuthMethods {
               //Envoie un mail de confirmation d'adresse mail
               sendEmailVerification();
             } else {
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(userDetails.uid)
-                  .update({
-                "providers": [
-                  {'facebook': true}, //Facebook
-                ],
-              });
               //Verifie si l'adresse mail a été vérifiée
               bool checkEmail =
                   await AuthMethods.instanace.checkEmailVerification();
 
               if (checkEmail) {
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(userDetails.uid)
+                    .update({
+                  "providers.Facebook": true, //Facebook
+                });
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) => MyApp()));
               }

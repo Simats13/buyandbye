@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:buyandbye/templates/Connexion/Login/background_login.dart';
 
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
 import 'package:buyandbye/templates/Connexion/Tools/social_icon.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -27,6 +29,20 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _email, _password;
+  static SharedPreferences _preferences;
+
+  static const _keyCreatedUser = "UserCreated";
+  bool isCreated;
+
+  @override
+  void initState() {
+    super.initState();
+    userInfo();
+  }
+
+  userInfo() async {
+    isCreated = await SharedPreferenceHelper().getUserCreated() ?? false;
+  }
 
   showMessage(String titre, e) {
     if (!Platform.isIOS) {
@@ -118,6 +134,13 @@ class _LoginState extends State<Login> {
                       if (checkEmail == false) {
                         showMessage("Vérification du mail",
                             "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
+                        isCreated = true;
+                        await _preferences.setBool(_keyCreatedUser, isCreated);
+                        SharedPreferenceHelper().saveUserCreated(isCreated);
+                      } else {
+                        isCreated = false;
+                        await _preferences.setBool(_keyCreatedUser, isCreated);
+                        SharedPreferenceHelper().saveUserCreated(isCreated);
                       }
                     } catch (e) {
                       if (e is FirebaseAuthException) {
@@ -136,9 +159,13 @@ class _LoginState extends State<Login> {
                   iconSrc: "assets/icons/google-plus.svg",
                   press: () async {
                     try {
-                      dynamic result =
-                          await AuthMethods.instanace.signInwithGoogle(context);
-                      return result.message;
+                      //Si la variable isCreated est égale à true, dans ce cas un message d'erreur s'affiche pour l'utilisa
+                      if (isCreated == true) {
+                        showMessage("Adresse mail non validé",
+                            "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil");
+                      } else {
+                        await AuthMethods.instanace.signInwithGoogle(context);
+                      }
                     } catch (e) {
                       if (e is FirebaseAuthException) {
                         print(e);
