@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/main.dart';
 import 'package:buyandbye/templates/Connexion/Tools/text_field_container.dart';
@@ -8,7 +11,6 @@ import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 import 'package:buyandbye/services/auth.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:buyandbye/templates/Connexion/Login/background_login.dart';
 
@@ -25,6 +27,42 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _email, _password;
+
+  showMessage(String titre, e) {
+    if (!Platform.isIOS) {
+      showDialog(
+          context: context,
+          builder: (BuildContext builderContext) {
+            return AlertDialog(
+              title: Text(titre),
+              content: Text(e),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () async {
+                    Navigator.of(builderContext).pop();
+                  },
+                )
+              ],
+            );
+          });
+    } else {
+      return showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+                title: Text(titre),
+                content: Text(e),
+                actions: [
+                  // Close the dialog
+                  CupertinoButton(
+                      child: Text('OK'),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,47 +89,66 @@ class _LoginState extends State<Login> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SocialIcon(
-                  iconSrc: "assets/icons/apple.svg",
-                  press: () async {
-                    dynamic user =
-                        await AuthMethods.instanace.signInWithApple();
-                    if (user != null) {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => Accueil()),
-                          (Route<dynamic> route) => false);
-                    }
-                  },
-                ),
+                Platform.isIOS
+                    ? SocialIcon(
+                        iconSrc: "assets/icons/apple.svg",
+                        press: () async {
+                          dynamic user =
+                              await AuthMethods.instanace.signInWithApple();
+                          if (user != null) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        Accueil()),
+                                (Route<dynamic> route) => false);
+                          }
+                        },
+                      )
+                    : "",
                 SocialIcon(
                   iconSrc: "assets/icons/facebook.svg",
                   press: () async {
-                    dynamic result =
-                        await AuthMethods.instanace.signInWithFacebook();
-                    if (result == null) {
-                    } else {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => Accueil()),
-                          (Route<dynamic> route) => false);
+                    try {
+                      await AuthMethods.instanace.signInWithFacebook(context);
+
+                      bool checkEmail =
+                          await AuthMethods.instanace.checkEmailVerification();
+
+                      if (checkEmail == false) {
+                        showMessage("Vérification du mail",
+                            "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
+                      }
+                    } catch (e) {
+                      if (e is FirebaseAuthException) {
+                        print(e);
+                        if (e.code ==
+                            'account-exists-with-different-credential') {
+                          String erreur =
+                              "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
+                          showMessage("Adresse mail déjà existante", erreur);
+                        }
+                      }
                     }
                   },
                 ),
                 SocialIcon(
                   iconSrc: "assets/icons/google-plus.svg",
                   press: () async {
-                    dynamic result =
-                        await AuthMethods.instanace.signInWithGoogle(context);
-                    if (result == null) {
-                    } else {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => Accueil()),
-                          (Route<dynamic> route) => false);
+                    try {
+                      dynamic result =
+                          await AuthMethods.instanace.signInwithGoogle(context);
+                      return result.message;
+                    } catch (e) {
+                      if (e is FirebaseAuthException) {
+                        print(e);
+                        if (e.code ==
+                            'account-exists-with-different-credential') {
+                          String erreur =
+                              "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
+                          showMessage("Adresse mail déjà existante", erreur);
+                        }
+                      }
                     }
                   },
                 ),

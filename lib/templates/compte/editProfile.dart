@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:buyandbye/templates/Connexion/Tools/social_icon.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -36,7 +40,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
+
+    if (user.providerData.length < 2) {
+      print(user.providerData[0].providerId);
+    }
+
     setState(() {});
+  }
+
+  showMessage(String erreur, FirebaseAuthException e) {
+    if (!Platform.isIOS) {
+      showDialog(
+          context: context,
+          builder: (BuildContext builderContext) {
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text(erreur),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () async {
+                    Navigator.of(builderContext).pop();
+                  },
+                )
+              ],
+            );
+          });
+    } else {
+      return showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+                title: Text("Erreur"),
+                content: Text(erreur),
+                actions: [
+                  // Close the dialog
+                  CupertinoButton(
+                      child: Text('OK'),
+                      onPressed: () async {
+                        if (e.code ==
+                            'account-exists-with-different-credential') {
+                          List<String> emailList = await FirebaseAuth.instance
+                              .fetchSignInMethodsForEmail(e.email);
+                          if (emailList.first == "google.com") {
+                            await AuthMethods.instanace
+                                .signInwithGoogle(context, true, e.credential);
+                            Navigator.of(context).pop();
+                          }
+                        }
+                      }),
+                ],
+              ));
+    }
   }
 
   // Première classe qui affiche les informations du commerçant
@@ -169,6 +223,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   : Text(myPhone),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
+                          Text("Méthode de connexion"),
+                          SocialIcon(
+                            iconSrc: "assets/icons/facebook.svg",
+                            press: () async {
+                              try {
+                                dynamic result = await AuthMethods.instanace
+                                    .signInWithFacebook(context);
+                              } catch (e) {
+                                if (e is FirebaseAuthException) {
+                                  if (e.code ==
+                                      'account-exists-with-different-credential') {
+                                    List<String> emailList = await FirebaseAuth
+                                        .instance
+                                        .fetchSignInMethodsForEmail(e.email);
+                                    print(emailList.first);
+                                    if (emailList.first == "google.com") {
+                                      await AuthMethods.instanace
+                                          .signInwithGoogle(
+                                              context, true, e.credential);
+                                      Navigator.of(context).pop();
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                          ),
+                          SocialIcon(
+                            iconSrc: "assets/icons/google-plus.svg",
+                            press: () async {
+                              try {
+                                await AuthMethods.instanace.linkFbToGoogle();
+                              } catch (e) {
+                                throw (e);
+                              }
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
@@ -278,7 +370,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         SizedBox(height: 20),
                                         Container(
                                             child: Text(
-                                                "Pas d'adresse enregistrée",
+                                                "Aucune adresse enregistrée",
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.w500))),

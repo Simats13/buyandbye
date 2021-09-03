@@ -303,7 +303,8 @@ class _PageCompteState extends State<PageCompte> {
                                 } else {
                                   return showCupertinoDialog(
                                       context: context,
-                                      builder: (_) => CupertinoAlertDialog(
+                                      builder: (context) =>
+                                          CupertinoAlertDialog(
                                             title: Text("Déconnexion"),
                                             content: Text(
                                                 "Souhaitez-vous réellement vous déconnecter ?"),

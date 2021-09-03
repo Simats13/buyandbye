@@ -2,6 +2,7 @@ import 'package:apple_sign_in/apple_sign_in.dart' as apple;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as messasing;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -22,72 +23,223 @@ class AuthMethods {
     return auth.currentUser;
   }
 
-  Future signInWithGoogle(BuildContext context) async {
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = new GoogleSignIn();
+  Future<String> signInwithGoogle(BuildContext context,
+      [bool link = false, AuthCredential authCredential]) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    try {
+      final GoogleSignInAccount googleSignInAccount =
+          await _googleSignIn.signIn();
 
-    final GoogleSignInAccount googleSignInAccount =
-        await _googleSignIn.signIn();
-
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
-
-    final AuthCredential credential = GoogleAuthProvider.credential(
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
-        accessToken: googleSignInAuthentication.accessToken);
+      );
 
-    UserCredential result =
-        await _firebaseAuth.signInWithCredential(credential);
-    User userDetails = result.user;
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
 
-    bool docExists = await DatabaseMethods().checkIfDocExists(userDetails.uid);
-    print("doc exists");
-    print(docExists);
-    if (result == null) {
-    } else {
-      if (docExists == false) {
-        // SharedPreferenceHelper().saveUserEmail(userDetails.email);
-        // SharedPreferenceHelper().saveUserId(userDetails.uid);
-        // SharedPreferenceHelper()
-        //     .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
-        // SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
-        // SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
-        Map<String, dynamic> userInfoMap = {
-          "id": userDetails.uid,
-          "email": userDetails.email,
-          "fname": userDetails.displayName.split(" ")[0],
-          "lname": userDetails.displayName.split(" ")[1],
-          "imgUrl": userDetails.photoURL,
-          "admin": false,
-          "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-              vapidKey:
-                  "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-          "phone": ""
-        };
-        DatabaseMethods()
-            .addUserInfoToDB(userDetails.uid, userInfoMap)
-            .then((value) {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => MyApp()));
-        });
-      } else {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MyApp()));
+      User userDetails = userCredential.user;
+
+      bool docExists =
+          await DatabaseMethods().checkIfDocExists(userDetails.uid);
+
+      if (link == false) {
+        if (userCredential == null) {
+        } else {
+          if (docExists == false) {
+            Map<String, dynamic> userInfoMap = {
+              "id": userDetails.uid,
+              "email": userDetails.email,
+              "fname": userDetails.displayName.split(" ")[0],
+              "lname": userDetails.displayName.split(" ")[1],
+              "imgUrl": userDetails.photoURL,
+              "providers": [
+                {'google': true}, //GOOGLE
+                {'facebook': false}, //FACEBOOK
+                {'apple': false}, //APPLE
+                {'mail': false}, // MAIL
+              ],
+              "admin": false,
+              "emailVerified": true,
+              "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+                  vapidKey:
+                      "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+              "phone": ""
+            };
+            DatabaseMethods()
+                .addUserInfoToDB(userDetails.uid, userInfoMap)
+                .then((value) {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => MyApp()));
+            });
+          } else {
+            //Verifie si l'adresse mail a été vérifiée
+            bool checkEmail =
+                await AuthMethods.instanace.checkEmailVerification();
+
+            if (checkEmail) {
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDetails.uid)
+                  .update({
+                "providers": [
+                  {'google': true}, //GOOGLE
+                ],
+              });
+
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => MyApp()));
+            }
+          }
+        }
       }
+
+      return userCredential.user.displayName;
+    } on FirebaseAuthException catch (e) {
+      throw e;
     }
-    isconnected = true;
   }
 
-  Future<UserCredential> signInWithFacebook() async {
-    final LoginResult result = await FacebookAuth.instance.login();
-    if (result.status == LoginStatus.success) {
-      // Create a credential from the access token
-      final OAuthCredential credential =
-          FacebookAuthProvider.credential(result.accessToken.token);
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+//Lie un compte identifé avec facebook avec un compte google
+  Future linkFbToGoogle() async {
+    // //get currently logged in user
+    final User existingUser = await AuthMethods().getCurrentUser();
+
+    //get the credentials of the new linking account
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final AuthCredential gcredential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    //now link these credentials with the existing user
+    UserCredential linkauthresult =
+        await existingUser.linkWithCredential(gcredential);
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(existingUser.uid)
+        .update({
+      "providers": [
+        {
+          'google': true,
+          'facebook': true,
+          'apple': false,
+          'email': false
+        }, //Facebook
+      ],
+    });
+
+    return linkauthresult.user.displayName;
+  }
+
+//Envoie un email à l'adresse email enregistrée
+  Future<void> sendEmailVerification() async {
+    final User user = await AuthMethods().getCurrentUser();
+    user.sendEmailVerification();
+  }
+
+//Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
+//Sinon il renvoie false
+  Future checkEmailVerification() async {
+    User user = await AuthMethods().getCurrentUser();
+    await user.reload();
+
+    if (user.emailVerified) {
+      FirebaseFirestore.instance.collection("users").doc(user.uid).update({
+        "emailVerified": true,
+      });
+      return true;
+    } else {
+      return false;
     }
-    return null;
+  }
+
+//Connexion via Facebook
+  Future signInWithFacebook(BuildContext context,
+      [bool link = false, AuthCredential authCredential]) async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      switch (result.status) {
+        case LoginStatus.success:
+          final AuthCredential facebookCredential =
+              FacebookAuthProvider.credential(result.accessToken.token);
+          final userCredential =
+              await auth.signInWithCredential(facebookCredential);
+
+          User userDetails = userCredential.user;
+
+          bool docExists =
+              await DatabaseMethods().checkIfDocExists(userDetails.uid);
+
+          if (result == null) {
+          } else {
+            if (docExists == false) {
+              Map<String, dynamic> userInfoMap = {
+                "id": userDetails.uid,
+                "email": userDetails.email,
+                "fname": userDetails.displayName.split(" ")[0],
+                "lname": userDetails.displayName.split(" ")[1],
+                "imgUrl": userDetails.photoURL,
+                "providers": [
+                  {
+                    'google': false,
+                    'facebook': true,
+                    'apple': false,
+                    'email': false
+                  }, //Facebook
+                ],
+                "admin": false,
+                "emailVerified": false,
+                "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+                    vapidKey:
+                        "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+                "phone": ""
+              };
+              DatabaseMethods().addUserInfoToDB(userDetails.uid, userInfoMap);
+
+              //Envoie un mail de confirmation d'adresse mail
+              sendEmailVerification();
+            } else {
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDetails.uid)
+                  .update({
+                "providers": [
+                  {'facebook': true}, //Facebook
+                ],
+              });
+              //Verifie si l'adresse mail a été vérifiée
+              bool checkEmail =
+                  await AuthMethods.instanace.checkEmailVerification();
+
+              if (checkEmail) {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => MyApp()));
+              }
+            }
+          }
+
+          return userCredential.user.displayName;
+
+        case LoginStatus.cancelled:
+
+        case LoginStatus.failed:
+
+        default:
+          return null;
+      }
+    } on FirebaseAuthException catch (e) {
+      throw e;
+    }
   }
 
   Future<User> signInWithApple({List<apple.Scope> scopes = const []}) async {
@@ -179,7 +331,7 @@ class AuthMethods {
       "adresse": _adresseSeller,
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "admin": true,
-      "phone": "",
+      "phone": "01 02 03 04 05",
       'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
           vapidKey:
               "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),

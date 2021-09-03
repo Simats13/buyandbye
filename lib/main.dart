@@ -14,7 +14,6 @@ import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
-import 'templates/Pages/pageBienvenue.dart';
 import 'templates_commercant/nav_bar.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -50,7 +49,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
+  bool checkEmailVerification = false;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -62,6 +61,7 @@ class _MyAppState extends State<MyApp> {
     _getFCMToken();
     super.initState();
     Geolocator.getCurrentPosition();
+    AuthMethods.instanace.checkEmailVerification();
   }
 
   Future<void> _getFCMToken() async {
@@ -125,9 +125,12 @@ class MainScreen extends StatelessWidget {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                if (snapshot.hasData) {
                   final userDoc = snapshot.data;
                   final user = userDoc;
+                  if (user['emailVerified'] == false) {
+                    return PageLogin();
+                  }
                   if (user['admin'] == true) {
                     return NavBar();
                   } else {
@@ -139,7 +142,7 @@ class MainScreen extends StatelessWidget {
               },
             );
           }
-          return PageBienvenue();
+          return PageLogin();
         });
   }
 }
