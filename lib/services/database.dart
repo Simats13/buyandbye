@@ -217,13 +217,16 @@ class DatabaseMethods {
   }
 
   // On ne récupère que les produits que le commerçant a choisi comme étant visible par les clients
-  Stream getVisibleProducts(String sellerId) {
-    return FirebaseFirestore.instance
+  Stream getVisibleProducts(String sellerId, String categorie, int actualPage) {
+    Stream query = FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
         .collection("produits")
         .where("visible", isEqualTo: true)
+        .where("categorie", isEqualTo: categorie)
+        .limit(6)
         .snapshots();
+    return query;
   }
 
   Stream getOneProduct(sellerId, productId) {

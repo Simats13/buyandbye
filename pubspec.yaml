@@ -86,14 +86,7 @@ dependencies:
   flutter_native_splash:
   wave: 
   app_settings:
-  
 
-
-
-
-
-
-  
 flutter_native_splash:
   #color: "#42a5f5"
   background_image: assets/images/splash.png
@@ -105,8 +98,6 @@ flutter_native_splash:
 
 flutter_launcher_name:
   name: "Buy & Bye"
-
-
 
 dev_dependencies:
   flutter_test:

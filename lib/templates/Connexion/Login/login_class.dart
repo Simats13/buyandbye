@@ -12,7 +12,6 @@ import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 import 'package:buyandbye/services/auth.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:buyandbye/templates/Connexion/Login/background_login.dart';
 
