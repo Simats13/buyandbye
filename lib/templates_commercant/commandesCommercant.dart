@@ -174,14 +174,17 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                       ],
                     ),
                     SizedBox(height: 20),
+                    Text("Pagination en cours de création,"),
+                    Text("Masquer pour démonstration"),
+                    // Le numéro de page actuelle reste le même sur En attente, En cours et Terminées.
+                    // Créer 3 variables qui seront modifiées selon la catégorie affichée
+                    SizedBox(height: 20),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       for (int i = 1; i < 6; i++)
                         Container(
                             height: 30,
                             width: 30,
                             margin: EdgeInsets.only(left: 10, right: 10),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black)),
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,

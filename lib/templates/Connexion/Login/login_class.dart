@@ -32,6 +32,7 @@ class _LoginState extends State<Login> {
   static SharedPreferences _preferences;
 
   static const _keyCreatedUser = "UserCreated";
+  String errorMessage;
   bool isCreated;
 
   @override
@@ -80,6 +81,7 @@ class _LoginState extends State<Login> {
     }
   }
 
+  bool showPassword = true;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -186,12 +188,16 @@ class _LoginState extends State<Login> {
               child: Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
                       // ignore: missing_return
                       validator: (input) {
                         if (input.isEmpty) {
-                          return 'Veuillez rentrer une adresse email';
+                          setState(() {
+                            errorMessage = null;
+                          });
+                          return 'Veuillez entrer une adresse email';
                         }
                       },
                       autocorrect: false,
@@ -203,11 +209,29 @@ class _LoginState extends State<Login> {
                           )),
                       onSaved: (input) => _email = input,
                     ),
+                    SizedBox(height: 5),
+                    ((errorMessage == "Utilisateur introuvable" ||
+                                errorMessage ==
+                                    "Le mail n'est pas au bon format") &&
+                            _email != null)
+                        ? Row(children: [
+                            SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width / 10.75),
+                            Text(errorMessage,
+                                style: TextStyle(
+                                    color: Color.fromRGBO(210, 40, 40, 1),
+                                    fontSize: 12))
+                          ])
+                        : SizedBox.shrink(),
                     TextFormField(
                       // ignore: missing_return
                       validator: (input) {
-                        if (input.length < 6) {
-                          return 'Mauvais mot de passe';
+                        if (input.isEmpty) {
+                          setState(() {
+                            errorMessage = null;
+                          });
+                          return 'Veuillez entrer un mot de passe';
                         }
                       },
                       autocorrect: false,
@@ -217,15 +241,33 @@ class _LoginState extends State<Login> {
                           Icons.lock,
                           color: BuyandByeAppTheme.kLightPrimaryColor,
                         ),
-                        suffixIcon: Icon(
-                          Icons.visibility,
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.visibility),
+                          onPressed: () {
+                            showPassword = !showPassword;
+                          },
                           color: BuyandByeAppTheme.kLightPrimaryColor,
                         ),
                         border: InputBorder.none,
                       ),
                       onSaved: (input) => _password = input,
-                      obscureText: true,
+                      obscureText: showPassword,
                     ),
+                    (errorMessage != "Utilisateur introuvable" &&
+                            errorMessage != "Le mail n'est pas au bon format" &&
+                            errorMessage != null &&
+                            _password != null)
+                        ? Row(children: [
+                            SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width / 10.75),
+                            Text(errorMessage,
+                                style: TextStyle(
+                                    color: Color.fromRGBO(210, 40, 40, 1),
+                                    fontSize: 12))
+                          ])
+                        : SizedBox.shrink(),
+                    SizedBox(height: 5)
                   ],
                 ),
               ),
@@ -239,7 +281,41 @@ class _LoginState extends State<Login> {
                       .then((User user) {
                     Navigator.pushReplacement(
                         context, MaterialPageRoute(builder: (_) => MyApp()));
-                  }).catchError((e) => print(e));
+                  }).catchError((e) {
+                    switch (e.code) {
+                      case "user-not-found":
+                        setState(() {
+                          errorMessage = "Utilisateur introuvable";
+                        });
+                        print(e.code);
+                        break;
+                      case "wrong-password":
+                        setState(() {
+                          errorMessage = "Mauvais mot de passe";
+                        });
+                        print(e.code);
+                        break;
+                      case "too-many-requests":
+                        setState(() {
+                          errorMessage =
+                              "Trop de tentatives. Réessayez plus tard";
+                        });
+                        print(e.code);
+                        break;
+                      case "invalid-email":
+                        setState(() {
+                          errorMessage = "Le mail n'est pas au bon format";
+                        });
+                        print(e.code);
+                        break;
+                      default:
+                        setState(() {
+                          errorMessage = "Erreur indéfinie";
+                        });
+                        print(e.code);
+                        break;
+                    }
+                  });
                 }
               },
               child: Text('CONNEXION'),
@@ -268,7 +344,7 @@ class _LoginState extends State<Login> {
                     );
                   },
                   child: Text(
-                    " Crée en un ! ",
+                    " Créez en un ! ",
                     style: TextStyle(
                       color: BuyandByeAppTheme.kPrimaryColor,
                       fontWeight: FontWeight.bold,
