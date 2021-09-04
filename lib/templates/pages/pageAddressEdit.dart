@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-
+import 'package:geocoder/geocoder.dart' as geocode;
 import '../buyandbye_app_theme.dart';
 
 class PageAddressEdit extends StatefulWidget {
@@ -43,6 +46,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
 
   Set<Marker> _markers = Set<Marker>();
   BitmapDescriptor mapMarker;
+  String userAddress;
   String buildingDetailsEdit;
   String buildingNameEdit;
   String adressTitleEdit;
@@ -73,6 +77,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   @override
   void initState() {
     super.initState();
+    findAddress();
 
     buildingDetailsController =
         TextEditingController(text: widget.buildingDetails);
@@ -93,6 +98,18 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     setState(() {});
   }
 
+  findAddress() async {
+    final coordinates = new geocode.Coordinates(widget.lat, widget.long);
+    var addresses =
+        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var first = addresses.first;
+
+    setState(() {
+      userAddress =
+          "${first.featureName}, ${first.locality}, ${first.countryName}";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +125,74 @@ class _PageAddressEditState extends State<PageAddressEdit> {
           systemOverlayStyle: SystemUiOverlayStyle.light,
           backgroundColor: BuyandByeAppTheme.black_electrik,
           automaticallyImplyLeading: false,
+          actions: [
+            // Boutons pour modifier les informations du commerçant
+            Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: GestureDetector(
+                  onTap: () async {
+                    try {
+                      Platform.isIOS
+                          ? showCupertinoDialog(
+                              context: context,
+                              builder: (context) => CupertinoAlertDialog(
+                                    title: Text("Suppression de l'adresse"),
+                                    content: Text(
+                                        "Souhaitez-vous réellement supprimer l'adresse ?"),
+                                    actions: [
+                                      // Close the dialog
+                                      CupertinoButton(
+                                          child: Text('Annuler'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          }),
+                                      CupertinoButton(
+                                        child: Text(
+                                          'Suppression',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                        onPressed: () async {
+                                          DatabaseMethods()
+                                              .deleteAddress(widget.iD);
+                                          Navigator.of(context).pop(false);
+                                          Navigator.of(context).pop(false);
+                                        },
+                                      )
+                                    ],
+                                  ))
+                          : showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text("Suppression du compte"),
+                                content: Text(
+                                    "Souhaitez-vous réellement supprimer l'adresse ?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text("Annuler"),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                  ),
+                                  TextButton(
+                                    child: Text(
+                                      'Suppression',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                    onPressed: () async {
+                                      DatabaseMethods()
+                                          .deleteAddress(widget.iD);
+                                      Navigator.of(context).pop(false);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                  child: Icon(Icons.delete_forever, color: Colors.red),
+                ))
+          ],
         ),
       ),
       body: Form(
@@ -139,7 +224,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                   Padding(
                     padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
                     child: Container(
-                      child: Text(widget.adresse,
+                      child: Text(userAddress ?? "Chargement",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -152,7 +237,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -168,7 +253,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           onPressed: buildingDetailsController.clear,
                           icon: Icon(Icons.clear),
                         ),
-                        hintText: "Numéro d'appartement, porte, étage",
+                        labelText: "Numéro d'appartement, porte, étage",
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
                             left: 14.0, bottom: 6.0, top: 8.0),
@@ -183,7 +268,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -197,7 +282,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           icon: Icon(Icons.clear),
                         ),
                         filled: true,
-                        hintText: "Nom de l'entreprise ou de l'immeuble",
+                        labelText: "Nom de l'entreprise ou de l'immeuble",
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
                             left: 14.0, bottom: 6.0, top: 8.0),
@@ -212,7 +297,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -226,7 +311,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           onPressed: familyNameController.clear,
                           icon: Icon(Icons.clear),
                         ),
-                        hintText: "Code porte et nom de famille",
+                        labelText: "Code porte et nom de famille",
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
                             left: 14.0, bottom: 6.0, top: 8.0),
@@ -264,7 +349,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -277,7 +362,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           onPressed: addressTitleController.clear,
                           icon: Icon(Icons.clear),
                         ),
-                        hintText: "Ajouter un intitulé (p. ex : Maison)",
+                        labelText: "Ajouter un intitulé (p. ex : Maison)",
                         filled: true,
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
@@ -331,7 +416,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           adressTitleEdit,
                           widget.long,
                           widget.lat,
-                          widget.adresse,
+                          userAddress,
                           widget.iD);
                       Navigator.of(context).pop();
                     }
@@ -367,15 +452,20 @@ class _PageAddressEditState extends State<PageAddressEdit> {
           address,
           widget.iD);
     } catch (e) {
-      showAlertDialog(
-          context, "Erreur lors de l'envoi, veuillez réesayer ultérieurement");
+      !Platform.isIOS
+          ? showAlertDialog(context,
+              "Erreur lors de l'envoi, veuillez réesayer ultérieurement")
+          : CupertinoAlertDialog(
+              title: Text("Erreur"),
+              content: Text(
+                  "Erreur lors de l'envoi, veuillez réesayer ultérieurement"),
+            );
     }
   }
 }
 
 class MapStyle {
-  static String mapStyle =
-      ''' [
+  static String mapStyle = ''' [
   {
     "elementType": "geometry",
     "stylers": [

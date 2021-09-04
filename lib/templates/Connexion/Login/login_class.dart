@@ -17,7 +17,10 @@ import 'package:buyandbye/templates/Connexion/Login/background_login.dart';
 
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
 import 'package:buyandbye/templates/Connexion/Tools/social_icon.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:sign_button/sign_button.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -108,9 +111,9 @@ class _LoginState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Platform.isIOS
-                    ? SocialIcon(
-                        iconSrc: "assets/icons/apple.svg",
-                        press: () async {
+                    ? SignInButton.mini(
+                        buttonType: ButtonType.apple,
+                        onPressed: () async {
                           dynamic user =
                               await AuthMethods.instanace.signInWithApple();
                           if (user != null) {
@@ -121,66 +124,65 @@ class _LoginState extends State<Login> {
                                         Accueil()),
                                 (Route<dynamic> route) => false);
                           }
-                        },
-                      )
-                    : "",
-                SocialIcon(
-                  iconSrc: "assets/icons/facebook.svg",
-                  press: () async {
-                    try {
-                      await AuthMethods.instanace.signInWithFacebook(context);
+                        })
+                    : Container(),
+                SignInButton.mini(
+                    buttonType: ButtonType.facebook,
+                    onPressed: () async {
+                      try {
+                        await AuthMethods.instanace.signInWithFacebook(context);
 
-                      bool checkEmail =
-                          await AuthMethods.instanace.checkEmailVerification();
+                        bool checkEmail = await AuthMethods.instanace
+                            .checkEmailVerification();
 
-                      if (checkEmail == false) {
-                        showMessage("Vérification du mail",
-                            "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
-                        isCreated = true;
-                        await _preferences.setBool(_keyCreatedUser, isCreated);
-                        SharedPreferenceHelper().saveUserCreated(isCreated);
-                      } else {
-                        isCreated = false;
-                        await _preferences.setBool(_keyCreatedUser, isCreated);
-                        SharedPreferenceHelper().saveUserCreated(isCreated);
-                      }
-                    } catch (e) {
-                      if (e is FirebaseAuthException) {
-                        print(e);
-                        if (e.code ==
-                            'account-exists-with-different-credential') {
-                          String erreur =
-                              "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
-                          showMessage("Adresse mail déjà existante", erreur);
+                        if (checkEmail == false) {
+                          showMessage("Vérification du mail",
+                              "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
+                          isCreated = true;
+                          await _preferences.setBool(
+                              _keyCreatedUser, isCreated);
+                          SharedPreferenceHelper().saveUserCreated(isCreated);
+                        } else {
+                          isCreated = false;
+                          await _preferences.setBool(
+                              _keyCreatedUser, isCreated);
+                          SharedPreferenceHelper().saveUserCreated(isCreated);
+                        }
+                      } catch (e) {
+                        if (e is FirebaseAuthException) {
+                          print(e);
+                          if (e.code ==
+                              'account-exists-with-different-credential') {
+                            String erreur =
+                                "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
+                            showMessage("Adresse mail déjà existante", erreur);
+                          }
                         }
                       }
-                    }
-                  },
-                ),
-                SocialIcon(
-                  iconSrc: "assets/icons/google-plus.svg",
-                  press: () async {
-                    try {
-                      //Si la variable isCreated est égale à true, dans ce cas un message d'erreur s'affiche pour l'utilisa
-                      if (isCreated == true) {
-                        showMessage("Adresse mail non validé",
-                            "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
-                      } else {
-                        await AuthMethods.instanace.signInwithGoogle(context);
-                      }
-                    } catch (e) {
-                      if (e is FirebaseAuthException) {
-                        print(e);
-                        if (e.code ==
-                            'account-exists-with-different-credential') {
-                          String erreur =
-                              "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
-                          showMessage("Adresse mail déjà existante", erreur);
+                    }),
+                SignInButton.mini(
+                    buttonType: ButtonType.google,
+                    onPressed: () async {
+                      try {
+                        //Si la variable isCreated est égale à true, dans ce cas un message d'erreur s'affiche pour l'utilisateur
+                        if (isCreated == true) {
+                          showMessage("Adresse mail non validé",
+                              "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
+                        } else {
+                          await AuthMethods.instanace.signInwithGoogle(context);
+                        }
+                      } catch (e) {
+                        if (e is FirebaseAuthException) {
+                          print(e);
+                          if (e.code ==
+                              'account-exists-with-different-credential') {
+                            String erreur =
+                                "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
+                            showMessage("Adresse mail déjà existante", erreur);
+                          }
                         }
                       }
-                    }
-                  },
-                ),
+                    }),
               ],
             ),
             OrDivider(),
@@ -236,15 +238,21 @@ class _LoginState extends State<Login> {
                       },
                       autocorrect: false,
                       decoration: InputDecoration(
-                        hintText: "Votre mot de passe",
+                        labelText: "Mot de passe",
                         icon: Icon(
                           Icons.lock,
                           color: BuyandByeAppTheme.kLightPrimaryColor,
                         ),
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.visibility),
+                          icon: Icon(
+                            showPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
                           onPressed: () {
-                            showPassword = !showPassword;
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
                           },
                           color: BuyandByeAppTheme.kLightPrimaryColor,
                         ),
@@ -273,7 +281,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
                   AuthMethods()

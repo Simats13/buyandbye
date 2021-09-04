@@ -131,7 +131,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -149,7 +149,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                       style: TextStyle(fontSize: 15.0, color: Colors.black),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: "Numéro d'appartement, porte, étage",
+                        labelText: "Numéro d'appartement, porte, étage",
                         filled: true,
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
@@ -165,7 +165,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -183,7 +183,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                       style: TextStyle(fontSize: 15.0, color: Colors.black),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: "Nom de l'entreprise ou de l'immeuble",
+                        labelText: "Nom de l'entreprise ou de l'immeuble",
                         filled: true,
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
@@ -199,7 +199,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -217,7 +217,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                       style: TextStyle(fontSize: 15.0, color: Colors.black),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Code porte et nom de famille',
+                        labelText: 'Code porte et nom de famille',
                         filled: true,
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
@@ -256,7 +256,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
               Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                 child: SizedBox(
-                  height: 40,
+                  height: 50,
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
@@ -271,16 +271,11 @@ class _PageAddressNextState extends State<PageAddressNext> {
                       },
                       autofocus: false,
                       onSaved: (value) => adressTitle = value,
-                      // validator: (value) {
-                      //   if (value == null || value.isEmpty) {
-                      //     return 'Veuillez remplir le champ';
-                      //   }
-                      //   return null;
-                      // },
                       style: TextStyle(fontSize: 15.0, color: Colors.black),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Ajouter un intitulé (p. ex : Maison)',
+                        labelText: 'Ajouter un intitulé (p. ex : Maison)',
+                        //hintText: 'Ajouter un intitulé (p. ex : Maison)',
                         filled: true,
                         fillColor: Colors.grey.withOpacity(0.15),
                         contentPadding: const EdgeInsets.only(
@@ -346,8 +341,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
 }
 
 class MapStyle {
-  static String mapStyle =
-      ''' [
+  static String mapStyle = ''' [
   {
     "elementType": "geometry",
     "stylers": [

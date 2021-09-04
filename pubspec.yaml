@@ -86,7 +86,7 @@ dependencies:
   flutter_native_splash:
   wave: 
   app_settings:
-  flutter_signin_button:
+  sign_button:
 
 flutter_native_splash:
   #color: "#42a5f5"

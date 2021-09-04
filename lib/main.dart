@@ -94,16 +94,24 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Buy & Bye",
+        title: "Buy&Bye",
         debugShowCheckedModeBanner: false,
         // theme: ThemeData(
         //     primaryColor: buyandbyeAppTheme.black_electrik,
         //     scaffoldBackgroundColor: Colors.white),
         theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+          }),
           brightness: Brightness.light,
           // primaryColor: Colors.red,
         ),
         darkTheme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+          }),
           brightness: Brightness.dark,
           // additional settings go here
         ),

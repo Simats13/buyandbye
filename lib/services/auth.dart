@@ -339,6 +339,36 @@ class AuthMethods {
     return linkauthresult.user.displayName;
   }
 
+  Future linkExistingToApple({
+    List<apple.Scope> scopes = const [],
+  }) async {
+    // //get currently logged in user
+    final User existingUser = await AuthMethods().getCurrentUser();
+
+    final resulte = await apple.AppleSignIn.performRequests(
+        [apple.AppleIdRequest(requestedScopes: scopes)]);
+
+    final appleIdCredential = resulte.credential;
+    final oAuthProvider = OAuthProvider('apple.com');
+    final credential = oAuthProvider.credential(
+      idToken: String.fromCharCodes(appleIdCredential.identityToken),
+      accessToken: String.fromCharCodes(appleIdCredential.authorizationCode),
+    );
+
+    //now link these credentials with the existing user
+    UserCredential linkauthresult =
+        await existingUser.linkWithCredential(credential);
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(existingUser.uid)
+        .update({
+      "providers.Apple": true, //Facebook
+    });
+
+    return linkauthresult.user.displayName;
+  }
+
   Future unlinkGoogle() async {
     final User existingUser = await AuthMethods().getCurrentUser();
 
@@ -348,6 +378,19 @@ class AuthMethods {
         .doc(existingUser.uid)
         .update({
       "providers.Google": false, //Facebook
+    });
+    return linkauthresult.displayName;
+  }
+
+  Future unlinkApple() async {
+    final User existingUser = await AuthMethods().getCurrentUser();
+
+    User linkauthresult = await existingUser.unlink("apple.com");
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(existingUser.uid)
+        .update({
+      "providers.Apple": false, //Facebook
     });
     return linkauthresult.displayName;
   }

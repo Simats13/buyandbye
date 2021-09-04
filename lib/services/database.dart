@@ -35,6 +35,24 @@ class DatabaseMethods {
 //         .snapshots();
 //   }
 
+  Future deleteUser(String userID) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .delete();
+  }
+
+  Future deleteAddress(String idDoc) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("Address")
+        .doc(idDoc)
+        .delete();
+  }
+
   Future checkIfDocExists(String docId) async {
     return await FirebaseFirestore.instance
         .collection("users")

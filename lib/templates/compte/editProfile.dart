@@ -1,7 +1,13 @@
 import 'dart:io';
-
-import 'package:buyandbye/templates/Connexion/Tools/social_icon.dart';
+import 'package:buyandbye/templates/Paiement/add_credit_card.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
+import 'package:buyandbye/templates/Pages/address_search.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
+import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
+import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +15,10 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import 'package:sign_button/sign_button.dart';
+import 'package:geocoder/geocoder.dart' as geocode;
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -28,7 +37,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
       facebook,
       mail,
       myPhone;
-  List providers = [];
+
+  final _controller = TextEditingController();
+  String _streetNumber = '';
+  String _street;
+  String _city;
+  String _currentAddress = "";
+  String _currentAddressLocation = "";
+
+  String _zipCode = '';
+  double longitude = 0;
+  double latitude = 0;
   @override
   void initState() {
     super.initState();
@@ -53,12 +72,50 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() {});
   }
 
+  showMessage(String titre, e) {
+    if (!Platform.isIOS) {
+      showDialog(
+          context: context,
+          builder: (BuildContext builderContext) {
+            return AlertDialog(
+              title: Text(titre),
+              content: Text(e),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () async {
+                    Navigator.of(builderContext).pop();
+                  },
+                )
+              ],
+            );
+          });
+    } else {
+      return showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+                title: Text(titre),
+                content: Text(e),
+                actions: [
+                  // Close the dialog
+                  CupertinoButton(
+                      child: Text('OK'),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              ));
+    }
+  }
+
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,
+        backwardsCompatibility: false, // 1
+        systemOverlayStyle: SystemUiOverlayStyle.light,
         title: Text("Mes informations"),
         elevation: 1,
         leading: IconButton(
@@ -177,9 +234,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           myPhone == null
                               ? CircularProgressIndicator()
                               : myPhone == ""
-                                  ? Text("Pas de numéro enregistré",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500))
+                                  ? RichText(
+                                      text: TextSpan(
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
+                                        children: [
+                                          TextSpan(
+                                              text:
+                                                  'Aucun numéro enregistré.\n\nEnregistrez en un éditant votre profil en appuyant sur le  '),
+                                          WidgetSpan(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 2.0),
+                                              child: Icon(Icons.edit_rounded),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   : Text(myPhone),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
@@ -188,117 +262,271 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ? Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Facebook,
-                                      text: "Délier Facebook",
-                                      onPressed: () async {
-                                        await AuthMethods.instanace
-                                            .unlinkFacebook();
-                                        setState(() {
-                                          facebook = "false";
-                                        });
-                                      },
-                                    )
+                                        btnText: "Delier Facebook",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.facebook,
+                                        onPressed: () async {
+                                          await AuthMethods.instanace
+                                              .unlinkFacebook();
+                                          showMessage("Lien Facebook",
+                                              "Votre compte Facebook a bien été délié !");
+                                          setState(() {
+                                            facebook = "false";
+                                          });
+                                        })
                                   ],
                                 )
                               : Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Facebook,
-                                      text: "Lier Facebook",
-                                      onPressed: () async {
-                                        await AuthMethods.instanace
-                                            .linkExistingToFacebook();
-                                        setState(() {
-                                          facebook = "true";
-                                        });
-                                      },
-                                    )
+                                        btnText: "Lier Facebook",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.facebook,
+                                        onPressed: () async {
+                                          try {
+                                            await AuthMethods.instanace
+                                                .linkExistingToFacebook();
+                                            showMessage("Lien Facebook",
+                                                "Votre compte Facebook a bien été lié !");
+                                            setState(() {
+                                              facebook = "true";
+                                            });
+                                          } catch (e) {
+                                            if (e is FirebaseAuthException) {
+                                              print(e);
+                                              if (e.code ==
+                                                  'credential-already-in-use') {
+                                                String erreur =
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                showMessage(
+                                                    "Adresse mail déjà utilisée",
+                                                    erreur);
+                                              }
+                                            }
+                                          }
+                                        })
                                   ],
                                 ),
                           google == "true"
                               ? Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Google,
-                                      text: "Délier google",
-                                      onPressed: () async {
-                                        await AuthMethods.instanace
-                                            .unlinkGoogle();
-                                        setState(() {
-                                          google = "false";
-                                        });
-                                      },
-                                    )
+                                        btnText: "Delier Google",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.google,
+                                        onPressed: () async {
+                                          await AuthMethods.instanace
+                                              .unlinkGoogle();
+                                          showMessage("Lien Google",
+                                              "Votre compte Google a bien été délié !");
+                                          setState(() {
+                                            google = "false";
+                                          });
+                                        })
                                   ],
                                 )
                               : Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Google,
-                                      text: "Lier Google",
-                                      onPressed: () async {
-                                        await AuthMethods.instanace
-                                            .linkExistingToGoogle();
-                                        setState(() {
-                                          google = "true";
-                                        });
-                                      },
-                                    )
+                                        btnText: "Lier Google",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.google,
+                                        onPressed: () async {
+                                          try {
+                                            await AuthMethods.instanace
+                                                .linkExistingToGoogle();
+                                            showMessage("Lien Google",
+                                                "Votre compte Google a bien été lié !");
+                                            setState(() {
+                                              google = "true";
+                                            });
+                                          } catch (e) {
+                                            if (e is FirebaseAuthException) {
+                                              print(e);
+                                              if (e.code ==
+                                                  'credential-already-in-use') {
+                                                String erreur =
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                showMessage(
+                                                    "Adresse mail déjà utilisée",
+                                                    erreur);
+                                              }
+                                            }
+                                          }
+                                        })
                                   ],
                                 ),
                           mail == "true"
                               ? Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Email,
-                                      text: "Délier l'adresse mail",
-                                      onPressed: () async {
-                                        // await AuthMethods.instanace
-                                        //     .linkFbToGoogle();
-                                      },
-                                    )
+                                        btnText: "Delier Mail",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.mail,
+                                        onPressed: () async {
+                                          try {
+                                            print('click');
+                                          } catch (e) {
+                                            if (e is FirebaseAuthException) {
+                                              print(e);
+                                              if (e.code ==
+                                                  'credential-already-in-use') {
+                                                String erreur =
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                showMessage(
+                                                    "Adresse mail déjà utilisée",
+                                                    erreur);
+                                              }
+                                            }
+                                          }
+                                        })
                                   ],
                                 )
                               : Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Email,
-                                      text: "Lier l'adresse Mail",
-                                      onPressed: () async {
-                                        // await AuthMethods.instanace
-                                        //     .linkFbToGoogle();
-                                      },
-                                    )
+                                        btnText: "Lier Mail",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.mail,
+                                        onPressed: () async {
+                                          try {
+                                            print('click');
+                                          } catch (e) {
+                                            if (e is FirebaseAuthException) {
+                                              print(e);
+                                              if (e.code ==
+                                                  'credential-already-in-use') {
+                                                String erreur =
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                showMessage(
+                                                    "Adresse mail déjà utilisée",
+                                                    erreur);
+                                              }
+                                            }
+                                          }
+                                        })
                                   ],
                                 ),
                           apple == "true"
                               ? Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Apple,
-                                      text: "Délier Apple",
-                                      onPressed: () async {
-                                        // await AuthMethods.instanace
-                                        //     .linkFbToGoogle();
-                                      },
-                                    )
+                                        btnText: "Delier Apple",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.apple,
+                                        onPressed: () async {
+                                          try {
+                                            await AuthMethods.instanace
+                                                .unlinkApple();
+                                            showMessage("Lien Apple",
+                                                "Votre compte Apple a bien été délié !");
+                                            setState(() {
+                                              apple = "false";
+                                            });
+                                          } catch (e) {
+                                            if (e is FirebaseAuthException) {
+                                              print(e);
+                                            }
+                                          }
+                                        })
                                   ],
                                 )
                               : Row(
                                   children: [
                                     SignInButton(
-                                      Buttons.Apple,
-                                      text: "Lier Apple",
-                                      onPressed: () async {
-                                        // await AuthMethods.instanace
-                                        //     .linkFbToGoogle();
-                                      },
-                                    )
+                                        btnText: "Lier Apple",
+                                        imagePosition:
+                                            ImagePosition.left, // left or right
+                                        buttonType: ButtonType.apple,
+                                        onPressed: () async {
+                                          try {
+                                            await AuthMethods.instanace
+                                                .linkExistingToApple();
+                                            showMessage("Lien Apple",
+                                                "Votre compte Apple a bien été lié !");
+                                            setState(() {
+                                              apple = "true";
+                                            });
+                                          } catch (e) {
+                                            if (e is FirebaseAuthException) {
+                                              print(e);
+                                              if (e.code ==
+                                                  'credential-already-in-use') {
+                                                String erreur =
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                showMessage(
+                                                    "Adresse mail déjà utilisée",
+                                                    erreur);
+                                              }
+                                            }
+                                          }
+                                        })
                                   ],
                                 ),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(width: 10),
+                              IconButton(
+                                  onPressed: () async {
+                                    // generate a new token here
+                                    final sessionToken = Uuid().v4();
+                                    final Suggestion result = await showSearch(
+                                      context: context,
+                                      delegate: AddressSearch(sessionToken),
+                                    );
+                                    // This will change the text displayed in the TextField
+                                    if (result != null) {
+                                      final placeDetails =
+                                          await PlaceApiProvider(sessionToken)
+                                              .getPlaceDetailFromId(
+                                                  result.placeId);
+
+                                      setState(() {
+                                        _controller.text = result.description;
+                                        _streetNumber =
+                                            placeDetails.streetNumber;
+                                        _street = placeDetails.street;
+                                        _city = placeDetails.city;
+                                        _zipCode = placeDetails.zipCode;
+                                        _currentAddressLocation =
+                                            "$_streetNumber $_street, $_city ";
+                                      });
+
+                                      final query =
+                                          "$_streetNumber $_street , $_city";
+
+                                      var addresses = await geocode
+                                          .Geocoder.local
+                                          .findAddressesFromQuery(query);
+                                      var first = addresses.first;
+
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PageAddressNext(
+                                                    lat: first
+                                                        .coordinates.latitude,
+                                                    long: first
+                                                        .coordinates.longitude,
+                                                    adresse: first.addressLine,
+                                                  )));
+                                    }
+                                  },
+                                  icon: Icon(Icons.home)),
+                            ],
+                          ),
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
                                   .collection("users")
@@ -405,12 +633,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     return Column(
                                       children: [
                                         SizedBox(height: 20),
-                                        Container(
-                                            child: Text(
-                                                "Aucune adresse enregistrée",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w500))),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width -
+                                                  50,
+                                              child: RichText(
+                                                text: TextSpan(
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2,
+                                                  children: [
+                                                    TextSpan(
+                                                        text:
+                                                            "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur le "),
+                                                    WidgetSpan(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal:
+                                                                    2.0),
+                                                        child: Icon(Icons.home),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 20),
                                       ],
                                     );
                                   }
@@ -420,10 +675,166 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               }),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes moyens de paiement"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(width: 10),
+                              IconButton(
+                                  onPressed: () async {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                CreditCardAdd()));
+                                  },
+                                  icon: Icon(Icons.credit_card)),
+                            ],
+                          ),
                           SizedBox(height: 20),
-                          Text("Pas de moyen de paiement enregistré",
-                              style: TextStyle(fontWeight: FontWeight.w500)),
+                          RichText(
+                            text: TextSpan(
+                              style: Theme.of(context).textTheme.bodyText2,
+                              children: [
+                                TextSpan(
+                                    text:
+                                        "Aucun moyens de paiement enregistrés.\n\nEnregistrez en un lors d'un achat ou bien en cliquant sur le "),
+                                WidgetSpan(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 2.0),
+                                    child: Icon(Icons.credit_card),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           Divider(thickness: 0.5, color: Colors.black),
+                          SizedBox(height: 20),
+                          Text("Suppression du compte"),
+                          SizedBox(height: 20),
+                          Platform.isIOS
+                              ? Center(
+                                  child: CupertinoButton(
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      showCupertinoDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              CupertinoAlertDialog(
+                                                title: Text(
+                                                    "Suppression du compte"),
+                                                content: Text(
+                                                    "Souhaitez-vous réellement supprimer votre compte ?"),
+                                                actions: [
+                                                  // Close the dialog
+                                                  CupertinoButton(
+                                                      child: Text('Annuler'),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      }),
+                                                  CupertinoButton(
+                                                    child: Text(
+                                                      'Suppression',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                    onPressed: () async {
+                                                      User user =
+                                                          await AuthMethods
+                                                              .instanace
+                                                              .getCurrentUser();
+
+                                                      user.delete();
+                                                      await DatabaseMethods
+                                                          .instanace
+                                                          .deleteUser(user.uid);
+                                                      SharedPreferences
+                                                          preferences =
+                                                          await SharedPreferences
+                                                              .getInstance();
+                                                      await preferences.clear();
+                                                      AuthMethods()
+                                                          .signOut()
+                                                          .then((s) {
+                                                        AuthMethods
+                                                            .toogleNavBar();
+                                                      });
+                                                      Navigator.of(context)
+                                                          .pushAndRemoveUntil(
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          PageLogin()),
+                                                              (Route<dynamic>
+                                                                      route) =>
+                                                                  false);
+                                                    },
+                                                  )
+                                                ],
+                                              ));
+                                    },
+                                    child: Text("Supprimer mon compte"),
+                                  ),
+                                )
+                              : Center(
+                                  child: RoundedButton(
+                                    color: Colors.red,
+                                    text: "Supprimer mon compte",
+                                    press: () {
+                                      return showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: Text("Suppression du compte"),
+                                          content: Text(
+                                              "Souhaitez-vous réellement supprimer votre compte ?"),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text("Annuler"),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                            ),
+                                            TextButton(
+                                              child: Text(
+                                                'Suppression',
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                              onPressed: () async {
+                                                User user = await AuthMethods
+                                                    .instanace
+                                                    .getCurrentUser();
+
+                                                user.delete();
+                                                await DatabaseMethods.instanace
+                                                    .deleteUser(user.uid);
+                                                SharedPreferences preferences =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                await preferences.clear();
+                                                AuthMethods()
+                                                    .signOut()
+                                                    .then((s) {
+                                                  AuthMethods.toogleNavBar();
+                                                });
+                                                Navigator.of(context)
+                                                    .pushAndRemoveUntil(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PageLogin()),
+                                                        (Route<dynamic>
+                                                                route) =>
+                                                            false);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                          SizedBox(height: 20),
                         ]),
                   )),
               // Affiche les champs de texte pour modifier les informations
