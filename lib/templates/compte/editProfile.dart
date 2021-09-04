@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -22,8 +23,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       myUserName,
       myEmail,
       myProfilePic,
+      apple,
+      google,
+      facebook,
+      mail,
       myPhone;
-
+  List providers = [];
   @override
   void initState() {
     super.initState();
@@ -40,10 +45,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
-
-    if (user.providerData.length < 2) {
-      print(user.providerData[0].providerId);
-    }
+    apple = "${querySnapshot.docs[0]["providers"]['Apple']}";
+    facebook = "${querySnapshot.docs[0]["providers"]['Facebook']}";
+    mail = "${querySnapshot.docs[0]["providers"]['Mail']}";
+    google = "${querySnapshot.docs[0]["providers"]['Google']}";
 
     setState(() {});
   }
@@ -179,27 +184,118 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Méthode de connexion"),
-                          SocialIcon(
-                            iconSrc: "assets/icons/facebook.svg",
-                            press: () async {
-                              try {
-                                dynamic result = await AuthMethods.instanace
-                                    .signInWithFacebook(context);
-                              } catch (e) {
-                                if (e is FirebaseAuthException) {}
-                              }
-                            },
-                          ),
-                          SocialIcon(
-                            iconSrc: "assets/icons/google-plus.svg",
-                            press: () async {
-                              try {
-                                await AuthMethods.instanace.linkFbToGoogle();
-                              } catch (e) {
-                                throw (e);
-                              }
-                            },
-                          ),
+                          facebook == "true"
+                              ? Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Facebook,
+                                      text: "Délier Facebook",
+                                      onPressed: () async {
+                                        await AuthMethods.instanace
+                                            .unlinkFacebook();
+                                        setState(() {
+                                          facebook = "false";
+                                        });
+                                      },
+                                    )
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Facebook,
+                                      text: "Lier Facebook",
+                                      onPressed: () async {
+                                        await AuthMethods.instanace
+                                            .linkExistingToFacebook();
+                                        setState(() {
+                                          facebook = "true";
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                          google == "true"
+                              ? Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Google,
+                                      text: "Délier google",
+                                      onPressed: () async {
+                                        await AuthMethods.instanace
+                                            .unlinkGoogle();
+                                        setState(() {
+                                          google = "false";
+                                        });
+                                      },
+                                    )
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Google,
+                                      text: "Lier Google",
+                                      onPressed: () async {
+                                        await AuthMethods.instanace
+                                            .linkExistingToGoogle();
+                                        setState(() {
+                                          google = "true";
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                          mail == "true"
+                              ? Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Email,
+                                      text: "Délier l'adresse mail",
+                                      onPressed: () async {
+                                        // await AuthMethods.instanace
+                                        //     .linkFbToGoogle();
+                                      },
+                                    )
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Email,
+                                      text: "Lier l'adresse Mail",
+                                      onPressed: () async {
+                                        // await AuthMethods.instanace
+                                        //     .linkFbToGoogle();
+                                      },
+                                    )
+                                  ],
+                                ),
+                          apple == "true"
+                              ? Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Apple,
+                                      text: "Délier Apple",
+                                      onPressed: () async {
+                                        // await AuthMethods.instanace
+                                        //     .linkFbToGoogle();
+                                      },
+                                    )
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    SignInButton(
+                                      Buttons.Apple,
+                                      text: "Lier Apple",
+                                      onPressed: () async {
+                                        // await AuthMethods.instanace
+                                        //     .linkFbToGoogle();
+                                      },
+                                    )
+                                  ],
+                                ),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),

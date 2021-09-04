@@ -162,7 +162,7 @@ class _LoginState extends State<Login> {
                       //Si la variable isCreated est égale à true, dans ce cas un message d'erreur s'affiche pour l'utilisa
                       if (isCreated == true) {
                         showMessage("Adresse mail non validé",
-                            "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil");
+                            "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                       } else {
                         await AuthMethods.instanace.signInwithGoogle(context);
                       }
