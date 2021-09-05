@@ -14,6 +14,7 @@ import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
+import 'templates/Pages/pageBienvenue.dart';
 import 'templates_commercant/nav_bar.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -26,8 +27,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     badge: true,
@@ -150,7 +152,7 @@ class MainScreen extends StatelessWidget {
               },
             );
           }
-          return PageLogin();
+          return PageBienvenue();
         });
   }
 }
