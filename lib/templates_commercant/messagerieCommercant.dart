@@ -123,7 +123,8 @@ class ChatRoomListTile extends StatefulWidget {
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
   String profilePicUrl = "",
-      name = "",
+      fname,
+      lname,
       username = "",
       token = "",
       userid,
@@ -135,7 +136,8 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     userid = user.uid;
     username = widget.clientID;
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
-    name = "${querySnapshot.docs[0]["name"]}";
+    fname = "${querySnapshot.docs[0]["fname"]}";
+    lname = "${querySnapshot.docs[0]["lname"]}";
     idTest = "${querySnapshot.docs[0]["id"]}";
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
     token = "${querySnapshot.docs[0]["FCMToken"]}";
@@ -174,7 +176,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             );
             //METTRE UN SHIMMER
           }
-          if (chatListSnapshot.data.docs[widget.index].get('badgeCount') != 0) {
+          if (chatListSnapshot.data.docs[0].get('badgeCount') != 0) {
             isActive = true;
           } else {
             isActive = false;
@@ -185,7 +187,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
               borderRadius: BorderRadius.circular(15),
               child: ImageController.instance.cachedImage(profilePicUrl),
             ),
-            title: Text(name),
+            title: Text(fname + " " + lname),
             subtitle: Text(
               widget.lastMessage,
               style: isActive == true
@@ -252,7 +254,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                           token,
                           idTest, // ID DU CORRESPONDANT
                           widget.chatRoomId, //ID DE LA CONV
-                          name, // NOM DU CORRESPONDANT
+                          fname + " " + lname, // NOM DU CORRESPONDANT
                           profilePicUrl, // IMAGE DU CORRESPONDANT
                         ))),
           );
