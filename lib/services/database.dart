@@ -8,14 +8,6 @@ import 'package:uuid/uuid.dart';
 class DatabaseMethods {
   static DatabaseMethods get instanace => DatabaseMethods();
 
-  Future addUserInfoToDB(
-      String userId, Map<String, dynamic> userInfoMap) async {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .doc(userId)
-        .set(userInfoMap);
-  }
-
   Future userAuthData(String userId) async {
     return FirebaseFirestore.instance.collection("users").doc(userId).get();
   }
@@ -43,6 +35,24 @@ class DatabaseMethods {
 //         .snapshots();
 //   }
 
+  Future deleteUser(String userID) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .delete();
+  }
+
+  Future deleteAddress(String idDoc) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("Address")
+        .doc(idDoc)
+        .delete();
+  }
+
   Future checkIfDocExists(String docId) async {
     return await FirebaseFirestore.instance
         .collection("users")
@@ -57,18 +67,10 @@ class DatabaseMethods {
     });
   }
 
-  Future addSellerInfoToDB(
-      String _nomSeller, Map<String, dynamic> userInfoMap) async {
+  Future addInfoToDB(
+      String collection, userid, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance
-        .collection("magasins")
-        .doc(_nomSeller)
-        .set(userInfoMap);
-  }
-
-  Future addSellerInfoToDB2(
-      String userid, Map<String, dynamic> userInfoMap) async {
-    return FirebaseFirestore.instance
-        .collection("users")
+        .collection(collection)
         .doc(userid)
         .set(userInfoMap);
   }
@@ -217,13 +219,16 @@ class DatabaseMethods {
   }
 
   // On ne récupère que les produits que le commerçant a choisi comme étant visible par les clients
-  Stream getVisibleProducts(String sellerId) {
-    return FirebaseFirestore.instance
+  Stream getVisibleProducts(String sellerId, String categorie, int actualPage) {
+    Stream query = FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
         .collection("produits")
         .where("visible", isEqualTo: true)
+        .where("categorie", isEqualTo: categorie)
+        .limit(6)
         .snapshots();
+    return query;
   }
 
   Stream getOneProduct(sellerId, productId) {

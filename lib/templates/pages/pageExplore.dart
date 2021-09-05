@@ -423,9 +423,22 @@ class _PageExploreState extends State<PageExplore> {
                     stream: stream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CupertinoActivityIndicator(),
-                        );
+                        return Container(
+                            child: Center(
+                          child: Platform.isIOS
+                              ? Column(
+                                  children: [
+                                    CupertinoActivityIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                )
+                              : Column(
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                ),
+                        ));
                         //METTRE UN SHIMMER
                       }
                       if (!snapshot.hasData) return Container();

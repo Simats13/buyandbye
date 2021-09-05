@@ -1,0 +1,28 @@
+/* Panel Top 09 */
+.Logo {
+  display: flex;
+ 	align-items: center;
+}
+.Logo h1 {
+  margin-left: 16px;
+  margin-bottom: 0;
+  font-size: 22px;
+}
+
+/* Slide 05 (#1) */
+#title {
+  font-size: 76px;
+  margin-bottom: 16px;
+}
+@media (max-width: 480px) {
+  #title {
+   font-size: 56px; 
+  }
+}
+
+
+.bottom .cop {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: .5;
+}

@@ -19,6 +19,7 @@ String getDate(time) {
 
 class _CommandesCommercantState extends State<CommandesCommercant> {
   var clickedCategorie = 0;
+  int clickedNumber = 1;
 
   // Première classe qui affiche les 3 boutons de statut des commandes
   Widget build(BuildContext context) {
@@ -172,7 +173,37 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                         ),
                       ],
                     ),
-                    Divider(thickness: 0.5, color: Colors.black),
+                    SizedBox(height: 20),
+                    Text("Pagination en cours de création,"),
+                    Text("Masquer pour démonstration"),
+                    // Le numéro de page actuelle reste le même sur En attente, En cours et Terminées.
+                    // Créer 3 variables qui seront modifiées selon la catégorie affichée
+                    SizedBox(height: 20),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      for (int i = 1; i < 6; i++)
+                        Container(
+                            height: 30,
+                            width: 30,
+                            margin: EdgeInsets.only(left: 10, right: 10),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                fixedSize: Size(10, 10),
+                              ),
+                              child: Text((i).toString(),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: i == clickedNumber
+                                          ? Colors.black
+                                          : Colors.grey)),
+                              onPressed: () {
+                                clickedNumber = i;
+                                setState(() {});
+                              },
+                            ))
+                    ]),
+                    SizedBox(height: 20),
                   ]),
                 );
               } else {
@@ -257,7 +288,7 @@ class _CommandState extends State<Command> {
                         children: [
                           // Container coloré pour masquer le message "Aucune commande"
                           Container(
-                            height: 18,
+                            height: 20,
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                                 color: brightness == "Brightness.light"
@@ -266,8 +297,7 @@ class _CommandState extends State<Command> {
                           ),
                           // Affiche un résumé de chaque commande
                           Container(
-                            width: 380,
-                            height: 80,
+                            margin: EdgeInsets.only(left: 20, right: 20),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
@@ -278,15 +308,21 @@ class _CommandState extends State<Command> {
                                 SizedBox(height: 10),
                                 // Affiche en ligne le numéro de commande et le prix total
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     SizedBox(width: 30),
-                                    Text("Commande n°" + reference.toString(), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                                    Text("Commande n°" + reference.toString(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16)),
                                     SizedBox(width: 100),
-                                    Text(prix.toStringAsFixed(2) + "€", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                                    Text(prix.toStringAsFixed(2) + "€",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16)),
                                   ],
                                 ),
+                                SizedBox(height: 10),
                                 // Affiche en ligne la date de la commande et le nombre d'articles différents
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -295,20 +331,30 @@ class _CommandState extends State<Command> {
                                     SizedBox(width: 20)
                                   ],
                                 ),
+                                SizedBox(height: 10),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     SizedBox(width: 30),
-                                    Text(date, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                                    Text(date,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16)),
                                     SizedBox(width: 100),
                                     nbArticles <= 1
                                         ? Text(
-                                            nbArticles.toString() + " article", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))
+                                            nbArticles.toString() + " article",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 16))
                                         : Text(
-                                            nbArticles.toString() + " articles", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))
+                                            nbArticles.toString() + " articles",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 16))
                                   ],
                                 ),
+                                SizedBox(height: 10),
                               ],
                             ),
                           ),

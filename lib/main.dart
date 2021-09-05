@@ -27,8 +27,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     badge: true,
@@ -50,7 +51,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
+  bool checkEmailVerification = false;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -62,6 +63,7 @@ class _MyAppState extends State<MyApp> {
     _getFCMToken();
     super.initState();
     Geolocator.getCurrentPosition();
+    AuthMethods.instanace.checkEmailVerification();
   }
 
   Future<void> _getFCMToken() async {
@@ -94,16 +96,24 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Buy & Bye",
+        title: "Buy&Bye",
         debugShowCheckedModeBanner: false,
         // theme: ThemeData(
         //     primaryColor: buyandbyeAppTheme.black_electrik,
         //     scaffoldBackgroundColor: Colors.white),
         theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+          }),
           brightness: Brightness.light,
           // primaryColor: Colors.red,
         ),
         darkTheme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+          }),
           brightness: Brightness.dark,
           // additional settings go here
         ),
@@ -125,9 +135,12 @@ class MainScreen extends StatelessWidget {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                if (snapshot.hasData) {
                   final userDoc = snapshot.data;
                   final user = userDoc;
+                  if (user['emailVerified'] == false) {
+                    return PageLogin();
+                  }
                   if (user['admin'] == true) {
                     return NavBar();
                   } else {

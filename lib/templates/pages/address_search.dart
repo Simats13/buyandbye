@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/Pages/place_service.dart';
 
@@ -61,7 +64,22 @@ class AddressSearch extends SearchDelegate<Suggestion> {
                   ),
                   itemCount: snapshot.data.length,
                 )
-              : Container(child: Text('Chargement...')),
+              : Container(
+                  child: Center(
+                  child: Platform.isIOS
+                      ? Column(
+                          children: [
+                            CupertinoActivityIndicator(),
+                            Text('Chargement...'),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            CircularProgressIndicator(),
+                            Text('Chargement...'),
+                          ],
+                        ),
+                )),
     );
   }
 }

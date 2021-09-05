@@ -152,6 +152,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     ]);
   }
 
+  // La variable avant le Widget sinon elle n'est pas modifiée dynamiquement
+  String dropdownValue = 'Électroménager';
+  int clickedNumber = 1;
   Widget getBody() {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
@@ -509,42 +512,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           SizedBox(
                             height: 15,
                           ),
-                          // Container(
-                          //   child: Column(
-                          //     children: List.generate(comments.length, (index) {
-                          //       return Padding(
-                          //         padding: const EdgeInsets.only(
-                          //           bottom: 15,
-                          //         ),
-                          //         child: Container(
-                          //           height: 40,
-                          //           child: Center(
-                          //             child: Padding(
-                          //               padding: const EdgeInsets.only(
-                          //                   left: 15, right: 15),
-                          //               child: Row(
-                          //                 children: [
-                          //                   Icon(
-                          //                     Icons.person_pin,
-                          //                     size: 17,
-                          //                   ),
-                          //                   SizedBox(
-                          //                     width: 15,
-                          //                   ),
-                          //                   Text(
-                          //                     comments[index],
-                          //                     style: TextStyle(
-                          //                         fontSize: 14, height: 1.5),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       );
-                          //     }),
-                          //   ),
-                          // ),
                           Text(
                             "Voir plus ...",
                             style: TextStyle(
@@ -561,22 +528,198 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        "Produits disponibles",
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      DropdownButton<String>(
+                        value: dropdownValue,
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                        iconSize: 24,
+                        elevation: 16,
+                        onChanged: (String newValue) {
+                          setState(() {
+                            dropdownValue = newValue;
+                          });
+                        },
+                        items: categorieNames
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 20),
+                      produits(dropdownValue),
+                      SizedBox(height: 30),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 5),
+                            for (int i = 1; i < 6; i++)
+                              Container(
+                                  height: 30,
+                                  width: 30,
+                                  margin: EdgeInsets.only(left: 10, right: 10),
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      fixedSize: Size(10, 10),
+                                    ),
+                                    child: Text((i).toString(),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                            color: i == clickedNumber
+                                                ? Colors.black
+                                                : Colors.grey)),
+                                    onPressed: () {
+                                      clickedNumber = i;
+                                      setState(() {});
+                                    },
+                                  ))
+                          ]),
+                      ////////// Design uniquement //////////
+                      SizedBox(height: 20),
+                      Text(
+                        "Meilleures ventes",
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text(
-                            "Produits disponibles",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                          SizedBox(width: 15),
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 15,
+                      SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                          SizedBox(width: 15),
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                        ],
                       ),
-                      Column(children: [produits()])
+                      SizedBox(height: 30),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 5),
+                            for (int i = 0; i < 3; i++)
+                              Container(
+                                  margin: EdgeInsets.only(left: 5, right: 5),
+                                  child: Icon(Icons.circle_rounded,
+                                      size: 12,
+                                      color:
+                                          i == 0 ? Colors.black : Colors.grey))
+                          ]),
+                      SizedBox(height: 30),
+                      Text(
+                        "Recommandations du commerçant",
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                          SizedBox(width: 15),
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                          SizedBox(width: 15),
+                          Container(
+                            height: 180,
+                            width: 180,
+                            decoration: BoxDecoration(
+                                color: BuyandByeAppTheme.white_grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(child: Text("Design uniquement")),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 5),
+                            for (int i = 0; i < 3; i++)
+                              Container(
+                                  margin: EdgeInsets.only(left: 5, right: 5),
+                                  child: Icon(Icons.circle_rounded,
+                                      size: 12,
+                                      color:
+                                          i == 0 ? Colors.black : Colors.grey))
+                          ]),
+                      ////////// Design uniquement //////////
                     ],
                   ),
                 ],
@@ -588,13 +731,13 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     );
   }
 
-  Widget produits() {
-    print(id);
+  Widget produits(selectedCategorie) {
     return StreamBuilder(
-        stream: DatabaseMethods().getVisibleProducts(id),
+        stream: DatabaseMethods().getVisibleProducts(id, selectedCategorie, clickedNumber),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           return GridView.builder(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

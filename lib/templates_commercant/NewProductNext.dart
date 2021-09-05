@@ -73,18 +73,58 @@ class _NewProductNextState extends State<NewProductNext> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
-                                      Navigator.pop(context);
                                       if (snapshot.data["images"].length == 0) {
-                                        return FirebaseFirestore.instance
-                                            .collection("magasins")
-                                            .doc(widget.myID)
-                                            .collection("produits")
-                                            .doc(widget.productId)
-                                            .update({
-                                          "images": [
-                                            "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Pas_d%27image_disponible.svg/1024px-Pas_d%27image_disponible.svg.png"
-                                          ]
-                                        });
+                                        showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text(
+                                                    "Aucune image enregistrée"),
+                                                content: Text(
+                                                    "Vous n'avez enregistré aucune image pour ce produit.\nSi vous continuez, une image par défaut sera enregistrée"),
+                                                actions: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child:
+                                                              Text("Annuler")),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.pop(
+                                                                context);
+                                                            return FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    "magasins")
+                                                                .doc(
+                                                                    widget.myID)
+                                                                .collection(
+                                                                    "produits")
+                                                                .doc(widget
+                                                                    .productId)
+                                                                .update({
+                                                              "images": [
+                                                                "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Pas_d%27image_disponible.svg/1024px-Pas_d%27image_disponible.svg.png"
+                                                              ]
+                                                            });
+                                                          },
+                                                          child:
+                                                              Text("Continuer"))
+                                                    ],
+                                                  )
+                                                ],
+                                              );
+                                            });
                                       }
                                     },
                                     child: Text("Terminer"),
