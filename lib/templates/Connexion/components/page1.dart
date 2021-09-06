@@ -73,19 +73,22 @@ class RelaxView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SlideTransition(
-                position: _relaxAnimation,
-                child: Text(
-                  "Découverte",
-                  style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold),
-                ),
-              ),
+                  position: _relaxAnimation,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      "Découverte",
+                      style: TextStyle(
+                          fontSize: 26.0, fontWeight: FontWeight.bold),
+                    ),
+                  )),
               SlideTransition(
                 position: _textAnimation,
                 child: Padding(
                   padding:
-                      EdgeInsets.only(left: 64, right: 64, top: 16, bottom: 16),
+                      EdgeInsets.only(left: 64, right: 64, top: 32, bottom: 48),
                   child: Text(
-                    "Découvrez ou redecouvrez les commerces proches de chez vous 🛍️",
+                    "Découvrez ou redécouvrez les commerces proches de chez vous 🛍️",
                     textAlign: TextAlign.center,
                   ),
                 ),

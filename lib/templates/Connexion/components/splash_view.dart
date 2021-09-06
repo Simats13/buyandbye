@@ -29,6 +29,7 @@ class _SplashViewState extends State<SplashView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
+              height: MediaQuery.of(context).size.height / 1.75,
               width: MediaQuery.of(context).size.width,
               child: Image.asset(
                 'assets/logo/logo.png',
@@ -43,14 +44,11 @@ class _SplashViewState extends State<SplashView> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 64, right: 64),
+              padding: EdgeInsets.only(left: 64, right: 64, bottom: 80),
               child: Text(
                 "L'application proche de chez vous",
                 textAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(
-              height: 48,
             ),
             Padding(
               padding: EdgeInsets.only(

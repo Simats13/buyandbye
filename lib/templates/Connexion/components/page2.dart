@@ -94,17 +94,18 @@ class CareView extends StatelessWidget {
               SlideTransition(
                 position: _relaxFirstHalfAnimation,
                 child: SlideTransition(
-                  position: _relaxSecondHalfAnimation,
-                  child: Text(
-                    "Local",
-                    style:
-                        TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold),
-                  ),
-                ),
+                    position: _relaxSecondHalfAnimation,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 48, bottom: 48),
+                      child: Text(
+                        "Local",
+                        style: TextStyle(
+                            fontSize: 26.0, fontWeight: FontWeight.bold),
+                      ),
+                    )),
               ),
               Padding(
-                padding:
-                    EdgeInsets.only(left: 64, right: 64, bottom: 16, top: 16),
+                padding: EdgeInsets.only(left: 64, right: 64, bottom: 16),
                 child: Text(
                   "Utilisateur et commerçant main dans la main afin de consommer local",
                   textAlign: TextAlign.center,
