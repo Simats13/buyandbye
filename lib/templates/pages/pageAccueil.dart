@@ -1235,6 +1235,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                                                 ['ClickAndCollect'],
                                             livraison: documents[index]
                                                 ['livraison'],
+                                            sellerID: documents[index]
+                                                ['id'],
                                           )));
                             },
                             child: Stack(
@@ -1375,6 +1377,8 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                                                 ['ClickAndCollect'],
                                             livraison: documents[index]
                                                 ['livraison'],
+                                            sellerID: documents[index]
+                                                ['id'],
                                           )));
                             },
                             child: Container(
@@ -1508,6 +1512,8 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                                                   ['ClickAndCollect'],
                                               livraison: documents[index]
                                                   ['livraison'],
+                                            sellerID: documents[index]
+                                                ['id'],
                                             )));
                               },
                               child: Container(
@@ -1608,6 +1614,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                             .docs[index]['ClickAndCollect'],
                                         livraison: snapshot.data.docs[index]
                                             ['livraison'],
+                                            sellerID: snapshot.data.docs[index]
+                                                ['id'],
                                       )));
                         },
                         child: Container(
@@ -1689,6 +1697,8 @@ class _AllStoresState extends State<AllStores> {
                                             ['ClickAndCollect'],
                                         livraison: snapshot.data[index]
                                             ['livraison'],
+                                            sellerID: snapshot.data[index]
+                                            ['id'],
                                       )));
                         },
                         child: Column(

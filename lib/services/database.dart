@@ -26,15 +26,6 @@ class DatabaseMethods {
         .snapshots();
   }
 
-// Stream getOneProduct(sellerId, productId) {
-//     return FirebaseFirestore.instance
-//         .collection("magasins")
-//         .doc(sellerId)
-//         .collection("produits")
-//         .doc(productId)
-//         .snapshots();
-//   }
-
   Future deleteUser(String userID) async {
     return await FirebaseFirestore.instance
         .collection("users")
@@ -141,22 +132,22 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  Future<QuerySnapshot> getUserInfo(String username) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .where("id", isEqualTo: username)
-        .get();
-  }
-
   Future updateUserInfo(userId, lname, fname, email, phone) async {
     return FirebaseFirestore.instance.collection("users").doc(userId).update(
         {"lname": lname, "fname": fname, "email": email, "phone": phone});
   }
 
-  Future<QuerySnapshot> getMagasinInfo(String username) async {
+  Future updateSellerInfo(userId, name, email, phone) async {
+    return FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(userId)
+        .update({"name": name, "email": email, "phone": phone});
+  }
+
+  Future<QuerySnapshot> getMagasinInfo(String sellerId) async {
     return await FirebaseFirestore.instance
-        .collection("users")
-        .where("name", isEqualTo: username)
+        .collection("magasins")
+        .where("id", isEqualTo: sellerId)
         .get();
   }
 
@@ -165,6 +156,13 @@ class DatabaseMethods {
         .collection("magasins")
         .where("id", isEqualTo: id)
         .get();
+  }
+
+  Stream getSellerInfo(userId) {
+    return FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(userId)
+        .snapshots();
   }
 
   Future<Stream<QuerySnapshot>> getInfoConv(String myID) async {

@@ -367,17 +367,18 @@ class ModifyDetailProduit extends StatefulWidget {
   _ModifyDetailProduitState createState() => _ModifyDetailProduitState();
 }
 
+// Déclaration des variables pour les champs de modification
+final nameField = TextEditingController();
+final referenceField = TextEditingController();
+final descriptionField = TextEditingController();
+final priceField = TextEditingController();
+final quantityField = TextEditingController();
+
 // 2e classe qui affiche les champ de texte pour modifier les informations
 class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
   Widget build(BuildContext context) {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
-    // Déclaration des variables pour les champs de modification
-    final nameField = TextEditingController();
-    final referenceField = TextEditingController();
-    final descriptionField = TextEditingController();
-    final priceField = TextEditingController();
-    final quantityField = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

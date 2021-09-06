@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:buyandbye/templates/Paiement/add_credit_card.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
 import 'package:buyandbye/templates/Pages/address_search.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
@@ -42,9 +41,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _streetNumber = '';
   String _street;
   String _city;
-  String _currentAddress = "";
+  // ignore: unused_field
   String _currentAddressLocation = "";
-
+  // ignore: unused_field
   String _zipCode = '';
   double longitude = 0;
   double latitude = 0;
@@ -859,15 +858,16 @@ class ModifyProfile extends StatefulWidget {
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
+// Déclaration des variables pour les champs de modification
+final lnameField = TextEditingController();
+final fnameField = TextEditingController();
+final emailField = TextEditingController();
+final phoneField = TextEditingController();
+final passwordField = TextEditingController();
+
 // Afiche les champ de modification des informations
 class _ModifyProfileState extends State<ModifyProfile> {
   Widget build(BuildContext context) {
-    // Déclaration des variables pour les champs de modification
-    final lnameField = TextEditingController();
-    final fnameField = TextEditingController();
-    final emailField = TextEditingController();
-    final phoneField = TextEditingController();
-    final passwordField = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

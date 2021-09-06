@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:buyandbye/json/menu_json.dart';
@@ -26,15 +29,15 @@ class PageDetail extends StatefulWidget {
       this.description,
       this.adresse,
       this.clickAndCollect,
-      this.livraison
-      //Sthis.comments
-      })
+      this.livraison,
+      this.sellerID})
       : super(key: key);
 
   final String img;
   final String name;
   final String description;
   final String adresse;
+  final String sellerID;
   final bool livraison;
   final bool clickAndCollect;
   _PageDetail createState() => _PageDetail();
@@ -49,7 +52,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       myUserName,
       myEmail,
       selectedUserToken,
-      conv,
       id,
       message,
       lastMessageTs,
@@ -60,7 +62,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   void initState() {
     super.initState();
     onScreenLoaded();
-    getThisUserInfo();
+    getSellerInfo();
     NotificationController.instance.updateTokenToServer();
     if (mounted) {
       checkLocalNotification(localNotificationAnimation, "");
@@ -79,13 +81,10 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     setState(() {});
   }
 
-  getThisUserInfo() async {
-    conv = widget.name;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMagasinInfo(conv);
-    id = "${querySnapshot.docs[0]["id"]}";
-    print("ID AUTRE :" + id);
+  getSellerInfo() async {
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getMagasinInfo(widget.sellerID);
     selectedUserToken = "${querySnapshot.docs[0]["FCMToken"]}";
-    print("Token AUTRE :" + selectedUserToken);
     setState(() {});
   }
 
@@ -156,6 +155,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   String dropdownValue = 'Électroménager';
   int clickedNumber = 1;
   Widget getBody() {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Padding(
@@ -536,24 +537,77 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         ),
                       ),
                       SizedBox(height: 20),
-                      DropdownButton<String>(
-                        value: dropdownValue,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        iconSize: 24,
-                        elevation: 16,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            dropdownValue = newValue;
-                          });
-                        },
-                        items: categorieNames
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
+                      Platform.isIOS
+                          ? TextButton(
+                              child: Row(
+                                children: [
+                                  Text(dropdownValue,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black)),
+                                  SizedBox(width: 10),
+                                  Icon(Icons.arrow_drop_down,
+                                      size: 30,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black)
+                                ],
+                              ),
+                              onPressed: () {
+                                showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (context) => Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 200,
+                                    child: CupertinoPicker(
+                                        itemExtent: 50,
+                                        backgroundColor: isDarkMode
+                                            ? Color.fromRGBO(48, 48, 48, 1)
+                                            : Colors.white,
+                                        onSelectedItemChanged: (value) {
+                                          setState(() {
+                                            dropdownValue =
+                                                categorieNames[value];
+                                          });
+                                        },
+                                        children: [
+                                          for (String name in categorieNames)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: Text(name,
+                                                  style: TextStyle(
+                                                      color: isDarkMode
+                                                          ? Colors.white
+                                                          : Colors.black)),
+                                            )
+                                        ]),
+                                  ),
+                                );
+                              },
+                            )
+                          : DropdownButton<String>(
+                              value: dropdownValue,
+                              icon:
+                                  const Icon(Icons.keyboard_arrow_down_rounded),
+                              iconSize: 24,
+                              elevation: 16,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  dropdownValue = newValue;
+                                });
+                              },
+                              items: categorieNames
+                                  .map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                return DropdownMenuItem(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
                       SizedBox(height: 20),
                       produits(dropdownValue),
                       SizedBox(height: 30),
@@ -733,7 +787,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   Widget produits(selectedCategorie) {
     return StreamBuilder(
-        stream: DatabaseMethods().getVisibleProducts(id, selectedCategorie, clickedNumber),
+        stream: DatabaseMethods().getVisibleProducts(
+            widget.sellerID, selectedCategorie, clickedNumber),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           return GridView.builder(

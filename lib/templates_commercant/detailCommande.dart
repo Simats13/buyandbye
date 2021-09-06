@@ -294,7 +294,7 @@ class _UserInfoState extends State<UserInfo> {
   getSellerName() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(userid);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myUserName = "${querySnapshot.docs[0]["name"]}";
   }
 
@@ -305,7 +305,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: DatabaseMethods().getUserInfo(widget.userId),
+      future: DatabaseMethods().getMyInfo(widget.userId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(

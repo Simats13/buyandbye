@@ -42,7 +42,8 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
   getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getMagasinInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
     myName = "${querySnapshot.docs[0]["name"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
@@ -106,18 +107,19 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                               // color: BuyandByeAppTheme.orange,
                               elevation: 2,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: Container(
-                                  child: Container(
-                                    height: 60,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Image.network(
-                                        myProfilePic,
-                                      ),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.4,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: Image.network(
+                                      myProfilePic,
                                     ),
                                   ),
+                                ),
                               ),
                             ),
                             IconButton(
