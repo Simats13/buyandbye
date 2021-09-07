@@ -88,7 +88,7 @@ class MoodDiaryVew extends StatelessWidget {
                   position: _moodSecondHalfAnimation,
                   child: Padding(
                     padding: EdgeInsets.only(
-                        left: 64, right: 64, top: 16, bottom: 16),
+                        left: 64, right: 64, top: 48, bottom: 48),
                     child: Text(
                       "Acheter n'aura jamais été aussi simple et efficace !",
                       textAlign: TextAlign.center,

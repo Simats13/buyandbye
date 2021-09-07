@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/fb_storage.dart';
@@ -365,15 +367,18 @@ class ModifyDetailProduit extends StatefulWidget {
   _ModifyDetailProduitState createState() => _ModifyDetailProduitState();
 }
 
+// Déclaration des variables pour les champs de modification
+final nameField = TextEditingController();
+final referenceField = TextEditingController();
+final descriptionField = TextEditingController();
+final priceField = TextEditingController();
+final quantityField = TextEditingController();
+
 // 2e classe qui affiche les champ de texte pour modifier les informations
 class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
   Widget build(BuildContext context) {
-    // Déclaration des variables pour les champs de modification
-    final nameField = TextEditingController();
-    final referenceField = TextEditingController();
-    final descriptionField = TextEditingController();
-    final priceField = TextEditingController();
-    final quantityField = TextEditingController();
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -429,24 +434,72 @@ class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
               Text("Catégorie : ", style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
               // Liste des catégories disponibles
-              DropdownButton<String>(
-                value: widget.dropdownValue,
-                icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                iconSize: 24,
-                elevation: 16,
-                onChanged: (String newValue) {
-                  setState(() {
-                    widget.dropdownValue = newValue;
-                  });
-                },
-                items: categorieNames
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
+              Platform.isIOS
+                  ? TextButton(
+                      child: Row(
+                        children: [
+                          Text(widget.dropdownValue,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : Colors.black)),
+                          SizedBox(width: 10),
+                          Icon(Icons.arrow_drop_down,
+                              size: 30,
+                              color: isDarkMode ? Colors.white : Colors.black)
+                        ],
+                      ),
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                          context: context,
+                          builder: (context) => Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 200,
+                            child: CupertinoPicker(
+                                itemExtent: 50,
+                                backgroundColor: isDarkMode
+                                    ? Color.fromRGBO(48, 48, 48, 1)
+                                    : Colors.white,
+                                onSelectedItemChanged: (value) {
+                                  setState(() {
+                                    widget.dropdownValue =
+                                        categorieNames[value];
+                                  });
+                                },
+                                children: [
+                                  for (String name in categorieNames)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Text(name,
+                                          style: TextStyle(
+                                              color: isDarkMode
+                                                  ? Colors.white
+                                                  : Colors.black)),
+                                    )
+                                ]),
+                          ),
+                        );
+                      },
+                    )
+                  : DropdownButton<String>(
+                      value: widget.dropdownValue,
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                      iconSize: 24,
+                      elevation: 16,
+                      onChanged: (String newValue) {
+                        setState(() {
+                          widget.dropdownValue = newValue;
+                        });
+                      },
+                      items: categorieNames
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
               SizedBox(height: 20),
             ]),
           ),

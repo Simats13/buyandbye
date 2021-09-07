@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -45,6 +48,8 @@ class _NewProductState extends State<NewProduct> {
       isQuantityFilled = false,
       checkbox = true;
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text("Ajouter un produit"),
@@ -171,24 +176,70 @@ class _NewProductState extends State<NewProduct> {
             SizedBox(height: 30),
             Text("Catégorie",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            DropdownButton<String>(
-              value: dropdownValue,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              iconSize: 24,
-              elevation: 16,
-              onChanged: (String newValue) {
-                setState(() {
-                  dropdownValue = newValue;
-                });
-              },
-              items:
-                  categorieNames.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+            Platform.isIOS
+                ? TextButton(
+                    child: Row(
+                      children: [
+                        Text(dropdownValue,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color:
+                                    isDarkMode ? Colors.white : Colors.black)),
+                        SizedBox(width: 10),
+                        Icon(Icons.arrow_drop_down,
+                            size: 30,
+                            color: isDarkMode ? Colors.white : Colors.black)
+                      ],
+                    ),
+                    onPressed: () {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (context) => Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 200,
+                          child: CupertinoPicker(
+                              itemExtent: 50,
+                              backgroundColor: isDarkMode
+                                  ? Color.fromRGBO(48, 48, 48, 1)
+                                  : Colors.white,
+                              onSelectedItemChanged: (value) {
+                                setState(() {
+                                  dropdownValue = categorieNames[value];
+                                });
+                              },
+                              children: [
+                                for (String name in categorieNames)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(name,
+                                        style: TextStyle(
+                                            color: isDarkMode
+                                                ? Colors.white
+                                                : Colors.black)),
+                                  )
+                              ]),
+                        ),
+                      );
+                    },
+                  )
+                : DropdownButton<String>(
+                    value: dropdownValue,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    iconSize: 24,
+                    elevation: 16,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                    },
+                    items: categorieNames
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

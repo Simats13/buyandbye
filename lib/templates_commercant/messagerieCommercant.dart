@@ -135,7 +135,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
     username = widget.clientID;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(username);
     fname = "${querySnapshot.docs[0]["fname"]}";
     lname = "${querySnapshot.docs[0]["lname"]}";
     idTest = "${querySnapshot.docs[0]["id"]}";

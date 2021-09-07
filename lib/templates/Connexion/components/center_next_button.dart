@@ -43,22 +43,25 @@ class CenterNextButton extends StatelessWidget {
 
     return Padding(
       padding:
-          EdgeInsets.only(bottom: 16 + MediaQuery.of(context).padding.bottom),
+          EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom / 2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SlideTransition(
-            position: _topMoveAnimation,
-            child: AnimatedBuilder(
-              animation: animationController,
-              builder: (context, child) => AnimatedOpacity(
-                opacity: animationController.value >= 0.2 &&
-                        animationController.value <= 0.6
-                    ? 1
-                    : 0,
-                duration: Duration(milliseconds: 480),
-                child: _pageView(),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: SlideTransition(
+              position: _topMoveAnimation,
+              child: AnimatedBuilder(
+                animation: animationController,
+                builder: (context, child) => AnimatedOpacity(
+                  opacity: animationController.value >= 0.2 &&
+                          animationController.value <= 0.6
+                      ? 1
+                      : 0,
+                  duration: Duration(milliseconds: 480),
+                  child: _pageView(),
+                ),
               ),
             ),
           ),
@@ -136,39 +139,41 @@ class CenterNextButton extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 8, bottom: 32),
             child: SlideTransition(
               position: _loginTextMoveAnimation,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
-                    key: ValueKey('Sign Up button'),
-                    onTap: () {
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => PageLogin()));
-                    },
-                    child: Row(
-                      children: [
-                        Text(
-                          'Vous avez déjà un compte ? ',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                          ),
+                      key: ValueKey('Sign Up button'),
+                      onTap: () {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => PageLogin()));
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 16, bottom: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Vous avez déjà un compte ? ',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            Text(
+                              'Connectez-vous !',
+                              style: TextStyle(
+                                color: Color(0xff132137),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Connectez-vous !',
-                          style: TextStyle(
-                            color: Color(0xff132137),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      )),
                 ],
               ),
             ),

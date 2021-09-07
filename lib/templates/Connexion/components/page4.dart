@@ -62,7 +62,7 @@ class WelcomeView extends StatelessWidget {
               SlideTransition(
                 position: _welcomeImageAnimation,
                 child: Container(
-                  constraints: BoxConstraints(maxWidth: 350, maxHeight: 350),
+                  constraints: BoxConstraints(maxWidth: 300, maxHeight: 300),
                   child: Image.asset(
                     'assets/logo/icon.png',
                     fit: BoxFit.contain,
@@ -70,15 +70,17 @@ class WelcomeView extends StatelessWidget {
                 ),
               ),
               SlideTransition(
-                position: _welcomeFirstHalfAnimation,
-                child: Text(
-                  "Rejoingez-nous \ndès maintenant !",
-                  style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-                ),
-              ),
+                  position: _welcomeFirstHalfAnimation,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 48),
+                    child: Text(
+                      "Rejoingez-nous \ndès maintenant !",
+                      style: TextStyle(
+                          fontSize: 25.0, fontWeight: FontWeight.bold),
+                    ),
+                  )),
               Padding(
-                padding:
-                    EdgeInsets.only(left: 64, right: 64, top: 16, bottom: 16),
+                padding: EdgeInsets.only(left: 64, right: 64, top: 48),
                 child: Text(
                   "N'attendez plus et rejoingnez Buy&Bye afin de commercer localement !",
                   textAlign: TextAlign.center,

@@ -1678,6 +1678,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
+<<<<<<< HEAD
             return PageView.builder(
               itemBuilder: (context, index) {
                 return Container(
@@ -1708,6 +1709,48 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                                   image: NetworkImage(
                                       snapshot.data[index]['imgUrl']),
                                   fit: BoxFit.cover,
+=======
+            return CustomSliderWidget(
+              items: [
+                (PageView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PageDetail(
+                                            img: documents[index]['imgUrl'],
+                                            name: documents[index]['name'],
+                                            description: documents[index]
+                                                ['description'],
+                                            adresse: documents[index]
+                                                ['adresse'],
+                                            clickAndCollect: documents[index]
+                                                ['ClickAndCollect'],
+                                            livraison: documents[index]
+                                                ['livraison'],
+                                            sellerID: documents[index]
+                                                ['id'],
+                                          )));
+                            },
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 2),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            snapshot.data[index]['imgUrl']),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+>>>>>>> dd6b46c560aee38dba6c0226aa89ea96bfc570ae
                                 ),
                               ),
                             ),
@@ -1814,6 +1857,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
+<<<<<<< HEAD
             return PageView.builder(
               itemBuilder: (context, index) {
                 return Container(
@@ -1836,6 +1880,34 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                       child: Stack(
                         children: [
                           Center(
+=======
+            return CustomSliderWidget(
+              items: [
+                PageView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PageDetail(
+                                            img: documents[index]['imgUrl'],
+                                            name: documents[index]['name'],
+                                            description: documents[index]
+                                                ['description'],
+                                            adresse: documents[index]
+                                                ['adresse'],
+                                            clickAndCollect: documents[index]
+                                                ['ClickAndCollect'],
+                                            livraison: documents[index]
+                                                ['livraison'],
+                                            sellerID: documents[index]
+                                                ['id'],
+                                          )));
+                            },
+>>>>>>> dd6b46c560aee38dba6c0226aa89ea96bfc570ae
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: 2),
                               decoration: BoxDecoration(
@@ -1949,6 +2021,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
+<<<<<<< HEAD
             return PageView.builder(
               itemBuilder: (context, index) {
                 return Container(
@@ -1979,6 +2052,43 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                                   image: NetworkImage(
                                       snapshot.data[index]['imgUrl']),
                                   fit: BoxFit.cover,
+=======
+            return CustomSliderWidget(
+              items: [
+                PageView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                          child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PageDetail(
+                                              img: documents[index]['imgUrl'],
+                                              name: documents[index]['name'],
+                                              description: documents[index]
+                                                  ['description'],
+                                              adresse: documents[index]
+                                                  ['adresse'],
+                                              clickAndCollect: documents[index]
+                                                  ['ClickAndCollect'],
+                                              livraison: documents[index]
+                                                  ['livraison'],
+                                            sellerID: documents[index]
+                                                ['id'],
+                                            )));
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 2),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                        documents[index]['imgUrl']),
+                                    fit: BoxFit.cover,
+                                  ),
+>>>>>>> dd6b46c560aee38dba6c0226aa89ea96bfc570ae
                                 ),
                               ),
                             ),
@@ -2073,6 +2183,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                             .docs[index]['ClickAndCollect'],
                                         livraison: snapshot.data.docs[index]
                                             ['livraison'],
+                                            sellerID: snapshot.data.docs[index]
+                                                ['id'],
                                       )));
                         },
                         child: Container(
@@ -2280,6 +2392,8 @@ class _AllStoresState extends State<AllStores> {
                                             ['ClickAndCollect'],
                                         livraison: snapshot.data[index]
                                             ['livraison'],
+                                            sellerID: snapshot.data[index]
+                                            ['id'],
                                       )));
                         },
                         child: Column(
