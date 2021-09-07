@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:app_settings/app_settings.dart';
 import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +17,7 @@ import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:buyandbye/theme/colors.dart';
+import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
@@ -35,11 +35,10 @@ class PageAccueil extends StatefulWidget {
 }
 
 class _PageAccueilState extends State<PageAccueil> {
-  int activeMenu = 0;
-  bool isVisible = true;
-  bool near = false;
-
-  String userid;
+  LocationData _locationData;
+  Location location = Location();
+  bool permissionChecked;
+  bool test = false;
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
   static SharedPreferences _preferences;
@@ -49,456 +48,850 @@ class _PageAccueilState extends State<PageAccueil> {
   static const _keyCity = "UserCityKey";
 
   // Future _future = DatabaseMethods().getCart();
-  var currentLocation;
-  var position;
-  String _currentAddress = "";
-  String _currentAddressLocation = "";
+  var currentLocation, position;
+
+  String _currentAddress,
+      _currentAddressLocation,
+      _streetNumber,
+      _street,
+      _city,
+      _zipCode,
+      userid;
+  double latitude, longitude, currentLatitude, currentLongitude;
   Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>> stream;
   final _controller = TextEditingController();
-  String _streetNumber = '';
-  String _street;
-  String _city;
-  // ignore: unused_field
-  String _zipCode = '';
-  double longitude = 0;
-  double latitude = 0;
-  double currentLatitude;
-  double currentLongitude;
-  LocationPermission permission;
-  bool locationEnabled = false;
+  final serviceEnabled = Geolocator.isLocationServiceEnabled();
+
   @override
   void initState() {
     super.initState();
+    _determinePermission();
+    getCoordinates();
     userID();
-    _determinePosition();
   }
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
     }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      setState(() {
-        locationEnabled = false;
-      });
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        setState(() {
-          locationEnabled = false;
-        });
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      setState(() {
-        locationEnabled = false;
-      });
-
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    setState(() {
-      locationEnabled = true;
-    });
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
   }
 
   userID() async {
     final User user = await AuthMethods().getCurrentUser();
-
-    if (locationEnabled == false) {
-      latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
-      longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
-      _currentAddressLocation =
-          await SharedPreferenceHelper().getUserAddress() ?? "Arènes de Nîmes";
-
-      _city = await SharedPreferenceHelper().getUserCity() ?? "Nîmes";
-    } else {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      final coordinates =
-          new geocode.Coordinates(position.latitude, position.longitude);
-      var addresses = await geocode.Geocoder.local
-          .findAddressesFromCoordinates(coordinates);
-      var first = addresses.first;
-      latitude =
-          await SharedPreferenceHelper().getUserLatitude() ?? position.latitude;
-      longitude = await SharedPreferenceHelper().getUserLongitude() ??
-          position.longitude;
-
-      _currentAddress = "${first.featureName}, ${first.locality}";
-      _currentAddressLocation =
-          await SharedPreferenceHelper().getUserAddress() ??
-              "${first.featureName}, ${first.locality}";
-
-      _city =
-          await SharedPreferenceHelper().getUserCity() ?? "${first.locality}";
-    }
-
     userid = user.uid;
+  }
+
+  positionCheck() async {
+    geo = Geoflutterfire();
+    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+    stream = radius.switchMap((rad) {
+      var collectionReference =
+          FirebaseFirestore.instance.collection('magasins');
+      return geo.collection(collectionRef: collectionReference).within(
+          center: center, radius: 10, field: 'position', strictMode: true);
+    });
+  }
+
+  getCoordinates() async {
+    latitude = await SharedPreferenceHelper().getUserLatitude() ??
+        currentLatitude ??
+        43.834647;
+    longitude = await SharedPreferenceHelper().getUserLongitude() ??
+        currentLongitude ??
+        4.359620;
+
+    _currentAddressLocation = await SharedPreferenceHelper().getUserAddress() ??
+        _currentAddress ??
+        "Arènes de Nîmes";
+
+    _city = await SharedPreferenceHelper().getUserCity() ?? _city ?? "Nîmes";
+  }
+
+//Fonction permettant de retourver la localisation exacte d'un utilisateur
+  getLocationUser() async {
+    _locationData = await location.getLocation();
+
+    final coordinates = new geocode.Coordinates(
+        _locationData.latitude, _locationData.longitude);
+
+    var addresses =
+        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+
+    var first = addresses.first;
 
     setState(() {
-      geo = Geoflutterfire();
-      GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
-      stream = radius.switchMap((rad) {
-        var collectionReference =
-            FirebaseFirestore.instance.collection('magasins');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
-      });
+      //Latitude de l'utilisateur via la localisation
+      currentLatitude = _locationData.latitude;
+      //Longitude de l'utilisateur via la localisation
+      currentLongitude = _locationData.longitude;
+      //Adresse de l'utilisateur via la localisation
+      _currentAddress = "${first.featureName}, ${first.locality}";
+      //Ville de l'utilisateur via la localisation
+      _city = "${first.locality}";
+      test = true;
     });
+  }
+
+//Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
+//S'il n'a pas accepté alors cela renvoit false
+//S'il a accepté alors ça renvoie la localisation périodiquement
+  Future<bool> _determinePermission() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return false;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return false;
+      }
+    }
+    getLocationUser();
+    return true;
   }
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    return StreamBuilder(
-        stream: stream,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: ColorLoader3(
-                radius: 15.0,
-                dotRadius: 6.0,
-              ),
-            );
-          }
+    getCoordinates();
+    positionCheck();
 
-          if (!snapshot.hasData) return CupertinoActivityIndicator();
-
-          if (snapshot.data.length > 0) {
-            return ListView(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                      Container(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width - 70,
-                        decoration: BoxDecoration(
-                          color: textFieldColor,
-                          borderRadius: BorderRadius.circular(30),
+    return test
+        ? StreamBuilder(
+            stream: stream,
+            builder: (BuildContext context,
+                AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 25,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.all(12),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey[300],
+                              highlightColor: Colors.grey[100],
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.location_on,
+                                  Container(
+                                    margin: EdgeInsets.only(left: 15),
+                                    height: 45,
+                                    width: size.width - 70,
+                                    decoration: BoxDecoration(
+                                      color: textFieldColor,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(12),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              SizedBox(
+                                                height: 30,
+                                                width: size.width - 150,
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    permissionChecked =
+                                                        await _determinePermission();
+
+                                                    affichageAddress();
+                                                  },
+                                                  child: Container(
+                                                    width: size.width - 150,
+                                                    padding:
+                                                        EdgeInsets.only(top: 5),
+                                                    child: Container(
+                                                      height: 10,
+                                                      width: 10,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (_, __) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      //Carrée
+
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+
+                                      Expanded(
+                                        child: CustomSliderWidget(
+                                          items: [
+                                            Container(
+                                              padding: EdgeInsets.all(20),
+                                              width: 200,
+                                              height: 300,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(
-                                    width: 10,
+                                    height: 15,
                                   ),
-                                  if (_currentAddress != null)
+                                  //trait gris de séparation
+                                  Container(
+                                    width: size.width,
+                                    height: 10,
+                                    decoration:
+                                        BoxDecoration(color: textFieldColor),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: 6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+
+              if (!snapshot.hasData)
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 25,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300],
+                            highlightColor: Colors.grey[100],
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(left: 15),
+                                  height: 45,
+                                  width: size.width - 70,
+                                  decoration: BoxDecoration(
+                                    color: textFieldColor,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(12),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            SizedBox(
+                                              height: 30,
+                                              width: size.width - 150,
+                                              child: InkWell(
+                                                onTap: () async {},
+                                                child: Container(
+                                                  width: size.width - 150,
+                                                  padding:
+                                                      EdgeInsets.only(top: 5),
+                                                  child: Container(
+                                                    height: 10,
+                                                    width: 10,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (_, __) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    //Carrée
+
                                     SizedBox(
-                                      height: 30,
-                                      width: size.width - 150,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          affichageAddress();
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.only(top: 5),
-                                          child: Text(
-                                            _currentAddressLocation,
-                                            textAlign: TextAlign.left,
+                                      height: 15,
+                                    ),
+
+                                    Expanded(
+                                      child: CustomSliderWidget(
+                                        items: [
+                                          Container(
+                                            padding: EdgeInsets.all(20),
+                                            width: 200,
+                                            height: 300,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                //trait gris de séparation
+                                Container(
+                                  width: size.width,
+                                  height: 10,
+                                  decoration:
+                                      BoxDecoration(color: textFieldColor),
+                                ),
+                              ],
+                            ),
+                          ),
+                          itemCount: 6,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+              if (snapshot.data.length > 0) {
+                return ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                height: 50,
+                                width: MediaQuery.of(context).size.width - 70,
+                                decoration: BoxDecoration(
+                                  color: textFieldColor,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(12),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                            width: size.width - 150,
+                                            child: InkWell(
+                                              onTapCancel: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              onTap: () async {
+                                                permissionChecked =
+                                                    await _determinePermission();
+
+                                                affichageAddress();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(top: 5),
+                                                child: Text(
+                                                  _currentAddressLocation,
+                                                  textAlign: TextAlign.left,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                    left: 6,
+                                    right: 6,
+                                  ),
+                                  child: IconButton(
+                                    icon: Container(
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.shopping_cart,
+                                          // size: 22,
                                         ),
                                       ),
                                     ),
+                                    onPressed: () {
+                                      affichageCart();
+                                    },
+                                  ),
+                                ),
+                              ]),
+                            ]),
+                        SizedBox(
+                          height: 15,
+                        ),
+
+                        SizedBox(
+                          height: 15,
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            "Les bons plans du moment",
+                            style: customTitle,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            "Des bons plans à $_city  🤲",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: CustomSliderWidget(
+                            items: [SliderAccueil1(latitude, longitude)],
+                          ),
+                        ),
+
+                        Center(
+                            child: Text(
+                          "Sponsorisé",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20.00),
+                        )),
+                        SizedBox(
+                          height: 15,
+                        ),
+
+                        //trait gris de séparation
+                        Container(
+                          width: size.width,
+                          height: 10,
+                          decoration: BoxDecoration(color: textFieldColor),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            "Près de chez vous",
+                            style: customTitle,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            "-3km 📍",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: CustomSliderWidget(
+                            items: [SliderAccueil2(latitude, longitude)],
+                          ),
+                        ),
+
+                        //trait gris de séparation
+                        Container(
+                          width: size.width,
+                          height: 10,
+                          decoration: BoxDecoration(color: textFieldColor),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            "Plus à découvrir",
+                            style: customTitle,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                          child: Text(
+                            "-10km 🗺️",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(20),
+                          child: CustomSliderWidget(
+                            items: [SliderAccueil3(latitude, longitude)],
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 15,
+                        ),
+                        // Text(
+                        //   "    Vous avez acheté chez eux récemment",
+                        //   style: customTitle,
+                        // ),
+                        // Container(
+                        //   padding: EdgeInsets.all(20),
+                        //   child: CustomSliderWidget(
+                        //     items: [SliderAccueil4()],
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        Container(
+                          width: size.width,
+                          height: 10,
+                          decoration: BoxDecoration(color: textFieldColor),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              affichageAllStores();
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 210,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: BuyandByeAppTheme.black_electrik),
+                              child: Text(
+                                "Afficher tous les commerçants",
+                                style: TextStyle(color: white),
+                              ),
+                              alignment: Alignment.center,
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              } else {
+                return ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 15),
+                              height: 45,
+                              width: size.width - 70,
+                              decoration: BoxDecoration(
+                                color: textFieldColor,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                          width: size.width - 150,
+                                          child: InkWell(
+                                            onTap: () async {
+                                              permissionChecked =
+                                                  await _determinePermission();
+
+                                              affichageAddress();
+                                            },
+                                            child: Container(
+                                              width: size.width - 150,
+                                              padding: EdgeInsets.only(top: 5),
+                                              child: Text(
+                                                _currentAddressLocation,
+                                                textAlign: TextAlign.left,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                      ],
+                    ),
+                    Container(
+                      child: Center(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                            'assets/images/splash_2.png',
+                            width: 300,
+                            height: 300,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(
+                              "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                              style: TextStyle(
+                                fontSize: 18,
+                                // color: Colors.grey[700]
+                              ),
+                              textAlign: TextAlign.justify,
+                            ),
+                          ),
+                        ],
+                      )),
+                    ),
+                  ],
+                );
+              }
+            })
+        : Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300],
+                        highlightColor: Colors.grey[100],
+                        child: Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 15),
+                              height: 45,
+                              width: size.width - 70,
+                              decoration: BoxDecoration(
+                                color: textFieldColor,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                          width: size.width - 150,
+                                          child: InkWell(
+                                            onTap: () async {},
+                                            child: Container(
+                                              width: size.width - 150,
+                                              padding: EdgeInsets.only(top: 5),
+                                              child: Container(
+                                                height: 10,
+                                                width: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Row(children: [
-                        Container(
-                          padding: EdgeInsets.only(
-                            left: 6,
-                            right: 6,
-                          ),
-                          child: IconButton(
-                            icon: Container(
-                              child: Center(
-                                child: Icon(
-                                  Icons.shopping_cart,
-                                  // size: 22,
-                                ),
-                              ),
-                            ),
-                            onPressed: () {
-                              affichageCart();
-                            },
-                          ),
-                        ),
-                      ])
-                    ]),
-                    SizedBox(
-                      height: 15,
-                    ),
-
-                    SizedBox(
-                      height: 15,
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                      child: Text(
-                        "Les bons plans du moment",
-                        style: customTitle,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                      child: Text(
-                        "Des bons plans à $_city  🤲",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ),
-
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      child: CustomSliderWidget(
-                        items: [SliderAccueil1(latitude, longitude)],
-                      ),
-                    ),
-
-                    Center(
-                        child: Text(
-                      "Sponsorisé",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20.00),
-                    )),
-                    SizedBox(
-                      height: 15,
-                    ),
-
-                    //trait gris de séparation
-                    Container(
-                      width: size.width,
-                      height: 10,
-                      decoration: BoxDecoration(color: textFieldColor),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                      child: Text(
-                        "Près de chez vous",
-                        style: customTitle,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                      child: Text(
-                        "-3km 📍",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      child: SliderAccueil2(latitude, longitude),
-                    ),
-
-                    //trait gris de séparation
-                    Container(
-                      width: size.width,
-                      height: 10,
-                      decoration: BoxDecoration(color: textFieldColor),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                      child: Text(
-                        "Plus à découvrir",
-                        style: customTitle,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                      child: Text(
-                        "-10km 🗺️",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      child: SliderAccueil3(latitude, longitude),
-                    ),
-
-                    SizedBox(
-                      height: 15,
-                    ),
-                    // Text(
-                    //   "    Vous avez acheté chez eux récemment",
-                    //   style: customTitle,
-                    // ),
-                    // Container(
-                    //   padding: EdgeInsets.all(20),
-                    //   child: CustomSliderWidget(
-                    //     items: [SliderAccueil4()],
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    Container(
-                      width: size.width,
-                      height: 10,
-                      decoration: BoxDecoration(color: textFieldColor),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          affichageAllStores();
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 210,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: BuyandByeAppTheme.black_electrik),
-                          child: Text(
-                            "Afficher tous les commerçants",
-                            style: TextStyle(color: white),
-                          ),
-                          alignment: Alignment.center,
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
-              ],
-            );
-          } else {
-            return ListView(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 15),
-                          height: 45,
-                          width: size.width - 70,
-                          decoration: BoxDecoration(
-                            color: textFieldColor,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    if (_currentAddress != null)
-                                      SizedBox(
-                                        height: 30,
-                                        width: size.width - 150,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            affichageAddress();
-                                          },
-                                          child: Container(
-                                            width: size.width - 150,
-                                            padding: EdgeInsets.only(top: 5),
-                                            child: Text(
-                                              _currentAddressLocation,
-                                              textAlign: TextAlign.left,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                  ],
-                ),
-                Container(
-                  child: Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/images/splash_2.png',
-                        width: 300,
-                        height: 300,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
-                          style: TextStyle(
-                            fontSize: 18,
-                            // color: Colors.grey[700]
-                          ),
-                          textAlign: TextAlign.justify,
-                        ),
+                      SizedBox(
+                        height: 15,
                       ),
                     ],
-                  )),
-                ),
-              ],
-            );
-          }
-        });
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                //Carrée
+
+                                SizedBox(
+                                  height: 15,
+                                ),
+
+                                Expanded(
+                                  child: CustomSliderWidget(
+                                    items: [
+                                      Container(
+                                        padding: EdgeInsets.all(20),
+                                        width: 200,
+                                        height: 300,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemCount: 6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 
   @override
@@ -666,7 +1059,7 @@ class _PageAccueilState extends State<PageAccueil> {
                       ),
                     ],
                   ),
-                  locationEnabled
+                  permissionChecked
                       ? Row(
                           children: [
                             Padding(
@@ -675,24 +1068,19 @@ class _PageAccueilState extends State<PageAccueil> {
                                 width: MediaQuery.of(context).size.width - 50,
                                 child: InkWell(
                                   onTap: () async {
-                                    Position position =
-                                        await Geolocator.getCurrentPosition(
-                                            desiredAccuracy:
-                                                LocationAccuracy.high);
                                     final coordinates = new geocode.Coordinates(
-                                        position.latitude, position.longitude);
+                                      latitude,
+                                      longitude,
+                                    );
                                     var addresses = await geocode.Geocoder.local
                                         .findAddressesFromCoordinates(
                                             coordinates);
                                     var first = addresses.first;
-
                                     setState(() {
                                       _city = first.locality;
-                                      latitude = position.latitude;
-                                      longitude = position.longitude;
+
                                       _currentAddressLocation =
                                           "${first.featureName + ", " + first.locality}";
-
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
                                           latitude: latitude,
@@ -717,10 +1105,10 @@ class _PageAccueilState extends State<PageAccueil> {
                                         await SharedPreferences.getInstance();
 
                                     await _preferences.setDouble(
-                                        _keyLatitude, position.latitude);
+                                        _keyLatitude, latitude);
 
                                     await _preferences.setDouble(
-                                        _keyLongitude, position.longitude);
+                                        _keyLongitude, longitude);
 
                                     await _preferences.setString(
                                         _keyAddress, _currentAddressLocation);
@@ -735,11 +1123,11 @@ class _PageAccueilState extends State<PageAccueil> {
                                         _currentAddressLocation);
 
                                     SharedPreferenceHelper()
-                                        .saveUserLatitude(position.latitude);
+                                        .saveUserLatitude(latitude);
 
                                     SharedPreferenceHelper()
-                                        .saveUserLongitude(position.longitude);
-
+                                        .saveUserLongitude(longitude);
+                                    setState(() {});
                                     Navigator.of(context).pop();
 
                                     Navigator.push(
@@ -747,10 +1135,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 PageAddressNext(
-                                                  lat: position.latitude,
-                                                  long: position.longitude,
-                                                  adresse:
-                                                      _currentAddressLocation,
+                                                  lat: currentLatitude,
+                                                  long: currentLongitude,
+                                                  adresse: _currentAddress,
                                                 )));
                                   },
                                   child: Container(
@@ -771,7 +1158,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                             children: [
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
-                                              Text(_currentAddressLocation)
+                                              _currentAddress != null
+                                                  ? Text(_currentAddress)
+                                                  : CircularProgressIndicator(),
                                             ]),
                                       ],
                                     ),
@@ -806,11 +1195,13 @@ class _PageAccueilState extends State<PageAccueil> {
                                                       .pop(false),
                                             ),
                                             TextButton(
-                                              child: Text("Activer"),
-                                              onPressed: () =>
+                                                child: Text("Activer"),
+                                                onPressed: () async {
+                                                  await Geolocator
+                                                      .openLocationSettings();
                                                   Navigator.of(context)
-                                                      .pop(true),
-                                            ),
+                                                      .pop(true);
+                                                }),
                                           ],
                                         ),
                                       );
@@ -819,7 +1210,8 @@ class _PageAccueilState extends State<PageAccueil> {
                                     // todo : showDialog for ios
                                     return showCupertinoDialog(
                                         context: context,
-                                        builder: (_) => CupertinoAlertDialog(
+                                        builder: (context) =>
+                                            CupertinoAlertDialog(
                                               title: Text(
                                                   "Localisation desactivée"),
                                               content: Text(
@@ -835,9 +1227,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                                     }),
                                                 CupertinoButton(
                                                   child: Text('Activer'),
-                                                  onPressed: () {
-                                                    AppSettings
-                                                        .openAppSettings();
+                                                  onPressed: () async {
+                                                    await Geolocator
+                                                        .openLocationSettings();
 
                                                     // Then close the dialog
                                                     Navigator.of(context).pop();
@@ -906,6 +1298,55 @@ class _PageAccueilState extends State<PageAccueil> {
                             ),
                           ),
                         ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(width: 10),
+                          IconButton(
+                              onPressed: () async {
+                                // generate a new token here
+                                final sessionToken = Uuid().v4();
+                                final Suggestion result = await showSearch(
+                                  context: context,
+                                  delegate: AddressSearch(sessionToken),
+                                );
+                                // This will change the text displayed in the TextField
+                                if (result != null) {
+                                  final placeDetails =
+                                      await PlaceApiProvider(sessionToken)
+                                          .getPlaceDetailFromId(result.placeId);
+
+                                  setState(() {
+                                    _controller.text = result.description;
+                                    _streetNumber = placeDetails.streetNumber;
+                                    _street = placeDetails.street;
+                                    _city = placeDetails.city;
+                                    _zipCode = placeDetails.zipCode;
+                                    _currentAddressLocation =
+                                        "$_streetNumber $_street, $_city ";
+                                  });
+
+                                  final query =
+                                      "$_streetNumber $_street , $_city";
+
+                                  var addresses = await geocode.Geocoder.local
+                                      .findAddressesFromQuery(query);
+                                  var first = addresses.first;
+
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PageAddressNext(
+                                                lat: first.coordinates.latitude,
+                                                long:
+                                                    first.coordinates.longitude,
+                                                adresse: first.addressLine,
+                                              )));
+                                }
+                              },
+                              icon: Icon(Icons.home)),
+                        ],
                       ),
                     ],
                   ),
@@ -1128,13 +1569,36 @@ class _PageAccueilState extends State<PageAccueil> {
                             return Column(
                               children: [
                                 SizedBox(height: 20),
-                                Container(
-                                    child: Text("Pas d'adresses enregistrées")),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20.0),
+                                  child: Container(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
+                                        children: [
+                                          TextSpan(
+                                              text:
+                                                  "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
+                                          WidgetSpan(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 2.0),
+                                              child: Icon(Icons.home),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             );
                           }
                         } else {
-                          return CircularProgressIndicator();
+                          return Center(child: CircularProgressIndicator());
                         }
                       }),
                 ],
@@ -1187,6 +1651,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {
@@ -1213,50 +1678,45 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
-            return CustomSliderWidget(
-              items: [
-                (PageView.builder(
-                    itemCount: documents.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageDetail(
-                                            img: documents[index]['imgUrl'],
-                                            name: documents[index]['name'],
-                                            description: documents[index]
-                                                ['description'],
-                                            adresse: documents[index]
-                                                ['adresse'],
-                                            clickAndCollect: documents[index]
-                                                ['ClickAndCollect'],
-                                            livraison: documents[index]
-                                                ['livraison'],
-                                          )));
-                            },
-                            child: Stack(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(horizontal: 2),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                            snapshot.data[index]['imgUrl']),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
+            return PageView.builder(
+              itemBuilder: (context, index) {
+                return Container(
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageDetail(
+                                      img: documents[index]['imgUrl'],
+                                      name: documents[index]['name'],
+                                      description: documents[index]
+                                          ['description'],
+                                      adresse: documents[index]['adresse'],
+                                      clickAndCollect: documents[index]
+                                          ['ClickAndCollect'],
+                                      livraison: documents[index]['livraison'],
+                                    )));
+                      },
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      snapshot.data[index]['imgUrl']),
+                                  fit: BoxFit.cover,
                                 ),
-                              ],
-                            )),
-                      );
-                    }))
-              ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
+                );
+              },
+              itemCount: documents.length,
             );
           } else {
             return Container(
@@ -1327,6 +1787,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {
@@ -1353,44 +1814,45 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
-            return CustomSliderWidget(
-              items: [
-                PageView.builder(
-                    itemCount: documents.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageDetail(
-                                            img: documents[index]['imgUrl'],
-                                            name: documents[index]['name'],
-                                            description: documents[index]
-                                                ['description'],
-                                            adresse: documents[index]
-                                                ['adresse'],
-                                            clickAndCollect: documents[index]
-                                                ['ClickAndCollect'],
-                                            livraison: documents[index]
-                                                ['livraison'],
-                                          )));
-                            },
+            return PageView.builder(
+              itemBuilder: (context, index) {
+                return Container(
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageDetail(
+                                      img: documents[index]['imgUrl'],
+                                      name: documents[index]['name'],
+                                      description: documents[index]
+                                          ['description'],
+                                      adresse: documents[index]['adresse'],
+                                      clickAndCollect: documents[index]
+                                          ['ClickAndCollect'],
+                                      livraison: documents[index]['livraison'],
+                                    )));
+                      },
+                      child: Stack(
+                        children: [
+                          Center(
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: 2),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
-                                  image:
-                                      NetworkImage(documents[index]['imgUrl']),
+                                  image: NetworkImage(
+                                      snapshot.data[index]['imgUrl']),
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                            )),
-                      );
-                    })
-              ],
+                            ),
+                          ),
+                        ],
+                      )),
+                );
+              },
+              itemCount: documents.length,
             );
           } else {
             return Container(
@@ -1460,6 +1922,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {
@@ -1486,43 +1949,45 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
             );
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
-            return CustomSliderWidget(
-              items: [
-                PageView.builder(
-                    itemCount: documents.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => PageDetail(
-                                              img: documents[index]['imgUrl'],
-                                              name: documents[index]['name'],
-                                              description: documents[index]
-                                                  ['description'],
-                                              adresse: documents[index]
-                                                  ['adresse'],
-                                              clickAndCollect: documents[index]
-                                                  ['ClickAndCollect'],
-                                              livraison: documents[index]
-                                                  ['livraison'],
-                                            )));
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 2),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  image: DecorationImage(
-                                    image: NetworkImage(
-                                        documents[index]['imgUrl']),
-                                    fit: BoxFit.cover,
-                                  ),
+            return PageView.builder(
+              itemBuilder: (context, index) {
+                return Container(
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageDetail(
+                                      img: documents[index]['imgUrl'],
+                                      name: documents[index]['name'],
+                                      description: documents[index]
+                                          ['description'],
+                                      adresse: documents[index]['adresse'],
+                                      clickAndCollect: documents[index]
+                                          ['ClickAndCollect'],
+                                      livraison: documents[index]['livraison'],
+                                    )));
+                      },
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      snapshot.data[index]['imgUrl']),
+                                  fit: BoxFit.cover,
                                 ),
-                              )));
-                    })
-              ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
+                );
+              },
+              itemCount: documents.length,
             );
           } else {
             return Container(
@@ -1659,10 +2124,136 @@ class _AllStoresState extends State<AllStores> {
   }
 
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData)
+            return Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300],
+                        highlightColor: Colors.grey[100],
+                        child: Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 15),
+                              height: 45,
+                              width: size.width - 70,
+                              decoration: BoxDecoration(
+                                color: textFieldColor,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                          width: size.width - 150,
+                                          child: InkWell(
+                                            onTap: () async {},
+                                            child: Container(
+                                              width: size.width - 150,
+                                              padding: EdgeInsets.only(top: 5),
+                                              child: Container(
+                                                height: 10,
+                                                width: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                //Carrée
+
+                                SizedBox(
+                                  height: 15,
+                                ),
+
+                                Expanded(
+                                  child: CustomSliderWidget(
+                                    items: [
+                                      Container(
+                                        padding: EdgeInsets.all(20),
+                                        width: 200,
+                                        height: 300,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemCount: 6,
+                    ),
+                  ),
+                ],
+              ),
+            );
           return ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,

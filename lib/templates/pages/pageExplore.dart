@@ -35,10 +35,14 @@ class _PageExploreState extends State<PageExplore> {
   LocationPermission permission;
   Stream<List<DocumentSnapshot>> stream;
   BitmapDescriptor mapMaker;
+  Set<Marker> _markers = Set<Marker>();
+
   double _value = 40.0;
   List magasins = [];
   String _label = 'kms';
   bool localisation = false;
+  double latitude, longitude;
+
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
   static SharedPreferences _preferences;
   static const _keySlider = "UserSliderKey";
@@ -47,48 +51,27 @@ class _PageExploreState extends State<PageExplore> {
   // firestore init
   final _firestore = FirebaseFirestore.instance;
 
-  TextEditingController _latitudeController, _longitudeController;
   GoogleMapController _mapController;
   PageController _pageController;
 
   @override
-  void dispose() {
-    _latitudeController.dispose();
-    _longitudeController.dispose();
-    radius.close();
-    super.dispose();
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-
-    _latitudeController = TextEditingController();
-    _longitudeController = TextEditingController();
-    setCustomMarker();
     userID();
-    _determinePosition();
+    setCustomMarker();
 
-    Geolocator.getCurrentPosition().then((currloc) {
-      setState(() {
-        currentLocation = currloc;
-        mapToggle = true;
-      });
-    });
-
-    Geolocator.getCurrentPosition().then((value) {
-      setState(() {
-        position = value;
-        geo = Geoflutterfire();
-        GeoFirePoint center = geo.point(
-            latitude: position.latitude, longitude: position.longitude);
-        stream = radius.switchMap((rad) {
-          var collectionReference = _firestore.collection('magasins');
-          return geo.collection(collectionRef: collectionReference).within(
-              center: center, radius: rad, field: 'position', strictMode: true);
-        });
-      });
-    });
+    // Geolocator.getCurrentPosition().then((currloc) {
+    //   setState(() {
+    //     currentLocation = currloc;
+    //   });
+    // });
 
     _pageController = PageController(initialPage: 1, viewportFraction: 0.8)
       ..addListener(_onScroll);
@@ -127,7 +110,7 @@ class _PageExploreState extends State<PageExplore> {
   void _showHome() async {
     _mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
-        target: LatLng(currentLocation.latitude, currentLocation.longitude),
+        target: LatLng(latitude, longitude),
         zoom: 15.0,
       ),
     ));
@@ -137,47 +120,30 @@ class _PageExploreState extends State<PageExplore> {
     final User user = await AuthMethods().getCurrentUser();
     _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
     _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
+    latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
+    longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
+    setState(() {
+      mapToggle = true;
+
+      geo = Geoflutterfire();
+      print("chanel");
+      print(latitude);
+      GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+      stream = radius.switchMap((rad) {
+        var collectionReference = _firestore.collection('magasins');
+        return geo.collection(collectionRef: collectionReference).within(
+            center: center, radius: rad, field: 'position', strictMode: true);
+      });
+    });
+
+    final idMarker = MarkerId(latitude.toString() + longitude.toString());
+    _markers.add(Marker(
+      markerId: idMarker,
+      position: LatLng(latitude, longitude),
+      //icon: mapMarker,
+    ));
 
     //String userid = user.uid;
-  }
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      localisation = false;
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        localisation = false;
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      localisation = false;
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
   }
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
@@ -300,9 +266,7 @@ class _PageExploreState extends State<PageExplore> {
                       child: GoogleMap(
                         onMapCreated: _onMapCreated,
                         initialCameraPosition: CameraPosition(
-                            target: LatLng(currentLocation.latitude,
-                                currentLocation.longitude),
-                            zoom: 15.0),
+                            target: LatLng(latitude, longitude), zoom: 15.0),
                         markers: Set<Marker>.of(markers.values),
                         myLocationButtonEnabled: false,
                         myLocationEnabled: true,
@@ -411,9 +375,7 @@ class _PageExploreState extends State<PageExplore> {
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
-                        target: LatLng(currentLocation.latitude,
-                            currentLocation.longitude),
-                        zoom: 10.0),
+                        target: LatLng(latitude, longitude), zoom: 10.0),
                     markers: Set<Marker>.of(markers.values),
                     myLocationButtonEnabled: false,
                     myLocationEnabled: true,

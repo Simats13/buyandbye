@@ -648,7 +648,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   children: [
                                                     TextSpan(
                                                         text:
-                                                            "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur le "),
+                                                            "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
                                                     WidgetSpan(
                                                       child: Padding(
                                                         padding:
