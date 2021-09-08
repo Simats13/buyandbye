@@ -52,7 +52,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       myUserName,
       myEmail,
       selectedUserToken,
-      id,
       message,
       lastMessageTs,
       idMag;
@@ -241,10 +240,12 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       GestureDetector(
                         onTap: () {
                           Map<String, dynamic> chatRoomInfoMap = {
-                            "users": [myID, id],
+                            "users": [myID, widget.sellerID],
                           };
-                          DatabaseMethods()
-                              .createChatRoom(id + myID, chatRoomInfoMap);
+                          print(widget.sellerID);
+                          print(myID);
+                          DatabaseMethods().createChatRoom(
+                              widget.sellerID + myID, chatRoomInfoMap);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -252,8 +253,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         myID, //ID DE L'UTILISATEUR
                                         myName, // NOM DE L'UTILISATEUR
                                         selectedUserToken,
-                                        id, // TOKEN DU CORRESPONDANT
-                                        id + myID, //ID DE LA CONV
+                                        widget
+                                            .sellerID, // TOKEN DU CORRESPONDANT
+                                        widget.sellerID + myID, //ID DE LA CONV
                                         widget.name, // NOM DU CORRESPONDANT
                                         widget.img, // IMAGE DU CORRESPONDANT
                                       )));
@@ -823,7 +825,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     adresse: widget.adresse,
                                     clickAndCollect: widget.clickAndCollect,
                                     livraison: widget.livraison,
-                                    idCommercant: id,
+                                    idCommercant: widget.sellerID,
                                     idProduit: snapshot.data.docs[index]['id'],
                                   )));
                     },

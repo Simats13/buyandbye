@@ -164,7 +164,7 @@ class CenterNextButton extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Connectez-vous !',
+                              'Connectez-vous',
                               style: TextStyle(
                                 color: Color(0xff132137),
                                 fontSize: 16,

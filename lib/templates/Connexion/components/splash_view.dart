@@ -24,20 +24,20 @@ class _SplashViewState extends State<SplashView> {
     ));
     return SlideTransition(
       position: _introductionanimation,
-      child: SingleChildScrollView(
+      // child: SingleChildScrollView(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 1.75,
-              width: MediaQuery.of(context).size.width,
+            Container(
+              constraints: BoxConstraints(maxWidth: 300, maxHeight: 300),
               child: Image.asset(
-                'assets/logo/logo.png',
-                fit: BoxFit.cover,
+                'assets/logo/icon.png',
+                fit: BoxFit.contain,
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+              padding: EdgeInsets.only(top: 128.0, bottom: 8.0),
               child: Text(
                 "Bienvenue sur Buy&Bye ! ",
                 style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
@@ -70,7 +70,7 @@ class _SplashViewState extends State<SplashView> {
                     color: Color(0xff132137),
                   ),
                   child: Text(
-                    "Rejoignez-nous !",
+                    "Découvrez l'application",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -82,6 +82,7 @@ class _SplashViewState extends State<SplashView> {
           ],
         ),
       ),
+      // ),
     );
   }
 }

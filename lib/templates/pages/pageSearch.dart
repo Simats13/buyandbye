@@ -71,7 +71,7 @@ class _PageSearchState extends State<PageSearch> {
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data.docs[index];
                   return searchedData(
-                      photoUrl: ds["photoUrl"],
+                      photoUrl: ds["imgUrl"],
                       name: ds["name"],
                       adresse: ds["adresse"],
                       description: ds["description"],
