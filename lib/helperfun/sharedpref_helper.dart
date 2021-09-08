@@ -95,12 +95,12 @@ class SharedPreferenceHelper {
     return prefs.getString(userProfilePicKey);
   }
 
-  Future<double> getUserLatitude() async {
+  getUserLatitude() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getDouble(userLocationLatitudeKey);
   }
 
-  Future<double> getUserLongitude() async {
+  getUserLongitude() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getDouble(userLocationLongitudeKey);
   }

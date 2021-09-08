@@ -1,19 +1,22 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
-
+import 'package:geocoder/geocoder.dart' as geocode;
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'templates/Pages/pageBienvenue.dart';
 import 'templates_commercant/nav_bar.dart';
 
@@ -52,17 +55,21 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   bool checkEmailVerification = false;
+
+  // Future _future = DatabaseMethods().getCart();
+
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+
     NotificationController.instance.takeFCMTokenWhenAppLaunch();
     NotificationController.instance.initLocalNotification();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _getFCMToken();
     super.initState();
-    Geolocator.getCurrentPosition();
+
     AuthMethods.instanace.checkEmailVerification();
   }
 

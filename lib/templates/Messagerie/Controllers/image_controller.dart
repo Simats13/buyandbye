@@ -9,8 +9,7 @@ class ImageController {
   static ImageController get instance => ImageController();
 
   Future<File> cropImageFromFile() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker.pickImage(source: ImageSource.gallery);
     final File imageFileFromLibrary = File(pickedFile.path);
 
     // Start crop iamge then take the file.

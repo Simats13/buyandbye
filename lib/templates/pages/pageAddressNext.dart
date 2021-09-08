@@ -55,12 +55,12 @@ class _PageAddressNextState extends State<PageAddressNext> {
   @override
   void initState() {
     super.initState();
-    Geolocator.getCurrentPosition().then((currloc) {
-      setState(() {
-        currentLocation = currloc;
-        mapToggle = true;
-      });
-    });
+    // Geolocator.getCurrentPosition().then((currloc) {
+    //   setState(() {
+    //     currentLocation = currloc;
+    //     mapToggle = true;
+    //   });
+    // });
 
     final idMarker = MarkerId(widget.lat.toString() + widget.long.toString());
     _markers.add(Marker(
@@ -333,7 +333,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
       String address) async {
     try {
       await DatabaseMethods.instanace.addAdresses(buildingDetails, buildingName,
-          familyName, adressTitle, longitude, latitude, address);
+          familyName, adressTitle, widget.long, widget.lat, address);
     } catch (e) {
       showAlertDialog(context, 'Error user information to database');
     }
