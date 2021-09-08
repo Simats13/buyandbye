@@ -110,7 +110,7 @@ class _PageAccueilState extends State<PageAccueil> {
     _city = await SharedPreferenceHelper().getUserCity() ?? _city ?? "Nîmes";
   }
 
-//Fonction permettant de retourver la localisation exacte d'un utilisateur
+//Fonction permettant de retourner la localisation exacte d'un utilisateur
   getLocationUser() async {
     _locationData = await location.getLocation();
 
@@ -166,7 +166,7 @@ class _PageAccueilState extends State<PageAccueil> {
     getCoordinates();
     positionCheck();
 
-    return test
+    return !test
         ? StreamBuilder(
             stream: stream,
             builder: (BuildContext context,
@@ -174,140 +174,140 @@ class _PageAccueilState extends State<PageAccueil> {
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               }
-              if (snapshot.connectionState == ConnectionState.waiting)
-                return Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Shimmer.fromColors(
-                              baseColor: Colors.grey[300],
-                              highlightColor: Colors.grey[100],
-                              child: Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    height: 45,
-                                    width: size.width - 70,
-                                    decoration: BoxDecoration(
-                                      color: textFieldColor,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(12),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.location_on,
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              SizedBox(
-                                                height: 30,
-                                                width: size.width - 150,
-                                                child: InkWell(
-                                                  onTap: () async {
-                                                    permissionChecked =
-                                                        await _determinePermission();
+              // if (snapshot.connectionState == ConnectionState.waiting)
+              //   return Center(
+              //     child: Container(
+              //       padding: const EdgeInsets.symmetric(
+              //           horizontal: 16.0, vertical: 16.0),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         mainAxisSize: MainAxisSize.max,
+              //         children: <Widget>[
+              //           SizedBox(
+              //             height: 25,
+              //           ),
+              //           Column(
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               SizedBox(
+              //                 height: 15,
+              //               ),
+              //               Shimmer.fromColors(
+              //                 baseColor: Colors.grey[300],
+              //                 highlightColor: Colors.grey[100],
+              //                 child: Row(
+              //                   children: [
+              //                     Container(
+              //                       margin: EdgeInsets.only(left: 15),
+              //                       height: 45,
+              //                       width: size.width - 70,
+              //                       decoration: BoxDecoration(
+              //                         color: textFieldColor,
+              //                         borderRadius: BorderRadius.circular(30),
+              //                       ),
+              //                       child: Row(
+              //                         mainAxisAlignment:
+              //                             MainAxisAlignment.spaceBetween,
+              //                         children: [
+              //                           Padding(
+              //                             padding: EdgeInsets.all(12),
+              //                             child: Row(
+              //                               children: [
+              //                                 Icon(
+              //                                   Icons.location_on,
+              //                                 ),
+              //                                 SizedBox(
+              //                                   width: 5,
+              //                                 ),
+              //                                 SizedBox(
+              //                                   height: 30,
+              //                                   width: size.width - 150,
+              //                                   child: InkWell(
+              //                                     onTap: () async {
+              //                                       permissionChecked =
+              //                                           await _determinePermission();
 
-                                                    affichageAddress();
-                                                  },
-                                                  child: Container(
-                                                    width: size.width - 150,
-                                                    padding:
-                                                        EdgeInsets.only(top: 5),
-                                                    child: Container(
-                                                      height: 10,
-                                                      width: 10,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            itemBuilder: (_, __) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      //Carrée
+              //                                       affichageAddress();
+              //                                     },
+              //                                     child: Container(
+              //                                       width: size.width - 150,
+              //                                       padding:
+              //                                           EdgeInsets.only(top: 5),
+              //                                       child: Container(
+              //                                         height: 10,
+              //                                         width: 10,
+              //                                       ),
+              //                                     ),
+              //                                   ),
+              //                                 ),
+              //                               ],
+              //                             ),
+              //                           ),
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //               SizedBox(
+              //                 height: 15,
+              //               ),
+              //             ],
+              //           ),
+              //           Expanded(
+              //             child: ListView.builder(
+              //               itemBuilder: (_, __) => Padding(
+              //                 padding: const EdgeInsets.only(bottom: 8.0),
+              //                 child: Column(
+              //                   children: [
+              //                     Row(
+              //                       crossAxisAlignment:
+              //                           CrossAxisAlignment.start,
+              //                       children: <Widget>[
+              //                         //Carrée
 
-                                      SizedBox(
-                                        height: 15,
-                                      ),
+              //                         SizedBox(
+              //                           height: 15,
+              //                         ),
 
-                                      Expanded(
-                                        child: CustomSliderWidget(
-                                          items: [
-                                            Container(
-                                              padding: EdgeInsets.all(20),
-                                              width: 200,
-                                              height: 300,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 15,
-                                  ),
-                                  //trait gris de séparation
-                                  Container(
-                                    width: size.width,
-                                    height: 10,
-                                    decoration:
-                                        BoxDecoration(color: textFieldColor),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            itemCount: 6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+              //                         Expanded(
+              //                           child: CustomSliderWidget(
+              //                             items: [
+              //                               Container(
+              //                                 padding: EdgeInsets.all(20),
+              //                                 width: 200,
+              //                                 height: 300,
+              //                                 decoration: BoxDecoration(
+              //                                   color: Colors.white,
+              //                                   borderRadius:
+              //                                       BorderRadius.circular(20),
+              //                                 ),
+              //                               ),
+              //                             ],
+              //                           ),
+              //                         ),
+              //                       ],
+              //                     ),
+              //                     SizedBox(
+              //                       height: 15,
+              //                     ),
+              //                     //trait gris de séparation
+              //                     Container(
+              //                       width: size.width,
+              //                       height: 10,
+              //                       decoration:
+              //                           BoxDecoration(color: textFieldColor),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //               itemCount: 6,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   );
 
               if (!snapshot.hasData)
                 return Container(
@@ -618,7 +618,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         Container(
                           padding: EdgeInsets.all(20),
                           child: CustomSliderWidget(
-                              // items: [SliderAccueil3(latitude, longitude)],
+                              items: [SliderAccueil3(latitude, longitude)],
                               ),
                         ),
 
@@ -928,7 +928,7 @@ class _PageAccueilState extends State<PageAccueil> {
               SizedBox(
                 height: 10,
               ),
-              // AllStores(),
+              AllStores(),
             ]),
           ),
         ));
@@ -1651,7 +1651,6 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         // ignore: missing_return
@@ -1793,11 +1792,10 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
 //   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Shimmer.fromColors(
               child: Container(
                 child: Stack(
@@ -1818,6 +1816,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
               baseColor: Colors.grey[300],
               highlightColor: Colors.grey[100],
             );
+          }
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
             return CustomSliderWidget(items: [
@@ -1923,11 +1922,10 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Shimmer.fromColors(
               child: Container(
                 child: Stack(
@@ -1948,6 +1946,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
               baseColor: Colors.grey[300],
               highlightColor: Colors.grey[100],
             );
+        }
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
             return CustomSliderWidget(items: [
@@ -2029,7 +2028,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
     return FutureBuilder(
         future: DatabaseMethods().getStoreInfo(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Shimmer.fromColors(
               child: Container(
                 child: Stack(
@@ -2050,6 +2049,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
               baseColor: Colors.grey[300],
               highlightColor: Colors.grey[100],
             );
+          }
           return PageView.builder(
               itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index) {

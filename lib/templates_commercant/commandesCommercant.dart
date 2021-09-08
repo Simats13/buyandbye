@@ -1,3 +1,5 @@
+import 'package:buyandbye/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:buyandbye/services/database.dart';
@@ -20,6 +22,19 @@ String getDate(time) {
 class _CommandesCommercantState extends State<CommandesCommercant> {
   var clickedCategorie = 0;
   int clickedNumber = 1;
+  String userid;
+
+  void initState() {
+    super.initState();
+    getMyInfo();
+  }
+
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+
+    setState(() {});
+  }
 
   // Première classe qui affiche les 3 boutons de statut des commandes
   Widget build(BuildContext context) {
@@ -32,7 +47,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
           elevation: 1,
         ),
         body: FutureBuilder(
-            future: DatabaseMethods().getPurchase(),
+            future: DatabaseMethods().getPurchase("magasins", userid),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return SingleChildScrollView(
@@ -163,12 +178,8 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                           shrinkWrap: true,
                           itemCount: snapshot.data.docs.length,
                           itemBuilder: (context, index) {
-                            String user0 =
-                                snapshot.data.docs[index]["users"][0];
-                            String user1 =
-                                snapshot.data.docs[index]["users"][1];
                             // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
-                            return Command(user0, user1, clickedCategorie);
+                            return Command(clickedCategorie, userid);
                           },
                         ),
                       ],
@@ -233,8 +244,8 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
 }
 
 class Command extends StatefulWidget {
-  const Command(this.user0, this.user1, this.clickedCategorie);
-  final String user0, user1;
+  const Command(this.clickedCategorie, this.sellerId);
+  final String sellerId;
   final int clickedCategorie;
   _CommandState createState() => _CommandState();
 }
@@ -242,9 +253,8 @@ class Command extends StatefulWidget {
 // Affichage de chacune des commandes du client
 class _CommandState extends State<Command> {
   Widget build(BuildContext context) {
-    String docId = widget.user0 + widget.user1;
     return StreamBuilder(
-      stream: DatabaseMethods().getCommandDetails(docId),
+      stream: DatabaseMethods().getSellerCommandDetails(widget.sellerId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
@@ -260,6 +270,7 @@ class _CommandState extends State<Command> {
               double prix = snapshot.data.docs[index]["prix"];
               int livraison = snapshot.data.docs[index]["livraison"];
               String commandId = snapshot.data.docs[index]["id"];
+              String clientId = snapshot.data.docs[index]["clientID"];
               String brightness =
                   MediaQuery.of(context).platformBrightness.toString();
               // Toutes les commandes sont récupérées mais on affiche seulement
@@ -278,8 +289,8 @@ class _CommandState extends State<Command> {
                                 date.toString(),
                                 prix,
                                 livraison,
-                                widget.user0,
-                                widget.user1,
+                                widget.sellerId,
+                                clientId,
                                 commandId),
                           ),
                         );

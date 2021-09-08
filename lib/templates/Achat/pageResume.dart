@@ -122,8 +122,7 @@ class _PageResumeState extends State<PageResume> {
                     Row(children: [
                       FutureBuilder(
                           future: DatabaseMethods().getPurchaseDetails(
-                              widget.sellerID + widget.userId,
-                              widget.idCommand),
+                              widget.sellerID + widget.userId),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Expanded(

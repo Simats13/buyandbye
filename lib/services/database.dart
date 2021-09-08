@@ -301,28 +301,40 @@ class DatabaseMethods {
   }
 
   // Récupère toutes les commandes d'un commerçant ou d'un client
-  Future getPurchase() async {
-    final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
+  Future getPurchase(userType, userid) async {
     return FirebaseFirestore.instance
-        .collection("commandes")
-        .where("users", arrayContains: userid)
+        .collection(userType)
+        .doc(userid)
+        .collection("commands")
         .get();
   }
 
   // Récupère les informations générales d'une commande
-  Stream getCommandDetails(documentId) {
+  Future getCommandDetails(documentId) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
     return FirebaseFirestore.instance
-        .collection("commandes")
+        .collection("users")
+        .doc(userid)
+        .collection("commands")
         .doc(documentId)
+        .get();
+  }
+
+  Stream getSellerCommandDetails(sellerId) {
+    return FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(sellerId)
         .collection("commands")
         .snapshots();
   }
 
-  Future getPurchaseDetails(documentId, commandId) async {
+  Future getPurchaseDetails(commandId) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
     return FirebaseFirestore.instance
-        .collection("commandes")
-        .doc(documentId)
+        .collection("users")
+        .doc(userid)
         .collection("commands")
         .doc(commandId)
         .collection("products")
@@ -339,10 +351,17 @@ class DatabaseMethods {
         .get();
   }
 
-  Future updateCommand(documentId, commandId, newStatut) async {
-    return await FirebaseFirestore.instance
-        .collection('commandes')
-        .doc(documentId)
+  Future updateCommand(sellerId, clientId, commandId, newStatut) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(clientId)
+        .collection('commands')
+        .doc(commandId)
+        .update({"statut": newStatut});
+
+    await FirebaseFirestore.instance
+        .collection('magasins')
+        .doc(sellerId)
         .collection('commands')
         .doc(commandId)
         .update({"statut": newStatut});
@@ -570,37 +589,27 @@ class DatabaseMethods {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
 
-    await FirebaseFirestore.instance
-        .collection('commandes')
-        .doc(idCommercant + userid)
-        .set({
-      "users": [
-        idCommercant,
-        userid,
-      ],
-    });
-
     //RECUPERE LA REFERENCE DANS LE DOCUMENT DU MAGASIN
     var ref = await FirebaseFirestore.instance
         .collection('magasins')
         .doc(idCommercant)
         .get();
 
+//RECUPERE LA QUANTITE D'ARTICLE DANS LE PANIER ET LE MET DANS UNE VARIABLE AFIN D'AVOIR UN NOMBRE TOTAL
     var produits = await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
         .get();
 
-    //RECUPERE LA QUANTITE D'ARTICLE DANS LE PANIER ET LE MET DANS UNE VARIABLE AFIN D'AVOIR UN NOMBRE TOTALE
     for (var i in produits.docs) {
       totalProduct = totalProduct + i["amount"];
     }
 
-    //MET LES NOUVELLES INFORMATIONS DANS LA BDD DE LA COMMANDE
+    //MET LES NOUVELLES INFORMATIONS DANS LA BDD DE L'UTILISATEUR
     await FirebaseFirestore.instance
-        .collection('commandes')
-        .doc(idCommercant + userid)
+        .collection('users')
+        .doc(userid)
         .collection("commands")
         .doc(idCommand)
         .set({
@@ -611,7 +620,26 @@ class DatabaseMethods {
       "prix": amount,
       "statut": 0.toInt(),
       "reference": ref["commandNb"].toInt(),
-      "adresse": userAdress
+      "adresse": userAdress,
+      "shopID": idCommercant
+    });
+
+    //MET LES NOUVELLES INFORMATIONS DANS LA BDD DU COMMERCANT
+    await FirebaseFirestore.instance
+        .collection('magasins')
+        .doc(idCommercant)
+        .collection("commands")
+        .doc(idCommand)
+        .set({
+      "articles": totalProduct.toInt(),
+      "horodatage": DateTime.now(),
+      "id": idCommand,
+      "livraison": deliveryChoose.toInt(),
+      "prix": amount,
+      "statut": 0.toInt(),
+      "reference": ref["commandNb"].toInt(),
+      "adresse": userAdress,
+      "clientID": userid
     });
 
     //UPDATE LA TABLE MAGASIN, INCREMENTE LE NOMBRE DE COMMANDES
@@ -620,10 +648,25 @@ class DatabaseMethods {
         .doc(idCommercant)
         .update({"commandNb": ref["commandNb"] + 1});
 
+    // Entre l'id de chaque produit et sa quantité pour le client puis pour le commercant
     for (var i in produits.docs) {
       await FirebaseFirestore.instance
-          .collection('commandes')
-          .doc(idCommercant + userid)
+          .collection('users')
+          .doc(userid)
+          .collection("commands")
+          .doc(idCommand)
+          .collection("products")
+          .doc()
+          .set({
+        "produit": i["id"],
+        "quantite": i["amount"],
+      });
+    }
+
+    for (var i in produits.docs) {
+      await FirebaseFirestore.instance
+          .collection('magasins')
+          .doc(idCommercant)
           .collection("commands")
           .doc(idCommand)
           .collection("products")

@@ -1,4 +1,6 @@
+import 'package:buyandbye/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -12,7 +14,7 @@ class UserHistory extends StatefulWidget {
 class _UserHistoryState extends State<UserHistory> {
   //Initialisation de la DropDownList
   List<DropdownMenuItem<String>> duration = [];
-  String def;
+  String def, userid;
 
   void listDuration() {
     duration.clear();
@@ -27,69 +29,81 @@ class _UserHistoryState extends State<UserHistory> {
         child: Text("30 jours", style: TextStyle(fontSize: 18))));
   }
 
+    void initState() {
+    super.initState();
+    getMyInfo();
+  }
+
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     listDuration();
     return FutureBuilder(
-        future: DatabaseMethods().getPurchase(),
+        future: DatabaseMethods().getPurchase("users", userid),
         builder: (context, snapshot) {
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: BuyandByeAppTheme.black_electrik,
-                title: Text("Historique d'achat"),
-                elevation: 1,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: BuyandByeAppTheme.orange,
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: BuyandByeAppTheme.black_electrik,
+              title: Text("Historique d'achat"),
+              elevation: 1,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: BuyandByeAppTheme.orange,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 15, right: 15, bottom: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  //Menu déroulant
+                  DropdownButton(
+                      value: def,
+                      elevation: 2,
+                      items: duration,
+                      hint: Text("Durée", style: TextStyle(fontSize: 18)),
+                      onChanged: (value) {
+                        def = value;
+                        setState(() {});
+                      }),
+                  SizedBox(
+                    height: 30,
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
+                  snapshot.hasData
+                      ? ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.docs.length,
+                          itemBuilder: (context, index) {
+                            String shopId = snapshot.data.docs[index]["shopID"];
+                            String commandId = snapshot.data.docs[index]["id"];
+                            // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
+                            return UserCommand(shopId, commandId);
+                          },
+                        )
+                      : CircularProgressIndicator()
+                ],
               ),
-              body: SingleChildScrollView(
-                padding: EdgeInsets.only(left: 15, right: 15, bottom: 30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    //Menu déroulant
-                    DropdownButton(
-                        value: def,
-                        elevation: 2,
-                        items: duration,
-                        hint: Text("Durée", style: TextStyle(fontSize: 18)),
-                        onChanged: (value) {
-                          def = value;
-                          setState(() {});
-                        }),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    snapshot.hasData
-                    ? ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.docs.length,
-                      itemBuilder: (context, index) {
-                        String user0 = snapshot.data.docs[index]["users"][0];
-                        String user1 = snapshot.data.docs[index]["users"][1];
-                        // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
-                        return UserCommand(user0, user1);
-                      },
-                    )
-                    : CircularProgressIndicator()
-                  ],
-                ),
-              ),
-            );
+            ),
+          );
         });
   }
 }
 
 class UserCommand extends StatefulWidget {
-  const UserCommand(this.user0, this.user1);
-  final String user0, user1;
+  const UserCommand(this.shopId, this.commandId);
+  final String shopId, commandId;
   _UserCommandState createState() => _UserCommandState();
 }
 
@@ -100,10 +114,9 @@ class _UserCommandState extends State<UserCommand> {
     return format.format(timestamp.toDate());
   }
 
-  //
   getShopInfos(sellerId) async {
     var querySnapshot = await FirebaseFirestore.instance
-        .collection("users")
+        .collection("magasins")
         .where("id", isEqualTo: sellerId)
         .get();
     shopName = "${querySnapshot.docs[0]["name"]}";
@@ -114,97 +127,80 @@ class _UserCommandState extends State<UserCommand> {
   }
 
   Widget build(BuildContext context) {
-    getShopInfos(widget.user0);
-    String docId = widget.user0 + widget.user1;
-    return StreamBuilder(
-        stream: DatabaseMethods().getCommandDetails(docId),
+    getShopInfos(widget.shopId);
+    return FutureBuilder(
+        future: DatabaseMethods().getCommandDetails(widget.commandId),
         builder: (context, snapshot) {
           if (snapshot.hasData && shopName != null) {
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          formatTimestamp(
-                              snapshot.data.docs[index]["horodatage"]),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      MaterialButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          print("clicked");
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(formatTimestamp(snapshot.data["horodatage"]),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                SizedBox(
+                  height: 10,
+                ),
+                MaterialButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    print("clicked");
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    shopName,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  // Ecrit au singulier ou au pluriel selon le nombre d'article
+                                  snapshot.data["articles"] == 1
+                                      ? Text(
+                                          snapshot.data["articles"].toString() +
+                                              " article")
+                                      : Text(
+                                          snapshot.data["articles"].toString() +
+                                              " articles"),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    snapshot.data["prix"].toStringAsFixed(2) +
+                                        "€",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700),
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text(
-                                          shopName,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        // Ecrit au singulier ou au pluriel selon le nombre d'article
-                                        snapshot.data.docs[index]["articles"] ==
-                                                1
-                                            ? Text(snapshot.data
-                                                    .docs[index]["articles"]
-                                                    .toString() +
-                                                " article")
-                                            : Text(snapshot.data
-                                                    .docs[index]["articles"]
-                                                    .toString() +
-                                                " articles"),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          snapshot.data.docs[index]["prix"]
-                                                  .toStringAsFixed(2) +
-                                              "€",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                ProductInfos(
-                                    docId,
-                                    snapshot.data.docs[index]["id"],
-                                    widget.user0)
-                              ],
-                            ),
-                          ),
-                        ),
+                          ProductInfos(widget.commandId, widget.shopId)
+                        ],
                       ),
-                      SizedBox(height: 30)
-                    ],
-                  );
-                });
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30)
+              ],
+            );
           } else {
             return CircularProgressIndicator();
           }
@@ -213,16 +209,15 @@ class _UserCommandState extends State<UserCommand> {
 }
 
 class ProductInfos extends StatefulWidget {
-  const ProductInfos(this.docId, this.commandId, this.sellerId);
-  final String docId, commandId, sellerId;
+  const ProductInfos(this.commandId, this.sellerId);
+  final String commandId, sellerId;
   _ProductInfosState createState() => _ProductInfosState();
 }
 
 class _ProductInfosState extends State<ProductInfos> {
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DatabaseMethods()
-            .getPurchaseDetails(widget.docId, widget.commandId),
+        future: DatabaseMethods().getPurchaseDetails(widget.commandId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Column(

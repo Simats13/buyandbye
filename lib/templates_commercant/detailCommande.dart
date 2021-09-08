@@ -8,8 +8,8 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 class DetailCommande extends StatefulWidget {
   const DetailCommande(this.ref, this.statut, this.date, this.total,
-      this.livraisonNb, this.user0, this.user1, this.commandId);
-  final String date, user0, user1, commandId;
+      this.livraisonNb, this.sellerId, this.clientId, this.commandId);
+  final String date, sellerId, clientId, commandId;
   final int ref, statut, livraisonNb;
   final double total;
   _DetailCommandeState createState() => _DetailCommandeState();
@@ -30,7 +30,7 @@ Widget defStatut(statut, livraison) {
 }
 
 // Affiche les boutons en bas de page pour les commandes "en attente"
-Widget boutonsEnAttente(documentId, commId, context) {
+Widget boutonsEnAttente(sellerId, clientId, commId, context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceAround,
     children: [
@@ -45,7 +45,7 @@ Widget boutonsEnAttente(documentId, commId, context) {
         ),
         child: MaterialButton(
             onPressed: () {
-              DatabaseMethods().updateCommand(documentId, commId, 1);
+              DatabaseMethods().updateCommand(sellerId, clientId, commId, 1);
               Navigator.pop(context);
             },
             child: Text(
@@ -76,7 +76,7 @@ Widget boutonsEnAttente(documentId, commId, context) {
 }
 
 // Affiche les boutons en bas de page pour les commandes "en cours"
-Widget boutonsEnCours(context, documentId, commId) {
+Widget boutonsEnCours(context, sellerId, clientId, commId) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceAround,
     children: [
@@ -91,7 +91,7 @@ Widget boutonsEnCours(context, documentId, commId) {
         ),
         child: MaterialButton(
             onPressed: () {
-              DatabaseMethods().updateCommand(documentId, commId, 2);
+              DatabaseMethods().updateCommand(sellerId, clientId, commId, 2);
               Navigator.pop(context);
             },
             child: Text(
@@ -122,11 +122,11 @@ Widget boutonsEnCours(context, documentId, commId) {
 }
 
 // Détermine les boutons à afficher en fonction du statut
-displayButtons(statut, documentId, commId, context) {
+displayButtons(statut, sellerId, clientId, commId, context) {
   if (statut == 0) {
-    return boutonsEnAttente(documentId, commId, context);
+    return boutonsEnAttente(sellerId, clientId, commId, context);
   } else if (statut == 1) {
-    return boutonsEnCours(context, documentId, commId);
+    return boutonsEnCours(context, sellerId, clientId, commId);
   } else {
     return SizedBox.shrink();
   }
@@ -136,7 +136,6 @@ displayButtons(statut, documentId, commId, context) {
 class _DetailCommandeState extends State<DetailCommande> {
   @override
   Widget build(BuildContext context) {
-    String documentId = widget.user0 + widget.user1;
     return Scaffold(
         appBar: AppBar(
           title: Text("Détail commande"),
@@ -150,7 +149,7 @@ class _DetailCommandeState extends State<DetailCommande> {
         ),
         body: FutureBuilder(
             future: DatabaseMethods()
-                .getPurchaseDetails(documentId, widget.commandId),
+                .getPurchaseDetails(widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 int nbArticles = snapshot.data.docs.length;
@@ -189,7 +188,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                         // pour chaque produit dans la commande
                         return Container(
                             child: Detail(
-                                widget.user0,
+                                widget.sellerId,
                                 snapshot.data.docs[index]["produit"],
                                 snapshot.data.docs[index]["quantite"]));
                       },
@@ -205,8 +204,8 @@ class _DetailCommandeState extends State<DetailCommande> {
                       ],
                     ),
                     // Appel de la classe pour afficher les informations du client
-                    UserInfo(widget.user1, widget.livraisonNb, widget.statut,
-                        widget.commandId, documentId, widget.user0),
+                    UserInfo(widget.clientId, widget.livraisonNb, widget.statut,
+                        widget.commandId, widget.commandId, widget.sellerId)
                   ],
                 ));
               } else {
@@ -218,8 +217,8 @@ class _DetailCommandeState extends State<DetailCommande> {
 
 // Affiche le détail de chaque produit commandé
 class Detail extends StatefulWidget {
-  Detail(this.shopId, this.productId, this.quantite);
-  final String shopId, productId;
+  Detail(this.sellerId, this.productId, this.quantite);
+  final String sellerId, productId;
   final int quantite;
   _DetailState createState() => _DetailState();
 }
@@ -228,7 +227,7 @@ class _DetailState extends State<Detail> {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream:
-            DatabaseMethods().getOneProduct(widget.shopId, widget.productId),
+            DatabaseMethods().getOneProduct(widget.sellerId, widget.productId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             // Affiche les informations du produit
@@ -281,9 +280,9 @@ class _DetailState extends State<Detail> {
 
 // Affiche les informations de l'acheteur
 class UserInfo extends StatefulWidget {
-  const UserInfo(this.userId, this.livraisonNb, this.statut, this.commId,
-      this.documentId, this.shopId);
-  final String userId, commId, documentId, shopId;
+  const UserInfo(this.clientId, this.livraisonNb, this.statut, this.commId,
+      this.documentId, this.sellerId);
+  final String clientId, commId, documentId, sellerId;
   final int livraisonNb, statut;
 
   _UserInfoState createState() => _UserInfoState();
@@ -293,8 +292,8 @@ class _UserInfoState extends State<UserInfo> {
   String myUserName;
   getSellerName() async {
     final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    final clientId = user.uid;
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(clientId);
     myUserName = "${querySnapshot.docs[0]["name"]}";
   }
 
@@ -305,7 +304,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: DatabaseMethods().getMyInfo(widget.userId),
+      future: DatabaseMethods().getMyInfo(widget.clientId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(
@@ -340,12 +339,12 @@ class _UserInfoState extends State<UserInfo> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ChatRoom(
-                                            widget.shopId,
+                                            widget.sellerId,
                                             myUserName,
                                             snapshot.data.docs[0]["FCMToken"],
-                                            widget.userId,
-                                            widget.shopId + widget.userId,
-                                            snapshot.data.docs[0]["name"],
+                                            widget.clientId,
+                                            widget.sellerId + widget.clientId,
+                                            snapshot.data.docs[0]["fname"],
                                             snapshot.data.docs[0]["imgUrl"])));
                               },
                               icon: Icon(Icons.message),
@@ -364,7 +363,7 @@ class _UserInfoState extends State<UserInfo> {
               ),
               // Affiche les boutons en fonction du statut de la commande
               displayButtons(
-                  widget.statut, widget.documentId, widget.commId, context),
+                  widget.statut, widget.sellerId, widget.clientId, widget.commId, context),
               SizedBox(height: 50)
             ],
           );
