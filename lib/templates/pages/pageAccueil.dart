@@ -38,7 +38,7 @@ class _PageAccueilState extends State<PageAccueil> {
   LocationData _locationData;
   Location location = Location();
   bool permissionChecked;
-  bool test = false;
+  bool chargementChecked = false;
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
   static SharedPreferences _preferences;
@@ -131,7 +131,7 @@ class _PageAccueilState extends State<PageAccueil> {
       _currentAddress = "${first.featureName}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
       _city = "${first.locality}";
-      test = true;
+      chargementChecked = true;
     });
   }
 
@@ -166,7 +166,7 @@ class _PageAccueilState extends State<PageAccueil> {
     getCoordinates();
     positionCheck();
 
-    return !test
+    return chargementChecked
         ? StreamBuilder(
             stream: stream,
             builder: (BuildContext context,
@@ -618,8 +618,8 @@ class _PageAccueilState extends State<PageAccueil> {
                         Container(
                           padding: EdgeInsets.all(20),
                           child: CustomSliderWidget(
-                              items: [SliderAccueil3(latitude, longitude)],
-                              ),
+                            items: [SliderAccueil3(latitude, longitude)],
+                          ),
                         ),
 
                         SizedBox(
@@ -1946,7 +1946,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
               baseColor: Colors.grey[300],
               highlightColor: Colors.grey[100],
             );
-        }
+          }
           final documents = snapshot.data..shuffle();
           if (documents.length > 0) {
             return CustomSliderWidget(items: [
