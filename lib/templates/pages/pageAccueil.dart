@@ -46,6 +46,7 @@ class _PageAccueilState extends State<PageAccueil> {
   static const _keyLongitude = "UserLongitudeKey";
   static const _keyAddress = "UserAddressKey";
   static const _keyCity = "UserCityKey";
+  static const _infoCharged = "infoCharged";
 
   // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
@@ -96,6 +97,8 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   getCoordinates() async {
+    chargementChecked =
+        await SharedPreferenceHelper().getInformationCharged() ?? false;
     latitude = await SharedPreferenceHelper().getUserLatitude() ??
         currentLatitude ??
         43.834647;
@@ -133,6 +136,11 @@ class _PageAccueilState extends State<PageAccueil> {
       _city = "${first.locality}";
       chargementChecked = true;
     });
+
+    _preferences = await SharedPreferences.getInstance();
+    await _preferences.setBool(_infoCharged, chargementChecked);
+
+    SharedPreferenceHelper().saveInfoCharged(chargementChecked);
   }
 
 //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
@@ -310,133 +318,146 @@ class _PageAccueilState extends State<PageAccueil> {
               //   );
 
               if (!snapshot.hasData)
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 16.0),
+                return Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 25,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ColorLoader3(
+                        radius: 15.0,
+                        dotRadius: 6.0,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Shimmer.fromColors(
-                            baseColor: Colors.grey[300],
-                            highlightColor: Colors.grey[100],
-                            child: Row(
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 15),
-                                  height: 45,
-                                  width: size.width - 70,
-                                  decoration: BoxDecoration(
-                                    color: textFieldColor,
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(12),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            SizedBox(
-                                              height: 30,
-                                              width: size.width - 150,
-                                              child: InkWell(
-                                                onTap: () async {},
-                                                child: Container(
-                                                  width: size.width - 150,
-                                                  padding:
-                                                      EdgeInsets.only(top: 5),
-                                                  child: Container(
-                                                    height: 10,
-                                                    width: 10,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemBuilder: (_, __) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    //Carrée
-
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-
-                                    Expanded(
-                                      child: CustomSliderWidget(
-                                        items: [
-                                          Container(
-                                            padding: EdgeInsets.all(20),
-                                            width: 200,
-                                            height: 300,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                                //trait gris de séparation
-                                Container(
-                                  width: size.width,
-                                  height: 10,
-                                  decoration:
-                                      BoxDecoration(color: textFieldColor),
-                                ),
-                              ],
-                            ),
-                          ),
-                          itemCount: 6,
-                        ),
-                      ),
+                      Text("Chargement, veuillez patienter"),
                     ],
                   ),
                 );
+
+              // return Container(
+              //   padding: const EdgeInsets.symmetric(
+              //       horizontal: 16.0, vertical: 16.0),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     mainAxisSize: MainAxisSize.max,
+              //     children: <Widget>[
+              //       SizedBox(
+              //         height: 25,
+              //       ),
+              //       Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           SizedBox(
+              //             height: 15,
+              //           ),
+              //           Shimmer.fromColors(
+              //             baseColor: Colors.grey[300],
+              //             highlightColor: Colors.grey[100],
+              //             child: Row(
+              //               children: [
+              //                 Container(
+              //                   margin: EdgeInsets.only(left: 15),
+              //                   height: 45,
+              //                   width: size.width - 70,
+              //                   decoration: BoxDecoration(
+              //                     color: textFieldColor,
+              //                     borderRadius: BorderRadius.circular(30),
+              //                   ),
+              //                   child: Row(
+              //                     mainAxisAlignment:
+              //                         MainAxisAlignment.spaceBetween,
+              //                     children: [
+              //                       Padding(
+              //                         padding: EdgeInsets.all(12),
+              //                         child: Row(
+              //                           mainAxisAlignment:
+              //                               MainAxisAlignment.spaceBetween,
+              //                           children: [
+              //                             Icon(
+              //                               Icons.location_on,
+              //                             ),
+              //                             SizedBox(
+              //                               width: 5,
+              //                             ),
+              //                             SizedBox(
+              //                               height: 30,
+              //                               width: size.width - 150,
+              //                               child: InkWell(
+              //                                 onTap: () async {},
+              //                                 child: Container(
+              //                                   width: size.width - 150,
+              //                                   padding:
+              //                                       EdgeInsets.only(top: 5),
+              //                                   child: Container(
+              //                                     height: 10,
+              //                                     width: 10,
+              //                                   ),
+              //                                 ),
+              //                               ),
+              //                             ),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //           SizedBox(
+              //             height: 15,
+              //           ),
+              //         ],
+              //       ),
+              //       Expanded(
+              //         child: ListView.builder(
+              //           itemBuilder: (_, __) => Padding(
+              //             padding: const EdgeInsets.only(bottom: 8.0),
+              //             child: Column(
+              //               children: [
+              //                 Row(
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: <Widget>[
+              //                     //Carrée
+
+              //                     SizedBox(
+              //                       height: 15,
+              //                     ),
+
+              //                     Expanded(
+              //                       child: CustomSliderWidget(
+              //                         items: [
+              //                           Container(
+              //                             padding: EdgeInsets.all(20),
+              //                             width: 200,
+              //                             height: 300,
+              //                             decoration: BoxDecoration(
+              //                               color: Colors.white,
+              //                               borderRadius:
+              //                                   BorderRadius.circular(20),
+              //                             ),
+              //                           ),
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //                 SizedBox(
+              //                   height: 15,
+              //                 ),
+              //                 //trait gris de séparation
+              //                 Container(
+              //                   width: size.width,
+              //                   height: 10,
+              //                   decoration:
+              //                       BoxDecoration(color: textFieldColor),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //           itemCount: 6,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // );
 
               if (snapshot.data.length > 0) {
                 return ListView(
@@ -768,130 +789,142 @@ class _PageAccueilState extends State<PageAccueil> {
               }
             })
         : Center(
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Shimmer.fromColors(
-                        baseColor: Colors.grey[300],
-                        highlightColor: Colors.grey[100],
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(left: 15),
-                              height: 45,
-                              width: size.width - 70,
-                              decoration: BoxDecoration(
-                                color: textFieldColor,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(12),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on,
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        SizedBox(
-                                          height: 30,
-                                          width: size.width - 150,
-                                          child: InkWell(
-                                            onTap: () async {},
-                                            child: Container(
-                                              width: size.width - 150,
-                                              padding: EdgeInsets.only(top: 5),
-                                              child: Container(
-                                                height: 10,
-                                                width: 10,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (_, __) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                //Carrée
-
-                                SizedBox(
-                                  height: 15,
-                                ),
-
-                                Expanded(
-                                  child: CustomSliderWidget(
-                                    items: [
-                                      Container(
-                                        padding: EdgeInsets.all(20),
-                                        width: 200,
-                                        height: 300,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            //trait gris de séparation
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                      itemCount: 6,
-                    ),
-                  ),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ColorLoader3(
+                  radius: 15.0,
+                  dotRadius: 6.0,
+                ),
+                Text("Chargement, veuillez patienter"),
+              ],
             ),
           );
+    // : Center(
+    //     child: Container(
+    //       padding:
+    //           const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         mainAxisSize: MainAxisSize.max,
+    //         children: <Widget>[
+    //           SizedBox(
+    //             height: 25,
+    //           ),
+    //           Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               SizedBox(
+    //                 height: 15,
+    //               ),
+    //               Shimmer.fromColors(
+    //                 baseColor: Colors.grey[300],
+    //                 highlightColor: Colors.grey[100],
+    //                 child: Row(
+    //                   children: [
+    //                     Container(
+    //                       margin: EdgeInsets.only(left: 15),
+    //                       height: 45,
+    //                       width: size.width - 70,
+    //                       decoration: BoxDecoration(
+    //                         color: textFieldColor,
+    //                         borderRadius: BorderRadius.circular(30),
+    //                       ),
+    //                       child: Row(
+    //                         mainAxisAlignment:
+    //                             MainAxisAlignment.spaceBetween,
+    //                         children: [
+    //                           Padding(
+    //                             padding: EdgeInsets.all(12),
+    //                             child: Row(
+    //                               children: [
+    //                                 Icon(
+    //                                   Icons.location_on,
+    //                                 ),
+    //                                 SizedBox(
+    //                                   width: 5,
+    //                                 ),
+    //                                 SizedBox(
+    //                                   height: 30,
+    //                                   width: size.width - 150,
+    //                                   child: InkWell(
+    //                                     onTap: () async {},
+    //                                     child: Container(
+    //                                       width: size.width - 150,
+    //                                       padding: EdgeInsets.only(top: 5),
+    //                                       child: Container(
+    //                                         height: 10,
+    //                                         width: 10,
+    //                                       ),
+    //                                     ),
+    //                                   ),
+    //                                 ),
+    //                               ],
+    //                             ),
+    //                           ),
+    //                         ],
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               SizedBox(
+    //                 height: 15,
+    //               ),
+    //             ],
+    //           ),
+    //           Expanded(
+    //             child: ListView.builder(
+    //               itemBuilder: (_, __) => Padding(
+    //                 padding: const EdgeInsets.only(bottom: 8.0),
+    //                 child: Column(
+    //                   children: [
+    //                     Row(
+    //                       crossAxisAlignment: CrossAxisAlignment.start,
+    //                       children: <Widget>[
+    //                         //Carrée
+
+    //                         SizedBox(
+    //                           height: 15,
+    //                         ),
+
+    //                         Expanded(
+    //                           child: CustomSliderWidget(
+    //                             items: [
+    //                               Container(
+    //                                 padding: EdgeInsets.all(20),
+    //                                 width: 200,
+    //                                 height: 300,
+    //                                 decoration: BoxDecoration(
+    //                                   color: Colors.white,
+    //                                   borderRadius:
+    //                                       BorderRadius.circular(20),
+    //                                 ),
+    //                               ),
+    //                             ],
+    //                           ),
+    //                         ),
+    //                       ],
+    //                     ),
+    //                     SizedBox(
+    //                       height: 15,
+    //                     ),
+    //                     //trait gris de séparation
+    //                     Container(
+    //                       width: size.width,
+    //                       height: 10,
+    //                       decoration: BoxDecoration(color: textFieldColor),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               itemCount: 6,
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   );
   }
 
   @override
