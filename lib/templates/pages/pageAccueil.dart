@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:buyandbye/templates/pages/address_search.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -568,9 +569,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
                         Container(
                           padding: EdgeInsets.all(20),
-                          child: CustomSliderWidget(
-                            items: [SliderAccueil1(latitude, longitude)],
-                          ),
+                          child: SliderAccueil1(latitude, longitude),
                         ),
 
                         Center(
@@ -608,9 +607,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         ),
                         Container(
                           padding: EdgeInsets.all(20),
-                          child: CustomSliderWidget(
-                            items: [SliderAccueil2(latitude, longitude)],
-                          ),
+                          child: SliderAccueil2(latitude, longitude),
                         ),
 
                         //trait gris de séparation
@@ -638,9 +635,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         ),
                         Container(
                           padding: EdgeInsets.all(20),
-                          child: CustomSliderWidget(
-                            items: [SliderAccueil3(latitude, longitude)],
-                          ),
+                          child: SliderAccueil3(latitude, longitude),
                         ),
 
                         SizedBox(
@@ -652,10 +647,8 @@ class _PageAccueilState extends State<PageAccueil> {
                         // ),
                         // Container(
                         //   padding: EdgeInsets.all(20),
-                        //   child: CustomSliderWidget(
-                        //     items: [SliderAccueil4()],
+                        //   child: SliderAccueil4(latitude, longitude),
                         //   ),
-                        // ),
                         // SizedBox(
                         //   height: 20,
                         // ),
@@ -1682,7 +1675,15 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
     });
   }
 
-  @override
+  List listImages(documents) {
+    List shopImages = [];
+    for (int i = 0; i < documents.length; i++) {
+      shopImages.add(documents[i]["imgUrl"]);
+    }
+    return shopImages;
+  }
+
+  int carouselItem = 0;
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: stream,
@@ -1710,53 +1711,75 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
               highlightColor: Colors.grey[100],
             );
           }
-          final documents = snapshot.data..shuffle();
-          if (documents.length > 0) {
-            return CustomSliderWidget(
-              items: [
-                (PageView.builder(
-                  itemCount: documents.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      child: InkWell(
+          // Les éléments sont mélangés à chaque mouvement du carousel
+          // final documents = snapshot.data..shuffle();
+          if (snapshot.data.length > 0) {
+            List shopImages = listImages(snapshot.data);
+            return CarouselSlider(
+                options: CarouselOptions(
+                    height: 200,
+                    // Les images tournent en boucle sauf s'il n'y en a qu'une
+                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        carouselItem = index;
+                      });
+                    }),
+                items: shopImages.map((i) {
+                  return Builder(builder: (context) {
+                    return GestureDetector(
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageDetail(
-                                        img: documents[index]['imgUrl'],
-                                        name: documents[index]['name'],
-                                        description: documents[index]
+                                        img: snapshot.data[carouselItem]
+                                            ['imgUrl'],
+                                        name: snapshot.data[carouselItem]
+                                            ['name'],
+                                        description: snapshot.data[carouselItem]
                                             ['description'],
-                                        adresse: documents[index]['adresse'],
-                                        clickAndCollect: documents[index]
-                                            ['ClickAndCollect'],
-                                        livraison: documents[index]
+                                        adresse: snapshot.data[carouselItem]
+                                            ['adresse'],
+                                        clickAndCollect:
+                                            snapshot.data[carouselItem]
+                                                ['ClickAndCollect'],
+                                        livraison: snapshot.data[carouselItem]
                                             ['livraison'],
-                                        sellerID: documents[index]['id'],
+                                        sellerID: snapshot.data[carouselItem]
+                                            ['id'],
                                       )));
                         },
-                        child: Stack(children: [
-                          Center(
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 2),
-                              decoration: BoxDecoration(
+                        child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            decoration: BoxDecoration(
+                                // border: Border.all(color: Colors.black),
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                      snapshot.data[index]['imgUrl']),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ),
-                    );
-                  },
-                ))
-              ],
-            );
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 4,
+                                      offset: Offset(4, 4))
+                                ]),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Image.network(i),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.only(bottom: 10, top: 40),
+                                    child: Text(
+                                        snapshot.data[carouselItem]["name"],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700))),
+                              ],
+                            )));
+                  });
+                }).toList());
           } else {
             return Container(
               child: Center(
@@ -1823,7 +1846,15 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
     });
   }
 
-//   @override
+  List listImages(documents) {
+    List shopImages = [];
+    for (int i = 0; i < documents.length; i++) {
+      shopImages.add(documents[i]["imgUrl"]);
+    }
+    return shopImages;
+  }
+
+  int carouselItem = 0;
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: stream,
@@ -1850,43 +1881,75 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
               highlightColor: Colors.grey[100],
             );
           }
-          final documents = snapshot.data..shuffle();
-          if (documents.length > 0) {
-            return CustomSliderWidget(items: [
-              PageView.builder(
-                  itemCount: documents.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                        child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PageDetail(
-                                      img: documents[index]['imgUrl'],
-                                      name: documents[index]['name'],
-                                      description: documents[index]
-                                          ['description'],
-                                      adresse: documents[index]['adresse'],
-                                      clickAndCollect: documents[index]
-                                          ['ClickAndCollect'],
-                                      livraison: documents[index]['livraison'],
-                                      sellerID: documents[index]['id'],
-                                    )));
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image: NetworkImage(snapshot.data[index]['imgUrl']),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ));
-                  })
-            ]);
+          // Les éléments sont mélangés à chaque mouvement du carousel
+          // final documents = snapshot.data..shuffle();
+          if (snapshot.data.length > 0) {
+            List shopImages = listImages(snapshot.data);
+            return CarouselSlider(
+                options: CarouselOptions(
+                    height: 200,
+                    // Les images tournent en boucle sauf s'il n'y en a qu'une
+                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        carouselItem = index;
+                      });
+                    }),
+                items: shopImages.map((i) {
+                  return Builder(builder: (context) {
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PageDetail(
+                                        img: snapshot.data[carouselItem]
+                                            ['imgUrl'],
+                                        name: snapshot.data[carouselItem]
+                                            ['name'],
+                                        description: snapshot.data[carouselItem]
+                                            ['description'],
+                                        adresse: snapshot.data[carouselItem]
+                                            ['adresse'],
+                                        clickAndCollect:
+                                            snapshot.data[carouselItem]
+                                                ['ClickAndCollect'],
+                                        livraison: snapshot.data[carouselItem]
+                                            ['livraison'],
+                                        sellerID: snapshot.data[carouselItem]
+                                            ['id'],
+                                      )));
+                        },
+                        child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            decoration: BoxDecoration(
+                                // border: Border.all(color: Colors.black),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 4,
+                                      offset: Offset(4, 4))
+                                ]),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Image.network(i),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.only(bottom: 10, top: 40),
+                                    child: Text(
+                                        snapshot.data[carouselItem]["name"],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700))),
+                              ],
+                            )));
+                  });
+                }).toList());
           } else {
             return Container(
               child: Center(
@@ -1953,7 +2016,15 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
     });
   }
 
-  @override
+  List listImages(documents) {
+    List shopImages = [];
+    for (int i = 0; i < documents.length; i++) {
+      shopImages.add(documents[i]["imgUrl"]);
+    }
+    return shopImages;
+  }
+
+  int carouselItem = 0;
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: stream,
@@ -1980,45 +2051,75 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
               highlightColor: Colors.grey[100],
             );
           }
-          final documents = snapshot.data..shuffle();
-          if (documents.length > 0) {
-            return CustomSliderWidget(items: [
-              PageView.builder(
-                  itemCount: documents.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      child: GestureDetector(
+          // Les éléments sont mélangés à chaque mouvement du carousel
+          // final documents = snapshot.data..shuffle();
+          if (snapshot.data.length > 0) {
+            List shopImages = listImages(snapshot.data);
+            return CarouselSlider(
+                options: CarouselOptions(
+                    height: 200,
+                    // Les images tournent en boucle sauf s'il n'y en a qu'une
+                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        carouselItem = index;
+                      });
+                    }),
+                items: shopImages.map((i) {
+                  return Builder(builder: (context) {
+                    return GestureDetector(
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageDetail(
-                                        img: documents[index]['imgUrl'],
-                                        name: documents[index]['name'],
-                                        description: documents[index]
+                                        img: snapshot.data[carouselItem]
+                                            ['imgUrl'],
+                                        name: snapshot.data[carouselItem]
+                                            ['name'],
+                                        description: snapshot.data[carouselItem]
                                             ['description'],
-                                        adresse: documents[index]['adresse'],
-                                        clickAndCollect: documents[index]
-                                            ['ClickAndCollect'],
-                                        livraison: documents[index]
+                                        adresse: snapshot.data[carouselItem]
+                                            ['adresse'],
+                                        clickAndCollect:
+                                            snapshot.data[carouselItem]
+                                                ['ClickAndCollect'],
+                                        livraison: snapshot.data[carouselItem]
                                             ['livraison'],
-                                        sellerID: documents[index]['id'],
+                                        sellerID: snapshot.data[carouselItem]
+                                            ['id'],
                                       )));
                         },
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(documents[index]['imgUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  })
-            ]);
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            decoration: BoxDecoration(
+                                // border: Border.all(color: Colors.black),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 4,
+                                      offset: Offset(4, 4))
+                                ]),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Image.network(i),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.only(bottom: 10, top: 40),
+                                    child: Text(
+                                        snapshot.data[carouselItem]["name"],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700))),
+                              ],
+                            )));
+                  });
+                }).toList());
           } else {
             return Container(
               child: Center(
@@ -2056,7 +2157,15 @@ class SliderAccueil4 extends StatefulWidget {
 
 //ACHAT USER
 class _SliderAccueil4State extends State<SliderAccueil4> {
-  @override
+  List listImages(documents) {
+    List shopImages = [];
+    for (int i = 0; i < documents.length; i++) {
+      shopImages.add(documents[i]["imgUrl"]);
+    }
+    return shopImages;
+  }
+
+  int carouselItem = 0;
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: DatabaseMethods().getStoreInfo(),
@@ -2083,43 +2192,101 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
               highlightColor: Colors.grey[100],
             );
           }
-          return PageView.builder(
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    child: GestureDetector(
+          // Les éléments sont mélangés à chaque mouvement du carousel
+          // final documents = snapshot.data..shuffle();
+          if (snapshot.data.length > 0) {
+            List shopImages = listImages(snapshot.data);
+            return CarouselSlider(
+                options: CarouselOptions(
+                    height: 200,
+                    // Les images tournent en boucle sauf s'il n'y en a qu'une
+                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        carouselItem = index;
+                      });
+                    }),
+                items: shopImages.map((i) {
+                  return Builder(builder: (context) {
+                    return GestureDetector(
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageDetail(
-                                        img: snapshot.data.docs[index]
+                                        img: snapshot.data[carouselItem]
                                             ['imgUrl'],
-                                        name: snapshot.data.docs[index]['name'],
-                                        description: snapshot.data.docs[index]
+                                        name: snapshot.data[carouselItem]
+                                            ['name'],
+                                        description: snapshot.data[carouselItem]
                                             ['description'],
-                                        adresse: snapshot.data.docs[index]
+                                        adresse: snapshot.data[carouselItem]
                                             ['adresse'],
-                                        clickAndCollect: snapshot.data
-                                            .docs[index]['ClickAndCollect'],
-                                        livraison: snapshot.data.docs[index]
+                                        clickAndCollect:
+                                            snapshot.data[carouselItem]
+                                                ['ClickAndCollect'],
+                                        livraison: snapshot.data[carouselItem]
                                             ['livraison'],
-                                        sellerID: snapshot.data.docs[index]
+                                        sellerID: snapshot.data[carouselItem]
                                             ['id'],
                                       )));
                         },
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  snapshot.data.docs[index]['imgUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        )));
-              });
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            decoration: BoxDecoration(
+                                // border: Border.all(color: Colors.black),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 4,
+                                      offset: Offset(4, 4))
+                                ]),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Image.network(i),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.only(bottom: 10, top: 40),
+                                    child: Text(
+                                        snapshot.data[carouselItem]["name"],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700))),
+                              ],
+                            )));
+                  });
+                }).toList());
+          } else {
+            return Container(
+              child: Center(
+                  child: Column(
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/splash_2.png',
+                    width: 50,
+                    height: 50,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Aucun commerce n'est disponible près de chez vous pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                      style: TextStyle(
+                        fontSize: 18,
+
+                        // color: Colors.grey[700]
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                ],
+              )),
+            );
+          }
         });
   }
 }
