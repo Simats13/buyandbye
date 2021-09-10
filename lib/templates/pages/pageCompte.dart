@@ -10,7 +10,6 @@ import 'package:buyandbye/templates/compte/constants.dart';
 import 'package:buyandbye/templates/compte/help.dart';
 import 'package:buyandbye/templates/compte/user_history.dart';
 import 'package:buyandbye/templates/compte/editProfile.dart';
-import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -221,7 +220,7 @@ class _PageCompteState extends State<PageCompte> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Help(),
+                                    builder: (context) => Help(true, email),
                                   ),
                                 );
                               },

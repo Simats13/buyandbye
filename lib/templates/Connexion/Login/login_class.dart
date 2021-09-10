@@ -16,7 +16,6 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Connexion/Login/background_login.dart';
 
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
-import 'package:buyandbye/templates/Connexion/Tools/social_icon.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 

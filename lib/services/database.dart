@@ -176,8 +176,11 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance.collection("magasins").get();
   }
 
-  Future<QuerySnapshot> getFAQ() async {
-    return await FirebaseFirestore.instance.collection("FAQ").get();
+  Future<QuerySnapshot> getFAQ(type) async {
+    return await FirebaseFirestore.instance
+        .collection("FAQ")
+        .where("client", isEqualTo: type)
+        .get();
   }
 
   Future getMagasin() async {

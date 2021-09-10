@@ -345,6 +345,7 @@ class _UserInfoState extends State<UserInfo> {
                                             widget.clientId,
                                             widget.sellerId + widget.clientId,
                                             snapshot.data.docs[0]["fname"],
+                                            snapshot.data.docs[0]["lname"],
                                             snapshot.data.docs[0]["imgUrl"])));
                               },
                               icon: Icon(Icons.message),

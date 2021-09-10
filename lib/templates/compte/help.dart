@@ -7,6 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Help extends StatefulWidget {
   @override
   _HelpState createState() => _HelpState();
+  Help(this.isAdmin, this.email);
+  final bool isAdmin;
+  final String email;
 }
 
 List questions = [];
@@ -46,254 +49,246 @@ class _HelpState extends State<Help> {
             },
           ),
         ),
-        body: FutureBuilder(
-          future: DatabaseMethods().getFAQ(),
-          builder: (context, snapshot) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    //Une question ?
-                    Container(
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(color: black.withOpacity(0.2))),
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Column(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(15),
+            child: Column(
+              children: [
+                //Une question ?
+                Container(
+                  width: size.width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: black.withOpacity(0.2))),
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Column(
                           children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  "Une question ?",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ],
+                            SizedBox(
+                              height: 20,
                             ),
-                            Container(
-                              height: 60,
-                              width: 60,
-                              margin: EdgeInsets.only(top: 30, bottom: 30),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.question_answer_rounded,
-                                          size: 50,
-                                        ),
-                                      )),
-                                ],
-                              ),
+                            Text(
+                              "Une question ?",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700),
                             ),
-                            TextButton(
-                              style: ButtonStyle(),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Foire aux questions",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: BuyandByeAppTheme.orange),
-                                  ),
-                                  Icon(
-                                    //Si la suite est affichée, la flèche pointe vers le bas
-                                    //Sinon elle pointe vers la gauche
-                                    isVisible1
-                                        ? Icons.arrow_drop_down
-                                        : Icons.arrow_left,
-                                    size: 25,
-                                    color: Colors.black,
-                                  ),
-                                ],
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  isVisible1 = !isVisible1;
-                                });
-                              },
-                            ),
-                            //Partie cachée
-                            Visibility(visible: isVisible1, child: Question())
                           ],
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    //Une suggestion ?
-                    Container(
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(color: black.withOpacity(0.2))),
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  "Une suggestion ?",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              height: 60,
-                              width: 60,
-                              margin: EdgeInsets.only(top: 30, bottom: 30),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.chat,
-                                          size: 50,
-                                        ),
-                                      )),
-                                ],
-                              ),
-                            ),
-                            TextButton(
-                              style: ButtonStyle(),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Ecrivez-nous",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: BuyandByeAppTheme.orange),
-                                  ),
-                                  Icon(
-                                    isVisible2
-                                        ? Icons.arrow_drop_down
-                                        : Icons.arrow_left,
-                                    size: 25,
-                                    color: Colors.black,
-                                  ),
-                                ],
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  isVisible2 = !isVisible2;
-                                });
-                              },
-                            ),
-                            //Partie cachée
-                            Visibility(
-                                visible: isVisible2,
-                                child: Column(
-                                  children: [Formulaire()],
-                                ))
-                          ],
+                        Container(
+                          height: 60,
+                          width: 60,
+                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.question_answer_rounded,
+                                      size: 50,
+                                    ),
+                                  )),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    //Un problème ?
-                    Container(
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(color: black.withOpacity(0.2))),
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  "Un problème ?",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              height: 60,
-                              width: 60,
-                              margin: EdgeInsets.only(top: 30, bottom: 30),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.contact_support,
-                                          size: 50,
-                                        ),
-                                      )),
-                                ],
+                        TextButton(
+                          style: ButtonStyle(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Foire aux questions",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: BuyandByeAppTheme.orange),
                               ),
-                            ),
-                            TextButton(
-                              style: ButtonStyle(),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Contactez le support",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: BuyandByeAppTheme.orange),
-                                  ),
-                                  Icon(
-                                    isVisible3
-                                        ? Icons.arrow_drop_down
-                                        : Icons.arrow_left,
-                                    size: 25,
-                                    color: Colors.black,
-                                  ),
-                                ],
+                              Icon(
+                                //Si la suite est affichée, la flèche pointe vers le bas
+                                //Sinon elle pointe vers la gauche
+                                isVisible1
+                                    ? Icons.arrow_drop_down
+                                    : Icons.arrow_left,
+                                size: 25,
+                                color: Colors.black,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  isVisible3 = !isVisible3;
-                                });
-                              },
-                            ),
-                            //Partie cachée
-                            Visibility(
-                                visible: isVisible3, child: Formulaire2())
-                          ],
+                            ],
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isVisible1 = !isVisible1;
+                            });
+                          },
                         ),
-                      ),
+                        //Partie cachée
+                        Visibility(
+                            visible: isVisible1,
+                            child: Question(widget.isAdmin))
+                      ],
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+                SizedBox(
+                  height: 20,
+                ),
+                //Une suggestion ?
+                Container(
+                  width: size.width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: black.withOpacity(0.2))),
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Une suggestion ?",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          height: 60,
+                          width: 60,
+                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.chat,
+                                      size: 50,
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          style: ButtonStyle(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Ecrivez-nous",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: BuyandByeAppTheme.orange),
+                              ),
+                              Icon(
+                                isVisible2
+                                    ? Icons.arrow_drop_down
+                                    : Icons.arrow_left,
+                                size: 25,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isVisible2 = !isVisible2;
+                            });
+                          },
+                        ),
+                        //Partie cachée
+                        Visibility(
+                            visible: isVisible2,
+                            child: Column(
+                              children: [Formulaire(widget.email)],
+                            ))
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                //Un problème ?
+                Container(
+                  width: size.width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: black.withOpacity(0.2))),
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Un problème ?",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          height: 60,
+                          width: 60,
+                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.contact_support,
+                                      size: 50,
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          style: ButtonStyle(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Contactez le support",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: BuyandByeAppTheme.orange),
+                              ),
+                              Icon(
+                                isVisible3
+                                    ? Icons.arrow_drop_down
+                                    : Icons.arrow_left,
+                                size: 25,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isVisible3 = !isVisible3;
+                            });
+                          },
+                        ),
+                        //Partie cachée
+                        Visibility(
+                            visible: isVisible3,
+                            child: Formulaire2(widget.email))
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+          ),
         ));
   }
 }
@@ -302,12 +297,14 @@ class _HelpState extends State<Help> {
 class Question extends StatefulWidget {
   @override
   _QuestionState createState() => _QuestionState();
+  Question(this.isAdmin);
+  final bool isAdmin;
 }
 
 class _QuestionState extends State<Question> {
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DatabaseMethods().getFAQ(),
+        future: DatabaseMethods().getFAQ(widget.isAdmin),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           return ListView.builder(
@@ -363,6 +360,8 @@ class MyTextFormField extends StatelessWidget {
 class Formulaire extends StatefulWidget {
   @override
   _FormulaireState createState() => _FormulaireState();
+  Formulaire(this.email);
+  final String email;
 }
 
 class _FormulaireState extends State<Formulaire> {
@@ -372,7 +371,7 @@ class _FormulaireState extends State<Formulaire> {
 
   addData() {
     Map<String, dynamic> userData = {
-      "email": email,
+      "email": widget.email,
       "message": suggestion,
       "date": DateTime.now()
     };
@@ -389,24 +388,6 @@ class _FormulaireState extends State<Formulaire> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 15),
-            Text("E-mail :",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            SizedBox(height: 10),
-            MyTextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez entrer votre e-mail';
-                }
-                if (!value.contains('@')) {
-                  return 'Mail invalide';
-                }
-                return null;
-              },
-              onSaved: (String value) {
-                email = value;
-              },
-            ),
             SizedBox(height: 15),
             Text("Votre suggestion :",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
@@ -432,7 +413,14 @@ class _FormulaireState extends State<Formulaire> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                            content: Text("Merci pour votre retour !"));
+                            content: Text("Merci pour votre retour !"),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Fermer"))
+                            ]);
                       });
                   Navigator.pop(context);
                 }
@@ -449,6 +437,8 @@ class _FormulaireState extends State<Formulaire> {
 class Formulaire2 extends StatefulWidget {
   @override
   _Formulaire2State createState() => _Formulaire2State();
+  Formulaire2(this.email);
+  final String email;
 }
 
 class _Formulaire2State extends State<Formulaire2> {
@@ -459,12 +449,12 @@ class _Formulaire2State extends State<Formulaire2> {
 
   addData2() {
     Map<String, dynamic> userData = {
-      "email": email,
+      "email": widget.email,
       "Numéro de problème": problemType,
       "Problème": problem,
       "date": DateTime.now()
     };
-
+    print(problem);
     CollectionReference writeProblems =
         FirebaseFirestore.instance.collection('problems');
     writeProblems.add(userData);
@@ -483,7 +473,7 @@ class _Formulaire2State extends State<Formulaire2> {
         value: "3", child: Text("Problème 3", style: TextStyle(fontSize: 18))));
   }
 
-  @override
+  bool nullType = false;
   Widget build(BuildContext context) {
     listProblems();
     return Form(
@@ -491,24 +481,6 @@ class _Formulaire2State extends State<Formulaire2> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 15),
-            Text("E-mail :",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            SizedBox(height: 10),
-            MyTextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez entrer votre e-mail';
-                }
-                if (!value.contains('@')) {
-                  return 'Mail invalide';
-                }
-                return null;
-              },
-              onSaved: (String value) {
-                email = value;
-              },
-            ),
             SizedBox(height: 15),
             Text("Quel type de problème ?",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
@@ -525,7 +497,12 @@ class _Formulaire2State extends State<Formulaire2> {
                   problemType = value;
                   setState(() {});
                 }),
-            //
+            SizedBox(height: 15),
+            nullType
+                ? Text("Veuillez sélectionner le type de problème",
+                    style: TextStyle(
+                        fontSize: 12.5, color: Color.fromRGBO(210, 40, 40, 1)))
+                : SizedBox.shrink(),
             SizedBox(height: 15),
             Text("Décrivez votre problème :",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
@@ -544,16 +521,32 @@ class _Formulaire2State extends State<Formulaire2> {
             SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  addData2();
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                            content: Text("Merci pour votre retour !"));
-                      });
-                  Navigator.pop(context);
+                if (problemType != null) {
+                  setState(() {
+                    nullType = false;
+                  });
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    addData2();
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                              content: Text("Merci pour votre retour !"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Fermer"))
+                              ]);
+                        });
+                    Navigator.pop(context);
+                  }
+                } else {
+                  setState(() {
+                    nullType = true;
+                  });
                 }
               },
               child: Text('Envoyer'),

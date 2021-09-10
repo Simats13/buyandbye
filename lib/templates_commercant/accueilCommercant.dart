@@ -110,14 +110,11 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Container(
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.4,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: Image.network(
-                                      myProfilePic,
-                                    ),
+                                width: MediaQuery.of(context).size.width / 1.4,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Image.network(
+                                    myProfilePic,
                                   ),
                                 ),
                               ),

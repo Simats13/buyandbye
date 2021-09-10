@@ -169,7 +169,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Help(),
+                                    builder: (context) => Help(false, email),
                                   ),
                                 );
                               },

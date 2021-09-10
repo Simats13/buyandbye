@@ -20,14 +20,11 @@ import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class ChatRoom extends StatefulWidget {
   ChatRoom(this.myID, this.myName, this.selectedUserToken, this.selectedUserID,
-      this.chatID, this.selectedUserName, this.selectedUserThumbnail);
-  final String myID,
-      myName,
-      selectedUserToken,
-      selectedUserID,
-      chatID,
-      selectedUserName,
-      selectedUserThumbnail;
+      this.chatID, this.selectedUserFname, this.selectedUserLname,
+      this.selectedUserThumbnail);
+
+  final String myID, myName, selectedUserToken, selectedUserID, chatID,
+      selectedUserFname, selectedUserLname, selectedUserThumbnail;
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -117,7 +114,7 @@ class _ChatRoomState extends State<ChatRoom>
         top: false,
         child: Scaffold(
           appBar: AppBar(
-            title: Text(widget.selectedUserName),
+            title: Text(widget.selectedUserFname + widget.selectedUserLname),
             backwardsCompatibility: false, // 1
             systemOverlayStyle: SystemUiOverlayStyle.light,
             backgroundColor: BuyandByeAppTheme.black_electrik,
@@ -174,7 +171,7 @@ class _ChatRoomState extends State<ChatRoom>
       _returnWidget = data['idFrom'] == widget.selectedUserID
           ? peerUserListTile(
               context,
-              widget.selectedUserName,
+              widget.selectedUserFname + widget.selectedUserLname,
               widget.selectedUserThumbnail,
               data['content'],
               returnTimeStamp(data['timestamp']),

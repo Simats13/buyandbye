@@ -29,7 +29,7 @@ class _UserHistoryState extends State<UserHistory> {
         child: Text("30 jours", style: TextStyle(fontSize: 18))));
   }
 
-    void initState() {
+  void initState() {
     super.initState();
     getMyInfo();
   }
@@ -265,7 +265,35 @@ class _ProductDetailsState extends State<ProductDetails> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Column(
-              children: [Text(snapshot.data["nom"])],
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 4,
+                      child: ClipRRect(
+                        child: Image.network(
+                          snapshot.data["images"][0],
+                        ),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Text(snapshot.data["nom"]),
+                        SizedBox(height: 30),
+                        Text("")
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text(snapshot.data["prix"].toString() + "€"),
+                        SizedBox(height: 30),
+                        Text(snapshot.data["reference"].toString())
+                      ],
+                    )
+                  ],
+                )
+              ],
             );
           } else {
             return CircularProgressIndicator();

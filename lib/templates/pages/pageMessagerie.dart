@@ -113,30 +113,24 @@ class _PageMessagerieState extends State<PageMessagerie>
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername, nameOther;
+  final String lastMessage, chatRoomId, myUsername, sellerID;
   final int index;
   ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
-      this.nameOther, this.index);
+      this.sellerID, this.index);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "",
-      name = "",
-      username = "",
-      token = "",
-      userid,
-      idTest;
+  String profilePicUrl, name, token, userid;
 
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    username = widget.nameOther;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(username);
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getMagasinInfo(widget.sellerID);
     name = "${querySnapshot.docs[0]["name"]}";
-    idTest = "${querySnapshot.docs[0]["id"]}";
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
     token = "${querySnapshot.docs[0]["FCMToken"]}";
     setState(() {});
@@ -253,9 +247,10 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                           userid, //ID DE L'UTILISATEUR
                           widget.myUsername, // NOM DE L'UTILISATEUR
                           token,
-                          idTest, // ID DU CORRESPONDANT
+                          widget.sellerID, // ID DU CORRESPONDANT
                           widget.chatRoomId, //ID DE LA CONV
-                          name, // NOM DU CORRESPONDANT
+                          name, // PRENOM DU CORRESPONDANT
+                          "", // NOM DU CORRESPONDANT
                           profilePicUrl, // IMAGE DU CORRESPONDANT
                         ))),
           );
@@ -264,24 +259,4 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     }
     return Container(width: 0.0, height: 0.0);
   }
-
-// Inutilisé
-//   Future<void> _moveTochatRoom() async {
-//     try {
-//       Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//               builder: (context) => ChatRoom(
-//                     userid, //ID DE L'UTILISATEUR
-//                     widget.myUsername, // NOM DE L'UTILISATEUR
-//                     token,
-//                     idTest, // TOKEN DU CORRESPONDANT
-//                     widget.chatRoomId, //ID DE LA CONV
-//                     widget.nameOther, // NOM DU CORRESPONDANT
-//                     profilePicUrl,
-//                   )));
-//     } catch (e) {
-//       print(e.message);
-//     }
-//   }
 }

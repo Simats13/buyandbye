@@ -268,6 +268,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                             .sellerID, // TOKEN DU CORRESPONDANT
                                         widget.sellerID + myID, //ID DE LA CONV
                                         widget.name, // NOM DU CORRESPONDANT
+                                        "", // LES COMMERCANTS N'ONT PAS DE LNAME
                                         widget.img, // IMAGE DU CORRESPONDANT
                                       )));
                         },
