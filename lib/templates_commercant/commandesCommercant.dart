@@ -21,7 +21,6 @@ String getDate(time) {
 
 class _CommandesCommercantState extends State<CommandesCommercant> {
   var clickedCategorie = 0;
-  int clickedNumber = 1;
   String userid;
 
   void initState() {
@@ -173,48 +172,9 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                           ],
                         ),
                         // Affiche les commandes (s'il y en a) par dessus le message
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
-                            return Command(clickedCategorie, userid);
-                          },
-                        ),
+                        Command(clickedCategorie, userid),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    Text("Pagination en cours de création,"),
-                    Text("Masquer pour démonstration"),
-                    // Le numéro de page actuelle reste le même sur En attente, En cours et Terminées.
-                    // Créer 3 variables qui seront modifiées selon la catégorie affichée
-                    SizedBox(height: 20),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      for (int i = 1; i < 6; i++)
-                        Container(
-                            height: 30,
-                            width: 30,
-                            margin: EdgeInsets.only(left: 10, right: 10),
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                fixedSize: Size(10, 10),
-                              ),
-                              child: Text((i).toString(),
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: i == clickedNumber
-                                          ? Colors.black
-                                          : Colors.grey)),
-                              onPressed: () {
-                                clickedNumber = i;
-                                setState(() {});
-                              },
-                            ))
-                    ]),
-                    SizedBox(height: 20),
                   ]),
                 );
               } else {
@@ -252,128 +212,165 @@ class Command extends StatefulWidget {
 
 // Affichage de chacune des commandes du client
 class _CommandState extends State<Command> {
+  int clickedNumber = 1;
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: DatabaseMethods().getSellerCommandDetails(widget.sellerId),
+      stream: DatabaseMethods()
+          .getSellerCommandDetails(widget.sellerId, widget.clickedCategorie),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: snapshot.data.docs.length,
-            itemBuilder: (context, index) {
-              // Récupération des valeurs de la bdd
-              int reference = snapshot.data.docs[index]["reference"];
-              int statut = snapshot.data.docs[index]["statut"];
-              String date = getDate((snapshot.data.docs[index]["horodatage"]));
-              int nbArticles = snapshot.data.docs[index]["articles"];
-              double prix = snapshot.data.docs[index]["prix"];
-              int livraison = snapshot.data.docs[index]["livraison"];
-              String commandId = snapshot.data.docs[index]["id"];
-              String clientId = snapshot.data.docs[index]["clientID"];
-              String brightness =
-                  MediaQuery.of(context).platformBrightness.toString();
-              // Toutes les commandes sont récupérées mais on affiche seulement
-              // celles dont le statut est le même que celui de la catégorie selectionnée
-              return statut == widget.clickedCategorie
-                  ? MaterialButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        // Renvoie vers la page de détail d'une commande
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailCommande(
-                                reference,
-                                statut,
-                                date.toString(),
-                                prix,
-                                livraison,
-                                widget.sellerId,
-                                clientId,
-                                commandId),
+          return Column(
+            children: [
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  // Récupération des valeurs de la bdd
+                  int reference = snapshot.data.docs[index]["reference"];
+                  int statut = snapshot.data.docs[index]["statut"];
+                  String date =
+                      getDate((snapshot.data.docs[index]["horodatage"]));
+                  int nbArticles = snapshot.data.docs[index]["articles"];
+                  double prix = snapshot.data.docs[index]["prix"];
+                  int livraison = snapshot.data.docs[index]["livraison"];
+                  String commandId = snapshot.data.docs[index]["id"];
+                  String clientId = snapshot.data.docs[index]["clientID"];
+                  String brightness =
+                      MediaQuery.of(context).platformBrightness.toString();
+                  // Toutes les commandes sont récupérées mais on affiche seulement
+                  // celles dont le statut est le même que celui de la catégorie selectionnée
+                  return MaterialButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      // Renvoie vers la page de détail d'une commande
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailCommande(
+                              reference,
+                              statut,
+                              date.toString(),
+                              prix,
+                              livraison,
+                              widget.sellerId,
+                              clientId,
+                              commandId),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        // Container coloré pour masquer le message "Aucune commande"
+                        Container(
+                          height: 20,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: brightness == "Brightness.light"
+                                  ? Color.fromRGBO(250, 250, 250, 1)
+                                  : Color.fromRGBO(48, 48, 48, 1)),
+                        ),
+                        // Affiche un résumé de chaque commande
+                        Container(
+                          margin: EdgeInsets.only(left: 20, right: 20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: BuyandByeAppTheme.orange, width: 2.0),
                           ),
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          // Container coloré pour masquer le message "Aucune commande"
-                          Container(
-                            height: 20,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                                color: brightness == "Brightness.light"
-                                    ? Color.fromRGBO(250, 250, 250, 1)
-                                    : Color.fromRGBO(48, 48, 48, 1)),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 10),
+                              // Affiche en ligne le numéro de commande et le prix total
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(width: 30),
+                                  Text("Commande n°" + reference.toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 16)),
+                                  SizedBox(width: 100),
+                                  Text(prix.toStringAsFixed(2) + "€",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 16)),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              // Affiche en ligne la date de la commande et le nombre d'articles différents
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(Icons.arrow_forward_ios_rounded),
+                                  SizedBox(width: 20)
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(width: 30),
+                                  Text(date,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 16)),
+                                  SizedBox(width: 100),
+                                  nbArticles <= 1
+                                      ? Text(nbArticles.toString() + " article",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 16))
+                                      : Text(
+                                          nbArticles.toString() + " articles",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 16))
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                            ],
                           ),
-                          // Affiche un résumé de chaque commande
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                  color: BuyandByeAppTheme.orange, width: 2.0),
-                            ),
-                            child: Column(
-                              children: [
-                                SizedBox(height: 10),
-                                // Affiche en ligne le numéro de commande et le prix total
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(width: 30),
-                                    Text("Commande n°" + reference.toString(),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 16)),
-                                    SizedBox(width: 100),
-                                    Text(prix.toStringAsFixed(2) + "€",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 16)),
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                // Affiche en ligne la date de la commande et le nombre d'articles différents
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.arrow_forward_ios_rounded),
-                                    SizedBox(width: 20)
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(width: 30),
-                                    Text(date,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 16)),
-                                    SizedBox(width: 100),
-                                    nbArticles <= 1
-                                        ? Text(
-                                            nbArticles.toString() + " article",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 16))
-                                        : Text(
-                                            nbArticles.toString() + " articles",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 16))
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : SizedBox.shrink();
-            },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              Text("Pagination en cours de création,"),
+              Text("Masquer pour démonstration"),
+              // Le numéro de page actuelle reste le même sur En attente, En cours et Terminées.
+              // Créer 3 variables qui seront modifiées selon la catégorie affichée
+              SizedBox(height: 20),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                for (int i = 1;
+                    i < ((snapshot.data.docs.length + 1) / 3).ceil() + 1;
+                    i++)
+                  Container(
+                      height: 30,
+                      width: 30,
+                      margin: EdgeInsets.only(left: 10, right: 10),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          fixedSize: Size(10, 10),
+                        ),
+                        child: Text((i).toString(),
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: i == clickedNumber
+                                    ? Colors.black
+                                    : Colors.grey)),
+                        onPressed: () {
+                          clickedNumber = i;
+                          setState(() {});
+                        },
+                      ))
+              ]),
+              SizedBox(height: 20),
+            ],
           );
         } else {
           return Shimmer.fromColors(

@@ -110,6 +110,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     await getMyInfoFromSharedPreference();
   }
 
+  List categoriesInDb(snapshot) {
+    List categoriesList = [];
+    // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
+    // pas déjà dans la liste
+    for (var i = 0; i <= snapshot.data.docs.length - 1; i++) {
+      String categoryName = snapshot.data.docs[i]["categorie"];
+      if (!categoriesList.contains(categoryName)) {
+        categoriesList.add(snapshot.data.docs[i]["categorie"]);
+      }
+    }
+    return categoriesList;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,8 +255,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           Map<String, dynamic> chatRoomInfoMap = {
                             "users": [myID, widget.sellerID],
                           };
-                          print(widget.sellerID);
-                          print(myID);
                           DatabaseMethods().createChatRoom(
                               widget.sellerID + myID, chatRoomInfoMap);
                           Navigator.push(
@@ -539,77 +550,96 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Platform.isIOS
-                          ? TextButton(
-                              child: Row(
-                                children: [
-                                  Text(dropdownValue,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black)),
-                                  SizedBox(width: 10),
-                                  Icon(Icons.arrow_drop_down,
-                                      size: 30,
-                                      color: isDarkMode
-                                          ? Colors.white
-                                          : Colors.black)
-                                ],
-                              ),
-                              onPressed: () {
-                                showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (context) => Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 200,
-                                    child: CupertinoPicker(
-                                        itemExtent: 50,
-                                        backgroundColor: isDarkMode
-                                            ? Color.fromRGBO(48, 48, 48, 1)
-                                            : Colors.white,
-                                        onSelectedItemChanged: (value) {
-                                          setState(() {
-                                            dropdownValue =
-                                                categorieNames[value];
-                                          });
-                                        },
+                      FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection("magasins")
+                              .doc(widget.sellerID)
+                              .collection("produits")
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              List listOfCategories = categoriesInDb(snapshot);
+                              return Platform.isIOS
+                                  ? TextButton(
+                                      child: Row(
                                         children: [
-                                          for (String name in categorieNames)
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8.0),
-                                              child: Text(name,
-                                                  style: TextStyle(
-                                                      color: isDarkMode
-                                                          ? Colors.white
-                                                          : Colors.black)),
-                                            )
-                                        ]),
-                                  ),
-                                );
-                              },
-                            )
-                          : DropdownButton<String>(
-                              value: dropdownValue,
-                              icon:
-                                  const Icon(Icons.keyboard_arrow_down_rounded),
-                              iconSize: 24,
-                              elevation: 16,
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  dropdownValue = newValue;
-                                });
-                              },
-                              items: categorieNames
-                                  .map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                return DropdownMenuItem(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                            ),
+                                          Text(dropdownValue,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black)),
+                                          SizedBox(width: 10),
+                                          Icon(Icons.arrow_drop_down,
+                                              size: 30,
+                                              color: isDarkMode
+                                                  ? Colors.white
+                                                  : Colors.black)
+                                        ],
+                                      ),
+                                      onPressed: () {
+                                        showCupertinoModalPopup(
+                                          context: context,
+                                          builder: (context) => Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 200,
+                                            child: CupertinoPicker(
+                                                itemExtent: 50,
+                                                backgroundColor: isDarkMode
+                                                    ? Color.fromRGBO(
+                                                        48, 48, 48, 1)
+                                                    : Colors.white,
+                                                onSelectedItemChanged: (value) {
+                                                  setState(() {
+                                                    dropdownValue =
+                                                        listOfCategories[value];
+                                                  });
+                                                },
+                                                children: [
+                                                  for (String name
+                                                      in listOfCategories)
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 8.0),
+                                                      child: Text(name,
+                                                          style: TextStyle(
+                                                              color: isDarkMode
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black)),
+                                                    )
+                                                ]),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : DropdownButton<String>(
+                                      value: dropdownValue,
+                                      icon: const Icon(
+                                          Icons.keyboard_arrow_down_rounded),
+                                      iconSize: 24,
+                                      elevation: 16,
+                                      onChanged: (String newValue) {
+                                        setState(() {
+                                          dropdownValue = newValue;
+                                        });
+                                      },
+                                      items: categorieNames
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    );
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          }),
                       SizedBox(height: 20),
                       produits(dropdownValue),
                       SizedBox(height: 30),

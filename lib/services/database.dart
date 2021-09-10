@@ -321,12 +321,19 @@ class DatabaseMethods {
         .get();
   }
 
-  Stream getSellerCommandDetails(sellerId) {
-    return FirebaseFirestore.instance
+  Stream getSellerCommandDetails(sellerId, statut) {
+    // var documentList;
+    var commandsQuery = FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
         .collection("commands")
+        .where("statut", isEqualTo: statut)
+        // .limit(3)
+        // .orderBy("reference")
         .snapshots();
+    // documentList.addAll(newDocumentList);
+    return commandsQuery;
+    // Chargement infini avec orderBy
   }
 
   Future getPurchaseDetails(commandId) async {
