@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
           }),
-          brightness: Brightness.dark,
+          brightness: Brightness.light,
           // additional settings go here
         ),
         home: MainScreen());

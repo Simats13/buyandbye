@@ -27,7 +27,7 @@ class PageExplore extends StatefulWidget {
 class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   var position;
-  var radius = BehaviorSubject<double>.seeded(10);
+  var radius = BehaviorSubject<double>.seeded(5);
   Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -66,12 +66,6 @@ class _PageExploreState extends State<PageExplore> {
     super.initState();
     userID();
     setCustomMarker();
-
-    // Geolocator.getCurrentPosition().then((currloc) {
-    //   setState(() {
-    //     currentLocation = currloc;
-    //   });
-    // });
 
     _pageController = PageController(initialPage: 1, viewportFraction: 0.8)
       ..addListener(_onScroll);
@@ -124,10 +118,8 @@ class _PageExploreState extends State<PageExplore> {
     longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
     setState(() {
       mapToggle = true;
-
       geo = Geoflutterfire();
-      print("chanel");
-      print(latitude);
+
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
         var collectionReference = _firestore.collection('magasins');
@@ -344,17 +336,6 @@ class _PageExploreState extends State<PageExplore> {
               title: Text('Explorer'),
               actions: <Widget>[
                 IconButton(
-                  onPressed: _mapController == null
-                      ? null
-                      : () {
-                          _showHome();
-                        },
-                  icon: Icon(
-                    Icons.home,
-                    color: BuyandByeAppTheme.white,
-                  ),
-                ),
-                IconButton(
                   icon: Icon(
                     Icons.add_location_outlined,
                     color: BuyandByeAppTheme.white,
@@ -388,17 +369,21 @@ class _PageExploreState extends State<PageExplore> {
                         return Container(
                             child: Center(
                           child: Platform.isIOS
-                              ? Column(
-                                  children: [
-                                    CupertinoActivityIndicator(),
-                                    Text('Chargement...'),
-                                  ],
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      CupertinoActivityIndicator(),
+                                      Text('Chargement...'),
+                                    ],
+                                  ),
                                 )
-                              : Column(
-                                  children: [
-                                    CircularProgressIndicator(),
-                                    Text('Chargement...'),
-                                  ],
+                              : Center(
+                                  child: Column(
+                                    children: [
+                                      CircularProgressIndicator(),
+                                      Text('Chargement...'),
+                                    ],
+                                  ),
                                 ),
                         ));
                         //METTRE UN SHIMMER
