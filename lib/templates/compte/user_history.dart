@@ -1,4 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/templates/compte/historyDetails.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,22 +13,7 @@ class UserHistory extends StatefulWidget {
 }
 
 class _UserHistoryState extends State<UserHistory> {
-  //Initialisation de la DropDownList
-  List<DropdownMenuItem<String>> duration = [];
-  String def, userid;
-
-  void listDuration() {
-    duration.clear();
-    duration.add(DropdownMenuItem(
-        value: "7 jours",
-        child: Text("7 jours", style: TextStyle(fontSize: 18))));
-    duration.add(DropdownMenuItem(
-        value: "14 jours",
-        child: Text("14 jours", style: TextStyle(fontSize: 18))));
-    duration.add(DropdownMenuItem(
-        value: "30 jours",
-        child: Text("30 jours", style: TextStyle(fontSize: 18))));
-  }
+  String userid;
 
   void initState() {
     super.initState();
@@ -43,67 +29,48 @@ class _UserHistoryState extends State<UserHistory> {
 
   @override
   Widget build(BuildContext context) {
-    listDuration();
     return FutureBuilder(
         future: DatabaseMethods().getPurchase("users", userid),
         builder: (context, snapshot) {
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: BuyandByeAppTheme.black_electrik,
-              title: Text("Historique d'achat"),
-              elevation: 1,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: BuyandByeAppTheme.orange,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.only(left: 15, right: 15, bottom: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  //Menu déroulant
-                  DropdownButton(
-                      value: def,
-                      elevation: 2,
-                      items: duration,
-                      hint: Text("Durée", style: TextStyle(fontSize: 18)),
-                      onChanged: (value) {
-                        def = value;
-                        setState(() {});
-                      }),
-                  SizedBox(
-                    height: 30,
+              appBar: AppBar(
+                backgroundColor: BuyandByeAppTheme.black_electrik,
+                title: Text("Historique d'achat"),
+                elevation: 1,
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: BuyandByeAppTheme.orange,
                   ),
-                  snapshot.hasData
-                      ? ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            String shopId = snapshot.data.docs[index]["shopID"];
-                            String commandId = snapshot.data.docs[index]["id"];
-                            // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
-                            return UserCommand(shopId, commandId);
-                          },
-                        )
-                      : CircularProgressIndicator()
-                ],
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-            ),
-          );
+              body: SingleChildScrollView(
+                padding:
+                    EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
+                child: snapshot.hasData
+                    ? ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          String shopId = snapshot.data.docs[index]["shopID"];
+                          String commandId = snapshot.data.docs[index]["id"];
+                          // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
+                          return UserCommand(shopId, commandId, userid);
+                        },
+                      )
+                    : CircularProgressIndicator(),
+              ));
         });
   }
 }
 
 class UserCommand extends StatefulWidget {
-  const UserCommand(this.shopId, this.commandId);
-  final String shopId, commandId;
+  const UserCommand(this.shopId, this.commandId, this.userid);
+  final String shopId, commandId, userid;
   _UserCommandState createState() => _UserCommandState();
 }
 
@@ -129,9 +96,11 @@ class _UserCommandState extends State<UserCommand> {
   Widget build(BuildContext context) {
     getShopInfos(widget.shopId);
     return FutureBuilder(
-        future: DatabaseMethods().getCommandDetails(widget.commandId),
+        future: DatabaseMethods()
+            .getCommandDetails(widget.userid, widget.commandId),
         builder: (context, snapshot) {
           if (snapshot.hasData && shopName != null) {
+            int statut = snapshot.data["statut"];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -144,13 +113,31 @@ class _UserCommandState extends State<UserCommand> {
                 MaterialButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
-                    print("clicked");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HistoryDetails(
+                            widget.userid,
+                            widget.commandId,
+                            statut,
+                            snapshot.data["horodatage"],
+                            widget.shopId,
+                            snapshot.data["prix"],
+                            snapshot.data["livraison"],
+                            snapshot.data["adresse"]),
+                      ),
+                    );
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(),
-                    ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 4,
+                              offset: Offset(4, 4))
+                        ]),
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Column(
@@ -159,6 +146,7 @@ class _UserCommandState extends State<UserCommand> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     shopName,
@@ -169,7 +157,7 @@ class _UserCommandState extends State<UserCommand> {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  // Ecrit au singulier ou au pluriel selon le nombre d'article
+                                  // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
                                   snapshot.data["articles"] == 1
                                       ? Text(
                                           snapshot.data["articles"].toString() +
@@ -192,107 +180,18 @@ class _UserCommandState extends State<UserCommand> {
                               ),
                             ],
                           ),
-                          ProductInfos(widget.commandId, widget.shopId)
+                          Center(
+                              child: Text(statut == 0
+                                  ? "Statut : En attente"
+                                  : statut == 1
+                                      ? "Statut : En cours"
+                                      : "Statut : Terminé")),
                         ],
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: 30)
-              ],
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
-  }
-}
-
-class ProductInfos extends StatefulWidget {
-  const ProductInfos(this.commandId, this.sellerId);
-  final String commandId, sellerId;
-  _ProductInfosState createState() => _ProductInfosState();
-}
-
-class _ProductInfosState extends State<ProductInfos> {
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: DatabaseMethods().getPurchaseDetails(widget.commandId),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: [
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        SizedBox(height: 15),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 40.0, right: 40.0),
-                          child: Divider(thickness: 1, color: Colors.black),
-                        ),
-                        SizedBox(height: 15),
-                        ProductDetails(widget.sellerId,
-                            snapshot.data.docs[index]["produit"]),
-                      ],
-                    );
-                  },
-                )
-              ],
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
-  }
-}
-
-class ProductDetails extends StatefulWidget {
-  const ProductDetails(this.sellerId, this.productId);
-  final String sellerId, productId;
-  _ProductDetailsState createState() => _ProductDetailsState();
-}
-
-class _ProductDetailsState extends State<ProductDetails> {
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream:
-            DatabaseMethods().getOneProduct(widget.sellerId, widget.productId),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width / 4,
-                      child: ClipRRect(
-                        child: Image.network(
-                          snapshot.data["images"][0],
-                        ),
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Text(snapshot.data["nom"]),
-                        SizedBox(height: 30),
-                        Text("")
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(snapshot.data["prix"].toString() + "€"),
-                        SizedBox(height: 30),
-                        Text(snapshot.data["reference"].toString())
-                      ],
-                    )
-                  ],
-                )
               ],
             );
           } else {

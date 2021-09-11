@@ -241,6 +241,15 @@ class DatabaseMethods {
         .snapshots();
   }
 
+    Future getOneProductFuture(sellerId, productId) {
+    return FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(sellerId)
+        .collection("produits")
+        .doc(productId)
+        .get();
+  }
+
   Future createProduct(sellerId, name, reference, description, price, quantity,
       id, categorie, visibility) {
     return FirebaseFirestore.instance
@@ -309,13 +318,12 @@ class DatabaseMethods {
         .collection(userType)
         .doc(userid)
         .collection("commands")
+        .orderBy("horodatage", descending: true)
         .get();
   }
 
   // Récupère les informations générales d'une commande
-  Future getCommandDetails(documentId) async {
-    final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
+  Future getCommandDetails(userid, documentId) async {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userid)
@@ -339,9 +347,7 @@ class DatabaseMethods {
     // Chargement infini avec orderBy
   }
 
-  Future getPurchaseDetails(commandId) async {
-    final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
+  Future getPurchaseDetails(userid, commandId) async {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userid)

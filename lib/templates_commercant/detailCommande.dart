@@ -149,7 +149,7 @@ class _DetailCommandeState extends State<DetailCommande> {
         ),
         body: FutureBuilder(
             future: DatabaseMethods()
-                .getPurchaseDetails(widget.commandId),
+                .getPurchaseDetails(widget.sellerId, widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 int nbArticles = snapshot.data.docs.length;

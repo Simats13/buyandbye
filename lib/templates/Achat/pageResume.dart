@@ -97,7 +97,6 @@ class _PageResumeState extends State<PageResume> {
                   Navigator.of(context).popUntil((route) => route.isFirst),
             ),
             title: Text('Récapitulatif de commande'),
-            backwardsCompatibility: false, // 1
             systemOverlayStyle: SystemUiOverlayStyle.light,
             backgroundColor: BuyandByeAppTheme.black_electrik,
             automaticallyImplyLeading: false,
@@ -121,8 +120,8 @@ class _PageResumeState extends State<PageResume> {
                     SizedBox(height: 10),
                     Row(children: [
                       FutureBuilder(
-                          future: DatabaseMethods().getPurchaseDetails(
-                              widget.sellerID + widget.userId),
+                          future: DatabaseMethods()
+                              .getPurchaseDetails(widget.userId, widget.idCommand),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Expanded(
@@ -331,8 +330,7 @@ class _DetailState extends State<Detail> {
 }
 
 class MapStyle {
-  static String mapStyle =
-      ''' [
+  static String mapStyle = ''' [
   {
     "elementType": "geometry",
     "stylers": [
