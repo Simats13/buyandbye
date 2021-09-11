@@ -393,12 +393,11 @@ class DatabaseMethods {
       int amount, String idCommercant, String idProduit) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    String iD = Uuid().v4();
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
-        .doc(iD)
+        .doc(idProduit)
         .set({
       "id": idProduit,
       "nomProduit": nomProduit,
@@ -549,14 +548,14 @@ class DatabaseMethods {
     });
   }
 
-  Future addItem(String nomProduit, int amount) async {
+  Future addItem(String idProduit, int amount) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
-        .doc(nomProduit)
+        .doc(idProduit)
         .update({"amount": amount});
   }
 
