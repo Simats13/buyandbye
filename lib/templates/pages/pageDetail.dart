@@ -52,16 +52,18 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       myUserName,
       myEmail,
       selectedUserToken,
+      name1,
       message,
-      lastMessageTs,
-      idMag;
+      dropdownValue;
   Stream usersStream, chatRoomsStream;
+  List listOfCategories = [];
 
   @override
   void initState() {
     super.initState();
     onScreenLoaded();
     getSellerInfo();
+    categoriesInDb();
     NotificationController.instance.updateTokenToServer();
     if (mounted) {
       checkLocalNotification(localNotificationAnimation, "");
@@ -110,25 +112,33 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     await getMyInfoFromSharedPreference();
   }
 
-  List categoriesInDb(snapshot) {
-    List categoriesList = [];
-    // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
-    // pas déjà dans la liste
-    for (var i = 0; i <= snapshot.data.docs.length - 1; i++) {
-      String categoryName = snapshot.data.docs[i]["categorie"];
-      if (!categoriesList.contains(categoryName)) {
-        categoriesList.add(snapshot.data.docs[i]["categorie"]);
-      }
-    }
-    return categoriesList;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomSheet: getFooter(),
       body: getBody(),
     );
+  }
+
+  categoriesInDb() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(widget.sellerID)
+        .collection("produits")
+        .get();
+    // name1 = "${querySnapshot.docs[0]["nom"]}";
+    // setState(() {});
+    // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
+    // pas déjà dans la liste
+    for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
+      String categoryName = querySnapshot.docs[i]["categorie"];
+      if (!listOfCategories.contains(categoryName)) {
+        listOfCategories.add(querySnapshot.docs[i]["categorie"]);
+      }
+    }
+    setState(() {
+      dropdownValue = listOfCategories[0];
+    });
   }
 
   Widget getFooter() {
@@ -164,7 +174,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   // La variable avant le Widget sinon elle n'est pas modifiée dynamiquement
-  String dropdownValue = 'Électroménager';
+  // String dropdownValue = 'Alimentation';
   int clickedNumber = 1;
   Widget getBody() {
     var brightness = MediaQuery.of(context).platformBrightness;
@@ -178,11 +188,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
             Stack(
               children: [
                 Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   width: size.width,
                   height: 150,
                   child: Image(
                     image: NetworkImage(widget.img),
-                    fit: BoxFit.cover,
                   ),
                 ),
                 SafeArea(
@@ -551,98 +561,86 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         ),
                       ),
                       SizedBox(height: 20),
-                      FutureBuilder(
-                          future: FirebaseFirestore.instance
-                              .collection("magasins")
-                              .doc(widget.sellerID)
-                              .collection("produits")
-                              .get(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              List listOfCategories = categoriesInDb(snapshot);
-                              return Platform.isIOS
-                                  ? TextButton(
-                                      child: Row(
-                                        children: [
-                                          Text(dropdownValue,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: isDarkMode
-                                                      ? Colors.white
-                                                      : Colors.black)),
-                                          SizedBox(width: 10),
-                                          Icon(Icons.arrow_drop_down,
-                                              size: 30,
+                      listOfCategories == null || dropdownValue == null
+                          ? CircularProgressIndicator()
+                          : Platform.isIOS
+                              ? TextButton(
+                                  child: Row(
+                                    children: [
+                                      Text(dropdownValue,
+                                          style: TextStyle(
+                                              fontSize: 16,
                                               color: isDarkMode
                                                   ? Colors.white
-                                                  : Colors.black)
-                                        ],
+                                                  : Colors.black)),
+                                      SizedBox(width: 10),
+                                      Icon(Icons.arrow_drop_down,
+                                          size: 30,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black)
+                                    ],
+                                  ),
+                                  onPressed: () {
+                                    showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (context) => Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height: 200,
+                                        child: CupertinoPicker(
+                                            itemExtent: 50,
+                                            backgroundColor: isDarkMode
+                                                ? Color.fromRGBO(48, 48, 48, 1)
+                                                : Colors.white,
+                                            onSelectedItemChanged: (value) {
+                                              setState(() {
+                                                dropdownValue =
+                                                    listOfCategories[value];
+                                              });
+                                            },
+                                            children: [
+                                              for (String name
+                                                  in listOfCategories)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 8.0),
+                                                  child: Text(name,
+                                                      style: TextStyle(
+                                                          color: isDarkMode
+                                                              ? Colors.white
+                                                              : Colors.black)),
+                                                )
+                                            ]),
                                       ),
-                                      onPressed: () {
-                                        showCupertinoModalPopup(
-                                          context: context,
-                                          builder: (context) => Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            height: 200,
-                                            child: CupertinoPicker(
-                                                itemExtent: 50,
-                                                backgroundColor: isDarkMode
-                                                    ? Color.fromRGBO(
-                                                        48, 48, 48, 1)
-                                                    : Colors.white,
-                                                onSelectedItemChanged: (value) {
-                                                  setState(() {
-                                                    dropdownValue =
-                                                        listOfCategories[value];
-                                                  });
-                                                },
-                                                children: [
-                                                  for (String name
-                                                      in listOfCategories)
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 8.0),
-                                                      child: Text(name,
-                                                          style: TextStyle(
-                                                              color: isDarkMode
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .black)),
-                                                    )
-                                                ]),
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : DropdownButton<String>(
-                                      value: dropdownValue,
-                                      icon: const Icon(
-                                          Icons.keyboard_arrow_down_rounded),
-                                      iconSize: 24,
-                                      elevation: 16,
-                                      onChanged: (String newValue) {
-                                        setState(() {
-                                          dropdownValue = newValue;
-                                        });
-                                      },
-                                      items: categorieNames
-                                          .map<DropdownMenuItem<String>>(
-                                              (String value) {
-                                        return DropdownMenuItem(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
                                     );
-                            } else {
-                              return SizedBox.shrink();
-                            }
-                          }),
+                                  },
+                                )
+                              : DropdownButton<String>(
+                                  value: dropdownValue,
+                                  icon: const Icon(
+                                      Icons.keyboard_arrow_down_rounded),
+                                  iconSize: 24,
+                                  elevation: 16,
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      dropdownValue = newValue;
+                                    });
+                                  },
+                                  items: categorieNames
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
                       SizedBox(height: 20),
-                      produits(dropdownValue),
+                      dropdownValue == null
+                          ? CircularProgressIndicator()
+                          : produits(dropdownValue),
                       SizedBox(height: 30),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
