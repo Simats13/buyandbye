@@ -58,7 +58,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    getMyInfo();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -127,20 +126,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-String myID, emailVerified, admin, myName, myProfilePic;
-getMyInfo() async {
-  final User user = await AuthMethods().getCurrentUser();
-  final userid = user.uid;
-  QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
-  myID = "${querySnapshot.docs[0]["id"]}";
-  emailVerified = "${querySnapshot.docs[0]["emailVerified"]}";
-  admin = "${querySnapshot.docs[0]["admin"]}";
-  myName =
-      "${querySnapshot.docs[0]["fname"]}" + "${querySnapshot.docs[0]["lname"]}";
-  myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
-}
-
-notifications(context, myID) {
+notifications(context, myID, myName, myProfilePic) {
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     Navigator.push(
         context,
@@ -161,16 +147,50 @@ notifications(context, myID) {
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    notifications(context, myID);
-    if (myID == null) {
-      return PageBienvenue();
-    } else if (emailVerified == "false") {
-      return PageLogin();
-    }
-    if (admin == "true") {
-      return NavBar();
-    } else {
-      return Accueil();
-    }
+    return FutureBuilder(
+        future: AuthMethods().getCurrentUser(),
+        builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(snapshot.data.uid)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  final userDoc = snapshot.data;
+                  final user = userDoc;
+                  if (user['emailVerified'] == false) {
+                    return PageLogin();
+                  }
+                  if (user['admin'] == true) {
+                    return NavBar();
+                  } else {
+                    return Accueil();
+                  }
+                } else {
+                  return PageLogin();
+                }
+              },
+            );
+          }
+          return PageBienvenue();
+        });
   }
 }
+
+//   Widget build(BuildContext context) {
+//     notifications(context, myID);
+//     print(admin);
+//     if (myID == null) {
+//       return PageBienvenue();
+//     } else if (admin == "true") {
+//       return NavBar();
+//     } else if (emailVerified == "false") {
+//       return PageLogin();
+//     } else {
+//       return Accueil();
+//     }
+//   }
+// }

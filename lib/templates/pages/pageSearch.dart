@@ -28,7 +28,8 @@ class _PageSearchState extends State<PageSearch> {
       description,
       adresse,
       clickAndCollect,
-      livraison}) {
+      livraison,
+      sellerID}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -41,6 +42,7 @@ class _PageSearchState extends State<PageSearch> {
                     adresse: adresse,
                     clickAndCollect: clickAndCollect,
                     livraison: livraison,
+                    sellerID: sellerID,
                   )),
         );
       },
@@ -76,7 +78,8 @@ class _PageSearchState extends State<PageSearch> {
                       adresse: ds["adresse"],
                       description: ds["description"],
                       clickAndCollect: ds["ClickAndCollect"],
-                      livraison: ds["livraison"]);
+                      livraison: ds["livraison"],
+                      sellerID: ds["id"]);
                 },
               )
             : Center(

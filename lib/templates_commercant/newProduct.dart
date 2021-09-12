@@ -52,6 +52,7 @@ class _NewProductState extends State<NewProduct> {
     bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: BuyandByeAppTheme.black_electrik,
         title: Text("Ajouter un produit"),
         elevation: 1,
         leading: IconButton(

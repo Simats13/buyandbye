@@ -81,7 +81,7 @@ dependencies:
   #flutter_stripe:
   flutter_facebook_auth: ^3.5.0
   http:
-  #stripe_payment:
+  stripe_payment:
   truncate:
   flutter_native_splash:
   wave: 

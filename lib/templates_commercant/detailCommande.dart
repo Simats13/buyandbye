@@ -138,6 +138,7 @@ class _DetailCommandeState extends State<DetailCommande> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: BuyandByeAppTheme.black_electrik,
           title: Text("Détail commande"),
           elevation: 1,
           leading: IconButton(
@@ -148,8 +149,8 @@ class _DetailCommandeState extends State<DetailCommande> {
           ),
         ),
         body: FutureBuilder(
-            future: DatabaseMethods()
-                .getPurchaseDetails(widget.sellerId, widget.commandId),
+            future: DatabaseMethods().getPurchaseDetails(
+                "magasins", widget.sellerId, widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 int nbArticles = snapshot.data.docs.length;
@@ -193,7 +194,6 @@ class _DetailCommandeState extends State<DetailCommande> {
                                 snapshot.data.docs[index]["quantite"]));
                       },
                     ),
-                    Divider(thickness: 0.5, color: Colors.black),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -231,45 +231,57 @@ class _DetailState extends State<Detail> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             // Affiche les informations du produit
-            return Column(
-              children: [
-                Divider(thickness: 0.5, color: Colors.black),
-                SizedBox(height: 15),
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  SizedBox(width: 25),
-                  Container(
-                    height: 50,
-                    width: 50,
-                    child: Image.network(snapshot.data["images"][0]),
-                  ),
-                  SizedBox(width: 50),
-                  Container(
-                    width: 160,
-                    child: Column(
-                      // Affiche en colonne le nom et la référence du produit commandé
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(snapshot.data["nom"],
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w700)),
-                        SizedBox(height: 30),
-                        Text("Réf : " + snapshot.data["reference"].toString()),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 30),
-                  // Affiche en colonne le prox et la quantité du produit
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(snapshot.data["prix"].toStringAsFixed(2) + "€"),
-                      SizedBox(height: 30),
-                      Text("Quantité : " + widget.quantite.toString())
-                    ],
-                  ),
-                ]),
-                SizedBox(height: 15)
-              ],
+            return Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey, blurRadius: 4, offset: Offset(4, 4))
+                    ]),
+                child: Column(
+                  children: [
+                    SizedBox(height: 15),
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      SizedBox(width: 25),
+                      Container(
+                        height: 50,
+                        width: 50,
+                        child: Image.network(snapshot.data["images"][0]),
+                      ),
+                      SizedBox(width: 50),
+                      Container(
+                        width: 160,
+                        child: Column(
+                          // Affiche en colonne le nom et la référence du produit commandé
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(snapshot.data["nom"],
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(height: 30),
+                            Text(
+                                "Réf : " + snapshot.data["reference"].toString()),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 30),
+                      // Affiche en colonne le prox et la quantité du produit
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(snapshot.data["prix"].toStringAsFixed(2) + "€"),
+                          SizedBox(height: 30),
+                          Text("Quantité : " + widget.quantite.toString())
+                        ],
+                      ),
+                    ]),
+                    SizedBox(height: 15)
+                  ],
+                ),
+              ),
             );
           } else {
             return CircularProgressIndicator();
@@ -365,8 +377,8 @@ class _UserInfoState extends State<UserInfo> {
                 ),
               ),
               // Affiche les boutons en fonction du statut de la commande
-              displayButtons(
-                  widget.statut, widget.sellerId, widget.clientId, widget.commId, context),
+              displayButtons(widget.statut, widget.sellerId, widget.clientId,
+                  widget.commId, context),
               SizedBox(height: 50)
             ],
           );

@@ -131,7 +131,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       idTest,
       myProfilePicUrl;
 
-  bool isActive;
+  bool isActive = false;
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
@@ -179,18 +179,20 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             );
             //METTRE UN SHIMMER
           }
-          if (chatListSnapshot.data.docs[0].get('badgeCount') != 0) {
-            isActive = true;
-          } else {
-            isActive = false;
-          }
+          // if (chatListSnapshot.data.docs[0].get('badgeCount') != 0) {
+          //   isActive = true;
+          // } else {
+          //   isActive = false;
+          // }
 
           return ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: ImageController.instance.cachedImage(profilePicUrl),
             ),
-            title: Text(fname + " " + lname),
+            title: fname == null
+                ? CircularProgressIndicator()
+                : Text(fname + " " + lname),
             subtitle: Text(
               widget.lastMessage,
               style: isActive == true
@@ -199,8 +201,10 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             ),
             trailing: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
-              child: (chatListSnapshot.hasData &&
-                      chatListSnapshot.data.docs.length > 0)
+              child: (chatListSnapshot
+                      .hasData /*&&
+                      chatListSnapshot.data.docs.length > 0*/
+                  )
                   ? Container(
                       width: 80,
                       height: 50,
@@ -214,35 +218,36 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                 : '',
                             style: TextStyle(fontSize: size.width * 0.03),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                            child: CircleAvatar(
-                              radius: 9,
-                              child: Text(
-                                chatListSnapshot.data.docs[widget.index]
-                                            .get('badgeCount') ==
-                                        null
-                                    ? ''
-                                    : ((chatListSnapshot.data.docs[widget.index]
-                                                .get('badgeCount') !=
-                                            0
-                                        ? '${chatListSnapshot.data.docs[widget.index].get('badgeCount')}'
-                                        : '')),
-                                style: TextStyle(fontSize: 10),
-                              ),
-                              backgroundColor: chatListSnapshot
-                                          .data.docs[widget.index]
-                                          .get('badgeCount') ==
-                                      null
-                                  ? Colors.transparent
-                                  : (chatListSnapshot.data.docs[widget.index]
-                                              ['badgeCount'] !=
-                                          0
-                                      ? Colors.red[400]
-                                      : Colors.transparent),
-                              foregroundColor: Colors.white,
-                            ),
-                          )
+                          // Ecran rouge pendant 1 seconde
+                          // Padding(
+                          //   padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                          //   child: CircleAvatar(
+                          //     radius: 9,
+                          //     child: Text(
+                          //       chatListSnapshot.data.docs[widget.index]
+                          //                   .get('badgeCount') ==
+                          //               null
+                          //           ? ''
+                          //           : ((chatListSnapshot.data.docs[widget.index]
+                          //                       .get('badgeCount') !=
+                          //                   0
+                          //               ? '${chatListSnapshot.data.docs[widget.index].get('badgeCount')}'
+                          //               : '')),
+                          //       style: TextStyle(fontSize: 10),
+                          //     ),
+                          //     backgroundColor: chatListSnapshot
+                          //                 .data.docs[widget.index]
+                          //                 .get('badgeCount') ==
+                          //             null
+                          //         ? Colors.transparent
+                          //         : (chatListSnapshot.data.docs[widget.index]
+                          //                     ['badgeCount'] !=
+                          //                 0
+                          //             ? Colors.red[400]
+                          //             : Colors.transparent),
+                          //     foregroundColor: Colors.white,
+                          //   ),
+                          // )
                         ],
                       ),
                     )
@@ -252,15 +257,15 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ChatRoom(
-                          userid, //ID DE L'UTILISATEUR
-                          widget.myUsername, // NOM DE L'UTILISATEUR
-                          token,
-                          idTest, // ID DU CORRESPONDANT
-                          widget.chatRoomId, //ID DE LA CONV
-                          fname, // PRENOM DU CORRESPONDANT
-                          lname, // NOM DU CORRESPONDANT
-                          profilePicUrl, // IMAGE DU CORRESPONDANT
-                          myProfilePicUrl // IMAGE DE L'UTILISATEUR
+                        userid, //ID DE L'UTILISATEUR
+                        widget.myUsername, // NOM DE L'UTILISATEUR
+                        token,
+                        idTest, // ID DU CORRESPONDANT
+                        widget.chatRoomId, //ID DE LA CONV
+                        fname, // PRENOM DU CORRESPONDANT
+                        lname, // NOM DU CORRESPONDANT
+                        profilePicUrl, // IMAGE DU CORRESPONDANT
+                        myProfilePicUrl // IMAGE DE L'UTILISATEUR
                         ))),
           );
         },

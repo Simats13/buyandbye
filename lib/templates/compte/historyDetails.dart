@@ -22,7 +22,8 @@ String getDate(time) {
 }
 
 class _HistoryDetailsState extends State<HistoryDetails> {
-  String shopName;
+  String shopName, profilePic, description, adresse;
+  bool clickAndCollect, livraison;
 
   getShopInfos(sellerId) async {
     var querySnapshot = await FirebaseFirestore.instance
@@ -30,6 +31,11 @@ class _HistoryDetailsState extends State<HistoryDetails> {
         .where("id", isEqualTo: sellerId)
         .get();
     shopName = "${querySnapshot.docs[0]["name"]}";
+    profilePic = "${querySnapshot.docs[0]["imgUrl"]}";
+    description = "${querySnapshot.docs[0]["description"]}";
+    adresse = "${querySnapshot.docs[0]["adresse"]}";
+    clickAndCollect = "${querySnapshot.docs[0]["ClickAndCollect"]}" == 'true';
+    livraison = "${querySnapshot.docs[0]["livraison"]}" == 'true';
     if (mounted) {
       setState(() {});
     }
@@ -54,7 +60,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
         ),
         body: FutureBuilder(
             future: DatabaseMethods()
-                .getPurchaseDetails(widget.userid, widget.commandId),
+                .getPurchaseDetails("users", widget.userid, widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 String date = getDate(widget.horodatage);
@@ -85,7 +91,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text("Vendeur : ",
+                              Text("Vendeur :",
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500)),
@@ -98,10 +104,20 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                                               fontWeight: FontWeight.w700,
                                               color: Colors.blue)),
                                       onPressed: () {
-                                        print("clicked");
-                                        // Navigator.push(context, MaterialPageRoute(
-                                        //   builder: (context) => PageDetail()
-                                        // ));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PageDetail(
+                                                      img: profilePic,
+                                                      name: shopName,
+                                                      description: description,
+                                                      adresse: adresse,
+                                                      clickAndCollect:
+                                                          clickAndCollect,
+                                                      livraison: livraison,
+                                                      sellerID: widget.shopID,
+                                                    )));
                                       }),
                             ],
                           ),
@@ -198,15 +214,19 @@ class _ProductDetailsState extends State<ProductDetails> {
                     ),
                   ],
                 ),
-                Center(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
-                  // children: [
-                  child: prix == null
-                      ? CircularProgressIndicator()
-                      : Text("Prix unitaire :\n" + prix + "€",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16)),
-                  // ],
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Quantité : " + widget.quantite.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16)),
+                    SizedBox(height: 20),
+                    prix == null
+                        ? CircularProgressIndicator()
+                        : Text("Prix unitaire :\n" + prix + "€",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16)),
+                  ],
                 ),
               ],
             ),

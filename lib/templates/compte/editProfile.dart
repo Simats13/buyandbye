@@ -149,19 +149,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: Column(
             children: [
               Container(
-                height: 100,
-                width: 200,
+                height: 95,
+                width: 95,
                 child: Stack(
                   children: <Widget>[
                     // Affiche l'image de profil
                     Center(
                       child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
                           child: Image.network(
-                        // S'il n'y a pas d'image on affiche celle par défaut
-                        myProfilePic ??
-                            "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                        height: MediaQuery.of(context).size.height,
-                      )),
+                            // S'il n'y a pas d'image on affiche celle par défaut
+                            myProfilePic ??
+                                "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
+                            height: MediaQuery.of(context).size.height,
+                          )),
                     ),
                     // Boutons de changement d'image quand on est en mode modification
                     isVisible

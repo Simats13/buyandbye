@@ -40,6 +40,7 @@ class _DetailProduitState extends State<DetailProduit> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            backgroundColor: BuyandByeAppTheme.black_electrik,
             title: Text("Produit"),
             elevation: 1,
             leading: IconButton(
@@ -84,10 +85,10 @@ class _DetailProduitState extends State<DetailProduit> {
                                     child: Text("Annuler")),
                                 TextButton(
                                     onPressed: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
                                       DatabaseMethods().deleteProduct(
                                           widget.uid, widget.productId);
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
                                     },
                                     child: Text("Supprimer")),
                               ],

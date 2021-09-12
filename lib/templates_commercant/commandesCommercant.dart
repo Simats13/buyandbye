@@ -205,7 +205,6 @@ class _CommandState extends State<Command> {
           .getSellerCommandDetails(widget.sellerId, widget.clickedCategorie),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          print(snapshot.data.docs.length);
           return snapshot.data.docs.length == 0
               ? //Affiche un message s'il n'y a aucune commande dans une catégorie
               Row(
@@ -344,8 +343,8 @@ class _CommandState extends State<Command> {
                       },
                     ),
                     SizedBox(height: 20),
-                    Text("Pagination en cours de création,"),
-                    Text("Masquer pour démonstration"),
+                    // Text("Pagination en cours de création,"),
+                    // Text("Masquer pour démonstration"),
                     // Le numéro de page actuelle reste le même sur En attente, En cours et Terminées.
                     // Créer 3 variables qui seront modifiées selon la catégorie affichée
                     SizedBox(height: 20),

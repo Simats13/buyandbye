@@ -18,6 +18,7 @@ class _NewProductNextState extends State<NewProductNext> {
     String brightness = MediaQuery.of(context).platformBrightness.toString();
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: BuyandByeAppTheme.black_electrik,
         title: Text("Ajouter un produit"),
         elevation: 1,
         leading: Container(),
@@ -125,6 +126,8 @@ class _NewProductNextState extends State<NewProductNext> {
                                                 ],
                                               );
                                             });
+                                      } else {
+                                        Navigator.pop(context);
                                       }
                                     },
                                     child: Text("Terminer"),

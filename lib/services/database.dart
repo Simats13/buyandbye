@@ -347,9 +347,9 @@ class DatabaseMethods {
     // Chargement infini avec orderBy
   }
 
-  Future getPurchaseDetails(userid, commandId) async {
+  Future getPurchaseDetails(userType, userid, commandId) async {
     return FirebaseFirestore.instance
-        .collection("users")
+        .collection(userType)
         .doc(userid)
         .collection("commands")
         .doc(commandId)

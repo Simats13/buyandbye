@@ -120,8 +120,8 @@ class _PageResumeState extends State<PageResume> {
                     SizedBox(height: 10),
                     Row(children: [
                       FutureBuilder(
-                          future: DatabaseMethods()
-                              .getPurchaseDetails(widget.userId, widget.idCommand),
+                          future: DatabaseMethods().getPurchaseDetails(
+                              "users", widget.userId, widget.idCommand),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Expanded(
@@ -170,11 +170,13 @@ class _PageResumeState extends State<PageResume> {
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
-                                Text("Vendeur : " + nomBoutique,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    )),
+                                nomBoutique == null
+                                    ? CircularProgressIndicator()
+                                    : Text("Vendeur : " + nomBoutique,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                        )),
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
@@ -186,11 +188,13 @@ class _PageResumeState extends State<PageResume> {
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
-                                Text(adresseBoutique,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    )),
+                                adresseBoutique == null
+                                    ? CircularProgressIndicator()
+                                    : Text(adresseBoutique,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                        )),
                               ]),
                             ]),
                           ),

@@ -15,7 +15,6 @@ import 'package:buyandbye/templates/Pages/cart.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
-import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:location/location.dart';
@@ -395,28 +394,28 @@ class _PageAccueilState extends State<PageAccueil> {
                           height: 10,
                           decoration: BoxDecoration(color: textFieldColor),
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              affichageAllStores();
-                            },
-                            child: Container(
-                              height: 50,
-                              width: 210,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: BuyandByeAppTheme.black_electrik),
-                              child: Text(
-                                "Afficher tous les commerçants",
-                                style: TextStyle(color: white),
-                              ),
-                              alignment: Alignment.center,
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        // Center(
+                        //   child: GestureDetector(
+                        //     onTap: () {
+                        //       affichageAllStores();
+                        //     },
+                        //     child: Container(
+                        //       height: 50,
+                        //       width: 210,
+                        //       decoration: BoxDecoration(
+                        //           borderRadius: BorderRadius.circular(20),
+                        //           color: BuyandByeAppTheme.black_electrik),
+                        //       child: Text(
+                        //         "Afficher tous les commerçants",
+                        //         style: TextStyle(color: white),
+                        //       ),
+                        //       alignment: Alignment.center,
+                        //     ),
+                        //   ),
+                        // ),
 
                         SizedBox(
                           height: 20,
@@ -1364,6 +1363,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                                       )));
                         },
                         child: Container(
+                            width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -1379,7 +1379,11 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Image.network(i),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 10,
+                                  child: Image.network(i),
+                                ),
                                 Padding(
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
@@ -1533,6 +1537,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                                       )));
                         },
                         child: Container(
+                            width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -1549,7 +1554,11 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Image.network(i),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 10,
+                                  child: Image.network(i),
+                                ),
                                 Padding(
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
@@ -1703,6 +1712,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                                       )));
                         },
                         child: Container(
+                            width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -1719,7 +1729,11 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Image.network(i),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 10,
+                                  child: Image.network(i),
+                                ),
                                 Padding(
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
@@ -1844,6 +1858,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                       )));
                         },
                         child: Container(
+                            width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -1860,7 +1875,11 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Image.network(i),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 10,
+                                  child: Image.network(i),
+                                ),
                                 Padding(
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
