@@ -289,12 +289,13 @@ class UserInfo extends StatefulWidget {
 }
 
 class _UserInfoState extends State<UserInfo> {
-  String myUserName;
+  String myUserName, myProfilePic;
   getSellerName() async {
     final User user = await AuthMethods().getCurrentUser();
     final clientId = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(clientId);
     myUserName = "${querySnapshot.docs[0]["name"]}";
+    myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
   }
 
   void initState() {
@@ -346,7 +347,8 @@ class _UserInfoState extends State<UserInfo> {
                                             widget.sellerId + widget.clientId,
                                             snapshot.data.docs[0]["fname"],
                                             snapshot.data.docs[0]["lname"],
-                                            snapshot.data.docs[0]["imgUrl"])));
+                                            snapshot.data.docs[0]["imgUrl"],
+                                            myProfilePic)));
                               },
                               icon: Icon(Icons.message),
                             ),

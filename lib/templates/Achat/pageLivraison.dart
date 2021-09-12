@@ -514,16 +514,16 @@ class _PageLivraisonState extends State<PageLivraison> {
                               }),
                           MaterialButton(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AccueilPaiement(
-                                            userId: userid,
-                                            idCommercant: widget.idCommercant,
-                                            total: widget.total,
-                                            userAddress: userAddressChoose,
-                                            deliveryChoose: deliveryChoose,
-                                          )));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => AccueilPaiement(
+                              //               userId: userid,
+                              //               idCommercant: widget.idCommercant,
+                              //               total: widget.total,
+                              //               userAddress: userAddressChoose,
+                              //               deliveryChoose: deliveryChoose,
+                              //             )));
                             },
                             color: BuyandByeAppTheme.orange,
                             height: 50,

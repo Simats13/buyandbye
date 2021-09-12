@@ -61,7 +61,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   @override
   void initState() {
     super.initState();
-    onScreenLoaded();
     getSellerInfo();
     categoriesInDb();
     NotificationController.instance.updateTokenToServer();
@@ -70,16 +69,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     }
   }
 
-  getMyInfoFromSharedPreference() async {
+    getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    myID = userid;
-    myName = user.displayName;
-    myProfilePic = user.photoURL;
-    myUserName = user.displayName;
-    myEmail = user.email;
-
-    setState(() {});
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    myID = "${querySnapshot.docs[0]["id"]}";
+    myName = "${querySnapshot.docs[0]["fname"]}" + "${querySnapshot.docs[0]["lname"]}";
+    myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
+    myEmail = "${querySnapshot.docs[0]["email"]}";
   }
 
   getSellerInfo() async {
@@ -106,10 +103,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         localNotificationAnimationOpacity = data[1] as double;
       });
     }
-  }
-
-  onScreenLoaded() async {
-    await getMyInfoFromSharedPreference();
   }
 
   @override
@@ -280,6 +273,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         widget.name, // NOM DU CORRESPONDANT
                                         "", // LES COMMERCANTS N'ONT PAS DE LNAME
                                         widget.img, // IMAGE DU CORRESPONDANT
+                                        myProfilePic // IMAGE DE L'UTILISATEUR
                                       )));
                         },
                         child: Icon(

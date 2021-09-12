@@ -1,23 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:buyandbye/helperfun/sharedpref_helper.dart';
+import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/templates/pages/chatscreen.dart';
+import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'templates/Pages/pageBienvenue.dart';
 import 'templates_commercant/nav_bar.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -60,6 +58,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    getMyInfo();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -128,38 +127,50 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+String myID, emailVerified, admin, myName, myProfilePic;
+getMyInfo() async {
+  final User user = await AuthMethods().getCurrentUser();
+  final userid = user.uid;
+  QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+  myID = "${querySnapshot.docs[0]["id"]}";
+  emailVerified = "${querySnapshot.docs[0]["emailVerified"]}";
+  admin = "${querySnapshot.docs[0]["admin"]}";
+  myName =
+      "${querySnapshot.docs[0]["fname"]}" + "${querySnapshot.docs[0]["lname"]}";
+  myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
+}
+
+notifications(context, myID) {
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ChatRoom(
+                myID,
+                myName,
+                message.data["otherToken"],
+                message.data["otherID"],
+                message.data["chatroomid"],
+                message.data["userName"],
+                "",
+                message.data["profilePic"],
+                myProfilePic)));
+  });
+}
+
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: AuthMethods().getCurrentUser(),
-        builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            return StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(snapshot.data.uid)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData) {
-                  final userDoc = snapshot.data;
-                  final user = userDoc;
-                  if (user['emailVerified'] == false) {
-                    return PageLogin();
-                  }
-                  if (user['admin'] == true) {
-                    return NavBar();
-                  } else {
-                    return Accueil();
-                  }
-                } else {
-                  return PageLogin();
-                }
-              },
-            );
-          }
-          return PageBienvenue();
-        });
+    notifications(context, myID);
+    if (myID == null) {
+      return PageBienvenue();
+    } else if (emailVerified == "false") {
+      return PageLogin();
+    }
+    if (admin == "true") {
+      return NavBar();
+    } else {
+      return Accueil();
+    }
   }
 }

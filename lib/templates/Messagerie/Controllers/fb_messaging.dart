@@ -119,7 +119,7 @@ class NotificationController {
   Future _selectNotification(String payload) async {}
 
   Future<void> sendNotificationMessageToPeerUser(unReadMSGCount, messageType,
-      textFromTextField, myName, chatID, peerUserToken) async {
+      textFromTextField, myName, chatID, peerUserToken, imgUrl, otherToken, otherID) async {
     const yourServerKey =
         "AAAAqk7liPM:APA91bHZUrcSZWjOgia117HltJ1BWSJ9_M1NEojTB8QXIGQXH8sWTrjQdJH_oUQrsH2DxAssSwSe_3rphP74uD4BkPdHgwWDn7yWypSItzovjkkxIubamzkQ1gEFBC6eT45P5GFSCl9S";
     // FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -149,6 +149,9 @@ class NotificationController {
               'userName': '$myName',
               'message':
                   messageType == 'text' ? '$textFromTextField' : '(Photo)',
+              'profilePic': imgUrl,
+              'otherToken': otherToken,
+              'otherID': otherID
             },
             'to': peerUserToken,
           },

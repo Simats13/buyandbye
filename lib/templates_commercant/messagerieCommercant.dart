@@ -128,15 +128,16 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       username = "",
       token = "",
       userid,
-      idTest;
+      idTest,
+      myProfilePicUrl;
 
   bool isActive;
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
+    QuerySnapshot querySnapshot2 = await DatabaseMethods().getMyInfo(userid);
+    myProfilePicUrl = "${querySnapshot2.docs[0]["imgUrl"]}";
     username = widget.clientID;
-    print("client");
-    print(username);
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(username);
     fname = "${querySnapshot.docs[0]["fname"]}";
     lname = "${querySnapshot.docs[0]["lname"]}";
@@ -259,6 +260,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                           fname, // PRENOM DU CORRESPONDANT
                           lname, // NOM DU CORRESPONDANT
                           profilePicUrl, // IMAGE DU CORRESPONDANT
+                          myProfilePicUrl // IMAGE DE L'UTILISATEUR
                         ))),
           );
         },

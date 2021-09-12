@@ -6,11 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:buyandbye/main.dart';
 import 'package:buyandbye/services/database.dart';
-import 'package:location/location.dart';
 
 class AuthMethods {
   bool isconnected = false;

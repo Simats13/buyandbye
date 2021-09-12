@@ -123,7 +123,7 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl, name, token, userid;
+  String profilePicUrl, name, token, userid, myThumbnail;
 
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
@@ -136,9 +136,17 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     setState(() {});
   }
 
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    myThumbnail = "${querySnapshot.docs[0]["imgUrl"]}";
+  }
+
   @override
   void initState() {
     getThisUserInfo();
+    getMyInfo();
     super.initState();
   }
 
@@ -252,6 +260,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                           name, // PRENOM DU CORRESPONDANT
                           "", // NOM DU CORRESPONDANT
                           profilePicUrl, // IMAGE DU CORRESPONDANT
+                          myThumbnail, // IMAGE DE L'UTILISATEUR
                         ))),
           );
         },

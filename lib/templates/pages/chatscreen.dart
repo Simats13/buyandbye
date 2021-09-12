@@ -19,12 +19,26 @@ import '../Messagerie/subWidgets/common_widgets.dart';
 import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class ChatRoom extends StatefulWidget {
-  ChatRoom(this.myID, this.myName, this.selectedUserToken, this.selectedUserID,
-      this.chatID, this.selectedUserFname, this.selectedUserLname,
-      this.selectedUserThumbnail);
+  ChatRoom(
+      this.myID,
+      this.myName,
+      this.selectedUserToken,
+      this.selectedUserID,
+      this.chatID,
+      this.selectedUserFname,
+      this.selectedUserLname,
+      this.selectedUserThumbnail,
+      this.myThumbnail);
 
-  final String myID, myName, selectedUserToken, selectedUserID, chatID,
-      selectedUserFname, selectedUserLname, selectedUserThumbnail;
+  final String myID,
+      myName,
+      selectedUserToken,
+      selectedUserID,
+      chatID,
+      selectedUserFname,
+      selectedUserLname,
+      selectedUserThumbnail,
+      myThumbnail;
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -66,7 +80,9 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void initState() {
     super.initState();
-    print("myname : " + widget.myName);
+    print("J'avais raison");
+    print(widget.selectedUserToken);
+    print(widget.selectedUserID);
     WidgetsBinding.instance.addObserver(this);
     FBCloudStore.instanace
         .updateMyChatListValues(widget.myID, widget.chatID, true);
@@ -281,13 +297,15 @@ class _ChatRoomState extends State<ChatRoom>
       int unReadMSGCount =
           await FBCloudStore.instanace.getUnreadMSGCount(widget.selectedUserID);
       await NotificationController.instance.sendNotificationMessageToPeerUser(
-        unReadMSGCount,
-        messageType,
-        _msgTextController.text,
-        widget.myName,
-        widget.chatID,
-        widget.selectedUserToken,
-      );
+          unReadMSGCount,
+          messageType,
+          _msgTextController.text,
+          widget.myName,
+          widget.chatID,
+          widget.selectedUserToken,
+          widget.myThumbnail,
+          widget.selectedUserToken,
+          widget.selectedUserID);
     } catch (e) {
       print(e.message);
     }
