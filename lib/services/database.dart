@@ -241,7 +241,7 @@ class DatabaseMethods {
         .snapshots();
   }
 
-    Future getOneProductFuture(sellerId, productId) {
+  Future getOneProductFuture(sellerId, productId) {
     return FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
@@ -312,7 +312,7 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  // Récupère toutes les commandes d'un commerçant ou d'un client
+  // Récupère toutes les commandes d'un client
   Future getPurchase(userType, userid) async {
     return FirebaseFirestore.instance
         .collection(userType)
