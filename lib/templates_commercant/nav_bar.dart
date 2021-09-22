@@ -1,9 +1,13 @@
+import 'package:buyandbye/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 import 'accueilCommercant.dart';
 import 'commandesCommercant.dart';
+import 'produitsCommercant.dart';
 import 'compteCommercant.dart';
 import 'messagerieCommercant.dart';
 
@@ -13,7 +17,7 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-  @override
+@override
   void initState() {
     super.initState();
     AuthMethods.toogleNavBar = this.toogleNavBar;
@@ -24,6 +28,7 @@ class _NavBarState extends State<NavBar> {
   Widget _affichePage = AccueilCommercant();
   final AccueilCommercant _accueilCommercant = AccueilCommercant();
   final CommandesCommercant _commandesCommercant = CommandesCommercant();
+  final Products _products = Products();
   final MessagerieCommercant _messagerieCommercant = MessagerieCommercant();
   final CompteCommercant _compteCommercant = CompteCommercant();
 
@@ -36,9 +41,12 @@ class _NavBarState extends State<NavBar> {
         return _commandesCommercant;
         break;
       case 2:
-        return _messagerieCommercant;
+        return _products;
         break;
       case 3:
+        return _messagerieCommercant;
+        break;
+      case 4:
         return _compteCommercant;
         break;
       default:
@@ -86,6 +94,14 @@ class _NavBarState extends State<NavBar> {
                             GButton(
                               icon: Icons.shopping_bag_outlined,
                               text: 'Commandes',
+                              hoverColor: Colors.pink[100],
+                              backgroundColor: Colors.pink[100],
+                              iconActiveColor: Colors.pink,
+                              textColor: Colors.pink,
+                            ),
+                            GButton(
+                              icon: Icons.backpack_outlined,
+                              text: 'Produits',
                               hoverColor: Colors.pink[100],
                               backgroundColor: Colors.pink[100],
                               iconActiveColor: Colors.pink,

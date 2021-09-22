@@ -701,4 +701,23 @@ class DatabaseMethods {
       await i.reference.delete();
     }
   }
+
+  Future accountpremium() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    return await FirebaseFirestore.instance
+        .collection('magasins')
+        .doc(userid)
+        .update({"premium": true});
+  }
+
+  Future accountfree() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    return await FirebaseFirestore.instance
+        .collection('magasins')
+        .doc(userid)
+        .update({"premium": false});
+  }
+
 }

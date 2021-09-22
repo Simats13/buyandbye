@@ -21,6 +21,7 @@ class CompteCommercant extends StatefulWidget {
 
 class _CompteCommercantState extends State<CompteCommercant> {
   String userid, myProfilePicture, name, email;
+  bool premium;
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
             myProfilePicture = snapshot.data["imgUrl"];
             name = snapshot.data["name"];
             email = snapshot.data["email"];
+            premium = snapshot.data["premium"];
           }
           return Column(
             children: <Widget>[
@@ -85,9 +87,13 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 ),
                 child: Center(
                   child: MaterialButton(
-                    child: Text(
-                      'Classique',
-                      style: kButtonTextStyle,
+                    child: premium == false
+                        ? Text(
+                      'GRATUIT',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                    ) : Text(
+                      'PREMIUM',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
                       Navigator.push(

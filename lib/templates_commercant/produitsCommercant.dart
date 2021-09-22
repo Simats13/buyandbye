@@ -1,7 +1,10 @@
+import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates_commercant/detailProduit.dart';
 import 'package:buyandbye/templates_commercant/newProduct.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 // Retourne la liste des catégories où le commerçant a entré au moins un produit
@@ -19,99 +22,122 @@ List categoriesInDb(snapshot) {
 }
 
 class Products extends StatefulWidget {
-  const Products(this.uid);
-  final String uid;
   _ProductsState createState() => _ProductsState();
 }
 
 class _ProductsState extends State<Products> {
+  String userid;
+
+  // Récupère les informations de l'utilisateur courant dans la bdd
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+   return user.uid;
+    // print(userid);
+  }
+
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            title: Text("Vos produits"),
-            elevation: 1,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: 20),
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          // Amène l'utilisateur sur la page d'ajout d'un produit
-                          MaterialPageRoute(
-                              builder: (context) => NewProduct(widget.uid)));
-                    },
-                    icon: Icon(
-                      Icons.add_rounded,
-                      size: 30,
-                    )),
-              )
-            ]),
-        body: SingleChildScrollView(
-          child: StreamBuilder(
-              stream: DatabaseMethods().getProducts(widget.uid),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  // Liste des catégories à afficher
-                  List listOfCategories = categoriesInDb(snapshot);
-                  return Column(
-                    children: [
-                      snapshot.data.docs.length < 1
-                          ?
-                          // Affiche un message pour indiquer qu'il n'y a pas de produit dans la boutique
-                          Center(
-                              child: Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(height: 20),
-                                      Text('Aucun produit dans la boutique.',
-                                          style: TextStyle(fontSize: 20)),
-                                      SizedBox(height: 10),
-                                      Text('Appuyez sur "+" pour ajouter votre',
-                                          style: TextStyle(fontSize: 20)),
-                                      Text('premier produit',
-                                          style: TextStyle(fontSize: 20))
-                                    ],
-                                  )),
-                            )
-                          :
-                          // Affiche toutes les catégories qui contiennent au moins un produit
-                          Column(
+    return FutureBuilder<dynamic>(
+        future: getMyInfo(),
+        builder: (context, snapshotuid) {
+          print(snapshotuid.data);
+          return snapshotuid.hasData
+              ? Scaffold(
+                  appBar: AppBar(
+                      backgroundColor: BuyandByeAppTheme.black_electrik,
+                      title: Text("Vos produits"),
+                      elevation: 1,
+                      leading: IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      actions: [
+                        Padding(
+                          padding: EdgeInsets.only(right: 20),
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    // Amène l'utilisateur sur la page d'ajout d'un produit
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NewProduct(snapshotuid.data)));
+                              },
+                              icon: Icon(
+                                Icons.add_rounded,
+                                size: 30,
+                              )),
+                        )
+                      ]),
+                  body: SingleChildScrollView(
+                    child: StreamBuilder(
+                        stream: DatabaseMethods().getProducts(snapshotuid.data),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            // Liste des catégories à afficher
+                            List listOfCategories = categoriesInDb(snapshot);
+                            return Column(
                               children: [
-                                ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: listOfCategories.length,
-                                  itemBuilder: (context, index) {
-                                    return SingleChildScrollView(
-                                        // Appel de la fonction pour chaque catégorie
-                                        child: Categorie(
-                                            snapshot,
-                                            listOfCategories,
-                                            index,
-                                            widget.uid));
-                                  },
-                                ),
-                                SizedBox(height: 20)
+                                snapshot.data.docs.length < 1
+                                    ?
+                                    // Affiche un message pour indiquer qu'il n'y a pas de produit dans la boutique
+                                    Center(
+                                        child: Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(height: 20),
+                                                Text(
+                                                    'Aucun produit dans la boutique.',
+                                                    style: TextStyle(
+                                                        fontSize: 20)),
+                                                SizedBox(height: 10),
+                                                Text(
+                                                    'Appuyez sur "+" pour ajouter votre',
+                                                    style: TextStyle(
+                                                        fontSize: 20)),
+                                                Text('premier produit',
+                                                    style:
+                                                        TextStyle(fontSize: 20))
+                                              ],
+                                            )),
+                                      )
+                                    :
+                                    // Affiche toutes les catégories qui contiennent au moins un produit
+                                    Column(
+                                        children: [
+                                          ListView.builder(
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemCount: listOfCategories.length,
+                                            itemBuilder: (context, index) {
+                                              return SingleChildScrollView(
+                                                  // Appel de la fonction pour chaque catégorie
+                                                  child: Categorie(
+                                                      snapshot,
+                                                      listOfCategories,
+                                                      index,
+                                                      snapshotuid.data));
+                                            },
+                                          ),
+                                          SizedBox(height: 20)
+                                        ],
+                                      ),
                               ],
-                            ),
-                    ],
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              }),
-        ));
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        }),
+                  ))
+              : Center(
+                  child: CircularProgressIndicator(),
+                );
+        });
   }
 }
 

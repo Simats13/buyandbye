@@ -285,7 +285,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Products(myID),
+                      builder: (context) => Products(),
                     ),
                   );
                 },

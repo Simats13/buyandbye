@@ -16,62 +16,83 @@ class MembershipStore extends StatefulWidget {
 }
 
 class _MembershipStore extends State<MembershipStore> {
-  Widget build(BuildContext context) {
-     return Scaffold(
-      body: Container(
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  Text(
-                    "Abonnement",
-                    style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                          color: Colors.white.withOpacity(0.2),
-                          offset: Offset(-8, -1),
-                          spreadRadius: 2,
-                          blurRadius: 5),
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: Offset(2, 2),
-                          spreadRadius: 4,
-                          blurRadius: 5)
-                    ], shape: BoxShape.circle, color: Colors.white),
-                    child: Icon(Icons.close),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20),
-              child: Text(
-                "Selectionnez votre abonnement",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            MembershipCard(),
-            MembershipCard2(),
-          ],
-        ),
-      ),
-    );
-  }
-}
+  String userid;
+  bool premium;
 
-class MembershipCard extends StatelessWidget {
   @override
+  void initState() {
+    super.initState();
+    getMyInfo();
+  }
+
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+
+    setState(() {});
+  }
+
   Widget build(BuildContext context) {
+    return Scaffold(
+        body: StreamBuilder(
+            stream: DatabaseMethods().getSellerInfo(userid),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                premium = snapshot.data["premium"];
+              }
+              return Container(
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Abonnement",
+                            style: TextStyle(
+                                fontSize: 26, fontWeight: FontWeight.bold),
+                          ),
+                          Spacer(),
+                          MaterialButton(
+                            child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.white.withOpacity(0.2),
+                                      offset: Offset(-8, -1),
+                                      spreadRadius: 2,
+                                      blurRadius: 5),
+                                  BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      offset: Offset(2, 2),
+                                      spreadRadius: 4,
+                                      blurRadius: 5)
+                                ], shape: BoxShape.circle, color: Colors.white),
+                                child: Icon(Icons.close)),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0, right: 20),
+                      child: Text(
+                        "Selectionnez votre abonnement",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    membershipCard(premium),
+                    membershipCard2(premium),
+                  ],
+                ),
+              );
+            }));
+  }
+
+  membershipCard(premium) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
@@ -122,8 +143,7 @@ class MembershipCard extends StatelessWidget {
                       Text(
                         "Abonnement Classique",
                         style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Container(
                         padding: EdgeInsets.all(5),
@@ -143,17 +163,14 @@ class MembershipCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10.0),
               child: Text(
                 "Fonctionnalités",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10.0),
               child: Text(
                 "Plus de Détails",
-                style: TextStyle(
-                    decoration: TextDecoration.underline),
+                style: TextStyle(decoration: TextDecoration.underline),
               ),
             ),
             Padding(
@@ -170,32 +187,41 @@ class MembershipCard extends StatelessWidget {
                   children: [
                     Text(
                       "Gratuit",
-                      style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
                 Spacer(),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(-5, -3),
-                            color: Colors.white.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5)
-                      ],
-                      gradient: LinearGradient(
-                          colors: [Color(0xffFE9B4D), Color(0xffFE8032)]),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Text(
-                    "Actuel",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                MaterialButton(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(-5, -3),
+                              color: Colors.white.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 5)
+                        ],
+                        gradient: LinearGradient(
+                            colors: [Color(0xffFE9B4D), Color(0xffFE8032)]),
+                        borderRadius: BorderRadius.circular(20)),
+                    child: premium == false
+                        ? Text(
+                            "Actuel",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            "Souscrire",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                   ),
+                  onPressed: () {
+                    DatabaseMethods().accountfree();
+                  },
                 )
               ],
             )
@@ -204,13 +230,8 @@ class MembershipCard extends StatelessWidget {
       ),
     );
   }
-}
 
-
-
-class MembershipCard2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  membershipCard2(premium) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
@@ -261,8 +282,7 @@ class MembershipCard2 extends StatelessWidget {
                       Text(
                         "Abonnement Premium",
                         style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Container(
                         padding: EdgeInsets.all(5),
@@ -282,17 +302,14 @@ class MembershipCard2 extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10.0),
               child: Text(
                 "Fonctionnalités",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10.0),
               child: Text(
                 "Plus de Details",
-                style: TextStyle(
-                    decoration: TextDecoration.underline),
+                style: TextStyle(decoration: TextDecoration.underline),
               ),
             ),
             Padding(
@@ -309,32 +326,41 @@ class MembershipCard2 extends StatelessWidget {
                   children: [
                     Text(
                       "19,99\€",
-                      style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
                 Spacer(),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(-5, -3),
-                            color: Colors.white.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5)
-                      ],
-                      gradient: LinearGradient(
-                          colors: [Color(0xffFE9B4D), Color(0xffFE8032)]),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Text(
-                    "Souscrire",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                MaterialButton(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(-5, -3),
+                              color: Colors.white.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 5)
+                        ],
+                        gradient: LinearGradient(
+                            colors: [Color(0xffFE9B4D), Color(0xffFE8032)]),
+                        borderRadius: BorderRadius.circular(20)),
+                    child: premium == false
+                        ? Text(
+                            "Souscrire",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            "Actuel",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                   ),
+                  onPressed: () {
+                    DatabaseMethods().accountpremium();
+                  },
                 )
               ],
             )
