@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:badges/badges.dart';
 
 import 'accueilCommercant.dart';
 import 'commandesCommercant.dart';
@@ -17,13 +18,16 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-@override
+  @override
   void initState() {
     super.initState();
     AuthMethods.toogleNavBar = this.toogleNavBar;
   }
-
+  
   int pageIndex = 0;
+  int badgeCommandes = 8;
+  int badgeMessages = 1;
+  double gap = 8;
 
   Widget _affichePage = AccueilCommercant();
   final AccueilCommercant _accueilCommercant = AccueilCommercant();
@@ -92,28 +96,69 @@ class _NavBarState extends State<NavBar> {
                               textColor: Colors.purple,
                             ),
                             GButton(
-                              icon: Icons.shopping_bag_outlined,
+                              gap: gap,
+                              iconActiveColor: Colors.pink,
+                              iconColor: Colors.black,
+                              textColor: Colors.pink,
+                              backgroundColor: Colors.pink.withOpacity(.2),
+                              iconSize: 24,
+                              icon: Icons.shopping_bag_rounded,
+                              leading: pageIndex == 1 || badgeCommandes == 0
+                                  ? null
+                                  : Badge(
+                                      badgeColor: Colors.red.shade100,
+                                      elevation: 0,
+                                      position: BadgePosition.topEnd(
+                                          top: -12, end: -10),
+                                      badgeContent: Text(
+                                        badgeCommandes.toString(),
+                                        style: TextStyle(
+                                            color: Colors.red.shade900),
+                                      ),
+                                      child: Icon(
+                                        Icons.shopping_bag_rounded,
+                                        color: pageIndex == 1
+                                            ? Colors.pink
+                                            : Colors.black,
+                                      ),
+                                    ),
                               text: 'Commandes',
-                              hoverColor: Colors.pink[100],
-                              backgroundColor: Colors.pink[100],
-                              iconActiveColor: Colors.pink,
-                              textColor: Colors.pink,
                             ),
                             GButton(
-                              icon: Icons.backpack_outlined,
+                              icon: Icons.add_business_rounded,
                               text: 'Produits',
-                              hoverColor: Colors.pink[100],
-                              backgroundColor: Colors.pink[100],
-                              iconActiveColor: Colors.pink,
-                              textColor: Colors.pink,
+                              hoverColor: Colors.orange[100],
+                              backgroundColor: Colors.orange[100],
+                              iconActiveColor: Colors.orange,
+                              textColor: Colors.orange,
                             ),
                             GButton(
+                              gap: gap,
                               icon: Icons.message,
                               text: 'Messages',
                               hoverColor: Colors.teal[100],
                               backgroundColor: Colors.teal[100],
                               iconActiveColor: Colors.teal,
                               textColor: Colors.teal,
+                              leading: pageIndex == 1 || badgeMessages == 0
+                                  ? null
+                                  : Badge(
+                                      badgeColor: Colors.red.shade100,
+                                      elevation: 0,
+                                      position: BadgePosition.topEnd(
+                                          top: -12, end: -12),
+                                      badgeContent: Text(
+                                        badgeMessages.toString(),
+                                        style: TextStyle(
+                                            color: Colors.red.shade900),
+                                      ),
+                                      child: Icon(
+                                        Icons.message,
+                                        color: pageIndex == 1
+                                            ? Colors.teal
+                                            : Colors.black,
+                                      ),
+                                    ),
                             ),
                             GButton(
                               icon: Icons.person,

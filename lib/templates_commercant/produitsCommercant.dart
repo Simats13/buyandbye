@@ -46,15 +46,8 @@ class _ProductsState extends State<Products> {
                       backgroundColor: BuyandByeAppTheme.black_electrik,
                       title: Text("Vos produits"),
                       elevation: 1,
-                      leading: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
                       actions: [
-                        Padding(
-                          padding: EdgeInsets.only(right: 20),
+                        Container(
                           child: IconButton(
                               onPressed: () {
                                 Navigator.push(

@@ -28,6 +28,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
   String myID;
   String myName, myUserName, myEmail;
   String myProfilePic;
+  String myPremium;
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
     myName = "${querySnapshot.docs[0]["name"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
+    myPremium = "${querySnapshot.docs[0]["premium"]}";
     setState(() {});
   }
 
@@ -223,73 +225,49 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                 ),
               ),
               SizedBox(height: 15),
-              Container(
-                width: 380,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: size.height * 0.35,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 4,
-                                offset: Offset(4, 4))
-                          ]),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
+              myPremium == "true"
+                  ? Container(
+                      width: 380,
+                      child: Stack(
                         children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                            child: Text('Vos Statistiques',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700)),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
                           Container(
-                            child: Image.asset('assets/images/charts.png'),
+                            height: size.height * 0.35,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 4,
+                                      offset: Offset(4, 4))
+                                ]),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                                  child: Text('Vos Statistiques',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700)),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child:
+                                      Image.asset('assets/images/charts.png'),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              MaterialButton(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 4,
-                            offset: Offset(4, 4))
-                      ]),
-                  child: Text(
-                    "Vos produits",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Products(),
-                    ),
-                  );
-                },
-              ),
+                    )
+                  : new Container(),
               SizedBox(height: 20),
             ],
           ),

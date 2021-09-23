@@ -63,7 +63,7 @@ dependencies:
   flutter_statusbarcolor:
   location: 
   progress_dialog:
-  cupertino_icons: ^1.0.0 
+  cupertino_icons: 
   flutter_credit_card:
   flutter_app_badger:
   animations:
@@ -79,7 +79,7 @@ dependencies:
   status_alert:
   flutter_add_to_cart_button:
   #flutter_stripe:
-  flutter_facebook_auth: ^3.5.0
+  flutter_facebook_auth:
   http:
   stripe_payment:
   truncate:
@@ -87,6 +87,8 @@ dependencies:
   wave: 
   app_settings:
   sign_button:
+  dependencies:
+  badges:
 
 flutter_native_splash:
   #color: "#42a5f5"

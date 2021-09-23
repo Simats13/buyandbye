@@ -720,4 +720,14 @@ class DatabaseMethods {
         .update({"premium": false});
   }
 
+  Future badgeStream() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userid)
+        .collection('chatlist')
+        .doc(userid)
+        .snapshots();
+  }
 }
