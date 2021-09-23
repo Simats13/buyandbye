@@ -720,14 +720,13 @@ class DatabaseMethods {
         .update({"premium": false});
   }
 
-  Future badgeStream() async {
+  Future colorMyStore(String myColorChoice) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
-        .collection('users')
+        .collection('magasins')
         .doc(userid)
-        .collection('chatlist')
-        .doc(userid)
-        .snapshots();
+        .update({"colorStore": myColorChoice});
   }
+
 }

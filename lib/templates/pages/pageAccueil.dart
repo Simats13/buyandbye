@@ -1360,6 +1360,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                                             ['livraison'],
                                         sellerID: snapshot.data[carouselItem]
                                             ['id'],
+                                        colorStore: snapshot.data[carouselItem]
+                                            ['colorStore'],
                                       )));
                         },
                         child: Container(
