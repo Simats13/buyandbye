@@ -730,4 +730,13 @@ class DatabaseMethods {
         .doc(userid)
         .snapshots();
   }
+
+  Future colorMyStore(String myColorChoice) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    return await FirebaseFirestore.instance
+        .collection('magasins')
+        .doc(userid)
+        .update({"colorStore": myColorChoice});
+  }
 }

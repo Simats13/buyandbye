@@ -110,6 +110,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,

@@ -87,7 +87,6 @@ dependencies:
   wave: 
   app_settings:
   sign_button:
-  dependencies:
   badges:
 
 flutter_native_splash:

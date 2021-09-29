@@ -30,7 +30,8 @@ class PageDetail extends StatefulWidget {
       this.adresse,
       this.clickAndCollect,
       this.livraison,
-      this.sellerID})
+      this.sellerID,
+      this.colorStore})
       : super(key: key);
 
   final String img;
@@ -38,6 +39,7 @@ class PageDetail extends StatefulWidget {
   final String description;
   final String adresse;
   final String sellerID;
+  final String colorStore;
   final bool livraison;
   final bool clickAndCollect;
   _PageDetail createState() => _PageDetail();
@@ -69,12 +71,13 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     }
   }
 
-    getMyInfo() async {
+  getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
-    myName = "${querySnapshot.docs[0]["fname"]}" + "${querySnapshot.docs[0]["lname"]}";
+    myName = "${querySnapshot.docs[0]["fname"]}" +
+        "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
   }
@@ -135,6 +138,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   Widget getFooter() {
+    var pimpMyStore  = widget.colorStore;
     var size = MediaQuery.of(context).size;
     return Stack(children: [
       GestureDetector(
@@ -157,7 +161,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                        color: BuyandByeAppTheme.orange),
+                        color: Color(int.parse("0x$pimpMyStore"))),
                   )
                 ],
               ),
@@ -170,6 +174,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   // String dropdownValue = 'Alimentation';
   int clickedNumber = 1;
   Widget getBody() {
+    var pimpMyStore  = widget.colorStore;
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     var size = MediaQuery.of(context).size;
@@ -197,7 +202,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: BuyandByeAppTheme.orange.withOpacity(0.5),
+                            color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -217,7 +222,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: BuyandByeAppTheme.orange.withOpacity(0.5),
+                            color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -264,21 +269,20 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ChatRoom(
-                                        myID, //ID DE L'UTILISATEUR
-                                        myName, // NOM DE L'UTILISATEUR
-                                        selectedUserToken,
-                                        widget
-                                            .sellerID, // TOKEN DU CORRESPONDANT
-                                        widget.sellerID + myID, //ID DE LA CONV
-                                        widget.name, // NOM DU CORRESPONDANT
-                                        "", // LES COMMERCANTS N'ONT PAS DE LNAME
-                                        widget.img, // IMAGE DU CORRESPONDANT
-                                        myProfilePic // IMAGE DE L'UTILISATEUR
+                                      myID, //ID DE L'UTILISATEUR
+                                      myName, // NOM DE L'UTILISATEUR
+                                      selectedUserToken,
+                                      widget.sellerID, // TOKEN DU CORRESPONDANT
+                                      widget.sellerID + myID, //ID DE LA CONV
+                                      widget.name, // NOM DU CORRESPONDANT
+                                      "", // LES COMMERCANTS N'ONT PAS DE LNAME
+                                      widget.img, // IMAGE DU CORRESPONDANT
+                                      myProfilePic // IMAGE DE L'UTILISATEUR
                                       )));
                         },
                         child: Icon(
                           Icons.message,
-                          color: BuyandByeAppTheme.orange,
+                          color: Color(int.parse("0x$pimpMyStore")),
                           size: 25,
                         ),
                       )
@@ -442,7 +446,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           "Plus d'infos",
                           style: TextStyle(
                               fontSize: 13,
-                              color: BuyandByeAppTheme.orange,
+                              color: Color(int.parse("0x$pimpMyStore")),
                               fontWeight: FontWeight.bold),
                         ),
                       )
@@ -485,7 +489,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             height: 40,
                             decoration: BoxDecoration(
                                 color:
-                                    BuyandByeAppTheme.orange.withOpacity(0.2),
+                                    Color(int.parse("0x$pimpMyStore")).withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(30)),
                             child: Center(
                               child: Padding(
@@ -495,7 +499,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   peopleFeedback[index],
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: BuyandByeAppTheme.orange,
+                                    color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -534,7 +538,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           Text(
                             "Voir plus ...",
                             style: TextStyle(
-                              color: BuyandByeAppTheme.orange,
+                              color: Color(int.parse("0x$pimpMyStore")),
                             ),
                           ),
                         ],

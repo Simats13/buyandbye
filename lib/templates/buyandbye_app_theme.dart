@@ -30,3 +30,5 @@ List<String> categorieNames = [
   'Montres & Bijoux',
   'Téléphonie'
 ];
+
+Map<String, String> colorName = {'défaut': 'f4a261', 'rouge': 'fc2a1a', 'bleu': '2394e9', 'vert': '44ba0c', 'jaune': 'e2e61c'};

@@ -1347,6 +1347,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[carouselItem]
                                             ['imgUrl'],
+                                        colorStore: snapshot.data[carouselItem]
+                                            ['colorStore'],
                                         name: snapshot.data[carouselItem]
                                             ['name'],
                                         description: snapshot.data[carouselItem]
@@ -1521,6 +1523,8 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[carouselItem]
                                             ['imgUrl'],
+                                        colorStore: snapshot.data[carouselItem]
+                                            ['colorStore'],
                                         name: snapshot.data[carouselItem]
                                             ['name'],
                                         description: snapshot.data[carouselItem]
@@ -1696,6 +1700,8 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[carouselItem]
                                             ['imgUrl'],
+                                        colorStore: snapshot.data[carouselItem]
+                                            ['colorStore'],
                                         name: snapshot.data[carouselItem]
                                             ['name'],
                                         description: snapshot.data[carouselItem]
@@ -1842,6 +1848,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[carouselItem]
                                             ['imgUrl'],
+                                        colorStore: snapshot.data[carouselItem]
+                                            ['colorStore'],
                                         name: snapshot.data[carouselItem]
                                             ['name'],
                                         description: snapshot.data[carouselItem]
@@ -2103,6 +2111,8 @@ class _AllStoresState extends State<AllStores> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[index]['imgUrl'],
                                         name: snapshot.data[index]['name'],
+                                        colorStore: snapshot.data[index]
+                                            ['colorStore'],
                                         description: snapshot.data[index]
                                             ['description'],
                                         adresse: snapshot.data[index]

@@ -15,6 +15,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
   String myName, myUserName, myEmail;
   String myProfilePic;
   String myPhone;
+  String dropdownValue = "défaut";
 
   @override
   void initState() {
@@ -38,6 +39,8 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,
@@ -152,6 +155,40 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                               ? CircularProgressIndicator()
                               : Text(myPhone),
                           SizedBox(height: 20),
+                          Text("Couleur de mon magasin :",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                          Row(children: [
+                            DropdownButton<String>(
+                              value: dropdownValue,
+                              icon:
+                                  const Icon(Icons.keyboard_arrow_down_rounded),
+                              iconSize: 24,
+                              elevation: 16,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  dropdownValue = newValue;
+                                  print(newValue);
+                                });
+                              },
+                              items: colorName
+                                  .map((value, value1) {
+                                    return MapEntry(
+                                        value,
+                                        DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                          onTap: () {
+                                            DatabaseMethods()
+                                                .colorMyStore(value1);
+                                          },
+                                        ));
+                                  })
+                                  .values
+                                  .toList(),
+                            ),
+                          ]),
+                          SizedBox(height: 10),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),
                           Divider(thickness: 0.5, color: Colors.black),
