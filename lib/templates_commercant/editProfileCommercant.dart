@@ -11,11 +11,13 @@ class EditProfileComPage extends StatefulWidget {
 }
 
 class _EditProfileComPageState extends State<EditProfileComPage> {
-  String myID;
-  String myName, myUserName, myEmail;
-  String myProfilePic;
-  String myPhone;
-  String dropdownValue = "défaut";
+  String myID,
+      myName,
+      myUserName,
+      myEmail,
+      myProfilePic,
+      myPhone,
+      colorStoreName;
 
   @override
   void initState() {
@@ -33,12 +35,14 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
+    colorStoreName = "${querySnapshot.docs[0]["colorStoreName"]}";
     setState(() {});
   }
 
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
+    String dropdownValue = colorStoreName;
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
@@ -168,7 +172,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                               onChanged: (String newValue) {
                                 setState(() {
                                   dropdownValue = newValue;
-                                  print(newValue);
+                                  getMyInfo();
                                 });
                               },
                               items: colorName
@@ -180,7 +184,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                                           child: Text(value),
                                           onTap: () {
                                             DatabaseMethods()
-                                                .colorMyStore(value1);
+                                                .colorMyStore(value1, value);
                                           },
                                         ));
                                   })

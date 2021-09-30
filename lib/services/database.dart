@@ -731,12 +731,12 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  Future colorMyStore(String myColorChoice) async {
+  Future colorMyStore(String myColorChoice, String myColorChoiceName) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
         .collection('magasins')
         .doc(userid)
-        .update({"colorStore": myColorChoice});
+        .update({"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
   }
 }
