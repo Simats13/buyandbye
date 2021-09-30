@@ -89,12 +89,15 @@ class _CompteCommercantState extends State<CompteCommercant> {
                   child: MaterialButton(
                     child: premium == false
                         ? Text(
-                      'GRATUIT',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                    ) : Text(
-                      'PREMIUM',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
+                            'GRATUIT',
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            'PREMIUM',
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -139,7 +142,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditProfileComPage(),
+                                    builder: (context) =>
+                                        EditProfileComPage(premium),
                                   ),
                                 );
                               },

@@ -7,6 +7,8 @@ import 'package:buyandbye/services/auth.dart';
 
 class EditProfileComPage extends StatefulWidget {
   @override
+  const EditProfileComPage(this.premium);
+  final bool premium;
   _EditProfileComPageState createState() => _EditProfileComPageState();
 }
 
@@ -159,39 +161,45 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                               ? CircularProgressIndicator()
                               : Text(myPhone),
                           SizedBox(height: 20),
-                          Text("Couleur de mon magasin :",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w700)),
-                          Row(children: [
-                            DropdownButton<String>(
-                              value: dropdownValue,
-                              icon:
-                                  const Icon(Icons.keyboard_arrow_down_rounded),
-                              iconSize: 24,
-                              elevation: 16,
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  dropdownValue = newValue;
-                                  getMyInfo();
-                                });
-                              },
-                              items: colorName
-                                  .map((value, value1) {
-                                    return MapEntry(
-                                        value,
-                                        DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                          onTap: () {
-                                            DatabaseMethods()
-                                                .colorMyStore(value1, value);
-                                          },
-                                        ));
-                                  })
-                                  .values
-                                  .toList(),
-                            ),
-                          ]),
+                          widget.premium == true
+                              ? Text("Couleur de mon magasin :",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700))
+                              : Container(),
+                          widget.premium == true
+                              ? Row(children: [
+                                  DropdownButton<String>(
+                                    value: dropdownValue,
+                                    icon: const Icon(
+                                        Icons.keyboard_arrow_down_rounded),
+                                    iconSize: 24,
+                                    elevation: 16,
+                                    onChanged: (String newValue) {
+                                      setState(() {
+                                        dropdownValue = newValue;
+                                        getMyInfo();
+                                      });
+                                    },
+                                    items: colorName
+                                        .map((value, value1) {
+                                          return MapEntry(
+                                              value,
+                                              DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                                onTap: () {
+                                                  DatabaseMethods()
+                                                      .colorMyStore(
+                                                          value1, value);
+                                                },
+                                              ));
+                                        })
+                                        .values
+                                        .toList(),
+                                  ),
+                                ])
+                              : Container(),
                           SizedBox(height: 10),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),

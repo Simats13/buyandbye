@@ -138,7 +138,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   Widget getFooter() {
-    var pimpMyStore  = widget.colorStore;
+    var pimpMyStore = widget.colorStore;
     var size = MediaQuery.of(context).size;
     return Stack(children: [
       GestureDetector(
@@ -161,7 +161,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                        color: Color(int.parse("0x$pimpMyStore"))),
+                        color: Color(int.parse("0x$pimpMyStore"))
+                            .withOpacity(0.8)),
                   )
                 ],
               ),
@@ -174,7 +175,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   // String dropdownValue = 'Alimentation';
   int clickedNumber = 1;
   Widget getBody() {
-    var pimpMyStore  = widget.colorStore;
+    var pimpMyStore = widget.colorStore;
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
     var size = MediaQuery.of(context).size;
@@ -202,7 +203,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                            color: Color(int.parse("0x$pimpMyStore"))
+                                .withOpacity(0.5),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -222,7 +224,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                            color: Color(int.parse("0x$pimpMyStore"))
+                                .withOpacity(0.5),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -282,7 +285,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         },
                         child: Icon(
                           Icons.message,
-                          color: Color(int.parse("0x$pimpMyStore")),
+                          color: Color(int.parse("0x$pimpMyStore"))
+                              .withOpacity(0.8),
                           size: 25,
                         ),
                       )
@@ -429,7 +433,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             SvgPicture.asset(
                               "assets/icons/pin_icon.svg",
                               width: 15,
-                              color: black.withOpacity(0.5),
+                              color: Color(int.parse("0x$pimpMyStore"))
+                                  .withOpacity(0.5),
                             ),
                             SizedBox(
                               width: 8,
@@ -441,15 +446,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ],
                         ),
                       ),
-                      Expanded(
-                        child: Text(
-                          "Plus d'infos",
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: Color(int.parse("0x$pimpMyStore")),
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )
+                      // Expanded(
+                      //   child: Text(
+                      //     "Plus d'infos",
+                      //     style: TextStyle(
+                      //         fontSize: 13,
+                      //         color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
+                      //         fontWeight: FontWeight.bold),
+                      //   ),
+                      // )
                     ],
                   ),
                   SizedBox(
@@ -461,7 +466,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       children: [
                         Icon(
                           Icons.watch_later_outlined,
-                          color: black.withOpacity(0.5),
+                          color: Color(int.parse("0x$pimpMyStore"))
+                              .withOpacity(0.5),
                           size: 17,
                         ),
                         SizedBox(
@@ -488,8 +494,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           child: Container(
                             height: 40,
                             decoration: BoxDecoration(
-                                color:
-                                    Color(int.parse("0x$pimpMyStore")).withOpacity(0.2),
+                                color: Color(int.parse("0x$pimpMyStore"))
+                                    .withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(30)),
                             child: Center(
                               child: Padding(
@@ -499,7 +505,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   peopleFeedback[index],
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
+                                    color: Color(int.parse("0x$pimpMyStore"))
+                                        .withOpacity(0.8),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
