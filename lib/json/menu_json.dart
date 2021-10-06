@@ -7,12 +7,14 @@ const List peopleFeedback = [
   "Follow order notes (11)"
 ];
 const List categories = [
-  {"img": "assets/icons/pickup.svg", "name": "Achat"},
-  {"img": "assets/icons/essentials.svg", "name": "Essentiels"},
-  {"img": "assets/icons/books.svg", "name": "Livres"},
-  {"img": "assets/icons/tools.svg", "name": "Outils"},
-  {"img": "assets/icons/deals.svg", "name": "Deals"},
-  {"img": "assets/icons/discount.svg", "name": "Promos"},
+  {"img": "assets/icons/iphone.png", "name": "High-tech"},
+  {"img": "assets/icons/vetement.png", "name": "Vêtements"},
+  {"img": "assets/icons/livres.png", "name": "Livres"},
+  {"img": "assets/icons/tools.png", "name": "Bricolage"},
+  {"img": "assets/icons/jeux-video.png", "name": "Jeux-Vidéos"},
+  {"img": "assets/icons/burger.png", "name": "Alimentation"},
+  {"img": "assets/icons/appareil-electromenager.png", "name": "Électroménager"},
+  {"img": "assets/icons/bijoux.png", "name": "Bijoux"},
 ];
 const List firstMenu = [
   {

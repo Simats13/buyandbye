@@ -175,8 +175,11 @@ class CategoryStore extends StatelessWidget {
         (index) {
           return GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => PageCategorie()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PageCategorie(
+                            categorie: categories[index]['name'])));
               },
               child: Column(
                 children: [
@@ -184,7 +187,7 @@ class CategoryStore extends StatelessWidget {
                     height: 20,
                     width: 20,
                   ),
-                  SvgPicture.asset(
+                  Image.asset(
                     categories[index]['img'],
                     width: 40,
                   ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/pages/pageFidelite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,21 +81,30 @@ class _PageCompteState extends State<PageCompte> {
                       ],
                     ),
               SizedBox(height: 20),
-              Container(
-                height: 40,
-                width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border:
-                      Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
-                ),
-                child: Center(
-                  child: Text(
-                    'Compte client',
-                    style: kButtonTextStyle,
+              MaterialButton(
+                  child: Container(
+                    height: 40,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                          color: BuyandByeAppTheme.orange, width: 2.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Compte Fidélité',
+                        style: kButtonTextStyle,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PageFidelite(),
+                      ),
+                    );
+                  }),
               Container(
                 width: MediaQuery.of(context).size.height,
                 child: Column(

@@ -737,6 +737,35 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance
         .collection('magasins')
         .doc(userid)
-        .update({"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
+        .update(
+            {"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
   }
+
+  Future allProductsCategory(String categorie) async {
+    return await FirebaseFirestore.instance
+        .collection('magasins')
+        .doc('CBODzxOryXcJuUTlpF2WIvoeYit2')
+        .collection('produits')
+        .where("categorie", isEqualTo: categorie)
+        .get();
+  }
+
+  //   Future allProductsCategory1() async {
+  //   List categoryList = [];
+
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection('magasins')
+  //         .get()
+  //         .then((querySnapshot) {
+  //       querySnapshot.docs.forEach((element) {
+  //         categoryList.add(element.data());
+  //       });
+  //     });
+  //     return categoryList;
+  //   } catch (e) {
+  //     print(e.toString());
+  //     return null;
+  //   }
+  // }
 }
