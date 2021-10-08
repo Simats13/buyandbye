@@ -43,10 +43,7 @@ class AccueilPaiementState extends State<AccueilPaiement> {
         payViaNewCard(context);
         break;
       // case 1:
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => CreditCardAdd()));
+      //   cardExisting();
       //   break;
     }
   }
@@ -194,11 +191,7 @@ class AccueilPaiementState extends State<AccueilPaiement> {
 
   Future<void> displayPaymentSheet() async {
     try {
-      await Stripe.instance.presentPaymentSheet(
-          parameters: PresentPaymentSheetParameters(
-        clientSecret: paymentIntentData['paymentIntent'],
-        confirmPayment: true,
-      ));
+      await Stripe.instance.presentPaymentSheet();
       setState(() {
         paymentIntentData = null;
       });
