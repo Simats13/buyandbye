@@ -78,10 +78,10 @@ dependencies:
   firebase_storage_web:
   status_alert:
   flutter_add_to_cart_button:
-  #flutter_stripe:
+  flutter_stripe:
   flutter_facebook_auth:
   http:
-  stripe_payment:
+  # stripe_payment:
   truncate:
   flutter_native_splash:
   wave: 
@@ -89,6 +89,7 @@ dependencies:
   sign_button:
   badges:
   flip_card: ^0.4.4
+  stripe_platform_interface:
 
 flutter_native_splash:
   #color: "#42a5f5"

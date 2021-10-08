@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
 import '../buyandbye_app_theme.dart';
@@ -41,6 +42,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
           child: Column(
             children: <Widget>[
               CreditCardWidget(
+                onCreditCardWidgetChange: (CreditCardBrand creditCardBand) {},
                 cardNumber: cardNumber,
                 expiryDate: expiryDate,
                 cardHolderName: cardHolderName,
