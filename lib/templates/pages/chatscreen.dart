@@ -50,24 +50,25 @@ class _ChatRoomState extends State<ChatRoom>
   final ScrollController _chatListController = ScrollController();
   String messageType = 'text';
   int chatListLength = 20;
+  bool celafonctionne = false;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('didChangeAppLifecycleState');
+    // print('didChangeAppLifecycleState');
     setState(() {
       switch (state) {
         case AppLifecycleState.resumed:
           FBCloudStore.instanace
               .updateMyChatListValues(widget.myID, widget.chatID, true);
-          print('AppLifecycleState.resumed');
+          // print('AppLifecycleState.resumed');
           break;
         case AppLifecycleState.inactive:
-          print('AppLifecycleState.inactive');
+          // print('AppLifecycleState.inactive');
           FBCloudStore.instanace
               .updateMyChatListValues(widget.myID, widget.chatID, false);
           break;
         case AppLifecycleState.paused:
-          print('AppLifecycleState.paused');
+          // print('AppLifecycleState.paused');
           FBCloudStore.instanace
               .updateMyChatListValues(widget.myID, widget.chatID, false);
           break;
@@ -80,9 +81,9 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void initState() {
     super.initState();
-    print("J'avais raison");
-    print(widget.selectedUserToken);
-    print(widget.selectedUserID);
+    // print("J'avais raison");
+    // print(widget.selectedUserToken);
+    // print(widget.selectedUserID);
     WidgetsBinding.instance.addObserver(this);
     FBCloudStore.instanace
         .updateMyChatListValues(widget.myID, widget.chatID, true);
@@ -124,48 +125,53 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   Widget build(BuildContext context) {
     //final size = MediaQuery.of(context).size;
-    return Container(
-      color: Color.fromRGBO(250, 250, 250, 1),
-      child: SafeArea(
-        top: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.selectedUserFname + widget.selectedUserLname),
-            backwardsCompatibility: false, // 1
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            centerTitle: true,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        color: Color.fromRGBO(250, 250, 250, 1),
+        child: SafeArea(
+          top: false,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(widget.selectedUserFname + widget.selectedUserLname),
+              backwardsCompatibility: false, // 1
+              systemOverlayStyle: SystemUiOverlayStyle.light,
+              backgroundColor: BuyandByeAppTheme.black_electrik,
+              centerTitle: true,
+            ),
+            body: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('chatrooms')
+                    .doc(widget.chatID)
+                    .collection(widget.chatID)
+                    .orderBy('timestamp', descending: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return LinearProgressIndicator();
+                  return Stack(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: ListView(
+                                keyboardDismissBehavior:
+                                    ScrollViewKeyboardDismissBehavior.onDrag,
+                                reverse: true,
+                                shrinkWrap: true,
+                                //padding: const EdgeInsets.fromLTRB(4.0, 10, 4, 1),
+                                controller: _chatListController,
+                                children:
+                                    addInstructionInSnapshot(snapshot.data.docs)
+                                        .map(_returnChatWidget)
+                                        .toList()),
+                          ),
+                          _buildTextComposer(),
+                        ],
+                      ),
+                    ],
+                  );
+                }),
           ),
-          body: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('chatrooms')
-                  .doc(widget.chatID)
-                  .collection(widget.chatID)
-                  .orderBy('timestamp', descending: false)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return LinearProgressIndicator();
-                return Stack(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: ListView(
-                              reverse: true,
-                              shrinkWrap: true,
-                              //padding: const EdgeInsets.fromLTRB(4.0, 10, 4, 1),
-                              controller: _chatListController,
-                              children:
-                                  addInstructionInSnapshot(snapshot.data.docs)
-                                      .map(_returnChatWidget)
-                                      .toList()),
-                        ),
-                        _buildTextComposer(),
-                      ],
-                    ),
-                  ],
-                );
-              }),
         ),
       ),
     );
@@ -231,6 +237,15 @@ class _ChatRoomState extends State<ChatRoom>
             ),
             new Flexible(
               child: new TextField(
+                onChanged: (value) {
+                  setState(() {
+                    if (value.length > 0) {
+                      celafonctionne = true;
+                    } else {
+                      celafonctionne = false;
+                    }
+                  });
+                },
                 textCapitalization: TextCapitalization.sentences,
                 controller: _msgTextController,
                 onSubmitted: _handleSubmitted,
@@ -243,13 +258,18 @@ class _ChatRoomState extends State<ChatRoom>
             new Container(
               //margin: new EdgeInsets.symmetric(horizontal: 2.0),
               child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: () {
-                    setState(() {
-                      messageType = 'text';
-                    });
-                    _handleSubmitted(_msgTextController.text);
-                  }),
+                icon: new Icon(Icons.send),
+                onPressed: celafonctionne
+                    ? () {
+                        setState(() {
+                          messageType = 'text';
+                        });
+                        _handleSubmitted(_msgTextController.text);
+                        _msgTextController.text = '';
+                        celafonctionne = false;
+                      }
+                    : null,
+              ),
             ),
           ],
         ),
@@ -288,7 +308,7 @@ class _ChatRoomState extends State<ChatRoom>
       _getUnreadMSGCountThenSendMessage();
     } catch (e) {
       showAlertDialog(context, 'Error user information to database');
-      _resetTextFieldAndLoading();
+      // _resetTextFieldAndLoading();
     }
   }
 
@@ -309,11 +329,11 @@ class _ChatRoomState extends State<ChatRoom>
     } catch (e) {
       print(e.message);
     }
-    _resetTextFieldAndLoading();
+    // _resetTextFieldAndLoading();
   }
 
-  void _resetTextFieldAndLoading() {
-    FocusScope.of(context).requestFocus(FocusNode());
-    _msgTextController.text = '';
-  }
+  // void _resetTextFieldAndLoading() {
+  //   FocusScope.of(context).requestFocus(FocusNode());
+  // _msgTextController.text = '';
+  // }
 }

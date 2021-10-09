@@ -63,6 +63,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   @override
   void initState() {
     super.initState();
+    getMyInfo();
     getSellerInfo();
     categoriesInDb();
     NotificationController.instance.updateTokenToServer();

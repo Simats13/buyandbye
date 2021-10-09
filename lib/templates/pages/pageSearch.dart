@@ -68,6 +68,8 @@ class _PageSearchState extends State<PageSearch> {
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 itemCount: snapshot.data.docs.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
@@ -100,65 +102,78 @@ class _PageSearchState extends State<PageSearch> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: AppBar(
-            title: Text('Rechercher'),
-            backwardsCompatibility: false, // 1
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            automaticallyImplyLeading: false,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(50.0),
+            child: AppBar(
+              title: Text('Rechercher'),
+              backwardsCompatibility: false, // 1
+              systemOverlayStyle: SystemUiOverlayStyle.light,
+              backgroundColor: BuyandByeAppTheme.black_electrik,
+              automaticallyImplyLeading: false,
+            ),
           ),
-        ),
-        body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(children: [
-              Row(children: [
-                isExecuted
-                    ? GestureDetector(
-                        onTap: () {
-                          isExecuted = false;
-                          searchController.text = "";
-                          setState(() {});
-                        },
-                        child: Padding(
-                            padding: EdgeInsets.only(right: 12),
-                            child: Icon(Icons.arrow_back)),
-                      )
-                    : Container(),
-                Expanded(
-                    child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 16),
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                          style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                              hintText: 'Rechercher un commerce'),
-                          controller: searchController,
-                        ),
-                      ),
-                      GestureDetector(
+          body: Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(children: [
+                Row(children: [
+                  isExecuted
+                      ? GestureDetector(
                           onTap: () {
-                            if (searchController.text != "") {
-                              research();
-                            }
+                            isExecuted = false;
+                            searchController.text = "";
+                            setState(() {});
                           },
-                          child: Icon(Icons.search))
-                    ],
-                  ),
-                ))
-              ]),
-              isExecuted ? searchStoreList() : CategoryStore()
-            ])));
+                          child: Padding(
+                              padding: EdgeInsets.only(right: 12),
+                              child: Icon(Icons.arrow_back)),
+                        )
+                      : Container(),
+                  Expanded(
+                      child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
+                            style: BorderStyle.solid),
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) {
+                              if (value.length > 0) {
+                                research();
+                              }
+                              if (value.length < 1) {
+                                setState(() {
+                                  isExecuted = false;
+                                });
+                              }
+                            },
+                            decoration: InputDecoration(
+                                hintText: 'Rechercher un commerce'),
+                            controller: searchController,
+                          ),
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              if (searchController.text != "") {
+                                research();
+                              }
+                            },
+                            child: Icon(Icons.search))
+                      ],
+                    ),
+                  ))
+                ]),
+                isExecuted ? searchStoreList() : CategoryStore()
+              ]))),
+    );
   }
 }
 

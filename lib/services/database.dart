@@ -308,7 +308,9 @@ class DatabaseMethods {
   Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
     return FirebaseFirestore.instance
         .collection("magasins")
-        .where("name", isEqualTo: name)
+        .where("nameSearch", isGreaterThanOrEqualTo: name,
+        isLessThan: name.substring(0, name.length - 1) +
+            String.fromCharCode(name.codeUnitAt(name.length - 1) + 1))
         .snapshots();
   }
 

@@ -95,8 +95,8 @@ class AccueilPaiementState extends State<AccueilPaiement> {
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData['client_secret'],
-              // applePay: true,
-              // googlePay: true,
+              applePay: true,
+              googlePay: true,
               customerId: paymentIntentData['customer'],
               customerEphemeralKeySecret: paymentIntentData['ephemeralKey'],
               style: ThemeMode.dark,
@@ -114,24 +114,24 @@ class AccueilPaiementState extends State<AccueilPaiement> {
     print(paymentIntentData);
     await Stripe.instance.presentPaymentSheet();
     await dialog.hide();
-    // Scaffold.of(context)
-    //     .showSnackBar(SnackBar(
-    //       content: Text("response"),
-    //       duration: new Duration(milliseconds: 1200),
-    //     ))
-    //     .closed
-    //     .then((_) {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => PageResume(
-    //         idCommand: idCommand,
-    //         sellerID: widget.idCommercant,
-    //         userId: widget.userId,
-    //       ),
-    //     ),
-    //   );
-    // });
+    Scaffold.of(context)
+        .showSnackBar(SnackBar(
+          content: Text("response"),
+          duration: new Duration(milliseconds: 1200),
+        ))
+        .closed
+        .then((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PageResume(
+            idCommand: idCommand,
+            sellerID: widget.idCommercant,
+            userId: widget.userId,
+          ),
+        ),
+      );
+    });
   }
 
   @override
