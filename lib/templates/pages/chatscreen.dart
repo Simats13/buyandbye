@@ -131,7 +131,6 @@ class _ChatRoomState extends State<ChatRoom>
         child: Scaffold(
           appBar: AppBar(
             title: Text(widget.selectedUserFname + widget.selectedUserLname),
-            backwardsCompatibility: false, // 1
             systemOverlayStyle: SystemUiOverlayStyle.light,
             backgroundColor: BuyandByeAppTheme.black_electrik,
             centerTitle: true,
@@ -179,7 +178,7 @@ class _ChatRoomState extends State<ChatRoom>
         if (data.reference != null) {
           FirebaseFirestore.instance
               .runTransaction((Transaction myTransaction) async {
-            await myTransaction.update(data.reference, {'isread': true});
+            myTransaction.update(data.reference, {'isread': true});
           });
         }
       }

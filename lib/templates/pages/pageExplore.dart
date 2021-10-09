@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -101,7 +99,7 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _showHome() async {
+  void showHome() async {
     _mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(latitude, longitude),
@@ -111,7 +109,6 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   userID() async {
-    final User user = await AuthMethods().getCurrentUser();
     _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
     _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
     latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
@@ -331,7 +328,6 @@ class _PageExploreState extends State<PageExplore> {
               automaticallyImplyLeading: false,
               centerTitle: true,
               backgroundColor: BuyandByeAppTheme.black_electrik,
-              backwardsCompatibility: false, // 1
               systemOverlayStyle: SystemUiOverlayStyle.light,
               title: Text('Explorer'),
               actions: <Widget>[

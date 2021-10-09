@@ -1,8 +1,4 @@
-import 'dart:io';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/templates/compte/constants.dart';
-import 'package:buyandbye/templates/widgets/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

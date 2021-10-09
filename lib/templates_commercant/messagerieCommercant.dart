@@ -49,7 +49,6 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
         title: Text('Messagerie'),
         backgroundColor: BuyandByeAppTheme.black_electrik,
         automaticallyImplyLeading: false,
-        backwardsCompatibility: false, // 1
         systemOverlayStyle: SystemUiOverlayStyle.light,
         centerTitle: true,
       ),

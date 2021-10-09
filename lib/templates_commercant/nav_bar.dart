@@ -1,6 +1,3 @@
-import 'package:buyandbye/services/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -23,7 +20,7 @@ class _NavBarState extends State<NavBar> {
     super.initState();
     AuthMethods.toogleNavBar = this.toogleNavBar;
   }
-  
+
   int pageIndex = 0;
   int badgeCommandes = 8;
   int badgeMessages = 1;

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
@@ -83,7 +82,6 @@ class _PageAddressNextState extends State<PageAddressNext> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text('Enregistrer une adresse'),
-          backwardsCompatibility: false, // 1
           systemOverlayStyle: SystemUiOverlayStyle.light,
           backgroundColor: BuyandByeAppTheme.black_electrik,
           automaticallyImplyLeading: false,
