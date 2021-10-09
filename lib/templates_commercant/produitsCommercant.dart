@@ -3,7 +3,6 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates_commercant/detailProduit.dart';
 import 'package:buyandbye/templates_commercant/newProduct.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +30,7 @@ class _ProductsState extends State<Products> {
   // Récupère les informations de l'utilisateur courant dans la bdd
   getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
-   return user.uid;
+    return user.uid;
     // print(userid);
   }
 

@@ -1,15 +1,8 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/templates/Compte/constants.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Compte/help.dart';
-import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MembershipStore extends StatefulWidget {
   _MembershipStore createState() => _MembershipStore();

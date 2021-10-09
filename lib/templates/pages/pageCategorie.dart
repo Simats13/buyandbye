@@ -1,5 +1,4 @@
 import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
@@ -52,8 +51,7 @@ class _PageCategorieState extends State<PageCategorie> {
 
   Widget getBody() {
     return FutureBuilder(
-        future: DatabaseMethods()
-            .allProductsCategory(widget.categorie),
+        future: DatabaseMethods().allProductsCategory(widget.categorie),
         builder: (context, snapshot) {
           return ListView.builder(
               itemCount: snapshot.data.docs.length,

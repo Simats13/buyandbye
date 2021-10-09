@@ -98,7 +98,6 @@ class _PageLivraisonState extends State<PageLivraison> {
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text('Choisir un mode de livraison'),
-            backwardsCompatibility: false, // 1
             systemOverlayStyle: SystemUiOverlayStyle.light,
             backgroundColor: BuyandByeAppTheme.black_electrik,
             automaticallyImplyLeading: false,

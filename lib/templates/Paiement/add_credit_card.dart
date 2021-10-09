@@ -31,7 +31,6 @@ class _CreditCardAddState extends State<CreditCardAdd> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text('Ajouter une carte bancaire'),
-          backwardsCompatibility: false, // 1
           systemOverlayStyle: SystemUiOverlayStyle.light,
           backgroundColor: BuyandByeAppTheme.black_electrik,
           automaticallyImplyLeading: false,

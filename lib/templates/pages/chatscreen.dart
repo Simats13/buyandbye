@@ -185,7 +185,7 @@ class _ChatRoomState extends State<ChatRoom>
         if (data.reference != null) {
           FirebaseFirestore.instance
               .runTransaction((Transaction myTransaction) async {
-            await myTransaction.update(data.reference, {'isread': true});
+            myTransaction.update(data.reference, {'isread': true});
           });
         }
       }

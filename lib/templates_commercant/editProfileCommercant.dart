@@ -45,8 +45,6 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
   bool isVisible = true;
   Widget build(BuildContext context) {
     String dropdownValue = colorStoreName;
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,

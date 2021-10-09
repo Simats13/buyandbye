@@ -1,5 +1,4 @@
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:buyandbye/templates_commercant/produitsCommercant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

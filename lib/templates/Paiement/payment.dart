@@ -1,12 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:buyandbye/templates/Paiement/add_credit_card.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/services/database.dart';
 import 'package:stripe_platform_interface/stripe_platform_interface.dart';
-import 'package:buyandbye/templates/Achat/pageResume.dart';
-import 'package:buyandbye/templates/Paiement/existing-cards.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;

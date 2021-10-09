@@ -56,7 +56,7 @@ class _PageAccueilState extends State<PageAccueil> {
       _streetNumber,
       _street,
       _city,
-      _zipCode,
+      zipCode,
       userid;
   double latitude, longitude, currentLatitude, currentLongitude;
   Geoflutterfire geo;
@@ -619,7 +619,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               _streetNumber = placeDetails.streetNumber;
                               _street = placeDetails.street;
                               _city = placeDetails.city;
-                              _zipCode = placeDetails.zipCode;
+                              zipCode = placeDetails.zipCode;
                               _currentAddressLocation =
                                   "$_streetNumber $_street, $_city ";
                             });
@@ -960,7 +960,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                     _streetNumber = placeDetails.streetNumber;
                                     _street = placeDetails.street;
                                     _city = placeDetails.city;
-                                    _zipCode = placeDetails.zipCode;
+                                    zipCode = placeDetails.zipCode;
                                     _currentAddressLocation =
                                         "$_streetNumber $_street, $_city ";
                                   });

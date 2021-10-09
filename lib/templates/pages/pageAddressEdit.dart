@@ -121,7 +121,6 @@ class _PageAddressEditState extends State<PageAddressEdit> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text('Modifier une adresse'),
-          backwardsCompatibility: false, // 1
           systemOverlayStyle: SystemUiOverlayStyle.light,
           backgroundColor: BuyandByeAppTheme.black_electrik,
           automaticallyImplyLeading: false,
