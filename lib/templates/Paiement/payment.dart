@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:buyandbye/templates/Achat/pageResume.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:stripe_platform_interface/stripe_platform_interface.dart';
