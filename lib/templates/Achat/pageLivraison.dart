@@ -1,14 +1,22 @@
+import 'package:buyandbye/templates/Achat/pageResume.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
-import 'package:buyandbye/templates/Paiement/payment.dart';
+// import 'package:buyandbye/templates/Paiement/payment.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
+import 'package:stripe_platform_interface/stripe_platform_interface.dart'
+    as platform;
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:truncate/truncate.dart';
+import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../buyandbye_app_theme.dart';
 
@@ -36,12 +44,17 @@ class _PageLivraisonState extends State<PageLivraison> {
   GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
   BitmapDescriptor mapMarker;
+  Map<String, dynamic> paymentIntentData;
 
   @override
   void initState() {
     super.initState();
     userID();
     getThisUserInfo();
+    stripe.Stripe.publishableKey =
+    "pk_test_51Ida2rD6J4doB8CzgG8J7yTDrm7TWqar81qa5Dqz2kG5NzK9rOTDLUTCNcTAc4BkMJHkGqdndvwqLgM2xvuLBTTy00B98cOCSL";
+    stripe.Stripe.merchantIdentifier = 'merchant.buyandbye.fr';
+    stripe.Stripe.instance.applySettings();
   }
 
   userID() async {
@@ -512,17 +525,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                 }
                               }),
                           MaterialButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AccueilPaiement(
-                                            userId: userid,
-                                            idCommercant: widget.idCommercant,
-                                            total: widget.total,
-                                            userAddress: userAddressChoose,
-                                            deliveryChoose: deliveryChoose,
-                                          )));
+                            onPressed: () {payViaNewCard(context);
                             },
                             color: BuyandByeAppTheme.orange,
                             height: 50,
@@ -557,7 +560,125 @@ class _PageLivraisonState extends State<PageLivraison> {
       );
     }
   }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////// PAIEMENT ////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+  Future<void> displayPaymentSheet() async {
+    try {
+      await stripe.Stripe.instance.presentPaymentSheet();
+      setState(() {
+        paymentIntentData = null;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+    String idCommand = Uuid().v4();
+  onItemPress(BuildContext context, int index) async {
+    switch (index) {
+      case 0:
+        payViaNewCard(context);
+        break;
+      // case 1:
+      //   cardExisting();
+      //   break;
+    }
+  }
+
+  payViaNewCard(BuildContext context) async {
+    print(deliveryChoose);
+    ProgressDialog dialog = new ProgressDialog(context);
+    dialog.style(message: 'Veuillez patienter...');
+    await dialog.show();
+    print(widget.total.ceil() * 100);
+    // var response = await StripeService.payWithNewCard(
+    //   amount: (widget.total * 100).ceil().toString(),
+    //   currency: 'EUR',
+    // );
+
+    // if (response.success == true) {
+    //   DatabaseMethods().acceptPayment(widget.idCommercant,
+    //       widget.deliveryChoose, widget.total, widget.userAddress, idCommand);
+    // }
+
+    var amount = (widget.total * 100).ceil().toString();
+    final url = "https://api.stripe.com/v1/payment_intents";
+
+    var secret =
+        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+    Map<String, dynamic> body = {
+      'amount': amount,
+      'currency': "eur",
+      'payment_method_types[]': 'card'
+    };
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $secret',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    var response =
+        await http.post(Uri.parse(url), body: body, headers: headers);
+    paymentIntentData = json.decode(response.body);
+
+    // print(response.request);
+
+    // final response =
+    //     await http.get(url, headers: {'Content-Type': 'application/json'});
+    // print(response.headers);
+    // paymentIntentData = json.decode(response.body.toString());
+
+    // print(paymentIntentData);
+    try {
+      await stripe.Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: platform.SetupPaymentSheetParameters(
+              paymentIntentClientSecret: paymentIntentData['client_secret'],
+              applePay: true,
+              googlePay: true,
+              customerId: paymentIntentData['customer'],
+              customerEphemeralKeySecret: paymentIntentData['ephemeralKey'],
+              style: ThemeMode.dark,
+              merchantCountryCode: 'FR',
+              testEnv: true,
+              merchantDisplayName: 'Buy&Bye'));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+
+    setState(() {});
+    // displayPaymentSheet();
+    print(paymentIntentData);
+    await stripe.Stripe.instance.presentPaymentSheet();
+    await dialog.hide();
+    Scaffold.of(context)
+        .showSnackBar(SnackBar(
+          content: Text("response"),
+          duration: new Duration(milliseconds: 1200),
+        ))
+        .closed
+        .then((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PageResume(
+            idCommand: idCommand,
+            sellerID: widget.idCommercant,
+            userId: userid,
+          ),
+        ),
+      );
+    });
+  }
+
 }
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////// FIN PAIEMENT ////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 class MapStyle {
   static String mapStyle = ''' [

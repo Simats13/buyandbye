@@ -6,6 +6,7 @@ import 'package:buyandbye/templates/pages/pageMessagerie.dart';
 import 'package:buyandbye/templates/pages/pageSearch.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:provider/provider.dart';
 
 class Accueil extends StatefulWidget {
   @override
