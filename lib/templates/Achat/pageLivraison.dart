@@ -52,7 +52,7 @@ class _PageLivraisonState extends State<PageLivraison> {
     userID();
     getThisUserInfo();
     stripe.Stripe.publishableKey =
-    "pk_test_51Ida2rD6J4doB8CzgG8J7yTDrm7TWqar81qa5Dqz2kG5NzK9rOTDLUTCNcTAc4BkMJHkGqdndvwqLgM2xvuLBTTy00B98cOCSL";
+        "pk_test_51Ida2rD6J4doB8CzgG8J7yTDrm7TWqar81qa5Dqz2kG5NzK9rOTDLUTCNcTAc4BkMJHkGqdndvwqLgM2xvuLBTTy00B98cOCSL";
     stripe.Stripe.merchantIdentifier = 'merchant.buyandbye.fr';
     stripe.Stripe.instance.applySettings();
   }
@@ -525,7 +525,8 @@ class _PageLivraisonState extends State<PageLivraison> {
                                 }
                               }),
                           MaterialButton(
-                            onPressed: () {payViaNewCard(context);
+                            onPressed: () {
+                              payViaNewCard(context);
                             },
                             color: BuyandByeAppTheme.orange,
                             height: 50,
@@ -565,18 +566,18 @@ class _PageLivraisonState extends State<PageLivraison> {
 //////////////////////// PAIEMENT ////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-  Future<void> displayPaymentSheet() async {
-    try {
-      await stripe.Stripe.instance.presentPaymentSheet();
-      setState(() {
-        paymentIntentData = null;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+  // Future<void> displayPaymentSheet() async {
+  //   try {
+  //     await stripe.Stripe.instance.presentPaymentSheet();
+  //     setState(() {
+  //       paymentIntentData = null;
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
-    String idCommand = Uuid().v4();
+  String idCommand = Uuid().v4();
   onItemPress(BuildContext context, int index) async {
     switch (index) {
       case 0:
@@ -605,24 +606,22 @@ class _PageLivraisonState extends State<PageLivraison> {
     // }
 
     var amount = (widget.total * 100).ceil().toString();
-    final url = "https://api.stripe.com/v1/payment_intents";
+    final url =
+        "https://us-central1-oficium-11bf9.cloudfunctions.net/app/payment-sheet";
 
     var secret =
         'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
 
-    Map<String, dynamic> body = {
-      'amount': amount,
-      'currency': "eur",
-      'payment_method_types[]': 'card'
-    };
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $secret',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    var response =
-        await http.post(Uri.parse(url), body: body, headers: headers);
-    paymentIntentData = json.decode(response.body);
-
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'a': 'a',
+      }),
+    );
+    paymentIntentData = json.decode(response.body.toString());
     // print(response.request);
 
     // final response =
@@ -630,16 +629,18 @@ class _PageLivraisonState extends State<PageLivraison> {
     // print(response.headers);
     // paymentIntentData = json.decode(response.body.toString());
 
-    // print(paymentIntentData);
+    print(paymentIntentData);
     try {
       await stripe.Stripe.instance.initPaymentSheet(
           paymentSheetParameters: platform.SetupPaymentSheetParameters(
-              paymentIntentClientSecret: paymentIntentData['client_secret'],
+              paymentIntentClientSecret: paymentIntentData['paymentIntent'],
+              // setupIntentClientSecret: paymentIntentData['client_secret'],
+              customFlow: true,
               applePay: true,
               googlePay: true,
               customerId: paymentIntentData['customer'],
               customerEphemeralKeySecret: paymentIntentData['ephemeralKey'],
-              style: ThemeMode.dark,
+              style: ThemeMode.system,
               merchantCountryCode: 'FR',
               testEnv: true,
               merchantDisplayName: 'Buy&Bye'));
@@ -651,10 +652,10 @@ class _PageLivraisonState extends State<PageLivraison> {
 
     setState(() {});
     // displayPaymentSheet();
-    print(paymentIntentData);
     await stripe.Stripe.instance.presentPaymentSheet();
+    await stripe.Stripe.instance.confirmPaymentSheetPayment();
     await dialog.hide();
-    Scaffold.of(context)
+    ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(
           content: Text("response"),
           duration: new Duration(milliseconds: 1200),
@@ -673,7 +674,6 @@ class _PageLivraisonState extends State<PageLivraison> {
       );
     });
   }
-
 }
 
 //////////////////////////////////////////////////////////////////////
