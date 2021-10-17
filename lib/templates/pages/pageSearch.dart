@@ -108,7 +108,6 @@ class _PageSearchState extends State<PageSearch> {
             preferredSize: Size.fromHeight(50.0),
             child: AppBar(
               title: Text('Rechercher'),
-              backwardsCompatibility: false, // 1
               systemOverlayStyle: SystemUiOverlayStyle.light,
               backgroundColor: BuyandByeAppTheme.black_electrik,
               automaticallyImplyLeading: false,

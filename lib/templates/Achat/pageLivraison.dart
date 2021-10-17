@@ -595,15 +595,6 @@ class _PageLivraisonState extends State<PageLivraison> {
     dialog.style(message: 'Veuillez patienter...');
     await dialog.show();
     print(widget.total.ceil() * 100);
-    // var response = await StripeService.payWithNewCard(
-    //   amount: (widget.total * 100).ceil().toString(),
-    //   currency: 'EUR',
-    // );
-
-    // if (response.success == true) {
-    //   DatabaseMethods().acceptPayment(widget.idCommercant,
-    //       widget.deliveryChoose, widget.total, widget.userAddress, idCommand);
-    // }
 
     var amount = (widget.total * 100).ceil().toString();
     final url =
@@ -622,14 +613,7 @@ class _PageLivraisonState extends State<PageLivraison> {
       }),
     );
     paymentIntentData = json.decode(response.body.toString());
-    // print(response.request);
 
-    // final response =
-    //     await http.get(url, headers: {'Content-Type': 'application/json'});
-    // print(response.headers);
-    // paymentIntentData = json.decode(response.body.toString());
-
-    print(paymentIntentData);
     try {
       await stripe.Stripe.instance.initPaymentSheet(
           paymentSheetParameters: platform.SetupPaymentSheetParameters(
@@ -650,29 +634,43 @@ class _PageLivraisonState extends State<PageLivraison> {
       );
     }
 
+    print(paymentIntentData);
+
     setState(() {});
-    // displayPaymentSheet();
-    await stripe.Stripe.instance.presentPaymentSheet();
-    await stripe.Stripe.instance.confirmPaymentSheetPayment();
-    await dialog.hide();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(
-          content: Text("response"),
-          duration: new Duration(milliseconds: 1200),
-        ))
-        .closed
-        .then((_) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PageResume(
-            idCommand: idCommand,
-            sellerID: widget.idCommercant,
-            userId: userid,
-          ),
-        ),
+
+    try {
+      await stripe.Stripe.instance.presentPaymentSheet();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
       );
-    });
+    }
+    try {
+      await stripe.Stripe.instance.confirmPaymentSheetPayment();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+    await dialog.hide();
+    // ScaffoldMessenger.of(context)
+    //     .showSnackBar(SnackBar(
+    //       content: Text("response"),
+    //       duration: new Duration(milliseconds: 1200),
+    //     ))
+    //     .closed
+    //     .then((_) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => PageResume(
+    //         idCommand: idCommand,
+    //         sellerID: widget.idCommercant,
+    //         userId: userid,
+    //       ),
+    //     ),
+    //   );
+    // });
   }
 }
 

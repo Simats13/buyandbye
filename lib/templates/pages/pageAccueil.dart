@@ -35,6 +35,7 @@ class PageAccueil extends StatefulWidget {
 }
 
 class _PageAccueilState extends State<PageAccueil> {
+  @override
   LocationData _locationData;
   Location location = Location();
   bool permissionChecked;
