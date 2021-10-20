@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:apple_sign_in/apple_sign_in.dart' as apple;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +14,7 @@ import 'package:buyandbye/services/database.dart';
 
 class AuthMethods {
   bool isconnected = false;
+  Map<String, dynamic> paymentIntentData;
 
   static AuthMethods get instanace => AuthMethods();
   static Function toogleNavBar;
@@ -414,11 +417,25 @@ class AuthMethods {
         .createUserWithEmailAndPassword(email: _email, password: _password);
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
+
+    final url = "https://api.stripe.com/v1/customers";
+
+    var secret =
+        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $secret',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    var response =
+        await http.post(Uri.parse(url), headers: headers);
+    paymentIntentData = json.decode(response.body);
     Map<String, dynamic> userInfoMap = {
       "id": user.uid,
       "email": _email,
       "fname": _fname,
       "lname": _lname,
+      "customerId": paymentIntentData["id"],
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "admin": false,
       "phone": "",

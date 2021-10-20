@@ -487,35 +487,44 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: List.generate(peopleFeedback.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                            right: 15,
-                          ),
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                color: Color(int.parse("0x$pimpMyStore"))
-                                    .withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 15, right: 15),
-                                child: Text(
-                                  peopleFeedback[index],
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(int.parse("0x$pimpMyStore"))
-                                        .withOpacity(0.8),
-                                    fontWeight: FontWeight.w500,
+                      children: [
+                        for (String name in listOfCategories)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 15,
+                            ),
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  color: Color(int.parse("0x$pimpMyStore"))
+                                      .withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      dropdownValue = name;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 15, right: 15),
+                                    child: Text(
+                                      name,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color:
+                                            Color(int.parse("0x$pimpMyStore"))
+                                                .withOpacity(0.8),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          )
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -567,83 +576,83 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         ),
                       ),
                       SizedBox(height: 20),
-                      listOfCategories == null || dropdownValue == null
-                          ? CircularProgressIndicator()
-                          : Platform.isIOS
-                              ? TextButton(
-                                  child: Row(
-                                    children: [
-                                      Text(dropdownValue,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: isDarkMode
-                                                  ? Colors.white
-                                                  : Colors.black)),
-                                      SizedBox(width: 10),
-                                      Icon(Icons.arrow_drop_down,
-                                          size: 30,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black)
-                                    ],
-                                  ),
-                                  onPressed: () {
-                                    showCupertinoModalPopup(
-                                      context: context,
-                                      builder: (context) => Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height: 200,
-                                        child: CupertinoPicker(
-                                            itemExtent: 50,
-                                            backgroundColor: isDarkMode
-                                                ? Color.fromRGBO(48, 48, 48, 1)
-                                                : Colors.white,
-                                            onSelectedItemChanged: (value) {
-                                              setState(() {
-                                                dropdownValue =
-                                                    listOfCategories[value];
-                                              });
-                                            },
-                                            children: [
-                                              for (String name
-                                                  in listOfCategories)
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 8.0),
-                                                  child: Text(name,
-                                                      style: TextStyle(
-                                                          color: isDarkMode
-                                                              ? Colors.white
-                                                              : Colors.black)),
-                                                )
-                                            ]),
-                                      ),
-                                    );
-                                  },
-                                )
-                              : DropdownButton<String>(
-                                  value: dropdownValue,
-                                  icon: const Icon(
-                                      Icons.keyboard_arrow_down_rounded),
-                                  iconSize: 24,
-                                  elevation: 16,
-                                  onChanged: (String newValue) {
-                                    setState(() {
-                                      dropdownValue = newValue;
-                                    });
-                                  },
-                                  items: categorieNames
-                                      .map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                    return DropdownMenuItem(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                ),
-                      SizedBox(height: 20),
+                      // listOfCategories == null || dropdownValue == null
+                      //     ? CircularProgressIndicator()
+                      //     : Platform.isIOS
+                      //         ? TextButton(
+                      //             child: Row(
+                      //               children: [
+                      //                 Text(dropdownValue,
+                      //                     style: TextStyle(
+                      //                         fontSize: 16,
+                      //                         color: isDarkMode
+                      //                             ? Colors.white
+                      //                             : Colors.black)),
+                      //                 SizedBox(width: 10),
+                      //                 Icon(Icons.arrow_drop_down,
+                      //                     size: 30,
+                      //                     color: isDarkMode
+                      //                         ? Colors.white
+                      //                         : Colors.black)
+                      //               ],
+                      //             ),
+                      //             onPressed: () {
+                      //               showCupertinoModalPopup(
+                      //                 context: context,
+                      //                 builder: (context) => Container(
+                      //                   width:
+                      //                       MediaQuery.of(context).size.width,
+                      //                   height: 200,
+                      //                   child: CupertinoPicker(
+                      //                       itemExtent: 50,
+                      //                       backgroundColor: isDarkMode
+                      //                           ? Color.fromRGBO(48, 48, 48, 1)
+                      //                           : Colors.white,
+                      //                       onSelectedItemChanged: (value) {
+                      //                         setState(() {
+                      //                           dropdownValue =
+                      //                               listOfCategories[value];
+                      //                         });
+                      //                       },
+                      //                       children: [
+                      //                         for (String name
+                      //                             in listOfCategories)
+                      //                           Padding(
+                      //                             padding:
+                      //                                 const EdgeInsets.only(
+                      //                                     top: 8.0),
+                      //                             child: Text(name,
+                      //                                 style: TextStyle(
+                      //                                     color: isDarkMode
+                      //                                         ? Colors.white
+                      //                                         : Colors.black)),
+                      //                           )
+                      //                       ]),
+                      //                 ),
+                      //               );
+                      //             },
+                      //           )
+                      //         : DropdownButton<String>(
+                      //             value: dropdownValue,
+                      //             icon: const Icon(
+                      //                 Icons.keyboard_arrow_down_rounded),
+                      //             iconSize: 24,
+                      //             elevation: 16,
+                      //             onChanged: (String newValue) {
+                      //               setState(() {
+                      //                 dropdownValue = newValue;
+                      //               });
+                      //             },
+                      //             items: categorieNames
+                      //                 .map<DropdownMenuItem<String>>(
+                      //                     (String value) {
+                      //               return DropdownMenuItem(
+                      //                 value: value,
+                      //                 child: Text(value),
+                      //               );
+                      //             }).toList(),
+                      //           ),
+                      // SizedBox(height: 20),
                       dropdownValue == null
                           ? CircularProgressIndicator()
                           : produits(dropdownValue),

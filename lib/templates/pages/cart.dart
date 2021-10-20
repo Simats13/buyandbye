@@ -1,4 +1,6 @@
+import 'package:buyandbye/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/Achat/pageLivraison.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -14,24 +16,32 @@ class _CartPageState extends State<CartPage> {
   double cartDeliver = 0.0;
 
   String idCommercant;
+  String customerID;
 
   @override
   void initState() {
-    super.initState();
+    super.initState();    
     getMyInfo();
+    getMyInfoCart();
   }
 
-  getMyInfo() async {
+  getMyInfoCart() async {
     QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
     idCommercant = "${querySnapshot.docs[0]["idCommercant"]}";
-    print("idCommercant");
-    print(idCommercant);
 
     setState(() {});
   }
 
+  getMyInfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    customerID = "${querySnapshot.docs[0]["customerId"]}";
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(customerID);
     return FutureBuilder(
         future: DatabaseMethods().allCartMoney(),
         builder: (context, snapshot) {
@@ -144,6 +154,7 @@ class _CartPageState extends State<CartPage> {
                                       builder: (context) => PageLivraison(
                                             idCommercant: idCommercant,
                                             total: cartTotal,
+                                            customerID: customerID,
                                           )));
                             },
                             color: BuyandByeAppTheme.orange,

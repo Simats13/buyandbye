@@ -21,9 +21,10 @@ import 'dart:convert';
 import '../buyandbye_app_theme.dart';
 
 class PageLivraison extends StatefulWidget {
-  const PageLivraison({Key key, this.idCommercant, this.total})
+  const PageLivraison({Key key, this.idCommercant, this.total, this.customerID})
       : super(key: key);
   final String idCommercant;
+  final String customerID;
   final double total;
 
   @override
@@ -99,8 +100,10 @@ class _PageLivraisonState extends State<PageLivraison> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
+    print(widget.customerID);
     if (nomBoutique != null) {
       return Scaffold(
         appBar: PreferredSize(
@@ -622,7 +625,7 @@ class _PageLivraisonState extends State<PageLivraison> {
               customFlow: true,
               applePay: true,
               googlePay: true,
-              customerId: paymentIntentData['customer'],
+              customerId: widget.customerID,
               customerEphemeralKeySecret: paymentIntentData['ephemeralKey'],
               style: ThemeMode.system,
               merchantCountryCode: 'FR',

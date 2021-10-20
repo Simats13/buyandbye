@@ -9,6 +9,7 @@ import 'dart:convert';
 class AccueilPaiement extends StatefulWidget {
   final double total;
   final String idCommercant;
+  final String customerID;
   final String userId;
   final String userAddress;
   final double deliveryChoose;
@@ -18,7 +19,8 @@ class AccueilPaiement extends StatefulWidget {
       this.idCommercant,
       this.userAddress,
       this.deliveryChoose,
-      this.userId})
+      this.userId,
+      this.customerID})
       : super(key: key);
 
   @override
