@@ -23,10 +23,9 @@ class _AccueilState extends State<Accueil> {
     AuthMethods.toogleNavBar = this.toogleNavBar;
   }
 
+  //INDEX DES PAGES
   int pageIndex = 0;
-
-  Widget currentScreen;
-
+  // Création d'une liste permettant l'indexation des pages
   final List<Widget> pages = [
     PageAccueil(),
     PageSearch(),
@@ -35,6 +34,7 @@ class _AccueilState extends State<Accueil> {
     PageCompte(),
   ];
 
+  //Affiche la barre de navigation si l'utilisateur est connecté ou non
   bool showNavBar = true;
   void toogleNavBar() {
     showNavBar = !showNavBar;
@@ -44,6 +44,7 @@ class _AccueilState extends State<Accueil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        //Empile les pages afin de les garder dans des états
         body: IndexedStack(
           index: pageIndex,
           children: pages,

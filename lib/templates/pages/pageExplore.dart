@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
+import 'package:buyandbye/templates/Pages/pageDetail.dart';
+import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -137,60 +139,107 @@ class _PageExploreState extends State<PageExplore> {
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
 
-  void _magasinAffichage(double lat, double lng, String name) {
+  void _magasinAffichage(double lat, double lng, String name, idSeller) {
     slideDialog.showSlideDialog(
       context: context,
-      child: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Center(
-              child: Text(
-                name,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+      child: FutureBuilder(
+          future: DatabaseMethods().getMagasinInfo(idSeller),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: ColorLoader3(
+                  radius: 15.0,
+                  dotRadius: 6.0,
                 ),
-              ),
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            // Container(
-            //   width: MediaQuery.of(context).size.width,
-            //   height: 200,
-            //   child: Image(
-            //     image: NetworkImage(imgUrl),
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
-            SizedBox(
-              height: 5,
-            ),
-            // Container(
-            //   child: Text("Adresse : " + adresse),
-            // ),
-            SizedBox(
-              height: 5,
-            ),
-            Container(
-              child: TextButton(
-                onPressed: () {
-                  moveCamera(lat, lng);
-                  Navigator.pop(context);
-                },
-                child: Center(
-                  child: Text(
-                    "Voir sur la map",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+              );
+            }
+            return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Center(
+                          child: Text(
+                            name,
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 200,
+                          child: Image(
+                            image: NetworkImage(
+                                snapshot.data.docs[index]['imgUrl']),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          child: Text("Adresse : " +
+                              snapshot.data.docs[index]['adresse']),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          child: Text("Description : " +
+                              snapshot.data.docs[index]['description']),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PageDetail(
+                                            img: snapshot.data.docs[index]
+                                                ['imgUrl'],
+                                            name: snapshot.data.docs[index]
+                                                ['name'],
+                                            colorStore: snapshot
+                                                .data.docs[index]['colorStore'],
+                                            description: snapshot.data
+                                                .docs[index]['description'],
+                                            adresse: snapshot.data.docs[index]
+                                                ['adresse'],
+                                            clickAndCollect: snapshot.data
+                                                .docs[index]['ClickAndCollect'],
+                                            livraison: snapshot.data.docs[index]
+                                                ['livraison'],
+                                            sellerID: snapshot.data.docs[index]
+                                                ['id'],
+                                          )));
+                            },
+                            child: Center(
+                              child: Text(
+                                "Accéder au magasin",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                });
+          }),
     );
   }
 
@@ -279,11 +328,7 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _addMarker(
-    double lat,
-    double lng,
-    String name,
-  ) {
+  void _addMarker(double lat, double lng, String name, String idSeller) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
         markerId: id,
@@ -294,6 +339,7 @@ class _PageExploreState extends State<PageExplore> {
             lat,
             lng,
             name,
+            idSeller,
           );
         });
     setState(() {
@@ -310,13 +356,16 @@ class _PageExploreState extends State<PageExplore> {
     documentList.forEach((DocumentSnapshot document) {
       final GeoPoint point = document.get('position')['geopoint'];
       final name = document.get('name');
+      final idSeller = document.get('id');
+      print("idSeller");
+      print(idSeller);
       // final clickAndCollect = document.get('ClickAndCollect');
       // final adresse = document.get('adresse');
       // final description = document.get('description');
 
       // final livraison = document.get('livraison');
       // final photoUrl = document.get('photoUrl');
-      _addMarker(point.latitude, point.longitude, name);
+      _addMarker(point.latitude, point.longitude, name, idSeller);
     });
   }
 
@@ -426,6 +475,7 @@ class _PageExploreState extends State<PageExplore> {
                                             geoPoint.latitude,
                                             geoPoint.longitude,
                                             snapshot.data[index]['name'],
+                                            snapshot.data[index]['id'],
                                             // snapshot.data[index]['adresse'],
                                             // snapshot.data[index]['imgUrl'],
                                             // snapshot.data[index]['description'],

@@ -1,11 +1,13 @@
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/compte/historyDetails.dart';
+import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class UserHistory extends StatefulWidget {
   @override
@@ -32,7 +34,16 @@ class _UserHistoryState extends State<UserHistory> {
     return FutureBuilder(
         future: DatabaseMethods().getPurchase("users", userid),
         builder: (context, snapshot) {
-          return Scaffold(
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: ColorLoader3(
+                radius: 15.0,
+                dotRadius: 6.0,
+              ),
+            );
+          }
+          if (snapshot.hasData) {
+            return Scaffold(
               appBar: AppBar(
                 backgroundColor: BuyandByeAppTheme.black_electrik,
                 title: Text("Historique d'achat"),
@@ -50,7 +61,7 @@ class _UserHistoryState extends State<UserHistory> {
               body: SingleChildScrollView(
                 padding:
                     EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
-                child: snapshot.hasData
+                child: snapshot.data.docs.length > 0
                     ? ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -62,8 +73,33 @@ class _UserHistoryState extends State<UserHistory> {
                           return UserCommand(shopId, commandId, userid);
                         },
                       )
-                    : CircularProgressIndicator(),
-              ));
+                    : Container(
+                        child: Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.shopping_cart_rounded,
+                              color: Colors.grey[700],
+                              size: 64,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "Vous n\'avez aucune commande.\n\nVous pouvez commander n\'importe quel produit depuis la page d'un magasin.",
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.grey[700]),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        )),
+                      ),
+              ),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
         });
   }
 }
@@ -99,7 +135,15 @@ class _UserCommandState extends State<UserCommand> {
         future: DatabaseMethods()
             .getCommandDetails(widget.userid, widget.commandId),
         builder: (context, snapshot) {
-          if (snapshot.hasData && shopName != null) {
+          // if (snapshot.connectionState == ConnectionState.waiting) {
+          //   return Center(
+          //     child: ColorLoader3(
+          //       radius: 15.0,
+          //       dotRadius: 6.0,
+          //     ),
+          //   );
+          // }
+          if (snapshot.hasData) {
             int statut = snapshot.data["statut"];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +239,26 @@ class _UserCommandState extends State<UserCommand> {
               ],
             );
           } else {
-            return CircularProgressIndicator();
+            return Shimmer.fromColors(
+              child: Container(
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              baseColor: Colors.grey[300],
+              highlightColor: Colors.grey[100],
+            );
           }
         });
   }
