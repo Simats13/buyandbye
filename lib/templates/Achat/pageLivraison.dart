@@ -602,9 +602,6 @@ class _PageLivraisonState extends State<PageLivraison> {
     final url =
         "https://us-central1-oficium-11bf9.cloudfunctions.net/app/payment-sheet?amount=$amount&customers=${widget.customerID}";
 
-    var secret =
-        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
-
     final response = await http.post(
       Uri.parse(url),
       headers: {

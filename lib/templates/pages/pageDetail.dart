@@ -463,26 +463,48 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   ),
                   Container(
                     width: (size.width) * 0.8,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.watch_later_outlined,
-                          color: Color(int.parse("0x$pimpMyStore"))
-                              .withOpacity(0.5),
-                          size: 17,
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "Horaires d'ouverture",
-                          style: TextStyle(fontSize: 14),
-                        )
-                      ],
-                    ),
+                    child: Column(children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.watch_later_outlined,
+                            color: Color(int.parse("0x$pimpMyStore"))
+                                .withOpacity(0.5),
+                            size: 17,
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            "Horaires d'ouverture",
+                            style: TextStyle(fontSize: 14),
+                          )
+                        ],
+                      ),
+                      // SizedBox(
+                      //   height: 10,
+                      // ),
+                      // Row(
+                      //   children: [
+                      //     Column(children: [
+                      //     Text("Lundi: 13h - 17h"),
+                      //     Text("Mardi: 10h - 19h"),
+                      //     Text("Mercredi: 9h - 14h"),
+                      //     Text("Jeudi: 9h - 17h"),
+                      //     Text("Vendredi: 8h30 - 18h"),
+                      //     ],)
+                      //   ],
+                      // ),
+                    ]),
                   ),
                   SizedBox(
                     height: 15,
+                  ),
+                  Text(
+                    "Catégories", style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -528,40 +550,40 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
-                  Container(
-                    width: size.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: black.withOpacity(0.1),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Avis clients",
-                            style: TextStyle(
-                              color: black.withOpacity(0.5),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            "Voir plus ...",
-                            style: TextStyle(
-                              color: Color(int.parse("0x$pimpMyStore")),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Container(
+                  //   width: size.width,
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(5),
+                  //     border: Border.all(
+                  //       color: black.withOpacity(0.1),
+                  //     ),
+                  //   ),
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(15.0),
+                  //     child: Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Text(
+                  //           "Avis clients",
+                  //           style: TextStyle(
+                  //             color: black.withOpacity(0.5),
+                  //           ),
+                  //         ),
+                  //         SizedBox(
+                  //           height: 15,
+                  //         ),
+                  //         Text(
+                  //           "Voir plus ...",
+                  //           style: TextStyle(
+                  //             color: Color(int.parse("0x$pimpMyStore")),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 20,
                   ),
