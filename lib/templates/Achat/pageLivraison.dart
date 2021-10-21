@@ -618,7 +618,7 @@ class _PageLivraisonState extends State<PageLivraison> {
           paymentSheetParameters: platform.SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData['paymentIntent'],
               // setupIntentClientSecret: paymentIntentData['client_secret'],
-              customFlow: true,
+
               applePay: true,
               googlePay: true,
               customerId: widget.customerID,
@@ -638,19 +638,30 @@ class _PageLivraisonState extends State<PageLivraison> {
     setState(() {});
 
     try {
+      // 3. display the payment sheet.
       await stripe.Stripe.instance.presentPaymentSheet();
-    } catch (e) {
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+          content: Text('Payment succesfully completed'),
+        ),
       );
+    } on Exception catch (e) {
+      if (e is stripe.StripeException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error from Stripe: ${e.error.localizedMessage}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Unforeseen error: ${e}'),
+          ),
+        );
+      }
     }
-    try {
-      await stripe.Stripe.instance.confirmPaymentSheetPayment();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    }
+
     await dialog.hide();
     // ScaffoldMessenger.of(context)
     //     .showSnackBar(SnackBar(

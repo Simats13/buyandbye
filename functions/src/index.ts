@@ -38,28 +38,30 @@ app.post("/payment-sheet", async (req, res) => {
     apiVersion: "2020-08-27",
     typescript: true,
   });
-  const customers = await stripe.customers.list();
-  const customer = customers.data[0];
+  // const customers = await stripe.customers.list();
+  // const customer = customers.data[0];
+  const customers = req.query.customers;
+  const amount = req.query.amount;
 
-  if (!customer) {
+  if (!customers) {
     res.send({
       error: "You have no customer created",
     });
   }
 
   const ephemeralKey = await stripe.ephemeralKeys.create(
-      {customer: customer.id},
+      {customer: `${customers}`},
       {apiVersion: "2020-08-27"}
   );
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: 1099,
-    currency: "usd",
-    customer: customer.id,
+    amount: Number(amount),
+    currency: "eur",
+    customer: `${customers}`,
   });
   res.json({
     paymentIntent: paymentIntent.client_secret,
     ephemeralKey: ephemeralKey.secret,
-    customer: customer.id,
+    customer: `${customers}`,
   });
 });
 exports.app = functions.https.onRequest(app);
