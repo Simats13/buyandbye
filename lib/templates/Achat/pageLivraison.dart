@@ -641,11 +641,26 @@ class _PageLivraisonState extends State<PageLivraison> {
       // 3. display the payment sheet.
       await stripe.Stripe.instance.presentPaymentSheet();
 
+       DatabaseMethods().acceptPayment(widget.idCommercant,
+           deliveryChoose, widget.total, userAddressChoose, idCommand);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Payment succesfully completed'),
+          content: Text('Paiement Réussi !'),
+        ),
+      ).closed
+        .then((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PageResume(
+            idCommand: idCommand,
+            sellerID: widget.idCommercant,
+            userId: userid,
+          ),
         ),
       );
+    });
     } on Exception catch (e) {
       if (e is stripe.StripeException) {
         ScaffoldMessenger.of(context).showSnackBar(

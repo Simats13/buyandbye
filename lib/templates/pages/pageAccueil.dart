@@ -70,7 +70,6 @@ class _PageAccueilState extends State<PageAccueil> {
   void initState() {
     super.initState();
     _determinePermission();
-    getCoordinates();
     userID();
   }
 
@@ -100,18 +99,15 @@ class _PageAccueilState extends State<PageAccueil> {
   getCoordinates() async {
     chargementChecked =
         await SharedPreferenceHelper().getInformationCharged() ?? false;
-    latitude = await SharedPreferenceHelper().getUserLatitude() ??
-        currentLatitude ??
-        43.834647;
-    longitude = await SharedPreferenceHelper().getUserLongitude() ??
-        currentLongitude ??
-        4.359620;
+    latitude =
+        await SharedPreferenceHelper().getUserLatitude() ?? currentLatitude;
+    longitude =
+        await SharedPreferenceHelper().getUserLongitude() ?? currentLongitude;
 
-    _currentAddressLocation = await SharedPreferenceHelper().getUserAddress() ??
-        _currentAddress ??
-        "Arènes de Nîmes";
+    _currentAddressLocation =
+        await SharedPreferenceHelper().getUserAddress() ?? _currentAddress;
 
-    _city = await SharedPreferenceHelper().getUserCity() ?? _city ?? "Nîmes";
+    _city = await SharedPreferenceHelper().getUserCity() ?? _city;
   }
 
 //Fonction permettant de retourner la localisation exacte d'un utilisateur
@@ -137,6 +133,8 @@ class _PageAccueilState extends State<PageAccueil> {
       _city = "${first.locality}";
       chargementChecked = true;
     });
+
+    getCoordinates();
 
     _preferences = await SharedPreferences.getInstance();
     await _preferences.setBool(_infoCharged, chargementChecked);
@@ -172,7 +170,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    getCoordinates();
+    // getCoordinates();
     positionCheck();
 
     return chargementChecked
@@ -719,7 +717,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                       _city = first.locality;
 
                                       _currentAddressLocation =
-                                          "${first.featureName + ", " + first.locality}";
+                                          "${first.addressLine + ", " + first.locality}";
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
                                           latitude: latitude,
@@ -1035,7 +1033,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             longitude = snapshot
                                                 .data.docs[index]["longitude"];
                                             _currentAddressLocation =
-                                                "${first.featureName + ", " + first.locality}";
+                                                "${first.addressLine + ", " + first.locality}";
 
                                             geo = Geoflutterfire();
                                             GeoFirePoint center = geo.point(

@@ -1,3 +1,4 @@
+import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,8 +94,9 @@ class _PageResumeState extends State<PageResume> {
           child: AppBar(
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () =>
-                  Navigator.of(context).popUntil((route) => route.isFirst),
+              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => Accueil()),
+                  (Route<dynamic> route) => false),
             ),
             title: Text('Récapitulatif de commande'),
             systemOverlayStyle: SystemUiOverlayStyle.light,
