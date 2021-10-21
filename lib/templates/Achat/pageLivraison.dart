@@ -100,7 +100,6 @@ class _PageLivraisonState extends State<PageLivraison> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     print(widget.customerID);
@@ -601,7 +600,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
     var amount = (widget.total * 100).ceil().toString();
     final url =
-        "https://us-central1-oficium-11bf9.cloudfunctions.net/app/payment-sheet";
+        "https://us-central1-oficium-11bf9.cloudfunctions.net/app/payment-sheet?amount=$amount&customers=${widget.customerID}";
 
     var secret =
         'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
