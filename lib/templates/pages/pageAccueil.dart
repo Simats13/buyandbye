@@ -70,8 +70,7 @@ class _PageAccueilState extends State<PageAccueil> {
   @override
   void initState() {
     super.initState();
-
-    userID();
+    // userID();
     getCoordinates();
     _determinePermission();
   }
@@ -83,10 +82,11 @@ class _PageAccueilState extends State<PageAccueil> {
     }
   }
 
-  userID() async {
-    final User user = await AuthMethods().getCurrentUser();
-    userid = user.uid;
-  }
+  // userID() async {
+  //   final User user = await AuthMethods().getCurrentUser();
+  //   userid = user.uid;
+  //   setState(() {});
+  // }
 
   positionCheck() async {
     geo = Geoflutterfire();
