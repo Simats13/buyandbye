@@ -58,6 +58,21 @@ class DatabaseMethods {
     });
   }
 
+  // Future checkIfAddressExist(String docId) async {
+  //   return await FirebaseFirestore.instance
+  //       .collection("users")
+  //       .doc(docId)
+  //       .collection('Address')
+  //       .get()
+  //       .then((DocumentSnapshot ds) {
+  //     if (ds.exists) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   });
+  // }
+
   Future addInfoToDB(
       String collection, userid, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance
@@ -308,9 +323,10 @@ class DatabaseMethods {
   Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
     return FirebaseFirestore.instance
         .collection("magasins")
-        .where("nameSearch", isGreaterThanOrEqualTo: name,
-        isLessThan: name.substring(0, name.length - 1) +
-            String.fromCharCode(name.codeUnitAt(name.length - 1) + 1))
+        .where("nameSearch",
+            isGreaterThanOrEqualTo: name,
+            isLessThan: name.substring(0, name.length - 1) +
+                String.fromCharCode(name.codeUnitAt(name.length - 1) + 1))
         .snapshots();
   }
 
@@ -480,6 +496,15 @@ class DatabaseMethods {
         .doc(userid)
         .collection("Address")
         .snapshots();
+  }
+
+  Future getChosenAddress(userID) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .collection("Address")
+        .where("chosen", isEqualTo: true)
+        .get();
   }
 
   Future getUnreadMSGCount(String documentID, String myUsername) async {

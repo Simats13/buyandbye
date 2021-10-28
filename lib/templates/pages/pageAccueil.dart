@@ -69,8 +69,10 @@ class _PageAccueilState extends State<PageAccueil> {
   @override
   void initState() {
     super.initState();
-    _determinePermission();
+
     userID();
+    getCoordinates();
+    _determinePermission();
   }
 
   @override
@@ -97,23 +99,29 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   getCoordinates() async {
-    chargementChecked =
-        await SharedPreferenceHelper().getInformationCharged() ?? false;
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
     latitude =
-        await SharedPreferenceHelper().getUserLatitude() ?? currentLatitude;
-    longitude =
-        await SharedPreferenceHelper().getUserLongitude() ?? currentLongitude;
-
+        double.parse("${querySnapshot.docs[0]['latitude']}") ?? currentLatitude;
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}") ??
+        currentLongitude;
     _currentAddressLocation =
-        await SharedPreferenceHelper().getUserAddress() ?? _currentAddress;
+        "${querySnapshot.docs[0]['address']}" ?? _currentAddress;
 
-    _city = await SharedPreferenceHelper().getUserCity() ?? _city;
+    _city = "${querySnapshot.docs[0]['address']}" ?? _city;
+
+    chargementChecked = true;
+    setState(() {});
   }
 
 //Fonction permettant de retourner la localisation exacte d'un utilisateur
   getLocationUser() async {
+    // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
+    print("hello eihfeuhge");
     _locationData = await location.getLocation();
-
+    print(_locationData);
     final coordinates = new geocode.Coordinates(
         _locationData.latitude, _locationData.longitude);
 
@@ -133,14 +141,8 @@ class _PageAccueilState extends State<PageAccueil> {
       _city = "${first.locality}";
       chargementChecked = true;
     });
-
-    getCoordinates();
-
-    _preferences = await SharedPreferences.getInstance();
-    await _preferences.setBool(_infoCharged, chargementChecked);
-
-    SharedPreferenceHelper().saveInfoCharged(chargementChecked);
   }
+
 
 //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
 //S'il n'a pas accepté alors cela renvoit false
@@ -164,6 +166,7 @@ class _PageAccueilState extends State<PageAccueil> {
         return false;
       }
     }
+
     getLocationUser();
     return true;
   }
@@ -717,7 +720,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                       _city = first.locality;
 
                                       _currentAddressLocation =
-                                          "${first.addressLine + ", " + first.locality}";
+                                          "${first.featureName + ", " + first.locality}";
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
                                           latitude: latitude,
@@ -1033,7 +1036,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             longitude = snapshot
                                                 .data.docs[index]["longitude"];
                                             _currentAddressLocation =
-                                                "${first.addressLine + ", " + first.locality}";
+                                                "${first.featureName + ", " + first.locality}";
 
                                             geo = Geoflutterfire();
                                             GeoFirePoint center = geo.point(
