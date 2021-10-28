@@ -58,6 +58,7 @@ class _PageAccueilState extends State<PageAccueil> {
       _street,
       _city,
       zipCode,
+      idAddress,
       userid;
   double latitude, longitude, currentLatitude, currentLongitude;
   Geoflutterfire geo;
@@ -107,10 +108,17 @@ class _PageAccueilState extends State<PageAccueil> {
         double.parse("${querySnapshot.docs[0]['latitude']}") ?? currentLatitude;
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}") ??
         currentLongitude;
-    _currentAddressLocation =
-        "${querySnapshot.docs[0]['address']}" ?? _currentAddress;
 
-    _city = "${querySnapshot.docs[0]['address']}" ?? _city;
+    final coordinates = new geocode.Coordinates(latitude, longitude);
+
+    var addresses =
+        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+
+    var first = addresses.first;
+    _currentAddressLocation =
+        "${first.featureName}, ${first.locality}" ?? _currentAddress;
+    idAddress = "${querySnapshot.docs[0]['idDoc']}" ?? null;
+    _city = "${first.locality}" ?? _city;
 
     chargementChecked = true;
     setState(() {});
@@ -119,7 +127,7 @@ class _PageAccueilState extends State<PageAccueil> {
 //Fonction permettant de retourner la localisation exacte d'un utilisateur
   getLocationUser() async {
     // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
-    print("hello eihfeuhge");
+
     _locationData = await location.getLocation();
     print(_locationData);
     final coordinates = new geocode.Coordinates(
@@ -142,7 +150,6 @@ class _PageAccueilState extends State<PageAccueil> {
       chargementChecked = true;
     });
   }
-
 
 //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
 //S'il n'a pas accepté alors cela renvoit false
@@ -1028,9 +1035,16 @@ class _PageAccueilState extends State<PageAccueil> {
                                               .findAddressesFromCoordinates(
                                                   coordinates);
                                           var first = addresses.first;
-
+                                          await DatabaseMethods()
+                                              .changeChosenAddress(
+                                                  userid,
+                                                  snapshot.data.docs[index]
+                                                      ["idDoc"],
+                                                  idAddress);
                                           setState(() {
                                             _city = first.locality;
+                                            idAddress = snapshot
+                                                .data.docs[index]["idDoc"];
                                             latitude = snapshot.data.docs[index]
                                                 ["latitude"];
                                             longitude = snapshot

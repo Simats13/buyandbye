@@ -454,6 +454,7 @@ class DatabaseMethods {
       'buildingName': buildingName,
       'familyName': familyName,
       'latitude': latitude,
+      'chosen': true,
       'longitude': longitude,
       'address': address,
       'idDoc': iD,
@@ -505,6 +506,22 @@ class DatabaseMethods {
         .collection("Address")
         .where("chosen", isEqualTo: true)
         .get();
+  }
+
+  Future changeChosenAddress(userID, addressID, previousID) async {
+    var previousAddress = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .collection("Address")
+        .doc(previousID)
+        .update({"chosen": false});
+
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .collection("Address")
+        .doc(addressID)
+        .update({"chosen": true});
   }
 
   Future getUnreadMSGCount(String documentID, String myUsername) async {
