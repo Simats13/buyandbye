@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:buyandbye/templates/pages/address_search.dart';
+import 'package:buyandbye/templates/widgets/slide_items.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -1342,78 +1343,31 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
           // Les éléments sont mélangés à chaque mouvement du carousel
           // final documents = snapshot.data..shuffle();
           if (snapshot.data.length > 0) {
-            List shopImages = listImages(snapshot.data);
-            return CarouselSlider(
-                options: CarouselOptions(
-                    height: 200,
-                    // Les images tournent en boucle sauf s'il n'y en a qu'une
-                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        carouselItem = index;
-                      });
-                    }),
-                items: shopImages.map((i) {
-                  return Builder(builder: (context) {
-                    return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data[carouselItem]
-                                            ['imgUrl'],
-                                        colorStore: snapshot.data[carouselItem]
-                                            ['colorStore'],
-                                        name: snapshot.data[carouselItem]
-                                            ['name'],
-                                        description: snapshot.data[carouselItem]
-                                            ['description'],
-                                        adresse: snapshot.data[carouselItem]
-                                            ['adresse'],
-                                        clickAndCollect:
-                                            snapshot.data[carouselItem]
-                                                ['ClickAndCollect'],
-                                        livraison: snapshot.data[carouselItem]
-                                            ['livraison'],
-                                        sellerID: snapshot.data[carouselItem]
-                                            ['id'],
-                                      )));
-                        },
-                        child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 4,
-                                      offset: Offset(4, 4))
-                                ]),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height:
-                                      MediaQuery.of(context).size.height / 10,
-                                  child: Image.network(i),
-                                ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.only(bottom: 10, top: 40),
-                                    child: Text(
-                                        snapshot.data[carouselItem]["name"],
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700))),
-                              ],
-                            )));
-                  });
-                }).toList());
+            return Container(
+              height: MediaQuery.of(context).size.height / 2.4,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: SlideItem(
+                      img: snapshot.data[index]["imgUrl"],
+                      name: snapshot.data[index]["name"],
+                      address: snapshot.data[index]["adresse"],
+                      description: snapshot.data[index]["description"],
+                      livraison: snapshot.data[index]["livraison"],
+                      sellerID: snapshot.data[index]["id"],
+                      colorStore: snapshot.data[index]["colorStore"],
+                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                    ),
+                  );
+                },
+              ),
+            );
           } else {
             return Container(
               child: Center(
@@ -1518,79 +1472,31 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
           // Les éléments sont mélangés à chaque mouvement du carousel
           // final documents = snapshot.data..shuffle();
           if (snapshot.data.length > 0) {
-            List shopImages = listImages(snapshot.data);
-            return CarouselSlider(
-                options: CarouselOptions(
-                    height: 200,
-                    // Les images tournent en boucle sauf s'il n'y en a qu'une
-                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        carouselItem = index;
-                      });
-                    }),
-                items: shopImages.map((i) {
-                  return Builder(builder: (context) {
-                    return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data[carouselItem]
-                                            ['imgUrl'],
-                                        colorStore: snapshot.data[carouselItem]
-                                            ['colorStore'],
-                                        name: snapshot.data[carouselItem]
-                                            ['name'],
-                                        description: snapshot.data[carouselItem]
-                                            ['description'],
-                                        adresse: snapshot.data[carouselItem]
-                                            ['adresse'],
-                                        clickAndCollect:
-                                            snapshot.data[carouselItem]
-                                                ['ClickAndCollect'],
-                                        livraison: snapshot.data[carouselItem]
-                                            ['livraison'],
-                                        sellerID: snapshot.data[carouselItem]
-                                            ['id'],
-                                      )));
-                        },
-                        child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                                // border: Border.all(color: Colors.black),
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 4,
-                                      offset: Offset(4, 4))
-                                ]),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height:
-                                      MediaQuery.of(context).size.height / 10,
-                                  child: Image.network(i),
-                                ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.only(bottom: 10, top: 40),
-                                    child: Text(
-                                        snapshot.data[carouselItem]["name"],
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700))),
-                              ],
-                            )));
-                  });
-                }).toList());
+            return Container(
+              height: MediaQuery.of(context).size.height / 2.4,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: SlideItem(
+                      img: snapshot.data[index]["imgUrl"],
+                      name: snapshot.data[index]["name"],
+                      address: snapshot.data[index]["adresse"],
+                      description: snapshot.data[index]["description"],
+                      livraison: snapshot.data[index]["livraison"],
+                      sellerID: snapshot.data[index]["id"],
+                      colorStore: snapshot.data[index]["colorStore"],
+                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                    ),
+                  );
+                },
+              ),
+            );
           } else {
             return Container(
               child: Center(
@@ -1695,79 +1601,31 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
           // Les éléments sont mélangés à chaque mouvement du carousel
           // final documents = snapshot.data..shuffle();
           if (snapshot.data.length > 0) {
-            List shopImages = listImages(snapshot.data);
-            return CarouselSlider(
-                options: CarouselOptions(
-                    height: 200,
-                    // Les images tournent en boucle sauf s'il n'y en a qu'une
-                    enableInfiniteScroll: shopImages.length > 1 ? true : false,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        carouselItem = index;
-                      });
-                    }),
-                items: shopImages.map((i) {
-                  return Builder(builder: (context) {
-                    return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: snapshot.data[carouselItem]
-                                            ['imgUrl'],
-                                        colorStore: snapshot.data[carouselItem]
-                                            ['colorStore'],
-                                        name: snapshot.data[carouselItem]
-                                            ['name'],
-                                        description: snapshot.data[carouselItem]
-                                            ['description'],
-                                        adresse: snapshot.data[carouselItem]
-                                            ['adresse'],
-                                        clickAndCollect:
-                                            snapshot.data[carouselItem]
-                                                ['ClickAndCollect'],
-                                        livraison: snapshot.data[carouselItem]
-                                            ['livraison'],
-                                        sellerID: snapshot.data[carouselItem]
-                                            ['id'],
-                                      )));
-                        },
-                        child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                                // border: Border.all(color: Colors.black),
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 4,
-                                      offset: Offset(4, 4))
-                                ]),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height:
-                                      MediaQuery.of(context).size.height / 10,
-                                  child: Image.network(i),
-                                ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.only(bottom: 10, top: 40),
-                                    child: Text(
-                                        snapshot.data[carouselItem]["name"],
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700))),
-                              ],
-                            )));
-                  });
-                }).toList());
+            return Container(
+              height: MediaQuery.of(context).size.height / 2.4,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: SlideItem(
+                      img: snapshot.data[index]["imgUrl"],
+                      name: snapshot.data[index]["name"],
+                      address: snapshot.data[index]["adresse"],
+                      description: snapshot.data[index]["description"],
+                      livraison: snapshot.data[index]["livraison"],
+                      sellerID: snapshot.data[index]["id"],
+                      colorStore: snapshot.data[index]["colorStore"],
+                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                    ),
+                  );
+                },
+              ),
+            );
           } else {
             return Container(
               child: Center(

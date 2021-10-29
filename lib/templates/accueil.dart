@@ -5,6 +5,7 @@ import 'package:buyandbye/templates/pages/pageExplore.dart';
 import 'package:buyandbye/templates/pages/pageMessagerie.dart';
 import 'package:buyandbye/templates/pages/pageSearch.dart';
 import 'package:buyandbye/services/auth.dart';
+import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +44,8 @@ class _AccueilState extends State<Accueil> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+
     return Scaffold(
         //Empile les pages afin de les garder dans des états
         body: IndexedStack(

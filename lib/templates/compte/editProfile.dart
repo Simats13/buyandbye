@@ -112,14 +112,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: BuyandByeAppTheme.black_electrik,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        title: Text("Mes informations"),
+        backgroundColor: Color(0xf3722c),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: Text(
+          "Mes informations",
+          style: TextStyle(color: Colors.black),
+        ),
         elevation: 1,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: BuyandByeAppTheme.orange,
+            color: BuyandByeAppTheme.black_electrik,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -135,8 +138,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     isVisible = !isVisible;
                   });
                 },
-                child:
-                    Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+                child: Icon(Icons.edit_rounded,
+                    color: BuyandByeAppTheme.black_electrik),
               ))
         ],
       ),

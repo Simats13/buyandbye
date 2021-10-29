@@ -7,6 +7,7 @@ class BuyandByeAppTheme {
   static const Color orange = Color(0xFFf4a261);
   static const Color orangeClair = Color(0xFFFFAA66);
   static const Color orangeTresClair = Color(0xFFFAB29E);
+  static const Color orangeTest = Color(0xf3722c);
   static const Color white = Color(0xFFFFFFFF);
   static const Color white_grey = Color(0xFFe8e8e8);
   static const Color grey = Color(0xFF5c5c5c);
@@ -31,4 +32,10 @@ List<String> categorieNames = [
   'Téléphonie'
 ];
 
-Map<String, String> colorName = {'défaut': 'f4a261', 'rouge': 'fc2a1a', 'bleu': '2394e9', 'vert': '44ba0c', 'jaune': 'e2e61c'};
+Map<String, String> colorName = {
+  'défaut': 'f4a261',
+  'rouge': 'fc2a1a',
+  'bleu': '2394e9',
+  'vert': '44ba0c',
+  'jaune': 'e2e61c'
+};
