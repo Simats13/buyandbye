@@ -20,7 +20,7 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void initState() {
-    super.initState();    
+    super.initState();
     getMyInfo();
     getMyInfoCart();
   }
@@ -41,7 +41,6 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(customerID);
     return FutureBuilder(
         future: DatabaseMethods().allCartMoney(),
         builder: (context, snapshot) {

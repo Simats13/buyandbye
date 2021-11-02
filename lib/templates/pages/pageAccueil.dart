@@ -73,7 +73,7 @@ class _PageAccueilState extends State<PageAccueil> {
     super.initState();
     // userID();
     getCoordinates();
-    _determinePermission();
+    // _determinePermission();
   }
 
   @override
@@ -100,6 +100,59 @@ class _PageAccueilState extends State<PageAccueil> {
     });
   }
 
+  //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
+  //S'il n'a pas accepté alors cela renvoit false
+  //S'il a accepté alors ça renvoie la localisation périodiquement
+  Future<bool> _determinePermission() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return false;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return false;
+      }
+    }
+
+    getLocationUser();
+    return true;
+  }
+
+  //Fonction permettant de retourner la localisation exacte d'un utilisateur
+  getLocationUser() async {
+    // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
+
+    _locationData = await location.getLocation();
+    print(_locationData);
+    final coordinates = new geocode.Coordinates(
+        _locationData.latitude, _locationData.longitude);
+
+    var addresses =
+        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+
+    var first = addresses.first;
+
+    setState(() {
+      //Latitude de l'utilisateur via la localisation
+      currentLatitude = _locationData.latitude;
+      //Longitude de l'utilisateur via la localisation
+      currentLongitude = _locationData.longitude;
+      //Adresse de l'utilisateur via la localisation
+      _currentAddress = "${first.featureName}, ${first.locality}";
+      //Ville de l'utilisateur via la localisation
+      _city = "${first.locality}";
+    });
+  }
+
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
@@ -123,60 +176,6 @@ class _PageAccueilState extends State<PageAccueil> {
 
     chargementChecked = true;
     setState(() {});
-  }
-
-//Fonction permettant de retourner la localisation exacte d'un utilisateur
-  getLocationUser() async {
-    // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
-
-    _locationData = await location.getLocation();
-    print(_locationData);
-    final coordinates = new geocode.Coordinates(
-        _locationData.latitude, _locationData.longitude);
-
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
-
-    var first = addresses.first;
-
-    setState(() {
-      //Latitude de l'utilisateur via la localisation
-      currentLatitude = _locationData.latitude;
-      //Longitude de l'utilisateur via la localisation
-      currentLongitude = _locationData.longitude;
-      //Adresse de l'utilisateur via la localisation
-      _currentAddress = "${first.featureName}, ${first.locality}";
-      //Ville de l'utilisateur via la localisation
-      _city = "${first.locality}";
-      chargementChecked = true;
-    });
-  }
-
-//Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
-//S'il n'a pas accepté alors cela renvoit false
-//S'il a accepté alors ça renvoie la localisation périodiquement
-  Future<bool> _determinePermission() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return false;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return false;
-      }
-    }
-
-    getLocationUser();
-    return true;
   }
 
   Widget getBody() {

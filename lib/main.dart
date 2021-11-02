@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -161,6 +162,9 @@ class MainScreen extends StatelessWidget {
                   final user = userDoc;
                   if (user['emailVerified'] == false) {
                     return PageLogin();
+                  }
+                  if (user['firstConnection'] == true) {
+                    return PageFirstConnection();
                   }
                   if (user['admin'] == true) {
                     return NavBar();

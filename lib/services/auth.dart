@@ -45,6 +45,18 @@ class AuthMethods {
 
       User userDetails = userCredential.user;
 
+      final url = "https://api.stripe.com/v1/customers";
+
+      var secret =
+          'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $secret',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      };
+      var response = await http.post(Uri.parse(url), headers: headers);
+      paymentIntentData = json.decode(response.body);
+
       bool docExists =
           await DatabaseMethods().checkIfDocExists(userDetails.uid);
 
@@ -57,6 +69,8 @@ class AuthMethods {
             "fname": userDetails.displayName.split(" ")[0],
             "lname": userDetails.displayName.split(" ")[1],
             "imgUrl": userDetails.photoURL,
+            "customerId": paymentIntentData["id"],
+            "firstConnection": true,
             "providers": {
               'Google': true, //GOOGLE
               'Facebook': false, //FACEBOOK
@@ -71,6 +85,9 @@ class AuthMethods {
             "phone": ""
           };
           DatabaseMethods().addInfoToDB("users", userDetails.uid, userInfoMap);
+
+          updateStripeInfo(paymentIntentData["id"], userDetails.email,
+              userDetails.displayName);
 
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => MyApp()));
@@ -99,6 +116,22 @@ class AuthMethods {
     }
   }
 
+  Future updateStripeInfo(String customerID, email, name) async {
+    final url = "https://api.stripe.com/v1/customers/$customerID";
+
+    var secret =
+        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $secret',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    Map body = {"email": email, "name": name};
+    var response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    paymentIntentData = json.decode(response.body);
+  }
+
 //Connexion via Facebook
   Future signInWithFacebook(
     BuildContext context,
@@ -117,6 +150,17 @@ class AuthMethods {
 
           bool docExists =
               await DatabaseMethods().checkIfDocExists(userDetails.uid);
+          final url = "https://api.stripe.com/v1/customers";
+
+          var secret =
+              'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+          Map<String, String> headers = {
+            'Authorization': 'Bearer $secret',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          };
+          var response = await http.post(Uri.parse(url), headers: headers);
+          paymentIntentData = json.decode(response.body);
 
           if (result == null) {
           } else {
@@ -127,6 +171,8 @@ class AuthMethods {
                 "fname": userDetails.displayName.split(" ")[0],
                 "lname": userDetails.displayName.split(" ")[1],
                 "imgUrl": userDetails.photoURL,
+                "customerId": paymentIntentData["id"],
+                "firstConnection": true,
                 "providers": {
                   'Google': false, //GOOGLE
                   'Facebook': true, //FACEBOOK
@@ -142,7 +188,8 @@ class AuthMethods {
               };
               DatabaseMethods()
                   .addInfoToDB("users", userDetails.uid, userInfoMap);
-
+              updateStripeInfo(paymentIntentData["id"], userDetails.email,
+                  userDetails.displayName);
               //Envoie un mail de confirmation d'adresse mail
               sendEmailVerification();
             } else {
@@ -197,6 +244,18 @@ class AuthMethods {
         final authResult = await auth.signInWithCredential(credential);
         final userDetails = authResult.user;
 
+        final url = "https://api.stripe.com/v1/customers";
+
+        var secret =
+            'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+        Map<String, String> headers = {
+          'Authorization': 'Bearer $secret',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        var response = await http.post(Uri.parse(url), headers: headers);
+        paymentIntentData = json.decode(response.body);
+
         bool docExists =
             await DatabaseMethods().checkIfDocExists(userDetails.uid);
 
@@ -209,6 +268,8 @@ class AuthMethods {
               "fname": userDetails.displayName,
               "lname": userDetails.displayName,
               "imgUrl": userDetails.photoURL,
+              "customerId": paymentIntentData["id"],
+              "firstConnection": true,
               "providers": {
                 'Google': false, //GOOGLE
                 'Facebook': false, //FACEBOOK
@@ -224,7 +285,8 @@ class AuthMethods {
             };
             DatabaseMethods()
                 .addInfoToDB("users", userDetails.uid, userInfoMap);
-
+            updateStripeInfo(paymentIntentData["id"], userDetails.email,
+                userDetails.displayName);
             //Envoie un mail de confirmation d'adresse mail
             sendEmailVerification();
           } else {
@@ -427,8 +489,7 @@ class AuthMethods {
       'Authorization': 'Bearer $secret',
       'Content-Type': 'application/x-www-form-urlencoded'
     };
-    var response =
-        await http.post(Uri.parse(url), headers: headers);
+    var response = await http.post(Uri.parse(url), headers: headers);
     paymentIntentData = json.decode(response.body);
     Map<String, dynamic> userInfoMap = {
       "id": user.uid,
@@ -436,6 +497,7 @@ class AuthMethods {
       "fname": _fname,
       "lname": _lname,
       "customerId": paymentIntentData["id"],
+      "firstConnection": true,
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "admin": false,
       "phone": "",

@@ -9,10 +9,23 @@ import 'package:buyandbye/templates/widgets/loader.dart';
 import '../buyandbye_app_theme.dart';
 
 class PageResume extends StatefulWidget {
-  final String idCommand;
-  final String userId;
-  final String sellerID;
-  const PageResume({Key key, this.idCommand, this.userId, this.sellerID})
+  final String idCommand,
+      userId,
+      sellerID,
+      nomBoutique,
+      addressSeller,
+      userAddressChoose;
+  final double latitude, longitude;
+  const PageResume(
+      {Key key,
+      this.idCommand,
+      this.userId,
+      this.sellerID,
+      this.latitude,
+      this.longitude,
+      this.nomBoutique,
+      this.addressSeller,
+      this.userAddressChoose})
       : super(key: key);
 
   @override
@@ -21,14 +34,7 @@ class PageResume extends StatefulWidget {
 
 class _PageResumeState extends State<PageResume> {
   var produits;
-  String idProduit;
-  String nomBoutique;
-  String nomProduit;
-  String userAddressChoose;
-  String adresseBoutique;
-  double livraison;
-  double latitude;
-  double longitude;
+
   GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
   BitmapDescriptor mapMarker;
@@ -51,19 +57,11 @@ class _PageResumeState extends State<PageResume> {
   }
 
   getThisUserInfo() async {
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getMagasinInfoViaID(widget.sellerID);
-    nomBoutique = "${querySnapshot.docs[0]["name"]}";
-    latitude = double.parse(
-        "${querySnapshot.docs[0]['position']['geopoint'].latitude}");
-    longitude = double.parse(
-        "${querySnapshot.docs[0]['position']['geopoint'].longitude}");
-    adresseBoutique = "${querySnapshot.docs[0]["adresse"]}";
-
-    final idMarker = MarkerId(latitude.toString() + longitude.toString());
+    final idMarker =
+        MarkerId(widget.latitude.toString() + widget.longitude.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(latitude, longitude),
+      position: LatLng(widget.latitude, widget.longitude),
       //icon: mapMarker,
     ));
 
@@ -94,9 +92,8 @@ class _PageResumeState extends State<PageResume> {
           child: AppBar(
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => Accueil()),
-                  (Route<dynamic> route) => false),
+              onPressed: () =>
+                  Navigator.of(context).popUntil((route) => route.isFirst),
             ),
             title: Text('Récapitulatif de commande'),
             systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -172,9 +169,9 @@ class _PageResumeState extends State<PageResume> {
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
-                                nomBoutique == null
+                                widget.nomBoutique == null
                                     ? CircularProgressIndicator()
-                                    : Text("Vendeur : " + nomBoutique,
+                                    : Text("Vendeur : " + widget.nomBoutique,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -190,9 +187,9 @@ class _PageResumeState extends State<PageResume> {
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
-                                adresseBoutique == null
+                                widget.addressSeller == null
                                     ? CircularProgressIndicator()
-                                    : Text(adresseBoutique,
+                                    : Text(widget.addressSeller,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -215,7 +212,8 @@ class _PageResumeState extends State<PageResume> {
                             child: GoogleMap(
                               onMapCreated: _onMapCreated,
                               initialCameraPosition: CameraPosition(
-                                  target: LatLng(latitude, longitude),
+                                  target:
+                                      LatLng(widget.latitude, widget.longitude),
                                   zoom: 15.0),
                               markers: _markers,
                               myLocationButtonEnabled: false,
@@ -247,9 +245,6 @@ class _DetailState extends State<Detail> {
         stream:
             DatabaseMethods().getOneProduct(widget.shopId, widget.productId),
         builder: (context, snapshot) {
-          var amount = widget.quantite;
-          var money = snapshot.data["prix"];
-          var allMoneyForProduct = money * amount;
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: ColorLoader3(
@@ -259,6 +254,9 @@ class _DetailState extends State<Detail> {
             );
           }
           if (snapshot.hasData) {
+            var amount = widget.quantite;
+            var money = snapshot.data["prix"];
+            var allMoneyForProduct = money * amount;
             return Expanded(
               child: Column(
                 children: [

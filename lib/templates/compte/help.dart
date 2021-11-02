@@ -123,8 +123,9 @@ class _HelpState extends State<Help> {
                         ),
                         //Partie cachée
                         Visibility(
-                            visible: isVisible1,
-                            child: Question(widget.isAdmin))
+                          visible: isVisible1,
+                          child: Question(widget.isAdmin),
+                        ),
                       ],
                     ),
                   ),

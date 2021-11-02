@@ -185,14 +185,18 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         padding: EdgeInsets.only(bottom: 100),
         child: Column(
           children: [
+            SizedBox(
+              height: 50,
+            ),
             Stack(
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   width: size.width,
-                  height: 150,
+                  height: 200,
                   child: Image(
                     image: NetworkImage(widget.img),
+                    fit: BoxFit.cover,
                   ),
                 ),
                 SafeArea(
@@ -501,7 +505,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     height: 15,
                   ),
                   Text(
-                    "Catégories", style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                    "Catégories",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 10,

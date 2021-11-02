@@ -524,6 +524,19 @@ class DatabaseMethods {
         .update({"chosen": true});
   }
 
+  Future addFirstAddress(userID, addressID) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .update({"firstConnection": false});
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .collection("Address")
+        .doc(addressID)
+        .update({"chosen": true});
+  }
+
   Future getUnreadMSGCount(String documentID, String myUsername) async {
     try {
       int unReadMSGCount = 0;
