@@ -186,7 +186,58 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         child: Column(
           children: [
             SizedBox(
-              height: 50,
+              height: 40,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color:
+                          Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 20,
+                        color: white,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                Text(
+                  widget.name,
+                  style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color:
+                          Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.favorite_border,
+                        size: 20,
+                        color: white,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    // Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
             Stack(
               children: [
@@ -194,60 +245,16 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   width: size.width,
                   height: 200,
-                  child: Image(
-                    image: NetworkImage(widget.img),
-                    fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                    child: Image(
+                      image: NetworkImage(widget.img),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                SafeArea(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color(int.parse("0x$pimpMyStore"))
-                                .withOpacity(0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.arrow_back,
-                              size: 20,
-                              color: white,
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      IconButton(
-                        icon: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color(int.parse("0x$pimpMyStore"))
-                                .withOpacity(0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.favorite_border,
-                              size: 20,
-                              color: white,
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          // Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                )
               ],
             ),
             SizedBox(
@@ -261,10 +268,79 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.name,
-                        style: TextStyle(
-                            fontSize: 21, fontWeight: FontWeight.bold),
+                      // Text(
+                      //   widget.name,
+                      //   style: TextStyle(
+                      //       fontSize: 21, fontWeight: FontWeight.bold),
+                      // ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: textFieldColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Click and Collect",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    widget.clickAndCollect
+                                        ? Icons.check_circle
+                                        : Icons.highlight_off,
+                                    color: widget.clickAndCollect
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: textFieldColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Livraison",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    widget.livraison
+                                        ? Icons.check_circle
+                                        : Icons.highlight_off,
+                                    color: widget.livraison
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       GestureDetector(
                         onTap: () {
@@ -346,75 +422,75 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       SizedBox(
                         width: 8,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: textFieldColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Click and Collect",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 3,
-                              ),
-                              Icon(
-                                widget.clickAndCollect
-                                    ? Icons.check_circle
-                                    : Icons.highlight_off,
-                                color: widget.clickAndCollect
-                                    ? Colors.green
-                                    : Colors.red,
-                                size: 17,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: textFieldColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Livraison",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 3,
-                              ),
-                              Icon(
-                                widget.livraison
-                                    ? Icons.check_circle
-                                    : Icons.highlight_off,
-                                color: widget.livraison
-                                    ? Colors.green
-                                    : Colors.red,
-                                size: 17,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     color: textFieldColor,
+                      //     borderRadius: BorderRadius.circular(10),
+                      //   ),
+                      //   child: Padding(
+                      //     padding: EdgeInsets.all(5),
+                      //     child: Row(
+                      //       children: [
+                      //         Text(
+                      //           "Click and Collect",
+                      //           style: TextStyle(
+                      //             fontSize: 14,
+                      //           ),
+                      //         ),
+                      //         SizedBox(
+                      //           width: 3,
+                      //         ),
+                      //         Icon(
+                      //           widget.clickAndCollect
+                      //               ? Icons.check_circle
+                      //               : Icons.highlight_off,
+                      //           color: widget.clickAndCollect
+                      //               ? Colors.green
+                      //               : Colors.red,
+                      //           size: 17,
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   width: 8,
+                      // ),
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     color: textFieldColor,
+                      //     borderRadius: BorderRadius.circular(10),
+                      //   ),
+                      //   child: Padding(
+                      //     padding: EdgeInsets.all(5),
+                      //     child: Row(
+                      //       children: [
+                      //         Text(
+                      //           "Livraison",
+                      //           style: TextStyle(
+                      //             fontSize: 14,
+                      //           ),
+                      //         ),
+                      //         SizedBox(
+                      //           width: 3,
+                      //         ),
+                      //         Icon(
+                      //           widget.livraison
+                      //               ? Icons.check_circle
+                      //               : Icons.highlight_off,
+                      //           color: widget.livraison
+                      //               ? Colors.green
+                      //               : Colors.red,
+                      //           size: 17,
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                   SizedBox(
-                    height: 15,
+                    height: 5,
                   ),
                   Divider(
                     color: black.withOpacity(0.3),
@@ -725,8 +801,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -734,8 +810,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
                           SizedBox(width: 15),
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -748,8 +824,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -757,8 +833,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
                           SizedBox(width: 15),
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -792,8 +868,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -801,8 +877,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
                           SizedBox(width: 15),
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -815,8 +891,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),
@@ -824,8 +900,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
                           SizedBox(width: 15),
                           Container(
-                            height: 180,
-                            width: 180,
+                            height: 160,
+                            width: 160,
                             decoration: BoxDecoration(
                                 color: BuyandByeAppTheme.white_grey,
                                 borderRadius: BorderRadius.circular(10)),

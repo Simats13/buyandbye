@@ -6,6 +6,16 @@ import 'package:flip_card/flip_card.dart';
 
 class PageFidelite extends StatefulWidget {
   @override
+  const PageFidelite(
+      {Key key,
+      this.firstName,
+      this.lastName,
+      this.eMail})
+      : super(key: key);
+
+  final String firstName;
+  final String lastName;
+  final String eMail;
   _PageFideliteState createState() => _PageFideliteState();
 }
 
@@ -187,7 +197,7 @@ class _PageFideliteState extends State<PageFidelite> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/cardBuy&Bye.png"),
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             ),
             child: Column(
@@ -195,11 +205,11 @@ class _PageFideliteState extends State<PageFidelite> {
                 Container(
                   margin: EdgeInsets.fromLTRB(20, 125, 0, 0),
                   child: Row(children: [
-                    Text("Hugo RENE",
+                    Text(widget.firstName + " " + widget.lastName,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                         )),
                     SizedBox(
                       width: 100,
@@ -225,7 +235,7 @@ class _PageFideliteState extends State<PageFidelite> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/cardBuy&ByeReverse.png"),
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             ),
             child: Column(
