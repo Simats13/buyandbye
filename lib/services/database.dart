@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/auth.dart';
@@ -7,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 class DatabaseMethods {
   static DatabaseMethods get instanace => DatabaseMethods();
+  Map<String, dynamic> paymentIntentData;
 
   Future userAuthData(String userId) async {
     return FirebaseFirestore.instance.collection("users").doc(userId).get();
@@ -26,7 +30,22 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  Future deleteUser(String userID) async {
+  Future deleteUser(String userID, customerID) async {
+    final url = "https://api.stripe.com/v1/customers/$customerID";
+
+    var secret =
+        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $secret',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    Map body = {
+      "deleted": "true",
+    };
+    var response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    paymentIntentData = json.decode(response.body);
     return await FirebaseFirestore.instance
         .collection("users")
         .doc(userID)
@@ -320,14 +339,15 @@ class DatabaseMethods {
         .delete();
   }
 
-  Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
-    return FirebaseFirestore.instance
-        .collection("magasins")
-        .where("nameSearch",
-            isGreaterThanOrEqualTo: name,
-            isLessThan: name.substring(0, name.length - 1) +
-                String.fromCharCode(name.codeUnitAt(name.length - 1) + 1))
-        .snapshots();
+  Future searchBarGetStoreInfo(
+      String name, double latitude, double longitude) async {
+    Geoflutterfire geo = Geoflutterfire();
+    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+    var collectionReference = FirebaseFirestore.instance
+        .collection('magasins')
+        .where("nameSearch", isEqualTo: name);
+    return geo.collection(collectionRef: collectionReference).within(
+        center: center, radius: 10, field: 'position', strictMode: false);
   }
 
   // Récupère toutes les commandes d'un client

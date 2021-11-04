@@ -7,7 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+
+import 'package:geocoding/geocoding.dart' as geocoder;
+
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
@@ -72,8 +74,9 @@ class _PageAccueilState extends State<PageAccueil> {
   void initState() {
     super.initState();
     // userID();
+
+    _determinePermission();
     getCoordinates();
-    // _determinePermission();
   }
 
   @override
@@ -82,12 +85,6 @@ class _PageAccueilState extends State<PageAccueil> {
       super.setState(fn);
     }
   }
-
-  // userID() async {
-  //   final User user = await AuthMethods().getCurrentUser();
-  //   userid = user.uid;
-  //   setState(() {});
-  // }
 
   positionCheck() async {
     geo = Geoflutterfire();
@@ -132,13 +129,9 @@ class _PageAccueilState extends State<PageAccueil> {
     // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
 
     _locationData = await location.getLocation();
-    print(_locationData);
-    final coordinates = new geocode.Coordinates(
-        _locationData.latitude, _locationData.longitude);
-
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
-
+    List<geocoder.Placemark> addresses =
+        await geocoder.placemarkFromCoordinates(
+            _locationData.latitude, _locationData.longitude);
     var first = addresses.first;
 
     setState(() {
@@ -147,9 +140,10 @@ class _PageAccueilState extends State<PageAccueil> {
       //Longitude de l'utilisateur via la localisation
       currentLongitude = _locationData.longitude;
       //Adresse de l'utilisateur via la localisation
-      _currentAddress = "${first.featureName}, ${first.locality}";
+      _currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
       _city = "${first.locality}";
+      chargementChecked = true;
     });
   }
 
@@ -163,18 +157,15 @@ class _PageAccueilState extends State<PageAccueil> {
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}") ??
         currentLongitude;
 
-    final coordinates = new geocode.Coordinates(latitude, longitude);
-
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+    List<geocoder.Placemark> addresses =
+        await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
     _currentAddressLocation =
-        "${first.featureName}, ${first.locality}" ?? _currentAddress;
+        "${first.name}, ${first.locality}" ?? _currentAddress;
     idAddress = "${querySnapshot.docs[0]['idDoc']}" ?? null;
     _city = "${first.locality}" ?? _city;
-
-    chargementChecked = true;
+    // chargementChecked = true;
     setState(() {});
   }
 
@@ -635,9 +626,9 @@ class _PageAccueilState extends State<PageAccueil> {
 
                             final query = "$_streetNumber $_street , $_city";
 
-                            var addresses = await geocode.Geocoder.local
-                                .findAddressesFromQuery(query);
-                            var first = addresses.first;
+                            List<geocoder.Location> locations =
+                                await geocoder.locationFromAddress(query);
+                            var first = locations.first;
 
                             Navigator.of(context).pop();
 
@@ -645,9 +636,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => PageAddressNext(
-                                          lat: first.coordinates.latitude,
-                                          long: first.coordinates.longitude,
-                                          adresse: first.addressLine,
+                                          lat: first.latitude,
+                                          long: first.longitude,
+                                          adresse: query,
                                         )));
                           }
                         },
@@ -715,19 +706,15 @@ class _PageAccueilState extends State<PageAccueil> {
                                 width: MediaQuery.of(context).size.width - 50,
                                 child: InkWell(
                                   onTap: () async {
-                                    final coordinates = new geocode.Coordinates(
-                                      latitude,
-                                      longitude,
-                                    );
-                                    var addresses = await geocode.Geocoder.local
-                                        .findAddressesFromCoordinates(
-                                            coordinates);
+                                    List<geocoder.Placemark> addresses =
+                                        await geocoder.placemarkFromCoordinates(
+                                            latitude, longitude);
                                     var first = addresses.first;
                                     setState(() {
                                       _city = first.locality;
 
                                       _currentAddressLocation =
-                                          "${first.featureName + ", " + first.locality}";
+                                          "${first.name + ", " + first.locality}";
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
                                           latitude: latitude,
@@ -977,18 +964,17 @@ class _PageAccueilState extends State<PageAccueil> {
                                   final query =
                                       "$_streetNumber $_street , $_city";
 
-                                  var addresses = await geocode.Geocoder.local
-                                      .findAddressesFromQuery(query);
-                                  var first = addresses.first;
+                                  List<geocoder.Location> locations =
+                                      await geocoder.locationFromAddress(query);
+                                  var first = locations.first;
 
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => PageAddressNext(
-                                                lat: first.coordinates.latitude,
-                                                long:
-                                                    first.coordinates.longitude,
-                                                adresse: first.addressLine,
+                                                lat: first.latitude,
+                                                long: first.longitude,
+                                                adresse: query,
                                               )));
                                 }
                               },
@@ -1024,17 +1010,15 @@ class _PageAccueilState extends State<PageAccueil> {
                                     children: [
                                       InkWell(
                                         onTap: () async {
-                                          final coordinates =
-                                              new geocode.Coordinates(
-                                                  snapshot.data.docs[index]
-                                                      ["latitude"],
-                                                  snapshot.data.docs[index]
-                                                      ["longitude"]);
-                                          var addresses = await geocode
-                                              .Geocoder.local
-                                              .findAddressesFromCoordinates(
-                                                  coordinates);
+                                          List<geocoder.Placemark> addresses =
+                                              await geocoder
+                                                  .placemarkFromCoordinates(
+                                                      snapshot.data.docs[index]
+                                                          ["latitude"],
+                                                      snapshot.data.docs[index]
+                                                          ["longitude"]);
                                           var first = addresses.first;
+
                                           await DatabaseMethods()
                                               .changeChosenAddress(
                                                   userid,
@@ -1050,7 +1034,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             longitude = snapshot
                                                 .data.docs[index]["longitude"];
                                             _currentAddressLocation =
-                                                "${first.featureName + ", " + first.locality}";
+                                                "${first.name + ", " + first.locality}";
 
                                             geo = Geoflutterfire();
                                             GeoFirePoint center = geo.point(

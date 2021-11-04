@@ -32,6 +32,33 @@ function getKeys(PAYMENT_METHOD?: string) {
 
   return {SECRET_KEY, PUBLISHABLE_KEY};
 }
+
+app.post("/delete_customer", async (req, res) => {
+  const {SECRET_KEY} = getKeys();
+  const stripe = new Stripe(SECRET_KEY as string, {
+    apiVersion: "2020-08-27",
+    typescript: true,
+  });
+  // const customers = await stripe.customers.list();
+  // const customer = customers.data[0];
+  const customers = req.query.customers;
+
+
+  if (!customers) {
+    res.send({
+      error: "You have no customer created",
+    });
+  }
+
+  const deleted = await stripe.customers.del(
+      `${customers}`,
+  );
+
+  res.json({
+    deleted: deleted,
+    customer: `${customers}`,
+  });
+});
 app.post("/payment-sheet", async (req, res) => {
   const {SECRET_KEY} = getKeys();
   const stripe = new Stripe(SECRET_KEY as string, {

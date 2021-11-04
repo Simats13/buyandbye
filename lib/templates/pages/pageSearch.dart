@@ -1,3 +1,4 @@
+import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,15 +22,16 @@ class _PageSearchState extends State<PageSearch> {
   bool isExecuted = false;
   int activeMenu = 0;
 
-  Widget searchedData(
-      {String photoUrl,
-      name,
-      description,
-      adresse,
-      clickAndCollect,
-      livraison,
-      colorStore,
-      sellerID}) {
+  Widget searchedData({
+    String photoUrl,
+    name,
+    description,
+    adresse,
+    clickAndCollect,
+    livraison,
+    colorStore,
+    sellerID,
+  }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -71,10 +73,10 @@ class _PageSearchState extends State<PageSearch> {
             ? ListView.builder(
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
-                itemCount: snapshot.data.docs.length,
+                itemCount: snapshot.data.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  DocumentSnapshot ds = snapshot.data[index];
                   return searchedData(
                       photoUrl: ds["imgUrl"],
                       name: ds["name"],
@@ -95,9 +97,13 @@ class _PageSearchState extends State<PageSearch> {
 
   research() async {
     isExecuted = true;
+    double latitude =
+        await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
+    double longitude =
+        await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
     setState(() {});
-    streamStore =
-        await DatabaseMethods().searchBarGetStoreInfo(searchController.text);
+    streamStore = await DatabaseMethods()
+        .searchBarGetStoreInfo(searchController.text, latitude, longitude);
 
     setState(() {});
   }

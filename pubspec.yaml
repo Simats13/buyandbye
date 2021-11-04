@@ -90,6 +90,7 @@ dependencies:
   badges:
   flip_card: ^0.4.4
   stripe_platform_interface:
+  geocoding:
 
 flutter_native_splash:
   #color: "#42a5f5"

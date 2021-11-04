@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:buyandbye/templates/Paiement/add_credit_card.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:geocoder/geocoder.dart' as geocode;
+import 'package:http/http.dart' as http;
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -35,8 +37,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       google,
       facebook,
       mail,
+      customerID,
       myPhone;
-
+  Map<String, dynamic> paymentIntentData;
   final _controller = TextEditingController();
   String _streetNumber = '';
   String _street;
@@ -63,6 +66,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
+    customerID = "${querySnapshot.docs[0]["customerId"]}";
     apple = "${querySnapshot.docs[0]["providers"]['Apple']}";
     facebook = "${querySnapshot.docs[0]["providers"]['Facebook']}";
     mail = "${querySnapshot.docs[0]["providers"]['Mail']}";
@@ -742,6 +746,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                           color: Colors.red),
                                                     ),
                                                     onPressed: () async {
+                                                      final url =
+                                                          "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=${customerID}";
+
+                                                      final response =
+                                                          await http.post(
+                                                        Uri.parse(url),
+                                                        headers: {
+                                                          'Content-Type':
+                                                              'application/json',
+                                                        },
+                                                        body: json.encode({
+                                                          'a': 'a',
+                                                        }),
+                                                      );
+                                                      paymentIntentData = json
+                                                          .decode(response.body
+                                                              .toString());
                                                       User user =
                                                           await AuthMethods
                                                               .instanace
@@ -750,7 +771,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       user.delete();
                                                       await DatabaseMethods
                                                           .instanace
-                                                          .deleteUser(user.uid);
+                                                          .deleteUser(user.uid,
+                                                              customerID);
                                                       SharedPreferences
                                                           preferences =
                                                           await SharedPreferences
@@ -810,7 +832,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                                 user.delete();
                                                 await DatabaseMethods.instanace
-                                                    .deleteUser(user.uid);
+                                                    .deleteUser(
+                                                        user.uid, customerID);
                                                 SharedPreferences preferences =
                                                     await SharedPreferences
                                                         .getInstance();
