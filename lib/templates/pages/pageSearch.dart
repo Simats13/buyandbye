@@ -218,7 +218,7 @@ class CategoryStore extends StatelessWidget {
                   ),
                   Text(
                     categories[index]['name'],
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 14),
                   ),
                 ],
               ));
