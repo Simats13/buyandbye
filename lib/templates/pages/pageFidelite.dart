@@ -6,11 +6,7 @@ import 'package:flip_card/flip_card.dart';
 
 class PageFidelite extends StatefulWidget {
   @override
-  const PageFidelite(
-      {Key key,
-      this.firstName,
-      this.lastName,
-      this.eMail})
+  const PageFidelite({Key key, this.firstName, this.lastName, this.eMail})
       : super(key: key);
 
   final String firstName;
@@ -214,12 +210,14 @@ class _PageFideliteState extends State<PageFidelite> {
                     SizedBox(
                       width: 100,
                     ),
-                    Text("180 pts",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        )),
+                    Container(
+                      child: Text("180 pts",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ),
                   ]),
                 ),
               ],

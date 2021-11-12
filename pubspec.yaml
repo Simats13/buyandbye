@@ -49,8 +49,8 @@ dependencies:
   theme_provider:
   get:
   google_maps_flutter:
-  apple_sign_in:
   sign_in_with_apple:
+  apple_sign_in:
   flutter_local_notifications:
   geolocator:
   clippy_flutter:
@@ -60,7 +60,6 @@ dependencies:
   slide_popup_dialog:
   ndialog:
   google_nav_bar:
-  flutter_statusbarcolor:
   location: 
   progress_dialog:
   cupertino_icons: 
@@ -74,7 +73,6 @@ dependencies:
   url_launcher:
   intl:
   shimmer:
-  geocoder:
   firebase_storage_web:
   status_alert:
   flutter_add_to_cart_button:
@@ -91,6 +89,8 @@ dependencies:
   flip_card: ^0.4.4
   stripe_platform_interface:
   geocoding:
+  mailer:
+ 
 
 flutter_native_splash:
   #color: "#42a5f5"

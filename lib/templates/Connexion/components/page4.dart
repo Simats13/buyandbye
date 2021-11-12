@@ -82,7 +82,7 @@ class WelcomeView extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 64, right: 64, top: 48),
                 child: Text(
-                  "Rejoingnez Buy&Bye et découvrez les commerces proches de chez vous !",
+                  "Rejoignez Buy&Bye et découvrez les commerces proches de chez vous !",
                   textAlign: TextAlign.center,
                 ),
               ),

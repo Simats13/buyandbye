@@ -1,4 +1,3 @@
-import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +6,7 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageCategorie.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:buyandbye/theme/styles.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../buyandbye_app_theme.dart';
 
@@ -22,16 +22,15 @@ class _PageSearchState extends State<PageSearch> {
   bool isExecuted = false;
   int activeMenu = 0;
 
-  Widget searchedData({
-    String photoUrl,
-    name,
-    description,
-    adresse,
-    clickAndCollect,
-    livraison,
-    colorStore,
-    sellerID,
-  }) {
+  Widget searchedData(
+      {String photoUrl,
+      name,
+      description,
+      adresse,
+      clickAndCollect,
+      livraison,
+      colorStore,
+      sellerID}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -69,41 +68,89 @@ class _PageSearchState extends State<PageSearch> {
     return StreamBuilder(
       stream: streamStore,
       builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                itemCount: snapshot.data.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data[index];
-                  return searchedData(
-                      photoUrl: ds["imgUrl"],
-                      name: ds["name"],
-                      adresse: ds["adresse"],
-                      description: ds["description"],
-                      clickAndCollect: ds["ClickAndCollect"],
-                      livraison: ds["livraison"],
-                      colorStore: ds["colorStore"],
-                      sellerID: ds["id"]);
-                },
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              );
+        if (!snapshot.hasData) {
+          return Shimmer.fromColors(
+            child: Container(
+              child: Stack(
+                children: [
+                  Center(
+                    child: ListTile(
+                      leading: Container(
+                        height: 100,
+                        width: 100,
+                      ),
+                      title: Text(
+                        "",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                      subtitle: Text(
+                        "",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            baseColor: Colors.grey[300],
+            highlightColor: Colors.grey[100],
+          );
+        }
+        if (snapshot.data.docs.length > 0) {
+          return ListView.builder(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            itemCount: snapshot.data.docs.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              DocumentSnapshot ds = snapshot.data.docs[index];
+              return searchedData(
+                  photoUrl: ds["imgUrl"],
+                  name: ds["name"],
+                  adresse: ds["adresse"],
+                  description: ds["description"],
+                  clickAndCollect: ds["ClickAndCollect"],
+                  livraison: ds["livraison"],
+                  colorStore: ds["colorStore"],
+                  sellerID: ds["id"]);
+            },
+          );
+        } else {
+          return Container(
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/splash_2.png',
+                  width: 300,
+                  height: 300,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    "Aucun commerce n'est disponible dans cette catégorie pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                    style: TextStyle(
+                      fontSize: 18,
+                      // color: Colors.grey[700]
+                    ),
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
+              ],
+            )),
+          );
+        }
       },
     );
   }
 
   research() async {
     isExecuted = true;
-    double latitude =
-        await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
-    double longitude =
-        await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
     setState(() {});
-    streamStore = await DatabaseMethods()
-        .searchBarGetStoreInfo(searchController.text, latitude, longitude);
+    streamStore =
+        await DatabaseMethods().searchBarGetStoreInfo(searchController.text);
 
     setState(() {});
   }
@@ -113,13 +160,38 @@ class _PageSearchState extends State<PageSearch> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+          backgroundColor: BuyandByeAppTheme.white,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(50.0),
             child: AppBar(
-              title: Text('Rechercher'),
-              systemOverlayStyle: SystemUiOverlayStyle.light,
-              backgroundColor: BuyandByeAppTheme.black_electrik,
+              title: RichText(
+                text: TextSpan(
+                  // style: Theme.of(context).textTheme.bodyText2,
+                  children: [
+                    TextSpan(
+                        text: 'Rechercher',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: BuyandByeAppTheme.orangeMiFonce,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    WidgetSpan(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Icon(
+                          Icons.search,
+                          color: BuyandByeAppTheme.orangeFonce,
+                          size:30,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              backgroundColor: BuyandByeAppTheme.white,
               automaticallyImplyLeading: false,
+              elevation: 0.0,
+              bottomOpacity: 0.0,
             ),
           ),
           body: Container(
@@ -163,7 +235,9 @@ class _PageSearchState extends State<PageSearch> {
                               }
                             },
                             decoration: InputDecoration(
-                                hintText: 'Rechercher un commerce'),
+                              hintText: 'Rechercher un commerce',
+                              border: InputBorder.none,
+                            ),
                             controller: searchController,
                           ),
                         ),
@@ -197,11 +271,17 @@ class CategoryStore extends StatelessWidget {
         (index) {
           return GestureDetector(
               onTap: () {
+                print(categories[index]['name']);
+
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PageCategorie(
-                            categorie: categories[index]['name'])));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PageCategorie(
+                      categorie: categories[index]['name'],
+                      img: categories[index]['img'],
+                    ),
+                  ),
+                );
               },
               child: Column(
                 children: [

@@ -339,15 +339,14 @@ class DatabaseMethods {
         .delete();
   }
 
-  Future searchBarGetStoreInfo(
-      String name, double latitude, double longitude) async {
-    Geoflutterfire geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
-    var collectionReference = FirebaseFirestore.instance
-        .collection('magasins')
-        .where("nameSearch", isEqualTo: name);
-    return geo.collection(collectionRef: collectionReference).within(
-        center: center, radius: 10, field: 'position', strictMode: false);
+  Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
+    return FirebaseFirestore.instance
+        .collection("magasins")
+        .where("nameSearch",
+            isGreaterThanOrEqualTo: name,
+            isLessThan: name.substring(0, name.length - 1) +
+                String.fromCharCode(name.codeUnitAt(name.length - 1) + 1))
+        .snapshots();
   }
 
   // Récupère toutes les commandes d'un client
@@ -818,13 +817,15 @@ class DatabaseMethods {
             {"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
   }
 
-  Future allProductsCategory(String categorie) async {
-    return await FirebaseFirestore.instance
+  Future allProductsCategory(
+      String categorie, double latitude, longitude) async {
+    Geoflutterfire geo = Geoflutterfire();
+    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+    var collectionReference = FirebaseFirestore.instance
         .collection('magasins')
-        .doc('CBODzxOryXcJuUTlpF2WIvoeYit2')
-        .collection('produits')
-        .where("categorie", isEqualTo: categorie)
-        .get();
+        .where("mainCategorie", isEqualTo: categorie);
+    return geo.collection(collectionRef: collectionReference).within(
+        center: center, radius: 10, field: 'position', strictMode: true);
   }
 
   //   Future allProductsCategory1() async {

@@ -8,7 +8,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
-// import 'package:buyandbye/templates/Paiement/payment.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:stripe_platform_interface/stripe_platform_interface.dart'
     as platform;
@@ -21,9 +22,10 @@ import 'dart:convert';
 import '../buyandbye_app_theme.dart';
 
 class PageLivraison extends StatefulWidget {
-  const PageLivraison({Key key, this.idCommercant, this.total, this.customerID})
+  const PageLivraison(
+      {Key key, this.idCommercant, this.total, this.customerID, this.email})
       : super(key: key);
-  final String idCommercant;
+  final String idCommercant, email;
   final String customerID;
   final double total;
 
@@ -42,6 +44,7 @@ class _PageLivraisonState extends State<PageLivraison> {
   String userAddressChoose;
   double latitude;
   double longitude;
+  String emailUser;
   GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
   BitmapDescriptor mapMarker;
@@ -93,7 +96,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), '../assets/images/shop.png')
+            ImageConfiguration(), '../../assets/images/shop.png')
         .then((value) {
       mapMarker = value;
     });
@@ -457,14 +460,14 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                         child:
                                                                             Row(
                                                                       children: [
-                                                                        Text(truncate(
-                                                                            snapshot.data.docs[index][
-                                                                                "address"],
-                                                                            25,
-                                                                            omission:
-                                                                                "...",
-                                                                            position:
-                                                                                TruncatePosition.end)),
+                                                                        Container(
+                                                                          width:
+                                                                              MediaQuery.of(context).size.width - 200,
+                                                                          child:
+                                                                              Text(
+                                                                            snapshot.data.docs[index]["address"],
+                                                                          ),
+                                                                        ),
                                                                         Row(
                                                                             children: [
                                                                               IconButton(
@@ -506,6 +509,14 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                           .docs[
                                                                       index]
                                                                   ["address"];
+                                                          latitude = snapshot
+                                                                  .data
+                                                                  .docs[index]
+                                                              ["latitude"];
+                                                          longitude = snapshot
+                                                                  .data
+                                                                  .docs[index]
+                                                              ["longitude"];
                                                           deliveryChoose = 2;
                                                           print(
                                                               userAddressChoose);
@@ -643,6 +654,30 @@ class _PageLivraisonState extends State<PageLivraison> {
 
       DatabaseMethods().acceptPayment(widget.idCommercant, deliveryChoose,
           widget.total, userAddressChoose, idCommand);
+      await dialog.hide();
+      //ENVOI D'UN MAIL
+
+      final smtpServer = SmtpServer(
+        "mail.buyandbye.fr",
+        username: "no-reply@buyandbye.fr",
+        password: "0Wz7Bg&n(}-lOjn3NJ",
+      );
+
+      final message = Message()
+        ..from = Address("no-reply@buyandbye.fr", 'Buy&Bye')
+        ..recipients.add(widget.email)
+        ..subject = 'Résumé de votre commande du ${DateTime.now()}'
+        ..html = "<h1>Résumé</h1>\n<p>Hey! Here's some HTML content</p>";
+
+      try {
+        final sendReport = await send(message, smtpServer);
+        print('Message sent: ' + sendReport.toString());
+      } on MailerException catch (e) {
+        print('Message not sent.');
+        for (var p in e.problems) {
+          print('Problem: ${p.code}: ${p.msg}');
+        }
+      }
 
       ScaffoldMessenger.of(context)
           .showSnackBar(
@@ -656,6 +691,7 @@ class _PageLivraisonState extends State<PageLivraison> {
           context,
           MaterialPageRoute(
             builder: (context) => PageResume(
+              deliveryChoose: deliveryChoose,
               idCommand: idCommand,
               sellerID: widget.idCommercant,
               userId: userid,
@@ -684,7 +720,6 @@ class _PageLivraisonState extends State<PageLivraison> {
       }
     }
 
-    await dialog.hide();
     // ScaffoldMessenger.of(context)
     //     .showSnackBar(SnackBar(
     //       content: Text("response"),

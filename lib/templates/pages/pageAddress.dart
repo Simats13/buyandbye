@@ -10,7 +10,8 @@ import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:rxdart/rxdart.dart';
 // import 'package:uuid/uuid.dart';
 import 'package:truncate/truncate.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+
+import 'package:geocoding/geocoding.dart' as geocoder;
 // import 'address_search.dart';
 
 class PageAddress extends StatefulWidget {
@@ -64,16 +65,12 @@ class _PageAddressState extends State<PageAddress> {
 
     latitude = position.latitude;
     longitude = position.longitude;
-    final coordinates =
-        new geocode.Coordinates(position.latitude, position.longitude);
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+    List<geocoder.Placemark> addresses = await geocoder
+        .placemarkFromCoordinates(position.latitude, position.longitude);
     var first = addresses.first;
 
-    adresseEntire = first.addressLine;
-
     setState(() {
-      _currentAddress = "${first.featureName}, ${first.locality}";
+      _currentAddress = "${first.name}, ${first.locality}";
     });
   }
 
@@ -156,7 +153,7 @@ class _PageAddressState extends State<PageAddress> {
                             builder: (context) => PageAddressNext(
                                   lat: latitude,
                                   long: longitude,
-                                  adresse: adresseEntire,
+                                  adresse: _currentAddress,
                                 )));
                   },
                   child: Container(

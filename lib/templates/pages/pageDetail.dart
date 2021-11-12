@@ -141,6 +141,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
     var size = MediaQuery.of(context).size;
+    bool isPressed = false;
     return Stack(children: [
       GestureDetector(
           onTap: () {
@@ -179,6 +180,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     var pimpMyStore = widget.colorStore;
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
+    bool isPressed = false;
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Padding(
@@ -599,12 +601,16 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                  color: Color(int.parse("0x$pimpMyStore"))
-                                      .withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(30)),
+                                  color: Color(
+                                    int.parse("0x$pimpMyStore"),
+                                  ).withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: dropdownValue == name
+                                      ? Border.all(color: Colors.blueAccent)
+                                      : null),
                               child: Center(
-                                child: GestureDetector(
-                                  onTap: () {
+                                child: TextButton(
+                                  onPressed: () {
                                     setState(() {
                                       dropdownValue = name;
                                     });
@@ -616,9 +622,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                       name,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color:
-                                            Color(int.parse("0x$pimpMyStore"))
-                                                .withOpacity(0.8),
+                                        color: Color(
+                                          int.parse("0x$pimpMyStore"),
+                                        ).withOpacity(0.8),
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),

@@ -15,6 +15,7 @@ class PageResume extends StatefulWidget {
       nomBoutique,
       addressSeller,
       userAddressChoose;
+  final double deliveryChoose;
   final double latitude, longitude;
   const PageResume(
       {Key key,
@@ -25,7 +26,8 @@ class PageResume extends StatefulWidget {
       this.longitude,
       this.nomBoutique,
       this.addressSeller,
-      this.userAddressChoose})
+      this.userAddressChoose,
+      this.deliveryChoose})
       : super(key: key);
 
   @override
@@ -78,7 +80,7 @@ class _PageResumeState extends State<PageResume> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), '../assets/images/shop.png')
+            ImageConfiguration(), '../../assets/images/shop.png')
         .then((value) {
       mapMarker = value;
     });
@@ -161,11 +163,17 @@ class _PageResumeState extends State<PageResume> {
                           child: SingleChildScrollView(
                             child: Column(children: [
                               Row(children: [
-                                Text("Click & Collect",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 21,
-                                    )),
+                                widget.deliveryChoose == 0
+                                    ? Text("Click & Collect",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 21,
+                                        ))
+                                    : Text("Livraison à domicile",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 21,
+                                        )),
                               ]),
                               SizedBox(height: 10),
                               Row(children: [

@@ -18,7 +18,7 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sign_button/sign_button.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+import 'package:geocoding/geocoding.dart' as geocoder;
 import 'package:http/http.dart' as http;
 
 class EditProfilePage extends StatefulWidget {
@@ -115,37 +115,62 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool isVisible = true;
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xf3722c),
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
-        title: Text(
-          "Mes informations",
-          style: TextStyle(color: Colors.black),
-        ),
-        elevation: 1,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: BuyandByeAppTheme.black_electrik,
+      backgroundColor: BuyandByeAppTheme.white,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: AppBar(
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: 'Mes Informations',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.settings,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          backgroundColor: BuyandByeAppTheme.white,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: BuyandByeAppTheme.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            // Boutons pour modifier les informations du commerçant
+            Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isVisible = !isVisible;
+                    });
+                  },
+                  icon:
+                      Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+                ))
+          ],
         ),
-        actions: [
-          // Boutons pour modifier les informations du commerçant
-          Padding(
-              padding: EdgeInsets.only(right: 20),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isVisible = !isVisible;
-                  });
-                },
-                child: Icon(Icons.edit_rounded,
-                    color: BuyandByeAppTheme.black_electrik),
-              ))
-        ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -512,21 +537,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       final query =
                                           "$_streetNumber $_street , $_city";
 
-                                      var addresses = await geocode
-                                          .Geocoder.local
-                                          .findAddressesFromQuery(query);
-                                      var first = addresses.first;
+                                      List<geocoder.Location> locations =
+                                          await geocoder
+                                              .locationFromAddress(query);
+                                      var first = locations.first;
 
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   PageAddressNext(
-                                                    lat: first
-                                                        .coordinates.latitude,
-                                                    long: first
-                                                        .coordinates.longitude,
-                                                    adresse: first.addressLine,
+                                                    lat: first.latitude,
+                                                    long: first.longitude,
+                                                    adresse: query,
                                                   )));
                                     }
                                   },

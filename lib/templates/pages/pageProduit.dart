@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_add_to_cart_button/flutter_add_to_cart_button.dart';
 
 class PageProduit extends StatefulWidget {
   const PageProduit(
@@ -17,8 +18,7 @@ class PageProduit extends StatefulWidget {
       this.clickAndCollect,
       this.livraison,
       this.idCommercant,
-      this.idProduit
-      })
+      this.idProduit})
       : super(key: key);
 
   final String img;
@@ -40,17 +40,16 @@ class PageProduit extends StatefulWidget {
 }
 
 class _PageProduitState extends State<PageProduit> {
-  Widget returnDetailPage() {
+  AddToCartButtonStateId stateId = AddToCartButtonStateId.idle;
+
+  returnDetailPage() async {
     String nomProduit = widget.nomProduit;
     num prixProduit = widget.prixProduit;
     String imgProduit = widget.imagesList[0];
     int amount = 1;
-    return FutureBuilder(
-        future: DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit,
-            amount, widget.idCommercant, widget.idProduit),
-        builder: (context, snapshot) {
-          return successfullAddCart();
-        });
+    await DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit, amount,
+        widget.idCommercant, widget.idProduit);
+    Navigator.of(context).pop();
   }
 
   Widget successfullAddCart() {
@@ -116,6 +115,7 @@ class _PageProduitState extends State<PageProduit> {
         Iterable<int>.generate(widget.imagesList.length).toList();
     String nomVendeur = widget.name;
     var money = widget.prixProduit;
+
     return Scaffold(
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -214,27 +214,67 @@ class _PageProduitState extends State<PageProduit> {
                     height: 20,
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      color: Colors.black,
-                    ),
+                    // margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    // height: 48,
+                    // width: double.infinity,
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(15.0),
+                    //   color: Colors.black,
+                    // ),
                     child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => returnDetailPage()));
-                        },
-                        child: Text(
-                          'Ajouter au panier',
-                          style: TextStyle(
-                              color: white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: AddToCartButton(
+                          // trolley: Image.asset(
+                          //   'assets/icons/ic_cart.png',
+                          //   width: 24,
+                          //   height: 24,
+                          //   color: Colors.white,
+                          // ),
+                          trolley: Icon(Icons.add_shopping_cart),
+                          text: Text(
+                            'Ajouter au panier',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                          ),
+                          check: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          backgroundColor: Colors.deepOrangeAccent,
+                          onPressed: (id) {
+                            if (id == AddToCartButtonStateId.idle) {
+                              //handle logic when pressed on idle state button.
+                              setState(() {
+                                stateId = AddToCartButtonStateId.loading;
+                                Future.delayed(Duration(seconds: 2), () {
+                                  setState(() {
+                                    stateId = AddToCartButtonStateId.done;
+                                  });
+                                  Future.delayed(Duration(seconds: 2), () {
+                                    returnDetailPage();
+                                  });
+                                });
+                              });
+                            } else if (id == AddToCartButtonStateId.done) {
+                              //handle logic when pressed on done state button.
+
+                              setState(() {
+                                stateId = AddToCartButtonStateId.idle;
+                              });
+                            }
+                          },
+                          stateId: stateId,
                         ),
                       ),
                     ),

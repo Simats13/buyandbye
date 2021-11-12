@@ -8,7 +8,7 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+import 'package:geocoding/geocoding.dart' as geocoder;
 import '../buyandbye_app_theme.dart';
 
 class PageAddressEdit extends StatefulWidget {
@@ -99,14 +99,11 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   }
 
   findAddress() async {
-    final coordinates = new geocode.Coordinates(widget.lat, widget.long);
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+    List<geocoder.Placemark> addresses =
+        await geocoder.placemarkFromCoordinates(widget.lat, widget.long);
     var first = addresses.first;
-
     setState(() {
-      userAddress =
-          "${first.featureName}, ${first.locality}, ${first.countryName}";
+      userAddress = "${first.name}, ${first.locality}, ${first.country}";
     });
   }
 

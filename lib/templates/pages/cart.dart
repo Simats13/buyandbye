@@ -16,7 +16,7 @@ class _CartPageState extends State<CartPage> {
   double cartDeliver = 0.0;
 
   String idCommercant;
-  String customerID;
+  String customerID, email;
 
   @override
   void initState() {
@@ -37,6 +37,7 @@ class _CartPageState extends State<CartPage> {
     final userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     customerID = "${querySnapshot.docs[0]["customerId"]}";
+    email = "${querySnapshot.docs[0]["email"]}";
   }
 
   @override
@@ -147,10 +148,12 @@ class _CartPageState extends State<CartPage> {
                           ),
                           MaterialButton(
                             onPressed: () {
+                              Navigator.of(context).pop();
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => PageLivraison(
+                                            email: email,
                                             idCommercant: idCommercant,
                                             total: cartTotal,
                                             customerID: customerID,

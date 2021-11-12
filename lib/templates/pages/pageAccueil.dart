@@ -165,13 +165,13 @@ class _PageAccueilState extends State<PageAccueil> {
         "${first.name}, ${first.locality}" ?? _currentAddress;
     idAddress = "${querySnapshot.docs[0]['idDoc']}" ?? null;
     _city = "${first.locality}" ?? _city;
-    // chargementChecked = true;
+    chargementChecked = true;
     setState(() {});
   }
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    // getCoordinates();
+
     positionCheck();
 
     return chargementChecked

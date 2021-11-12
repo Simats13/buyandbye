@@ -44,10 +44,36 @@ class _HistoryDetailsState extends State<HistoryDetails> {
   Widget build(BuildContext context) {
     getShopInfos(widget.shopID);
     return Scaffold(
+       backgroundColor: BuyandByeAppTheme.white,
         appBar: AppBar(
-          backgroundColor: BuyandByeAppTheme.black_electrik,
-          title: Text("Détails de commande"),
-          elevation: 1,
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: "Détail de Commande",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.shopping_bag,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: BuyandByeAppTheme.white,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,

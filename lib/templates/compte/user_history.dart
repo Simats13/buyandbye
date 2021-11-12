@@ -44,18 +44,48 @@ class _UserHistoryState extends State<UserHistory> {
           }
           if (snapshot.hasData) {
             return Scaffold(
-              appBar: AppBar(
-                backgroundColor: BuyandByeAppTheme.black_electrik,
-                title: Text("Historique d'achat"),
-                elevation: 1,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: BuyandByeAppTheme.orange,
+              backgroundColor: BuyandByeAppTheme.white,
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(50.0),
+                child: AppBar(
+                  title: RichText(
+                    text: TextSpan(
+                      // style: Theme.of(context).textTheme.bodyText2,
+                      children: [
+                        TextSpan(
+                            text: "Historique d'Achat",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: BuyandByeAppTheme.orangeMiFonce,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        WidgetSpan(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: Icon(
+                              Icons.history,
+                              color: BuyandByeAppTheme.orangeFonce,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  backgroundColor: BuyandByeAppTheme.white,
+                  automaticallyImplyLeading: false,
+                  elevation: 0.0,
+                  bottomOpacity: 0.0,
+                  leading: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: BuyandByeAppTheme.orange,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
               ),
               body: SingleChildScrollView(
