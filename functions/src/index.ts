@@ -59,6 +59,64 @@ app.post("/delete_customer", async (req, res) => {
     customer: `${customers}`,
   });
 });
+
+
+app.post("/delete_cards", async (req, res) => {
+  const {SECRET_KEY} = getKeys();
+  const stripe = new Stripe(SECRET_KEY as string, {
+    apiVersion: "2020-08-27",
+    typescript: true,
+  });
+  // const customers = await stripe.customers.list();
+  // const customer = customers.data[0];
+  const customers = req.query.customers;
+  const idCard = req.query.idCard;
+
+
+  if (!customers) {
+    res.send({
+      error: "You have no customer created",
+    });
+  }
+
+  const deleted = await stripe.customers.deleteSource(
+      `${customers}`,
+      `${idCard}`,
+  );
+
+  res.json({
+    deleted: deleted,
+    customer: `${customers}`,
+  });
+});
+app.post("/list_cards", async (req, res) => {
+  const {SECRET_KEY} = getKeys();
+  const stripe = new Stripe(SECRET_KEY as string, {
+    apiVersion: "2020-08-27",
+    typescript: true,
+  });
+  // const customers = await stripe.customers.list();
+  // const customer = customers.data[0];
+  const customers = req.query.customers;
+
+
+  if (!customers) {
+    res.send({
+      error: "You have no customer created",
+    });
+  }
+
+  const cards = await stripe.customers.listSources(
+      `${customers}`,
+      {object: "card"}
+  );
+
+  res.json({
+    cards: cards,
+    customer: `${customers}`,
+  });
+});
+
 app.post("/payment-sheet", async (req, res) => {
   const {SECRET_KEY} = getKeys();
   const stripe = new Stripe(SECRET_KEY as string, {

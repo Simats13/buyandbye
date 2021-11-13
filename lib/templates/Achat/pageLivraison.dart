@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:buyandbye/templates/Achat/pageResume.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
@@ -104,22 +107,94 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.customerID);
-
     if (nomBoutique != null) {
       return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+        backgroundColor: BuyandByeAppTheme.white,
+        appBar: AppBar(
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: 'Livraison',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.local_shipping,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            title: Text('Choisir un mode de livraison'),
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            automaticallyImplyLeading: false,
           ),
+          backgroundColor: BuyandByeAppTheme.white,
+          leading: IconButton(
+            icon:
+                Icon(Icons.arrow_back, color: BuyandByeAppTheme.orangeMiFonce),
+            onPressed: () {
+              Platform.isIOS
+                  ? showCupertinoDialog(
+                      context: context,
+                      builder: (context) => CupertinoAlertDialog(
+                        title: Text("Annuler ma commande"),
+                        content: Text(
+                            "Souhaitez-vous annuler votre commande et revenir à l'accueil ?"),
+                        actions: [
+                          // Close the dialog
+                          CupertinoButton(
+                              child: Text('Non'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              }),
+                          CupertinoButton(
+                            child: Text(
+                              'Oui',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      ),
+                    )
+                  : showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Annuler ma commande"),
+                        content: Text(
+                            "Souhaitez-vous annuler votre commande et revenir à l'accueil ?"),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("Non"),
+                            onPressed: () => Navigator.of(context).pop(false),
+                          ),
+                          TextButton(
+                            child: Text(
+                              'Oui',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+            },
+          ),
+          elevation: 0.0,
+          bottomOpacity: 0.0,
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -518,9 +593,6 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                   .docs[index]
                                                               ["longitude"];
                                                           deliveryChoose = 2;
-                                                          print(
-                                                              userAddressChoose);
-                                                          print(deliveryChoose);
                                                         })
                                                       },
                                                     ),
@@ -602,6 +674,91 @@ class _PageLivraisonState extends State<PageLivraison> {
     }
   }
 
+  dialogPaymentCancelled() {
+    Platform.isIOS
+        ? showCupertinoDialog(
+            context: context,
+            builder: (context) => CupertinoAlertDialog(
+              title: Text("Paiement Annulé !"),
+              content:
+                  Text("Le paiement a été annulé, souhaitez-vous réssayer ?"),
+              actions: [
+                // Close the dialog
+                CupertinoButton(
+                    child: Text('Non'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    }),
+                CupertinoButton(
+                  child: Text(
+                    'Oui',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    // await dialog.show();
+                    try {
+                      await stripe.Stripe.instance.presentPaymentSheet();
+                    } on Exception catch (e) {
+                      if (e is stripe.StripeException) {
+                        if (e.error.localizedMessage ==
+                            "The payment has been canceled") {
+                          dialogPaymentCancelled();
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Unforeseen error: ${e}'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                )
+              ],
+            ),
+          )
+        : showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("Paiement Annulé !"),
+              content: Text(
+                  "Souhaitez-vous annuler votre commande et revenir à l'accueil ?"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Non"),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: Text(
+                    'Oui',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    try {
+                      await stripe.Stripe.instance.presentPaymentSheet();
+                    } on Exception catch (e) {
+                      if (e is stripe.StripeException) {
+                        if (e.error.localizedMessage ==
+                            "The payment has been canceled") {
+                          dialogPaymentCancelled();
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Unforeseen error: ${e}'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+  }
+
   payViaNewCard(BuildContext context) async {
     print(deliveryChoose);
     ProgressDialog dialog = new ProgressDialog(context);
@@ -623,13 +780,11 @@ class _PageLivraisonState extends State<PageLivraison> {
       }),
     );
     paymentIntentData = json.decode(response.body.toString());
-
+    dialog.hide();
     try {
       await stripe.Stripe.instance.initPaymentSheet(
           paymentSheetParameters: platform.SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData['paymentIntent'],
-              // setupIntentClientSecret: paymentIntentData['client_secret'],
-
               applePay: true,
               googlePay: true,
               customerId: widget.customerID,
@@ -644,7 +799,7 @@ class _PageLivraisonState extends State<PageLivraison> {
       );
     }
 
-    print(paymentIntentData);
+    // print(paymentIntentData);
 
     setState(() {});
 
@@ -679,33 +834,28 @@ class _PageLivraisonState extends State<PageLivraison> {
         }
       }
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-            SnackBar(
-              content: Text('Paiement Réussi !'),
-            ),
-          )
-          .closed
-          .then((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PageResume(
-              deliveryChoose: deliveryChoose,
-              idCommand: idCommand,
-              sellerID: widget.idCommercant,
-              userId: userid,
-              latitude: latitude,
-              longitude: longitude,
-              nomBoutique: nomBoutique,
-              addressSeller: adresseBoutique,
-              userAddressChoose: userAddressChoose,
-            ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PageResume(
+            deliveryChoose: deliveryChoose,
+            idCommand: idCommand,
+            sellerID: widget.idCommercant,
+            userId: userid,
+            latitude: latitude,
+            longitude: longitude,
+            nomBoutique: nomBoutique,
+            addressSeller: adresseBoutique,
+            userAddressChoose: userAddressChoose,
           ),
-        );
-      });
+        ),
+      );
     } on Exception catch (e) {
       if (e is stripe.StripeException) {
+        if (e.error.localizedMessage == "The payment has been canceled") {
+          dialogPaymentCancelled();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error from Stripe: ${e.error.localizedMessage}'),

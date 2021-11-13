@@ -116,6 +116,9 @@ class _PageAccueilState extends State<PageAccueil> {
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) {
+        setState(() {
+          chargementChecked = true;
+        });
         return false;
       }
     }
@@ -157,6 +160,16 @@ class _PageAccueilState extends State<PageAccueil> {
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}") ??
         currentLongitude;
 
+    _preferences = await SharedPreferences.getInstance();
+
+    await _preferences.setDouble(_keyLatitude, latitude);
+
+    await _preferences.setDouble(_keyLongitude, longitude);
+
+    SharedPreferenceHelper().saveUserLatitude(latitude);
+
+    SharedPreferenceHelper().saveUserLongitude(longitude);
+
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(latitude, longitude);
 
@@ -165,7 +178,7 @@ class _PageAccueilState extends State<PageAccueil> {
         "${first.name}, ${first.locality}" ?? _currentAddress;
     idAddress = "${querySnapshot.docs[0]['idDoc']}" ?? null;
     _city = "${first.locality}" ?? _city;
-    chargementChecked = true;
+    // chargementChecked = true;
     setState(() {});
   }
 
@@ -174,7 +187,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
     positionCheck();
 
-    return chargementChecked
+    return latitude != null
         ? StreamBuilder(
             stream: stream,
             builder: (BuildContext context,
@@ -196,7 +209,14 @@ class _PageAccueilState extends State<PageAccueil> {
                     ],
                   ),
                 );
-
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: ColorLoader3(
+                    radius: 15.0,
+                    dotRadius: 6.0,
+                  ),
+                );
+              }
               if (snapshot.data.length > 0) {
                 return ListView(
                   children: [

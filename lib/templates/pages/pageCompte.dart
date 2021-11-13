@@ -120,6 +120,7 @@ class _PageCompteState extends State<PageCompte> {
                     ).copyWith(
                       bottom: 20,
                     ),
+                    width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.symmetric(
                       horizontal: 20,
                     ),

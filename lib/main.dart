@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
@@ -146,10 +147,11 @@ notifications(context, myID, myName, myProfilePic) {
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder(
         future: AuthMethods().getCurrentUser(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
+          if (snapshot.hasData && snapshot.data.uid != null) {
             return StreamBuilder<DocumentSnapshot>(
               stream: FirebaseFirestore.instance
                   .collection("users")
@@ -157,16 +159,17 @@ class MainScreen extends StatelessWidget {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData) {
-                  final userDoc = snapshot.data;
-                  final user = userDoc;
+                if (snapshot.hasData &&
+                    snapshot.data['emailVerified'] != null) {
+                  final user = snapshot.data;
                   if (user['emailVerified'] == false) {
                     return PageLogin();
                   }
                   if (user['firstConnection'] == true) {
                     return PageFirstConnection();
                   }
-                  if (user['admin'] == true) {
+                  if (user['admin'] == true &&
+                      user['firstConnection'] == true) {
                     return NavBar();
                   } else {
                     return Accueil();
@@ -176,8 +179,9 @@ class MainScreen extends StatelessWidget {
                 }
               },
             );
+          } else {
+            return PageBienvenue();
           }
-          return PageBienvenue();
         });
   }
 }

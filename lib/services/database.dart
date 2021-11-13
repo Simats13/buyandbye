@@ -31,21 +31,6 @@ class DatabaseMethods {
   }
 
   Future deleteUser(String userID, customerID) async {
-    final url = "https://api.stripe.com/v1/customers/$customerID";
-
-    var secret =
-        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
-
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $secret',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    Map body = {
-      "deleted": "true",
-    };
-    var response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
-    paymentIntentData = json.decode(response.body);
     return await FirebaseFirestore.instance
         .collection("users")
         .doc(userID)
@@ -55,12 +40,24 @@ class DatabaseMethods {
   Future deleteAddress(String idDoc) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    return await FirebaseFirestore.instance
+    QuerySnapshot _myDoc = await FirebaseFirestore.instance
         .collection("users")
         .doc(userid)
         .collection("Address")
-        .doc(idDoc)
-        .delete();
+        .get();
+    List<DocumentSnapshot> _myDocCount = _myDoc.docs;
+    print(_myDocCount.length);
+    if (_myDocCount.length == 1) {
+      return false;
+    } else {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userid)
+          .collection("Address")
+          .doc(idDoc)
+          .delete();
+      return true;
+    }
   }
 
   Future checkIfDocExists(String docId) async {
@@ -462,22 +459,48 @@ class DatabaseMethods {
     final User user = await AuthMethods().getCurrentUser();
     String iD = Uuid().v4();
     final userid = user.uid;
-    return await FirebaseFirestore.instance
-        .collection('users')
+    QuerySnapshot _myDoc = await FirebaseFirestore.instance
+        .collection("users")
         .doc(userid)
-        .collection('Address')
-        .doc(iD)
-        .set({
-      'addressName': adressTitle,
-      'buildingDetails': buildingDetails,
-      'buildingName': buildingName,
-      'familyName': familyName,
-      'latitude': latitude,
-      'chosen': true,
-      'longitude': longitude,
-      'address': address,
-      'idDoc': iD,
-    });
+        .collection("Address")
+        .get();
+    List<DocumentSnapshot> _myDocCount = _myDoc.docs;
+
+    if (_myDocCount.length >= 1) {
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userid)
+          .collection('Address')
+          .doc(iD)
+          .set({
+        'addressName': adressTitle,
+        'buildingDetails': buildingDetails,
+        'buildingName': buildingName,
+        'familyName': familyName,
+        'latitude': latitude,
+        'chosen': false,
+        'longitude': longitude,
+        'address': address,
+        'idDoc': iD,
+      });
+    } else {
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userid)
+          .collection('Address')
+          .doc(iD)
+          .set({
+        'addressName': adressTitle,
+        'buildingDetails': buildingDetails,
+        'buildingName': buildingName,
+        'familyName': familyName,
+        'latitude': latitude,
+        'chosen': true,
+        'longitude': longitude,
+        'address': address,
+        'idDoc': iD,
+      });
+    }
   }
 
   Future editAdresses(

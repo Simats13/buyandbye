@@ -22,7 +22,7 @@ String getDate(time) {
 }
 
 class _HistoryDetailsState extends State<HistoryDetails> {
-  String shopName, profilePic, description, adresse;
+  String shopName, profilePic, description, adresse, colorStore;
   bool clickAndCollect, livraison;
 
   getShopInfos(sellerId) async {
@@ -34,6 +34,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
     profilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     description = "${querySnapshot.docs[0]["description"]}";
     adresse = "${querySnapshot.docs[0]["adresse"]}";
+    colorStore = "${querySnapshot.docs[0]["colorStore"]}";
     clickAndCollect = "${querySnapshot.docs[0]["ClickAndCollect"]}" == 'true';
     livraison = "${querySnapshot.docs[0]["livraison"]}" == 'true';
     if (mounted) {
@@ -44,7 +45,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
   Widget build(BuildContext context) {
     getShopInfos(widget.shopID);
     return Scaffold(
-       backgroundColor: BuyandByeAppTheme.white,
+        backgroundColor: BuyandByeAppTheme.white,
         appBar: AppBar(
           title: RichText(
             text: TextSpan(
@@ -139,6 +140,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                                                       name: shopName,
                                                       description: description,
                                                       adresse: adresse,
+                                                      colorStore: colorStore,
                                                       clickAndCollect:
                                                           clickAndCollect,
                                                       livraison: livraison,

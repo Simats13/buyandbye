@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
+import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -113,12 +115,16 @@ class _PageExploreState extends State<PageExplore> {
   userID() async {
     _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
     _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
-    latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
-    longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
+    final User user = await AuthMethods().getCurrentUser();
+    var userid = user.uid;
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
     setState(() {
       mapToggle = true;
       geo = Geoflutterfire();
 
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
         var collectionReference = _firestore.collection('magasins');
@@ -382,7 +388,7 @@ class _PageExploreState extends State<PageExplore> {
                     // style: Theme.of(context).textTheme.bodyText2,
                     children: [
                       TextSpan(
-                          text: 'Explore',
+                          text: 'Explorer',
                           style: TextStyle(
                             fontSize: 20,
                             color: BuyandByeAppTheme.orangeMiFonce,
@@ -671,7 +677,8 @@ class _PageExploreState extends State<PageExplore> {
 }
 
 class MapStyle {
-  static String mapStyle = ''' [
+  static String mapStyle =
+      ''' [
   {
     "elementType": "geometry",
     "stylers": [

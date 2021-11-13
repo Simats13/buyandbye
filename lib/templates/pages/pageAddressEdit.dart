@@ -103,7 +103,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
         await geocoder.placemarkFromCoordinates(widget.lat, widget.long);
     var first = addresses.first;
     setState(() {
-      userAddress = "${first.name}, ${first.locality}, ${first.country}";
+      userAddress = "${first.street}, ${first.locality}, ${first.country}";
     });
   }
 

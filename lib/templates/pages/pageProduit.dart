@@ -257,11 +257,11 @@ class _PageProduitState extends State<PageProduit> {
                               //handle logic when pressed on idle state button.
                               setState(() {
                                 stateId = AddToCartButtonStateId.loading;
-                                Future.delayed(Duration(seconds: 2), () {
+                                Future.delayed(Duration(seconds: 1), () {
                                   setState(() {
                                     stateId = AddToCartButtonStateId.done;
                                   });
-                                  Future.delayed(Duration(seconds: 2), () {
+                                  Future.delayed(Duration(seconds: 1), () {
                                     returnDetailPage();
                                   });
                                 });

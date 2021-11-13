@@ -7,7 +7,7 @@ import 'package:buyandbye/templates/pages/pageCategorie.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:shimmer/shimmer.dart';
-
+import 'dart:convert';
 import '../buyandbye_app_theme.dart';
 
 class PageSearch extends StatefulWidget {
