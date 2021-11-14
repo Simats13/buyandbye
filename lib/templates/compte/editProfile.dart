@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
@@ -1024,6 +1025,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                           },
                                                         );
                                                         setState(() {});
+                                                        Phoenix.rebirth(context);
+
                                                       }),
                                                 ],
                                                 cancelButton:

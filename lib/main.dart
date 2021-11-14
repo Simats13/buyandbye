@@ -17,6 +17,8 @@ import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
 import 'templates_commercant/nav_bar.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -36,9 +38,11 @@ void main() async {
     badge: true,
   );
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => InfoWindowsModel(),
-      child: MyApp(),
+    Phoenix(
+      child: ChangeNotifierProvider(
+        create: (context) => InfoWindowsModel(),
+        child: MyApp(),
+      ),
     ),
   );
 }

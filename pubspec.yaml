@@ -90,6 +90,7 @@ dependencies:
   stripe_platform_interface:
   geocoding:
   mailer:
+  flutter_phoenix:
  
 
 flutter_native_splash:
