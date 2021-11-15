@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:buyandbye/services/database.dart';
@@ -18,7 +22,8 @@ class PageProduit extends StatefulWidget {
       this.clickAndCollect,
       this.livraison,
       this.idCommercant,
-      this.idProduit})
+      this.idProduit,
+      this.userid})
       : super(key: key);
 
   final String img;
@@ -32,7 +37,7 @@ class PageProduit extends StatefulWidget {
   final bool livraison;
   final bool clickAndCollect;
   final String idCommercant;
-  final String idProduit;
+  final String idProduit, userid;
   //final List comments;
 
   @override
@@ -47,9 +52,92 @@ class _PageProduitState extends State<PageProduit> {
     num prixProduit = widget.prixProduit;
     String imgProduit = widget.imagesList[0];
     int amount = 1;
-    await DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit, amount,
-        widget.idCommercant, widget.idProduit);
-    Navigator.of(context).pop();
+    bool addProductToCart = await DatabaseMethods().addCart(nomProduit,
+        prixProduit, imgProduit, amount, widget.idCommercant, widget.idProduit);
+    print(addProductToCart);
+    if (addProductToCart == false) {
+      var doc_id = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userid)
+          .collection('cart')
+          .get();
+      QueryDocumentSnapshot doc = doc_id.docs[0];
+      DocumentReference docRef = doc.reference;
+      QuerySnapshot querySnapshot =
+          await DatabaseMethods().getMagasinInfo(docRef.id);
+      String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
+      Platform.isIOS
+          ? showCupertinoDialog(
+              context: context,
+              builder: (context) => CupertinoAlertDialog(
+                title: Text("Commencer un nouveau panier ?"),
+                content: Text(
+                    "Votre panier contient déjà un produit de '$sellerNameCart'. Voulez-vous vider votre panier et ajouter ce produit du magasin '${widget.name}' à la place ?"),
+                actions: [
+                  // Close the dialog
+                  CupertinoButton(
+                      child: Text('Non'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      }),
+                  CupertinoButton(
+                    child: Text(
+                      'Oui',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () async {
+                      print(docRef.id);
+                      await DatabaseMethods().deleteCart(docRef.id);
+                      await DatabaseMethods().addCart(
+                          nomProduit,
+                          prixProduit,
+                          imgProduit,
+                          amount,
+                          widget.idCommercant,
+                          widget.idProduit);
+                      Navigator.of(context).pop();
+                     
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              ),
+            )
+          : showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text("Commencer un nouveau panier ?"),
+                content: Text(
+                    "Votre panier contient déjà un produit du magasin '$sellerNameCart'. Voulez-vous vider votre panier et ajouter ce produit du magasin '${widget.name}' à la place ?"),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text("Annuler"),
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  TextButton(
+                    child: Text(
+                      'Nouveau panier',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () async {
+                      await DatabaseMethods().deleteCart(docRef.id);
+                      await DatabaseMethods().addCart(
+                          nomProduit,
+                          prixProduit,
+                          imgProduit,
+                          amount,
+                          widget.idCommercant,
+                          widget.idProduit);
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            );
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Widget successfullAddCart() {
@@ -167,7 +255,7 @@ class _PageProduitState extends State<PageProduit> {
                     margin: EdgeInsets.only(left: 5, right: 5),
                     child: Icon(Icons.circle_rounded,
                         size: 12,
-                        color: carouselItem == i ? Colors.grey : Colors.black))
+                        color: carouselItem == i ? Colors.black : Colors.grey))
             ]),
             // Affichage des autres informations du produit
             Container(

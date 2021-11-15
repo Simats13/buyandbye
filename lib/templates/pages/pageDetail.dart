@@ -58,14 +58,17 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       message,
       dropdownValue;
   Stream usersStream, chatRoomsStream;
+  String userid;
+  Stream<List<DocumentSnapshot>> stream;
   List listOfCategories = [];
-
+  List<DocumentSnapshot> _myDocCount = [];
   @override
   void initState() {
     super.initState();
     getMyInfo();
     getSellerInfo();
     categoriesInDb();
+    countCart();
     NotificationController.instance.updateTokenToServer();
     if (mounted) {
       checkLocalNotification(localNotificationAnimation, "");
@@ -74,13 +77,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
+    userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
     myName = "${querySnapshot.docs[0]["fname"]}" +
         "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
+    bool cartEmpty = await DatabaseMethods().checkCartEmpty();
+    print(cartEmpty);
   }
 
   getSellerInfo() async {
@@ -88,6 +93,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         await DatabaseMethods().getMagasinInfo(widget.sellerID);
     selectedUserToken = "${querySnapshot.docs[0]["FCMToken"]}";
     setState(() {});
+  }
+
+  countCart() async {
+    QuerySnapshot _myDoc = await DatabaseMethods().getCart();
+    _myDocCount = _myDoc.docs;
   }
 
   getChatRoomIdByUsernames(String a, String b) {
@@ -125,6 +135,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         .get();
     // name1 = "${querySnapshot.docs[0]["nom"]}";
     // setState(() {});
+
     // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
     // pas déjà dans la liste
     for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
@@ -159,7 +170,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
               child: Column(
                 children: [
                   Text(
-                    "PANIER",
+                    _myDocCount.length == 0
+                        ? "PANIER"
+                        : "PANIER (${_myDocCount.length})",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
@@ -601,11 +614,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                  color: Color(
-                                    int.parse("0x$pimpMyStore"),
-                                  ).withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(30),
-                                  ),
+                                color: Color(
+                                  int.parse("0x$pimpMyStore"),
+                                ).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                               child: Center(
                                 child: TextButton(
                                   onPressed: () {
@@ -620,12 +633,16 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                       name,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: dropdownValue == name ? Color(
-                                          int.parse("0x$pimpMyStore"),
-                                        ).withOpacity(1) : Color(
-                                          int.parse("0x$pimpMyStore"),
-                                        ).withOpacity(0.8),
-                                        fontWeight: dropdownValue == name ? FontWeight.bold : FontWeight.w500,
+                                        color: dropdownValue == name
+                                            ? Color(
+                                                int.parse("0x$pimpMyStore"),
+                                              ).withOpacity(1)
+                                            : Color(
+                                                int.parse("0x$pimpMyStore"),
+                                              ).withOpacity(0.8),
+                                        fontWeight: dropdownValue == name
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
                                       ),
                                     ),
                                   ),
@@ -941,6 +958,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   Widget produits(selectedCategorie) {
+    setState(() {
+      countCart();
+    });
     return StreamBuilder(
         stream: DatabaseMethods().getVisibleProducts(
             widget.sellerID, selectedCategorie, clickedNumber),
@@ -964,6 +984,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           context,
                           MaterialPageRoute(
                               builder: (context) => PageProduit(
+                                    userid: userid,
                                     imagesList: snapshot.data.docs[index]
                                         ['images'],
                                     nomProduit: snapshot.data.docs[index]
@@ -1011,6 +1032,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   void affichageCart() {
-    slideDialog.showSlideDialog(context: context, child: CartPage());
+    slideDialog.showSlideDialog(
+      context: context,
+      child: CartPage(),
+    );
   }
 }

@@ -28,7 +28,7 @@ class _CartPageState extends State<CartPage> {
   getMyInfoCart() async {
     QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
     idCommercant = "${querySnapshot.docs[0]["idCommercant"]}";
-
+    
     setState(() {});
   }
 
@@ -161,13 +161,31 @@ class _CartPageState extends State<CartPage> {
                             },
                             color: Colors.deepOrangeAccent,
                             height: 50,
-                            minWidth: double.infinity,
+                            minWidth: MediaQuery.of(context).size.width - 50,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24)),
-                            child: Text(
-                              "CHOISIR LE MODE DE LIVRAISON",
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'CHOISIR LE MODE DE LIVRAISON',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  // color: BuyandByeAppTheme.orangeMiFonce,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                children: [
+                                  WidgetSpan(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: Icon(
+                                        Icons.local_shipping,
+                                        color: BuyandByeAppTheme.white,
+                                        size: 25,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           )
                         ],
@@ -176,7 +194,6 @@ class _CartPageState extends State<CartPage> {
                   }),
             );
           } else {
-            print("panier vide");
             cartTotal = 0.0;
             return Container(
               margin: EdgeInsets.only(top: 100),
@@ -216,7 +233,6 @@ class _CartPageState extends State<CartPage> {
                   shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
-                    print("pas vide");
                     double total = 0.0;
                     for (var i = 0; i < snapshot.data.docs.length; i++) {
                       total += snapshot.data.docs[i]["prixProduit"] *
@@ -360,7 +376,7 @@ class _CartPageState extends State<CartPage> {
 
   deleteItem(itemdelete) {
     String idProduit = itemdelete;
-    DatabaseMethods().deleteCart(idProduit);
+    DatabaseMethods().deleteCartProduct(idProduit);
     setState(() {});
   }
 }

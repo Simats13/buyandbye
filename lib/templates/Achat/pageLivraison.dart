@@ -613,15 +613,33 @@ class _PageLivraisonState extends State<PageLivraison> {
                             onPressed: () {
                               payViaNewCard(context);
                             },
-                            color: BuyandByeAppTheme.orange,
+                            color: Colors.deepOrangeAccent,
                             height: 50,
                             minWidth: MediaQuery.of(context).size.width - 50,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              "PASSER AU PAIEMENT",
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                                borderRadius: BorderRadius.circular(24)),
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'PASSER AU PAIEMENT',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  // color: BuyandByeAppTheme.orangeMiFonce,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                children: [
+                                  WidgetSpan(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: Icon(
+                                        Icons.credit_card,
+                                        color: BuyandByeAppTheme.white,
+                                        size: 25,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -761,7 +779,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   payViaNewCard(BuildContext context) async {
     print(deliveryChoose);
-    ProgressDialog dialog = new ProgressDialog(context);
+    ProgressDialog dialog = new ProgressDialog(context,isDismissible: false);
     dialog.style(message: 'Veuillez patienter...');
     await dialog.show();
     print(widget.total.ceil() * 100);
@@ -806,10 +824,10 @@ class _PageLivraisonState extends State<PageLivraison> {
     try {
       // 3. display the payment sheet.
       await stripe.Stripe.instance.presentPaymentSheet();
-
+ await dialog.show();
       DatabaseMethods().acceptPayment(widget.idCommercant, deliveryChoose,
           widget.total, userAddressChoose, idCommand);
-      await dialog.hide();
+
       //ENVOI D'UN MAIL
 
       final smtpServer = SmtpServer(
@@ -833,6 +851,7 @@ class _PageLivraisonState extends State<PageLivraison> {
           print('Problem: ${p.code}: ${p.msg}');
         }
       }
+     
 
       Navigator.pushReplacement(
         context,
@@ -896,7 +915,8 @@ class _PageLivraisonState extends State<PageLivraison> {
 //////////////////////////////////////////////////////////////////////
 
 class MapStyle {
-  static String mapStyle = ''' [
+  static String mapStyle =
+      ''' [
   {
     "elementType": "geometry",
     "stylers": [
