@@ -380,52 +380,52 @@ class _PageExploreState extends State<PageExplore> {
     return mapToggle
         ? Scaffold(
             backgroundColor: BuyandByeAppTheme.white,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(50.0),
-              child: AppBar(
-                title: RichText(
-                  text: TextSpan(
-                    // style: Theme.of(context).textTheme.bodyText2,
-                    children: [
-                      TextSpan(
-                          text: 'Explorer',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: BuyandByeAppTheme.orangeMiFonce,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      WidgetSpan(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Icon(
-                            Icons.public,
-                            color: BuyandByeAppTheme.orangeFonce,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // actions: <Widget>[
-                //   IconButton(
-                //     icon: Icon(
-                //       Icons.add_location_outlined,
-                //       color: BuyandByeAppTheme.orange,
-                //     ),
-                //     onPressed: _mapController == null
-                //         ? null
-                //         : () {
-                //             _perimeter();
-                //           },
-                //   )
-                // ],
-                backgroundColor: BuyandByeAppTheme.white,
-                automaticallyImplyLeading: false,
-                elevation: 0.0,
-                bottomOpacity: 0.0,
-              ),
-            ),
+            // appBar: PreferredSize(
+            //   preferredSize: Size.fromHeight(50.0),
+            //   child: AppBar(
+            //     title: RichText(
+            //       text: TextSpan(
+            //         // style: Theme.of(context).textTheme.bodyText2,
+            //         children: [
+            //           TextSpan(
+            //               text: 'Explorer',
+            //               style: TextStyle(
+            //                 fontSize: 20,
+            //                 color: BuyandByeAppTheme.orangeMiFonce,
+            //                 fontWeight: FontWeight.bold,
+            //               )),
+            //           WidgetSpan(
+            //             child: Padding(
+            //               padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            //               child: Icon(
+            //                 Icons.public,
+            //                 color: BuyandByeAppTheme.orangeFonce,
+            //                 size: 30,
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     // actions: <Widget>[
+            //     //   IconButton(
+            //     //     icon: Icon(
+            //     //       Icons.add_location_outlined,
+            //     //       color: BuyandByeAppTheme.orange,
+            //     //     ),
+            //     //     onPressed: _mapController == null
+            //     //         ? null
+            //     //         : () {
+            //     //             _perimeter();
+            //     //           },
+            //     //   )
+            //     // ],
+            //     backgroundColor: BuyandByeAppTheme.white,
+            //     automaticallyImplyLeading: false,
+            //     elevation: 0.0,
+            //     bottomOpacity: 0.0,
+            //   ),
+            // ),
             body: Stack(
               children: [
                 Container(

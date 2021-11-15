@@ -110,8 +110,13 @@ app.post("/list_cards", async (req, res) => {
       `${customers}`,
       {object: "card"}
   );
+  // const paymentMethods = await stripe.paymentMethods.list({
+  //   customer: `${customers}`,
+  //   type: "card",
+  // });
 
   res.json({
+
     cards: cards,
     customer: `${customers}`,
   });
