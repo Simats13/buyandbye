@@ -1001,39 +1001,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     },
                                                   ),
                                                   CupertinoActionSheetAction(
-                                                      child: Text(
-                                                          "Supprimer ma carte"),
-                                                      isDestructiveAction: true,
-                                                      onPressed: () async {
-                                                        final url =
-                                                            "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?customers=${customerID}&idCard=${paymentIntentData['paymentMethods']['data'][index]['id']}";
+                                                    child: Text(
+                                                        "Supprimer ma carte"),
+                                                    isDestructiveAction: true,
+                                                    onPressed: () async {
+                                                      final url =
+                                                          "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?customers=${customerID}&idCard=${paymentIntentData['paymentMethods']['data'][index]['id']}";
 
-                                                        final response =
-                                                            await http
-                                                                .post(
-                                                          Uri.parse(url),
-                                                          headers: {
-                                                            'Content-Type':
-                                                                'application/json',
-                                                          },
-                                                          body: json.encode({
-                                                            'a': 'a',
-                                                          }),
-                                                        )
-                                                                .then(
-                                                          (value) async {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                            showMessage(
-                                                                "Suppression carte",
-                                                                "Votre carte a bien été supprimé !");
-                                                          },
-                                                        );
-                                                        setState(() {});
-                                                        Phoenix.rebirth(
-                                                            context);
-                                                      }),
+                                                      final response =
+                                                          await http
+                                                              .post(
+                                                        Uri.parse(url),
+                                                        headers: {
+                                                          'Content-Type':
+                                                              'application/json',
+                                                        },
+                                                        body: json.encode({
+                                                          'a': 'a',
+                                                        }),
+                                                      )
+                                                              .then(
+                                                        (value) async {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          showMessage(
+                                                              "Suppression carte",
+                                                              "Votre carte a bien été supprimé !");
+                                                        },
+                                                      );
+                                                      setState(() {});
+                                                      // Phoenix.rebirth(context);
+                                                    },
+                                                  ),
                                                 ],
                                                 cancelButton:
                                                     CupertinoActionSheetAction(
