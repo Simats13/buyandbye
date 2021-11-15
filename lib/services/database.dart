@@ -402,6 +402,20 @@ class DatabaseMethods {
     return querySnapshot;
   }
 
+  Future<QuerySnapshot> getCartProducts(String sellerID) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("cart")
+        .doc(sellerID)
+        .collection('products')
+        .get();
+
+    return querySnapshot;
+  }
+
   Future checkCartEmpty() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
@@ -409,6 +423,24 @@ class DatabaseMethods {
         .collection("users")
         .doc(userid)
         .collection("cart")
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future checkCartProductEmpty(sellerID) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("cart")
+        .doc(sellerID)
+        .collection('products')
         .get();
 
     if (querySnapshot.docs.isEmpty) {
@@ -714,26 +746,40 @@ class DatabaseMethods {
     });
   }
 
-  Future addItem(String idProduit, int amount) async {
+  Future addItem(String idProduit, sellerID, int amount) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
+        .doc(sellerID)
+        .collection('products')
         .doc(idProduit)
         .update({"amount": amount});
   }
 
-  Future deleteCartProduct(String nomProduit) async {
+  Future deleteCartProduct(String nomProduit, sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    return await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
+        .doc(sellerID)
+        .collection('products')
         .doc(nomProduit)
         .delete();
+    bool checkEmpty = await DatabaseMethods().checkCartProductEmpty(sellerID);
+
+    if (checkEmpty == true) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userid)
+          .collection('cart')
+          .doc(sellerID)
+          .delete();
+    }
   }
 
   Future deleteCart(String sellerID) async {
@@ -769,13 +815,15 @@ class DatabaseMethods {
         .get();
   }
 
-  Future allCartMoney() async {
+  Future allCartMoney(String idCommercant) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
+        .doc(idCommercant)
+        .collection('products')
         .where("prixProduit")
         .get();
   }

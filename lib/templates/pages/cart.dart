@@ -27,8 +27,8 @@ class _CartPageState extends State<CartPage> {
 
   getMyInfoCart() async {
     QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
-    idCommercant = "${querySnapshot.docs[0]["idCommercant"]}";
-    
+    idCommercant = "${querySnapshot.docs[0].id}";
+    print(idCommercant);
     setState(() {});
   }
 
@@ -43,7 +43,7 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DatabaseMethods().allCartMoney(),
+        future: DatabaseMethods().allCartMoney(idCommercant),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
@@ -223,7 +223,7 @@ class _CartPageState extends State<CartPage> {
 
   cartItem() {
     return FutureBuilder(
-        future: DatabaseMethods().getCart(),
+        future: DatabaseMethods().getCartProducts(idCommercant),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -234,6 +234,7 @@ class _CartPageState extends State<CartPage> {
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     double total = 0.0;
+
                     for (var i = 0; i < snapshot.data.docs.length; i++) {
                       total += snapshot.data.docs[i]["prixProduit"] *
                           snapshot.data.docs[i]["amount"];
@@ -244,7 +245,8 @@ class _CartPageState extends State<CartPage> {
                     var amount = snapshot.data.docs[index]["amount"];
                     var money = snapshot.data.docs[index]["prixProduit"];
                     var allMoneyForProduct = money * amount;
-
+                    print("allMoneyForProduct");
+                    print(money);
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
@@ -304,13 +306,13 @@ class _CartPageState extends State<CartPage> {
                                           amount = (snapshot.data.docs[index]
                                                   ["amount"] -
                                               1);
-                                          addItem(itemdelete, amount);
+                                          addItem(itemdelete, amount,idCommercant);
                                           if (snapshot.data.docs[index]
                                                   ["amount"] ==
                                               1) {
                                             var itemdelete =
                                                 snapshot.data.docs[index]["id"];
-                                            deleteItem(itemdelete);
+                                            deleteItem(itemdelete,idCommercant);
                                           }
                                         },
                                       ),
@@ -342,7 +344,7 @@ class _CartPageState extends State<CartPage> {
                                           amount = (snapshot.data.docs[index]
                                                   ["amount"] +
                                               1);
-                                          addItem(itemdelete, amount);
+                                          addItem(itemdelete, amount,idCommercant);
                                         },
                                       ),
                                     ),
@@ -368,15 +370,15 @@ class _CartPageState extends State<CartPage> {
         });
   }
 
-  addItem(itemdelete, amount) async {
+  addItem(itemdelete, amount, sellerID) async {
     String idProduit = itemdelete;
-    DatabaseMethods().addItem(idProduit, amount);
+    DatabaseMethods().addItem(idProduit,sellerID, amount);
     setState(() {});
   }
 
-  deleteItem(itemdelete) {
+  deleteItem(itemdelete, sellerID) {
     String idProduit = itemdelete;
-    DatabaseMethods().deleteCartProduct(idProduit);
+    DatabaseMethods().deleteCartProduct(idProduit,sellerID);
     setState(() {});
   }
 }

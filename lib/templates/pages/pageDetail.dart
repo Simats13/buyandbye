@@ -96,8 +96,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   countCart() async {
-    QuerySnapshot _myDoc = await DatabaseMethods().getCart();
+    QuerySnapshot _myDoc = await DatabaseMethods().getCartProducts(widget.sellerID);
     _myDocCount = _myDoc.docs;
+    setState(() {});
   }
 
   getChatRoomIdByUsernames(String a, String b) {
