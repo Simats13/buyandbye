@@ -53,10 +53,22 @@ class _PageProduitState extends State<PageProduit> {
     String imgProduit = widget.imagesList[0];
     int amount = 1;
 
-    bool checkProductsExists = await DatabaseMethods()
-        .checkIfProductsExists(widget.idCommercant, widget.userid, nomProduit);
+    bool checkProductsExists = await DatabaseMethods().checkIfProductsExists(
+        widget.userid, widget.idCommercant, widget.idProduit);
+
     if (checkProductsExists == true) {
-      DatabaseMethods().addItem(nomProduit,widget.idCommercant, amount);
+      DocumentSnapshot ds = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userid)
+          .collection('cart')
+          .doc(widget.idCommercant)
+          .collection('products')
+          .doc(widget.idProduit)
+          .get();
+      Map getDocs = ds.data();
+      amount = getDocs['amount'];
+      DatabaseMethods().addItem(
+          widget.userid, widget.idCommercant, widget.idProduit, amount + 1);
       Navigator.of(context).pop();
     } else {
       bool addProductToCart = await DatabaseMethods().addCart(

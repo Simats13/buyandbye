@@ -432,7 +432,7 @@ class DatabaseMethods {
     }
   }
 
-  Future checkIfProductsExists(String sellerID, userID, productID) async {
+  Future checkIfProductsExists(String userID, sellerID, productID) async {
     return await FirebaseFirestore.instance
         .collection("users")
         .doc(userID)
@@ -764,16 +764,14 @@ class DatabaseMethods {
     });
   }
 
-  Future addItem(String idProduit, sellerID, int amount) async {
-    final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
+  Future addItem(String userID, sellerID, productID, int amount) async {
     return await FirebaseFirestore.instance
         .collection('users')
-        .doc(userid)
+        .doc(userID)
         .collection('cart')
         .doc(sellerID)
         .collection('products')
-        .doc(idProduit)
+        .doc(productID)
         .update({"amount": amount});
   }
 

@@ -16,7 +16,7 @@ class _CartPageState extends State<CartPage> {
   double cartDeliver = 0.0;
 
   String idCommercant;
-  String customerID, email;
+  String customerID, email, userid;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _CartPageState extends State<CartPage> {
 
   getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
+    userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     customerID = "${querySnapshot.docs[0]["customerId"]}";
     email = "${querySnapshot.docs[0]["email"]}";
@@ -306,13 +306,15 @@ class _CartPageState extends State<CartPage> {
                                           amount = (snapshot.data.docs[index]
                                                   ["amount"] -
                                               1);
-                                          addItem(itemdelete, amount,idCommercant);
+                                          addItem(
+                                              itemdelete, amount, idCommercant);
                                           if (snapshot.data.docs[index]
                                                   ["amount"] ==
                                               1) {
                                             var itemdelete =
                                                 snapshot.data.docs[index]["id"];
-                                            deleteItem(itemdelete,idCommercant);
+                                            deleteItem(
+                                                itemdelete, idCommercant);
                                           }
                                         },
                                       ),
@@ -344,7 +346,8 @@ class _CartPageState extends State<CartPage> {
                                           amount = (snapshot.data.docs[index]
                                                   ["amount"] +
                                               1);
-                                          addItem(itemdelete, amount,idCommercant);
+                                          addItem(
+                                              itemdelete, amount, idCommercant);
                                         },
                                       ),
                                     ),
@@ -372,13 +375,13 @@ class _CartPageState extends State<CartPage> {
 
   addItem(itemdelete, amount, sellerID) async {
     String idProduit = itemdelete;
-    DatabaseMethods().addItem(idProduit,sellerID, amount);
+    DatabaseMethods().addItem(userid, sellerID, idProduit, amount);
     setState(() {});
   }
 
   deleteItem(itemdelete, sellerID) {
     String idProduit = itemdelete;
-    DatabaseMethods().deleteCartProduct(idProduit,sellerID);
+    DatabaseMethods().deleteCartProduct(idProduit, sellerID);
     setState(() {});
   }
 }
