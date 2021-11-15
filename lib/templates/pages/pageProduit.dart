@@ -52,91 +52,104 @@ class _PageProduitState extends State<PageProduit> {
     num prixProduit = widget.prixProduit;
     String imgProduit = widget.imagesList[0];
     int amount = 1;
-    bool addProductToCart = await DatabaseMethods().addCart(nomProduit,
-        prixProduit, imgProduit, amount, widget.idCommercant, widget.idProduit);
-    print(addProductToCart);
-    if (addProductToCart == false) {
-      var doc_id = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userid)
-          .collection('cart')
-          .get();
-      QueryDocumentSnapshot doc = doc_id.docs[0];
-      DocumentReference docRef = doc.reference;
-      QuerySnapshot querySnapshot =
-          await DatabaseMethods().getMagasinInfo(docRef.id);
-      String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
-      Platform.isIOS
-          ? showCupertinoDialog(
-              context: context,
-              builder: (context) => CupertinoAlertDialog(
-                title: Text("Commencer un nouveau panier ?"),
-                content: Text(
-                    "Votre panier contient déjà un produit de '$sellerNameCart'. Voulez-vous vider votre panier et ajouter ce produit du magasin '${widget.name}' à la place ?"),
-                actions: [
-                  // Close the dialog
-                  CupertinoButton(
-                      child: Text('Non'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      }),
-                  CupertinoButton(
-                    child: Text(
-                      'Oui',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    onPressed: () async {
-                      print(docRef.id);
-                      await DatabaseMethods().deleteCart(docRef.id);
-                      await DatabaseMethods().addCart(
-                          nomProduit,
-                          prixProduit,
-                          imgProduit,
-                          amount,
-                          widget.idCommercant,
-                          widget.idProduit);
-                      Navigator.of(context).pop();
-                     
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              ),
-            )
-          : showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text("Commencer un nouveau panier ?"),
-                content: Text(
-                    "Votre panier contient déjà un produit du magasin '$sellerNameCart'. Voulez-vous vider votre panier et ajouter ce produit du magasin '${widget.name}' à la place ?"),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text("Annuler"),
-                    onPressed: () => Navigator.of(context).pop(false),
-                  ),
-                  TextButton(
-                    child: Text(
-                      'Nouveau panier',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    onPressed: () async {
-                      await DatabaseMethods().deleteCart(docRef.id);
-                      await DatabaseMethods().addCart(
-                          nomProduit,
-                          prixProduit,
-                          imgProduit,
-                          amount,
-                          widget.idCommercant,
-                          widget.idProduit);
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            );
-    } else {
+
+    bool checkProductsExists = await DatabaseMethods()
+        .checkIfProductsExists(widget.idCommercant, widget.userid, nomProduit);
+    if (checkProductsExists == true) {
+      DatabaseMethods().addItem(nomProduit,widget.idCommercant, amount);
       Navigator.of(context).pop();
+    } else {
+      bool addProductToCart = await DatabaseMethods().addCart(
+          nomProduit,
+          prixProduit,
+          imgProduit,
+          amount,
+          widget.idCommercant,
+          widget.idProduit);
+
+      if (addProductToCart == false) {
+        var doc_id = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userid)
+            .collection('cart')
+            .get();
+        QueryDocumentSnapshot doc = doc_id.docs[0];
+        DocumentReference docRef = doc.reference;
+        QuerySnapshot querySnapshot =
+            await DatabaseMethods().getMagasinInfo(docRef.id);
+        String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
+        Platform.isIOS
+            ? showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                  title: Text("Commencer un nouveau panier ?"),
+                  content: Text(
+                      "Votre panier contient déjà un produit de '$sellerNameCart'. Voulez-vous vider votre panier et ajouter ce produit du magasin '${widget.name}' à la place ?"),
+                  actions: [
+                    // Close the dialog
+                    CupertinoButton(
+                        child: Text('Non'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        }),
+                    CupertinoButton(
+                      child: Text(
+                        'Oui',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      onPressed: () async {
+                        print(docRef.id);
+                        await DatabaseMethods().deleteCart(docRef.id);
+                        await DatabaseMethods().addCart(
+                            nomProduit,
+                            prixProduit,
+                            imgProduit,
+                            amount,
+                            widget.idCommercant,
+                            widget.idProduit);
+                        Navigator.of(context).pop();
+
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                ),
+              )
+            : showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("Commencer un nouveau panier ?"),
+                  content: Text(
+                      "Votre panier contient déjà un produit du magasin '$sellerNameCart'. Voulez-vous vider votre panier et ajouter ce produit du magasin '${widget.name}' à la place ?"),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text("Annuler"),
+                      onPressed: () => Navigator.of(context).pop(false),
+                    ),
+                    TextButton(
+                      child: Text(
+                        'Nouveau panier',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      onPressed: () async {
+                        await DatabaseMethods().deleteCart(docRef.id);
+                        await DatabaseMethods().addCart(
+                            nomProduit,
+                            prixProduit,
+                            imgProduit,
+                            amount,
+                            widget.idCommercant,
+                            widget.idProduit);
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
+      } else {
+        Navigator.of(context).pop();
+      }
     }
   }
 

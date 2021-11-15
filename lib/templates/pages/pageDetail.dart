@@ -96,7 +96,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   countCart() async {
-    QuerySnapshot _myDoc = await DatabaseMethods().getCartProducts(widget.sellerID);
+    QuerySnapshot _myDoc =
+        await DatabaseMethods().getCartProducts(widget.sellerID);
     _myDocCount = _myDoc.docs;
     setState(() {});
   }
@@ -170,16 +171,33 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
               padding: EdgeInsets.all(15),
               child: Column(
                 children: [
-                  Text(
-                    _myDocCount.length == 0
-                        ? "PANIER"
-                        : "PANIER (${_myDocCount.length})",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Color(int.parse("0x$pimpMyStore"))
-                            .withOpacity(0.8)),
-                  )
+                  RichText(
+                    text: TextSpan(
+                      // style: Theme.of(context).textTheme.bodyText2,
+                      children: [
+                        TextSpan(
+                            text: _myDocCount.length == 0
+                                ? "PANIER"
+                                : "PANIER (${_myDocCount.length})",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Color(int.parse("0x$pimpMyStore"))
+                                    .withOpacity(0.8))),
+                        WidgetSpan(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: Icon(
+                              Icons.shopping_basket,
+                              color: BuyandByeAppTheme.orangeMiFonce,
+                              size: 25,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

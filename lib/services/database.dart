@@ -432,6 +432,24 @@ class DatabaseMethods {
     }
   }
 
+  Future checkIfProductsExists(String sellerID, userID, productID) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .collection('cart')
+        .doc(sellerID)
+        .collection('products')
+        .doc(productID)
+        .get()
+        .then((DocumentSnapshot ds) {
+      if (ds.exists) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+
   Future checkCartProductEmpty(sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
