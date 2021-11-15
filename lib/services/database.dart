@@ -861,6 +861,8 @@ class DatabaseMethods {
         .collection('users')
         .doc(userid)
         .collection('cart')
+        .doc(idCommercant)
+        .collection('products')
         .get();
 
     for (var i in produits.docs) {

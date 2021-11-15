@@ -215,7 +215,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                     SizedBox(height: 10),
                     Row(children: [
                       FutureBuilder(
-                          future: DatabaseMethods().getCart(),
+                          future: DatabaseMethods().getCartProducts(widget.idCommercant),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Expanded(
