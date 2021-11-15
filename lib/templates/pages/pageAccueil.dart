@@ -42,7 +42,7 @@ class _PageAccueilState extends State<PageAccueil> {
   @override
   LocationData _locationData;
   Location location = Location();
-  bool permissionChecked;
+  bool permissionChecked = false;
   bool chargementChecked = false;
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
@@ -63,7 +63,8 @@ class _PageAccueilState extends State<PageAccueil> {
       _city,
       zipCode,
       idAddress,
-      userid;
+      userid,
+      username;
   double latitude, longitude, currentLatitude, currentLongitude;
   Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
@@ -75,7 +76,7 @@ class _PageAccueilState extends State<PageAccueil> {
   void initState() {
     super.initState();
     // userID();
-
+    userinfo();
     _determinePermission();
     getCoordinates();
   }
@@ -124,6 +125,9 @@ class _PageAccueilState extends State<PageAccueil> {
       }
     }
 
+    setState(() {
+      permissionChecked = true;
+    });
     getLocationUser();
     return true;
   }
@@ -151,9 +155,17 @@ class _PageAccueilState extends State<PageAccueil> {
     });
   }
 
+  userinfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+    QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
+    username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
+  }
+
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
+
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getChosenAddress(userid);
     latitude =
@@ -189,358 +201,382 @@ class _PageAccueilState extends State<PageAccueil> {
     positionCheck();
 
     return latitude != null
-        ? StreamBuilder(
-            stream: stream,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-              if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              }
+        ? CupertinoPageScaffold(
+            child: NestedScrollView(
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  CupertinoSliverNavigationBar(
+                    // leading: Material(
+                    //     child: IconButton(
+                    //   icon: Icon(Icons.home),
+                    //   onPressed: () {},
+                    // )),
 
-              if (!snapshot.hasData)
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ColorLoader3(
-                        radius: 15.0,
-                        dotRadius: 6.0,
+                    middle: Container(
+                      height: 100,
+                      width: MediaQuery.of(context).size.width - 70,
+                      decoration: BoxDecoration(
+                        color: textFieldColor,
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      Text("Chargement, veuillez patienter"),
-                    ],
-                  ),
-                );
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: ColorLoader3(
-                    radius: 15.0,
-                    dotRadius: 6.0,
-                  ),
-                );
-              }
-              if (snapshot.data.length > 0) {
-                return ListView(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Container(
-                                height: 50,
-                                width: MediaQuery.of(context).size.width - 70,
-                                decoration: BoxDecoration(
-                                  color: textFieldColor,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: BuyandByeAppTheme.orangeMiFonce
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          SizedBox(
-                                            height: 30,
-                                            width: size.width - 150,
-                                            child: InkWell(
-                                              onTapCancel: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              onTap: () async {
-                                                permissionChecked =
-                                                    await _determinePermission();
-
-                                                affichageAddress();
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.only(top: 5),
-                                                child: Text(
-                                                  _currentAddressLocation,
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(children: [
-                                Container(
-                                  padding: EdgeInsets.only(
-                                    left: 6,
-                                    right: 6,
-                                  ),
-                                  child: IconButton(
-                                    icon: Container(
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.shopping_cart,
-                                          color: BuyandByeAppTheme.orangeMiFonce
-                                          // size: 22,
-                                        ),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      affichageCart();
-                                    },
-                                  ),
-                                ),
-                              ]),
-                            ]),
-                        SizedBox(
-                          height: 15,
-                        ),
-
-                        SizedBox(
-                          height: 15,
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                          child: Text(
-                            "Les bons plans du moment",
-                            style: customTitle,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                          child: Text(
-                            "Des bons plans à $_city  🤲",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          child: SliderAccueil1(latitude, longitude),
-                        ),
-
-                        Center(
-                            child: Text(
-                          "Sponsorisé",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20.00),
-                        )),
-                        SizedBox(
-                          height: 15,
-                        ),
-
-                        //trait gris de séparation
-                        Container(
-                          width: size.width,
-                          height: 10,
-                          decoration: BoxDecoration(color: textFieldColor),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                          child: Text(
-                            "Près de chez vous",
-                            style: customTitle,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                          child: Text(
-                            "-3km 📍",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          child: SliderAccueil2(latitude, longitude),
-                        ),
-
-                        //trait gris de séparation
-                        Container(
-                          width: size.width,
-                          height: 10,
-                          decoration: BoxDecoration(color: textFieldColor),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                          child: Text(
-                            "Plus à découvrir",
-                            style: customTitle,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                          child: Text(
-                            "-10km 🗺️",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          child: SliderAccueil3(latitude, longitude),
-                        ),
-
-                        SizedBox(
-                          height: 15,
-                        ),
-                        // Text(
-                        //   "    Vous avez acheté chez eux récemment",
-                        //   style: customTitle,
-                        // ),
-                        // Container(
-                        //   padding: EdgeInsets.all(20),
-                        //   child: SliderAccueil4(latitude, longitude),
-                        //   ),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
-                        Container(
-                          width: size.width,
-                          height: 10,
-                          decoration: BoxDecoration(color: textFieldColor),
-                        ),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
-                        // Center(
-                        //   child: GestureDetector(
-                        //     onTap: () {
-                        //       affichageAllStores();
-                        //     },
-                        //     child: Container(
-                        //       height: 50,
-                        //       width: 210,
-                        //       decoration: BoxDecoration(
-                        //           borderRadius: BorderRadius.circular(20),
-                        //           color: BuyandByeAppTheme.black_electrik),
-                        //       child: Text(
-                        //         "Afficher tous les commerçants",
-                        //         style: TextStyle(color: white),
-                        //       ),
-                        //       alignment: Alignment.center,
-                        //     ),
-                        //   ),
-                        // ),
-
-                        SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              } else {
-                return ListView(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(left: 15),
-                              height: 45,
-                              width: size.width - 70,
-                              decoration: BoxDecoration(
-                                color: textFieldColor,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(12),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on,
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        SizedBox(
-                                          height: 30,
-                                          width: size.width - 150,
-                                          child: InkWell(
-                                            onTap: () async {
-                                              permissionChecked =
-                                                  await _determinePermission();
-
-                                              affichageAddress();
-                                            },
-                                            child: Container(
-                                              width: size.width - 150,
-                                              padding: EdgeInsets.only(top: 5),
-                                              child: Text(
-                                                _currentAddressLocation,
-                                                textAlign: TextAlign.left,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                    ),
-                    Container(
-                      child: Center(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/splash_2.png',
-                            width: 300,
-                            height: 300,
-                          ),
+                      child: Row(
+                        // mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Text(
-                              "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
-                              style: TextStyle(
-                                fontSize: 18,
-                                // color: Colors.grey[700]
-                              ),
-                              textAlign: TextAlign.justify,
+                            padding: EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                Icon(Icons.location_on,
+                                    color: BuyandByeAppTheme.orangeMiFonce),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                  // width: size.width - 150,
+                                  child: InkWell(
+                                    onTapCancel: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    onTap: () async {
+                                      // permissionChecked =
+                                      //     await _determinePermission();
+
+                                      affichageAddress();
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        _currentAddressLocation ?? "",
+                                        style: TextStyle(fontSize: 13.5),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      )),
+                      ),
                     ),
-                  ],
-                );
-              }
-            })
+
+                    trailing: Container(
+                      padding: EdgeInsets.only(
+                        left: 6,
+                        right: 6,
+                      ),
+                      child: IconButton(
+                        icon: Container(
+                          child: Center(
+                            child: Icon(Icons.shopping_cart,
+                                color: BuyandByeAppTheme.orangeMiFonce
+                                // size: 22,
+                                ),
+                          ),
+                        ),
+                        onPressed: () {
+                          affichageCart();
+                        },
+                      ),
+                    ),
+
+                    largeTitle: RichText(
+                      text: TextSpan(
+                        // style: Theme.of(context).textTheme.bodyText2,
+                        children: [
+                          TextSpan(
+                              text: 'Bienvenue ',
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: BuyandByeAppTheme.orangeMiFonce,
+                                fontWeight: FontWeight.bold,
+                              )),
+                          TextSpan(
+                            text: username,
+                            style: TextStyle(
+                              fontSize: 23,
+                              color: BuyandByeAppTheme.black_electrik,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ];
+              },
+              body: StreamBuilder(
+                stream: stream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (!snapshot.hasData)
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ColorLoader3(
+                            radius: 15.0,
+                            dotRadius: 6.0,
+                          ),
+                          Text("Chargement, veuillez patienter"),
+                        ],
+                      ),
+                    );
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: ColorLoader3(
+                        radius: 15.0,
+                        dotRadius: 6.0,
+                      ),
+                    );
+                  }
+                  if (snapshot.data.length > 0) {
+                    return ListView(
+                      shrinkWrap: true,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Les bons plans du moment",
+                                style: customTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Des bons plans à $_city  🤲",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+
+                            Container(
+                              padding: EdgeInsets.all(20),
+                              child: SliderAccueil1(latitude, longitude),
+                            ),
+
+                            Center(
+                                child: Text(
+                              "Sponsorisé",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20.00),
+                            )),
+                            SizedBox(
+                              height: 15,
+                            ),
+
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Près de chez vous",
+                                style: customTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "-3km 📍",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(20),
+                              child: SliderAccueil2(latitude, longitude),
+                            ),
+
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Plus à découvrir",
+                                style: customTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "-10km 🗺️",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(20),
+                              child: SliderAccueil3(latitude, longitude),
+                            ),
+
+                            SizedBox(
+                              height: 15,
+                            ),
+                            // Text(
+                            //   "    Vous avez acheté chez eux récemment",
+                            //   style: customTitle,
+                            // ),
+                            // Container(
+                            //   padding: EdgeInsets.all(20),
+                            //   child: SliderAccueil4(latitude, longitude),
+                            //   ),
+                            // SizedBox(
+                            //   height: 20,
+                            // ),
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            // SizedBox(
+                            //   height: 20,
+                            // ),
+                            // Center(
+                            //   child: GestureDetector(
+                            //     onTap: () {
+                            //       affichageAllStores();
+                            //     },
+                            //     child: Container(
+                            //       height: 50,
+                            //       width: 210,
+                            //       decoration: BoxDecoration(
+                            //           borderRadius: BorderRadius.circular(20),
+                            //           color: BuyandByeAppTheme.black_electrik),
+                            //       child: Text(
+                            //         "Afficher tous les commerçants",
+                            //         style: TextStyle(color: white),
+                            //       ),
+                            //       alignment: Alignment.center,
+                            //     ),
+                            //   ),
+                            // ),
+
+                            SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  } else {
+                    return ListView(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(left: 15),
+                                  height: 45,
+                                  width: size.width - 70,
+                                  decoration: BoxDecoration(
+                                    color: textFieldColor,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(12),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            SizedBox(
+                                              height: 30,
+                                              width: size.width - 150,
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  // permissionChecked =
+                                                  //     await _determinePermission();
+
+                                                  affichageAddress();
+                                                },
+                                                child: Container(
+                                                  width: size.width - 150,
+                                                  padding:
+                                                      EdgeInsets.only(top: 5),
+                                                  child: Text(
+                                                    _currentAddressLocation,
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: Center(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Image.asset(
+                                'assets/images/splash_2.png',
+                                width: 300,
+                                height: 300,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Text(
+                                  "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    // color: Colors.grey[700]
+                                  ),
+                                  textAlign: TextAlign.justify,
+                                ),
+                              ),
+                            ],
+                          )),
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          )
         : Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
