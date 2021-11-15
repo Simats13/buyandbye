@@ -101,7 +101,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
 
     paymentIntentData = jsonDecode(response.body);
-    print(paymentIntentData);
+    print(paymentIntentData['paymentMethods']['data'][0]['card']);
+    print(paymentIntentData['paymentMethods']['data'][1]['card']);
 
     setState(() {});
   }
@@ -424,7 +425,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ? Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Delier Facebook",
+                                        btnText: "Dissocier Facebook",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.facebook,
@@ -432,7 +433,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           await AuthMethods.instanace
                                               .unlinkFacebook();
                                           showMessage("Lien Facebook",
-                                              "Votre compte Facebook a bien été délié !");
+                                              "Votre compte Facebook a bien été dissocié !");
                                           setState(() {
                                             facebook = "false";
                                           });
@@ -442,7 +443,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               : Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Lier Facebook",
+                                        btnText: "Associer Facebook",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.facebook,
@@ -461,7 +462,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               if (e.code ==
                                                   'credential-already-in-use') {
                                                 String erreur =
-                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
                                                 showMessage(
                                                     "Adresse mail déjà utilisée",
                                                     erreur);
@@ -475,7 +476,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ? Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Delier Google",
+                                        btnText: "Dissocier Google",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.google,
@@ -483,7 +484,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           await AuthMethods.instanace
                                               .unlinkGoogle();
                                           showMessage("Lien Google",
-                                              "Votre compte Google a bien été délié !");
+                                              "Votre compte Google a bien été dissocié !");
                                           setState(() {
                                             google = "false";
                                           });
@@ -493,7 +494,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               : Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Lier Google",
+                                        btnText: "Associer Google",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.google,
@@ -512,7 +513,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               if (e.code ==
                                                   'credential-already-in-use') {
                                                 String erreur =
-                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
                                                 showMessage(
                                                     "Adresse mail déjà utilisée",
                                                     erreur);
@@ -526,7 +527,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ? Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Delier Mail",
+                                        btnText: "Dissocier Mail",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.mail,
@@ -539,7 +540,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               if (e.code ==
                                                   'credential-already-in-use') {
                                                 String erreur =
-                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
                                                 showMessage(
                                                     "Adresse mail déjà utilisée",
                                                     erreur);
@@ -552,7 +553,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               : Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Lier Mail",
+                                        btnText: "Associer Mail",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.mail,
@@ -565,7 +566,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               if (e.code ==
                                                   'credential-already-in-use') {
                                                 String erreur =
-                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
                                                 showMessage(
                                                     "Adresse mail déjà utilisée",
                                                     erreur);
@@ -579,7 +580,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ? Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Delier Apple",
+                                        btnText: "Dissocier Apple",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.apple,
@@ -588,7 +589,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             await AuthMethods.instanace
                                                 .unlinkApple();
                                             showMessage("Lien Apple",
-                                                "Votre compte Apple a bien été délié !");
+                                                "Votre compte Apple a bien été dissocié !");
                                             setState(() {
                                               apple = "false";
                                             });
@@ -603,7 +604,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               : Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Lier Apple",
+                                        btnText: "Associer Apple",
                                         imagePosition:
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.apple,
@@ -622,7 +623,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               if (e.code ==
                                                   'credential-already-in-use') {
                                                 String erreur =
-                                                    "Un compte existe déjà avec cette adresse mail, veuillez le delier ou bien contactez le support.";
+                                                    "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
                                                 showMessage(
                                                     "Adresse mail déjà utilisée",
                                                     erreur);
@@ -936,20 +937,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                           SizedBox(height: 20),
                           (paymentIntentData != null &&
-                                  paymentIntentData['cards']['data'].length !=
+                                  paymentIntentData['paymentMethods']['data']
+                                          .length !=
                                       0)
                               ? ListView.builder(
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: paymentIntentData.length - 1,
+                                  itemCount: paymentIntentData.length,
                                   itemBuilder: (context, index) {
                                     return Column(
                                       children: [
                                         ListTile(
-                                          leading: paymentIntentData['cards']
+                                          leading: paymentIntentData[
+                                                              'paymentMethods']
                                                           ['data'][index]
-                                                      ['brand'] ==
-                                                  "MasterCard"
+                                                      ['card']['brand'] ==
+                                                  "mastercard"
                                               ? Image.network(
                                                   "https://logos-marques.com/wp-content/uploads/2021/07/Mastercard-logo.png",
                                                   width: 50,
@@ -960,20 +963,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   height: 50,
                                                 ),
                                           title: Text(
-                                            paymentIntentData['cards']['data']
-                                                [index]['brand'],
+                                            paymentIntentData['paymentMethods']
+                                                    ['data'][index]['card']
+                                                ['brand'],
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 20.0),
                                           ),
                                           subtitle: Text(
-                                            paymentIntentData['cards']['data']
-                                                        [index]['exp_month']
+                                            paymentIntentData['paymentMethods']
+                                                            ['data'][index]
+                                                        ['card']['exp_month']
                                                     .toString() +
                                                 '/' +
-                                                paymentIntentData['cards']
+                                                paymentIntentData[
+                                                                'paymentMethods']
                                                             ['data'][index]
-                                                        ['exp_year']
+                                                        ['card']['exp_year']
                                                     .toString(),
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -1000,7 +1006,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       isDestructiveAction: true,
                                                       onPressed: () async {
                                                         final url =
-                                                            "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?customers=${customerID}&idCard=${paymentIntentData['cards']['data'][index]['id']}";
+                                                            "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?customers=${customerID}&idCard=${paymentIntentData['paymentMethods']['data'][index]['id']}";
 
                                                         final response =
                                                             await http
@@ -1025,8 +1031,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                           },
                                                         );
                                                         setState(() {});
-                                                        Phoenix.rebirth(context);
-
+                                                        Phoenix.rebirth(
+                                                            context);
                                                       }),
                                                 ],
                                                 cancelButton:

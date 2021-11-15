@@ -237,9 +237,8 @@ class DatabaseMethods {
     //List usersList = [];
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    try {
-      await FirebaseFirestore.instance.collection("users").doc(userid).get();
-    } catch (e) {}
+
+    await FirebaseFirestore.instance.collection("users").doc(userid).get();
   }
 
   Stream getProducts(String sellerId) {

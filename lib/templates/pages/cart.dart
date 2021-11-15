@@ -159,11 +159,11 @@ class _CartPageState extends State<CartPage> {
                                             customerID: customerID,
                                           )));
                             },
-                            color: BuyandByeAppTheme.orange,
+                            color: Colors.deepOrangeAccent,
                             height: 50,
                             minWidth: double.infinity,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                                borderRadius: BorderRadius.circular(24)),
                             child: Text(
                               "CHOISIR LE MODE DE LIVRAISON",
                               style: TextStyle(

@@ -106,18 +106,22 @@ app.post("/list_cards", async (req, res) => {
     });
   }
 
-  const cards = await stripe.customers.listSources(
-      `${customers}`,
-      {object: "card", limit: 10}
-  );
+  // const cards = await stripe.customers.listSources(
+  //     `${customers}`,
+  //     {object: "card", limit: 10}
+  // );
+
   // const paymentMethods = await stripe.paymentMethods.list({
-  //   customer: `${customers}`,
-  //   type: "card",
+  //   customer: 'cus_KPCQxJNAdK4wIn',
+  //   type: 'card',
   // });
+  const paymentMethods = await stripe.paymentMethods.list({
+    customer: `${customers}`,
+    type: "card",
+  });
 
   res.json({
-
-    cards: cards,
+    paymentMethods: paymentMethods,
     customer: `${customers}`,
   });
 });

@@ -42,13 +42,14 @@ class _PageResumeState extends State<PageResume> {
   GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
   BitmapDescriptor mapMarker;
-  String shopName, profilePic, description, adresse,colorStore;
+  String shopName, profilePic, description, adresse, colorStore;
   bool clickAndCollect, livraison;
   @override
   void initState() {
     super.initState();
     getThisUserInfo();
     getCommand();
+    getShopInfos();
   }
 
   getCommand() async {
@@ -74,11 +75,9 @@ class _PageResumeState extends State<PageResume> {
     setState(() {});
   }
 
-  getShopInfos(sellerId) async {
-    var querySnapshot = await FirebaseFirestore.instance
-        .collection("magasins")
-        .where("id", isEqualTo: widget.sellerID)
-        .get();
+  getShopInfos() async {
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getMagasinInfoViaID(widget.sellerID);
     shopName = "${querySnapshot.docs[0]["name"]}";
     profilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     description = "${querySnapshot.docs[0]["description"]}";
@@ -86,6 +85,7 @@ class _PageResumeState extends State<PageResume> {
     clickAndCollect = "${querySnapshot.docs[0]["ClickAndCollect"]}" == 'true';
     colorStore = "${querySnapshot.docs[0]["colorStore"]}";
     livraison = "${querySnapshot.docs[0]["livraison"]}" == 'true';
+
     if (mounted) {
       setState(() {});
     }
@@ -109,6 +109,7 @@ class _PageResumeState extends State<PageResume> {
 
   @override
   Widget build(BuildContext context) {
+    print(colorStore);
     return Scaffold(
         backgroundColor: BuyandByeAppTheme.white,
         appBar: AppBar(
@@ -129,7 +130,7 @@ class _PageResumeState extends State<PageResume> {
                     child: Icon(
                       Icons.shopping_cart,
                       color: BuyandByeAppTheme.orangeFonce,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                 ),
@@ -225,9 +226,9 @@ class _PageResumeState extends State<PageResume> {
                               SizedBox(height: 10),
                               Row(children: [
                                 Text("Vendeur :",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500)),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500)),
                                 widget.nomBoutique == null
                                     ? CircularProgressIndicator()
                                     : TextButton(
@@ -250,7 +251,7 @@ class _PageResumeState extends State<PageResume> {
                                                         clickAndCollect:
                                                             clickAndCollect,
                                                         livraison: livraison,
-                                                        colorStore:colorStore,
+                                                        colorStore: colorStore,
                                                         sellerID:
                                                             widget.sellerID,
                                                       )));
