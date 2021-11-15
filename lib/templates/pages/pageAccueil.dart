@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -246,6 +247,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                         children: [
                                           Icon(
                                             Icons.location_on,
+                                            color: BuyandByeAppTheme.orangeMiFonce
                                           ),
                                           SizedBox(
                                             width: 10,
@@ -290,6 +292,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                       child: Center(
                                         child: Icon(
                                           Icons.shopping_cart,
+                                          color: BuyandByeAppTheme.orangeMiFonce
                                           // size: 22,
                                         ),
                                       ),

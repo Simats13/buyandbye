@@ -169,7 +169,7 @@ class _PageSearchState extends State<PageSearch> {
                   // style: Theme.of(context).textTheme.bodyText2,
                   children: [
                     TextSpan(
-                        text: 'Rechercher',
+                        text: 'Recherche',
                         style: TextStyle(
                           fontSize: 20,
                           color: BuyandByeAppTheme.orangeMiFonce,
@@ -181,7 +181,7 @@ class _PageSearchState extends State<PageSearch> {
                         child: Icon(
                           Icons.search,
                           color: BuyandByeAppTheme.orangeFonce,
-                          size:30,
+                          size:25,
                         ),
                       ),
                     ),
@@ -235,7 +235,7 @@ class _PageSearchState extends State<PageSearch> {
                               }
                             },
                             decoration: InputDecoration(
-                              hintText: 'Rechercher un commerce',
+                              hintText: 'Trouver un commerce',
                               border: InputBorder.none,
                             ),
                             controller: searchController,

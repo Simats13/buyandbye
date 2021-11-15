@@ -53,7 +53,7 @@ class _UserHistoryState extends State<UserHistory> {
                     child: Icon(
                       Icons.history,
                       color: BuyandByeAppTheme.orangeFonce,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                 ),

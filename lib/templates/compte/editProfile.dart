@@ -166,8 +166,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: Icon(
                       Icons.settings,
-                      color: BuyandByeAppTheme.orangeFonce,
-                      size: 30,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      size: 25,
                     ),
                   ),
                 ),

@@ -67,7 +67,7 @@ class _PageMessagerieState extends State<PageMessagerie>
                     child: Icon(
                       Icons.chat,
                       color: BuyandByeAppTheme.orangeFonce,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                 ),

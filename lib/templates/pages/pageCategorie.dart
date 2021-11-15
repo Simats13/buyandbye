@@ -75,7 +75,7 @@ class _PageCategorieState extends State<PageCategorie> {
                 WidgetSpan(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Image.asset(widget.img,width: 50,height:50,)
+                    child: Image.asset(widget.img,width: 30,height:30,)
                   ),
                 ),
               ],

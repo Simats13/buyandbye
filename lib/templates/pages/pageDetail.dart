@@ -605,9 +605,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     int.parse("0x$pimpMyStore"),
                                   ).withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(30),
-                                  border: dropdownValue == name
-                                      ? Border.all(color: Colors.blueAccent)
-                                      : null),
+                                  ),
                               child: Center(
                                 child: TextButton(
                                   onPressed: () {
@@ -622,10 +620,12 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                       name,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Color(
+                                        color: dropdownValue == name ? Color(
+                                          int.parse("0x$pimpMyStore"),
+                                        ).withOpacity(1) : Color(
                                           int.parse("0x$pimpMyStore"),
                                         ).withOpacity(0.8),
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: dropdownValue == name ? FontWeight.bold : FontWeight.w500,
                                       ),
                                     ),
                                   ),
