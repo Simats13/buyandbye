@@ -5,18 +5,18 @@ import 'package:buyandbye/templates/compte/constants.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 class ProfileListItem extends StatelessWidget {
-  final IconData icon;
-  final String text;
+  final IconData? icon;
+  final String? text;
   final bool hasNavigation;
-  final Function press;
+  final Function? press;
 
   const ProfileListItem({
-    Key key,
+    Key? key,
     this.icon,
     this.text,
     this.hasNavigation = true,
     this.press,
-    Null Function() onTap,
+    Null Function()? onTap,
   }) : super(key: key);
 
   @override
@@ -36,7 +36,7 @@ class ProfileListItem extends StatelessWidget {
         color: BuyandByeAppTheme.orange,
       ),
       child: MaterialButton(
-        onPressed: press,
+        onPressed: press as void Function()?,
         child: Row(
           children: <Widget>[
             Icon(
@@ -45,7 +45,7 @@ class ProfileListItem extends StatelessWidget {
             ),
             SizedBox(width: kSpacingUnit.w * 1.5),
             Text(
-              this.text,
+              this.text!,
               style: kTitleTextStyle.copyWith(
                 fontWeight: FontWeight.w500,
               ),

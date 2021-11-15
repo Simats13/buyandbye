@@ -5,7 +5,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 class FullPhoto extends StatefulWidget {
   final String url;
 
-  FullPhoto({Key key,@required this.url}) : super(key: key);
+  FullPhoto({Key? key,required this.url}) : super(key: key);
   @override State createState() => new _FullPhoto();
 }
 
@@ -37,7 +37,7 @@ class _FullPhoto extends State<FullPhoto> {
                       width: 20.0,
                       height: 20.0,
                       child: CircularProgressIndicator(
-                        value: event == null ? 0 : event.cumulativeBytesLoaded / event.expectedTotalBytes,
+                        value: event == null ? 0 : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
                       ),
                     ),
                   ),

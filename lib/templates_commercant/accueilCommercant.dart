@@ -11,7 +11,7 @@ List categoriesInDb(snapshot) {
   // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
   // pas déjà dans la liste
   for (var i = 0; i <= snapshot.data.docs.length - 1; i++) {
-    String categoryName = snapshot.data.docs[i]["categorie"];
+    String? categoryName = snapshot.data.docs[i]["categorie"];
     if (!categoriesList.contains(categoryName)) {
       categoriesList.add(snapshot.data.docs[i]["categorie"]);
     }
@@ -24,10 +24,10 @@ class AccueilCommercant extends StatefulWidget {
 }
 
 class _AccueilCommercantState extends State<AccueilCommercant> {
-  String myID;
-  String myName, myUserName, myEmail;
-  String myProfilePic;
-  String myPremium;
+  String? myID;
+  late String myName, myUserName, myEmail;
+  String? myProfilePic;
+  String? myPremium;
 
   @override
   void initState() {
@@ -97,7 +97,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(100),
                         child: Image.network(
-                          myProfilePic,
+                          myProfilePic!,
                         ),
                       ),
                     ),

@@ -9,10 +9,10 @@ class HistoryDetails extends StatefulWidget {
   _HistoryDetailsState createState() => _HistoryDetailsState();
   HistoryDetails(this.userid, this.commandId, this.statut, this.horodatage,
       this.shopID, this.prix, this.livraison, this.adresse);
-  final String userid, commandId, shopID, adresse;
-  final int statut, livraison;
-  final Timestamp horodatage;
-  final double prix;
+  final String? userid, commandId, shopID, adresse;
+  final int? statut, livraison;
+  final Timestamp? horodatage;
+  final double? prix;
 }
 
 // Fonction qui renvoie l'horodatage actuel
@@ -22,8 +22,8 @@ String getDate(time) {
 }
 
 class _HistoryDetailsState extends State<HistoryDetails> {
-  String shopName, profilePic, description, adresse;
-  bool clickAndCollect, livraison;
+  String? shopName, profilePic, description, adresse;
+  bool? clickAndCollect, livraison;
 
   getShopInfos(sellerId) async {
     var querySnapshot = await FirebaseFirestore.instance
@@ -84,7 +84,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              "Total : " + widget.prix.toStringAsFixed(2) + "€",
+                              "Total : " + widget.prix!.toStringAsFixed(2) + "€",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                           SizedBox(height: 20),
@@ -98,7 +98,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                               shopName == null
                                   ? CircularProgressIndicator()
                                   : TextButton(
-                                      child: Text(shopName,
+                                      child: Text(shopName!,
                                           style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w700,
@@ -129,7 +129,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                           SizedBox(height: 20),
-                          Text("Adresse de livraison : " + widget.adresse,
+                          Text("Adresse de livraison : " + widget.adresse!,
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                         ],
@@ -137,7 +137,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                       ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: snapshot.data.docs.length,
+                        itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 15),
@@ -154,8 +154,8 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                                 child: Padding(
                                   padding: EdgeInsets.all(30),
                                   child: ProductDetails(
-                                      snapshot.data.docs[index]["produit"],
-                                      snapshot.data.docs[index]["quantite"],
+                                      (snapshot.data! as QuerySnapshot).docs[index]["produit"],
+                                      (snapshot.data! as QuerySnapshot).docs[index]["quantite"],
                                       widget.shopID),
                                 )),
                           );
@@ -173,23 +173,23 @@ class _HistoryDetailsState extends State<HistoryDetails> {
 
 class ProductDetails extends StatefulWidget {
   ProductDetails(this.productID, this.quantite, this.shopID);
-  final String productID, shopID;
-  final int quantite;
+  final String? productID, shopID;
+  final int? quantite;
   _ProductDetailsState createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
       future: DatabaseMethods()
           .getOneProductFuture(widget.shopID, widget.productID),
       builder: (context, snapshot) {
-        String image, nom, prix, description;
+        String? image, nom, prix, description;
         if (snapshot.hasData) {
-          image = snapshot.data["images"][0];
-          nom = snapshot.data["nom"];
-          prix = snapshot.data["prix"].toStringAsFixed(2);
-          description = snapshot.data["description"];
+          image = snapshot.data!()["images"][0];
+          nom = snapshot.data!()["nom"];
+          prix = snapshot.data!()["prix"].toStringAsFixed(2);
+          description = snapshot.data!()["description"];
         }
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,

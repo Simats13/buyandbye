@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -49,20 +49,16 @@ dependencies:
   theme_provider:
   get:
   google_maps_flutter:
-  apple_sign_in:
-  sign_in_with_apple:
+  sign_in_with_apple: ^3.2.0
   flutter_local_notifications:
   geolocator:
-  clippy_flutter:
-  flutter_restart:
+  clippy_flutter: ^2.0.0-nullsafety.1
   geoflutterfire:
   rxdart:
-  slide_popup_dialog:
   ndialog:
   google_nav_bar:
-  flutter_statusbarcolor:
   location: 
-  progress_dialog:
+  sn_progress_dialog: 
   cupertino_icons: 
   flutter_credit_card:
   flutter_app_badger:
@@ -74,23 +70,26 @@ dependencies:
   url_launcher:
   intl:
   shimmer:
-  geocoder:
   firebase_storage_web:
-  status_alert:
+  status_alert: ^1.0.0-nullsafety.1
   flutter_add_to_cart_button:
   flutter_stripe:
   flutter_facebook_auth:
   http:
-  # stripe_payment:
   truncate:
   flutter_native_splash:
   wave: 
   app_settings:
   sign_button:
   badges:
-  flip_card: ^0.4.4
+  flip_card: ^0.6.0
   stripe_platform_interface:
   geocoding:
+  slide_popup_dialog:
+    git:
+      url: git://github.com/kw2019ltd/slide_popup_dialog.git
+      ref: master
+  crypto: ^3.0.1
 
 flutter_native_splash:
   #color: "#42a5f5"

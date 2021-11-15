@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
@@ -22,7 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_button/sign_button.dart';
 
 class Login extends StatefulWidget {
-  Login({Key key}) : super(key: key);
+  Login({Key? key}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -30,12 +31,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _email, _password;
-  static SharedPreferences _preferences;
+  String? _email, _password;
+  static late SharedPreferences _preferences;
 
   static const _keyCreatedUser = "UserCreated";
-  String errorMessage;
-  bool isCreated;
+  String? errorMessage;
+  bool? isCreated;
 
   @override
   void initState() {
@@ -113,8 +114,8 @@ class _LoginState extends State<Login> {
                     ? SignInButton.mini(
                         buttonType: ButtonType.apple,
                         onPressed: () async {
-                          dynamic user =
-                              await AuthMethods.instanace.signInWithApple();
+                          dynamic user = await AuthMethods.instance
+                              .signInWithApple(context);
                           if (user != null) {
                             Navigator.pushAndRemoveUntil(
                                 context,
@@ -129,23 +130,23 @@ class _LoginState extends State<Login> {
                     buttonType: ButtonType.facebook,
                     onPressed: () async {
                       try {
-                        await AuthMethods.instanace.signInWithFacebook(context);
+                        await AuthMethods.instance.signInWithFacebook(context);
 
-                        bool checkEmail = await AuthMethods.instanace
-                            .checkEmailVerification();
+                        bool checkEmail = await (AuthMethods.instance
+                            .checkEmailVerification() as FutureOr<bool>);
 
                         if (checkEmail == false) {
                           showMessage("Vérification du mail",
                               "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
                           isCreated = true;
                           await _preferences.setBool(
-                              _keyCreatedUser, isCreated);
-                          SharedPreferenceHelper().saveUserCreated(isCreated);
+                              _keyCreatedUser, isCreated!);
+                          SharedPreferenceHelper().saveUserCreated(isCreated!);
                         } else {
                           isCreated = false;
                           await _preferences.setBool(
-                              _keyCreatedUser, isCreated);
-                          SharedPreferenceHelper().saveUserCreated(isCreated);
+                              _keyCreatedUser, isCreated!);
+                          SharedPreferenceHelper().saveUserCreated(isCreated!);
                         }
                       } catch (e) {
                         if (e is FirebaseAuthException) {
@@ -168,7 +169,7 @@ class _LoginState extends State<Login> {
                           showMessage("Adresse mail non validé",
                               "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                         } else {
-                          await AuthMethods.instanace.signInwithGoogle(context);
+                          await AuthMethods.instance.signInwithGoogle(context);
                         }
                       } catch (e) {
                         if (e is FirebaseAuthException) {
@@ -194,7 +195,7 @@ class _LoginState extends State<Login> {
                     TextFormField(
                       // ignore: missing_return
                       validator: (input) {
-                        if (input.isEmpty) {
+                        if (input!.isEmpty) {
                           setState(() {
                             errorMessage = null;
                           });
@@ -219,7 +220,7 @@ class _LoginState extends State<Login> {
                             SizedBox(
                                 width:
                                     MediaQuery.of(context).size.width / 10.75),
-                            Text(errorMessage,
+                            Text(errorMessage!,
                                 style: TextStyle(
                                     color: Color.fromRGBO(210, 40, 40, 1),
                                     fontSize: 12))
@@ -228,7 +229,7 @@ class _LoginState extends State<Login> {
                     TextFormField(
                       // ignore: missing_return
                       validator: (input) {
-                        if (input.isEmpty) {
+                        if (input!.isEmpty) {
                           setState(() {
                             errorMessage = null;
                           });
@@ -268,7 +269,7 @@ class _LoginState extends State<Login> {
                             SizedBox(
                                 width:
                                     MediaQuery.of(context).size.width / 10.75),
-                            Text(errorMessage,
+                            Text(errorMessage!,
                                 style: TextStyle(
                                     color: Color.fromRGBO(210, 40, 40, 1),
                                     fontSize: 12))
@@ -281,10 +282,10 @@ class _LoginState extends State<Login> {
             ),
             TextButton(
               onPressed: () async {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
                   AuthMethods()
-                      .signInWithMail(_email, _password)
+                      .signInWithMail(_email!, _password!)
                       .then((User user) {
                     Navigator.pushReplacement(
                         context, MaterialPageRoute(builder: (_) => MyApp()));

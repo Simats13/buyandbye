@@ -9,8 +9,8 @@ class MembershipStore extends StatefulWidget {
 }
 
 class _MembershipStore extends State<MembershipStore> {
-  String userid;
-  bool premium;
+  String? userid;
+  bool? premium;
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _MembershipStore extends State<MembershipStore> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        body: StreamBuilder(
+        body: StreamBuilder<dynamic>(
             stream: DatabaseMethods().getSellerInfo(userid),
             builder: (context, snapshot) {
               if (snapshot.hasData) {

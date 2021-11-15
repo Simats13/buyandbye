@@ -5,7 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 class PageProduit extends StatefulWidget {
   const PageProduit(
-      {Key key,
+      {Key? key,
       this.img,
       this.name,
       this.description,
@@ -21,18 +21,18 @@ class PageProduit extends StatefulWidget {
       })
       : super(key: key);
 
-  final String img;
-  final List imagesList;
-  final String nomProduit;
-  final String descriptionProduit;
-  final num prixProduit;
-  final String name;
-  final String description;
-  final String adresse;
-  final bool livraison;
-  final bool clickAndCollect;
-  final String idCommercant;
-  final String idProduit;
+  final String? img;
+  final List? imagesList;
+  final String? nomProduit;
+  final String? descriptionProduit;
+  final num? prixProduit;
+  final String? name;
+  final String? description;
+  final String? adresse;
+  final bool? livraison;
+  final bool? clickAndCollect;
+  final String? idCommercant;
+  final String? idProduit;
   //final List comments;
 
   @override
@@ -41,9 +41,9 @@ class PageProduit extends StatefulWidget {
 
 class _PageProduitState extends State<PageProduit> {
   Widget returnDetailPage() {
-    String nomProduit = widget.nomProduit;
-    num prixProduit = widget.prixProduit;
-    String imgProduit = widget.imagesList[0];
+    String? nomProduit = widget.nomProduit;
+    num? prixProduit = widget.prixProduit;
+    String imgProduit = widget.imagesList![0];
     int amount = 1;
     return FutureBuilder(
         future: DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit,
@@ -113,8 +113,8 @@ class _PageProduitState extends State<PageProduit> {
   int carouselItem = 0;
   Widget build(BuildContext context) {
     var carouselList =
-        Iterable<int>.generate(widget.imagesList.length).toList();
-    String nomVendeur = widget.name;
+        Iterable<int>.generate(widget.imagesList!.length).toList();
+    String? nomVendeur = widget.name;
     var money = widget.prixProduit;
     return Scaffold(
       body: SingleChildScrollView(
@@ -145,7 +145,7 @@ class _PageProduitState extends State<PageProduit> {
                 options: CarouselOptions(
                     height: 200,
                     enableInfiniteScroll:
-                        widget.imagesList.length > 1 ? true : false,
+                        widget.imagesList!.length > 1 ? true : false,
                     onPageChanged: (index, reason) {
                       setState(() {
                         carouselItem = index;
@@ -156,13 +156,13 @@ class _PageProduitState extends State<PageProduit> {
                     return Container(
                         width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Image.network(widget.imagesList[i]));
+                        child: Image.network(widget.imagesList![i]));
                   });
                 }).toList()),
             SizedBox(height: 20),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               SizedBox(width: 5),
-              for (int i = 0; i < widget.imagesList.length; i++)
+              for (int i = 0; i < widget.imagesList!.length; i++)
                 Container(
                     margin: EdgeInsets.only(left: 5, right: 5),
                     child: Icon(Icons.circle_rounded,
@@ -180,7 +180,7 @@ class _PageProduitState extends State<PageProduit> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          widget.nomProduit,
+                          widget.nomProduit!,
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w500),
                         ),
@@ -205,7 +205,7 @@ class _PageProduitState extends State<PageProduit> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 15.0),
-                    child: Text(widget.descriptionProduit
+                    child: Text(widget.descriptionProduit!
                         // style: descriptionStyle,
                         ),
                   ),

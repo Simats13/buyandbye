@@ -2,26 +2,26 @@ import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:flutter/material.dart';
 
 class SlideItem extends StatefulWidget {
-  final String img;
-  final String name;
-  final String address;
+  final String? img;
+  final String? name;
+  final String? address;
 
-  final String colorStore;
-  final String description;
-  final bool clickAndCollect;
-  final bool livraison;
-  final String sellerID;
+  final String? colorStore;
+  final String? description;
+  final bool? clickAndCollect;
+  final bool? livraison;
+  final String? sellerID;
 
   SlideItem({
-    Key key,
-    @required this.img,
-    @required this.name,
-    @required this.address,
-    @required this.colorStore,
-    @required this.description,
-    @required this.clickAndCollect,
-    @required this.livraison,
-    @required this.sellerID,
+    Key? key,
+    required this.img,
+    required this.name,
+    required this.address,
+    required this.colorStore,
+    required this.description,
+    required this.clickAndCollect,
+    required this.livraison,
+    required this.sellerID,
   }) : super(key: key);
 
   @override
@@ -46,14 +46,14 @@ class _SlideItemState extends State<SlideItem> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PageDetail(
-                      img: widget.img,
-                      colorStore: widget.colorStore,
-                      name: widget.name,
-                      description: widget.description,
-                      adresse: widget.address,
-                      clickAndCollect: widget.clickAndCollect,
-                      livraison: widget.livraison,
-                      sellerID: widget.sellerID,
+                      img: widget.img!,
+                      colorStore: widget.colorStore!,
+                      name: widget.name!,
+                      description: widget.description!,
+                      adresse: widget.address!,
+                      clickAndCollect: widget.clickAndCollect!,
+                      livraison: widget.livraison!,
+                      sellerID: widget.sellerID!,
                     ),
                   ),
                 );
@@ -71,7 +71,7 @@ class _SlideItemState extends State<SlideItem> {
                             topRight: Radius.circular(10.0),
                           ),
                           child: Image.network(
-                            widget.img,
+                            widget.img!,
                             fit: BoxFit.cover,
                           ),
                         ),

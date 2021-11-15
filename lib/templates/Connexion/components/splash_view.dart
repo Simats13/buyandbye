@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SplashView extends StatefulWidget {
-  final AnimationController animationController;
+  final AnimationController? animationController;
 
-  const SplashView({Key key, this.animationController}) : super(key: key);
+  const SplashView({Key? key, this.animationController}) : super(key: key);
 
   @override
   _SplashViewState createState() => _SplashViewState();
@@ -15,7 +15,7 @@ class _SplashViewState extends State<SplashView> {
     final _introductionanimation =
         Tween<Offset>(begin: Offset(0, 0), end: Offset(0.0, -1.0))
             .animate(CurvedAnimation(
-      parent: widget.animationController,
+      parent: widget.animationController!,
       curve: Interval(
         0.0,
         0.2,
@@ -55,7 +55,7 @@ class _SplashViewState extends State<SplashView> {
                   bottom: MediaQuery.of(context).padding.bottom + 16),
               child: InkWell(
                 onTap: () {
-                  widget.animationController.animateTo(0.2);
+                  widget.animationController!.animateTo(0.2);
                 },
                 child: Container(
                   height: 58,

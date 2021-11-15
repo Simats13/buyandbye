@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
@@ -22,7 +23,7 @@ import 'package:sign_button/sign_button.dart';
 import '../../accueil.dart';
 
 class BodyInscription extends StatefulWidget {
-  BodyInscription({Key key}) : super(key: key);
+  BodyInscription({Key? key}) : super(key: key);
 
   @override
   _BodyInscriptionState createState() => _BodyInscriptionState();
@@ -30,13 +31,13 @@ class BodyInscription extends StatefulWidget {
 
 class _BodyInscriptionState extends State<BodyInscription> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _email, _password, _fname, _lname;
+  String? _email, _password, _fname, _lname;
   bool obscureText = true;
-  static SharedPreferences _preferences;
+  static late SharedPreferences _preferences;
 
   static const _keyCreatedUser = "UserCreated";
-  String errorMessage;
-  bool isCreated;
+  String? errorMessage;
+  bool? isCreated;
   @override
   void initState() {
     super.initState();
@@ -109,7 +110,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                       buttonType: ButtonType.apple,
                       onPressed: () async {
                         dynamic user =
-                            await AuthMethods.instanace.signInWithApple();
+                            await AuthMethods.instance.signInWithApple(context);
                         if (user != null) {
                           Navigator.pushAndRemoveUntil(
                               context,
@@ -123,21 +124,21 @@ class _BodyInscriptionState extends State<BodyInscription> {
                   buttonType: ButtonType.facebook,
                   onPressed: () async {
                     try {
-                      await AuthMethods.instanace.signInWithFacebook(context);
+                      await AuthMethods.instance.signInWithFacebook(context);
 
                       bool checkEmail =
-                          await AuthMethods.instanace.checkEmailVerification();
+                          await (AuthMethods.instance.checkEmailVerification() as FutureOr<bool>);
 
                       if (checkEmail == false) {
                         showMessage("Vérification du mail",
                             "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
                         isCreated = true;
-                        await _preferences.setBool(_keyCreatedUser, isCreated);
-                        SharedPreferenceHelper().saveUserCreated(isCreated);
+                        await _preferences.setBool(_keyCreatedUser, isCreated!);
+                        SharedPreferenceHelper().saveUserCreated(isCreated!);
                       } else {
                         isCreated = false;
-                        await _preferences.setBool(_keyCreatedUser, isCreated);
-                        SharedPreferenceHelper().saveUserCreated(isCreated);
+                        await _preferences.setBool(_keyCreatedUser, isCreated!);
+                        SharedPreferenceHelper().saveUserCreated(isCreated!);
                       }
                     } catch (e) {
                       if (e is FirebaseAuthException) {
@@ -160,7 +161,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         showMessage("Adresse mail non validé",
                             "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                       } else {
-                        await AuthMethods.instanace.signInwithGoogle(context);
+                        await AuthMethods.instance.signInwithGoogle(context);
                       }
                     } catch (e) {
                       if (e is FirebaseAuthException) {
@@ -186,7 +187,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                   TextFormField(
                     // ignore: missing_return
                     validator: (input) {
-                      if (input.isEmpty) {
+                      if (input!.isEmpty) {
                         return 'Veuillez rentrer votre nom';
                       }
                     },
@@ -203,7 +204,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                   TextFormField(
                     // ignore: missing_return
                     validator: (input) {
-                      if (input.isEmpty) {
+                      if (input!.isEmpty) {
                         return 'Veuillez rentrer votre prénom';
                       }
                     },
@@ -220,7 +221,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                   TextFormField(
                     // ignore: missing_return
                     validator: (input) {
-                      if (input.isEmpty) {
+                      if (input!.isEmpty) {
                         return 'Veuillez rentrer une adresse mail';
                       }
                       final regex = RegExp(
@@ -246,7 +247,7 @@ class _BodyInscriptionState extends State<BodyInscription> {
                   TextFormField(
                     // ignore: missing_return
                     validator: (input) {
-                      if (input.length < 6) {
+                      if (input!.length < 6) {
                         return 'Veuillez rentrer un mot de passe de plus \nde 6 caractères';
                       }
                     },
@@ -279,15 +280,15 @@ class _BodyInscriptionState extends State<BodyInscription> {
           ),
           TextButton(
             onPressed: () async {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
                 try {
                   AuthMethods()
-                      .signUpWithMail(_email, _password, _fname, _lname);
+                      .signUpWithMail(_email!, _password!, _fname, _lname);
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => Accueil()));
                 } catch (e) {
-                  print(e.message);
+                  print(e);
                 }
               }
             },

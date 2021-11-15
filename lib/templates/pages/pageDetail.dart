@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:buyandbye/json/menu_json.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/chatscreen.dart';
 import 'package:buyandbye/theme/colors.dart';
@@ -23,7 +20,7 @@ import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class PageDetail extends StatefulWidget {
   const PageDetail(
-      {Key key,
+      {Key? key,
       this.img,
       this.name,
       this.description,
@@ -34,21 +31,21 @@ class PageDetail extends StatefulWidget {
       this.colorStore})
       : super(key: key);
 
-  final String img;
-  final String name;
-  final String description;
-  final String adresse;
-  final String sellerID;
-  final String colorStore;
-  final bool livraison;
-  final bool clickAndCollect;
+  final String? img;
+  final String? name;
+  final String? description;
+  final String? adresse;
+  final String? sellerID;
+  final String? colorStore;
+  final bool? livraison;
+  final bool? clickAndCollect;
   _PageDetail createState() => _PageDetail();
 }
 
 class _PageDetail extends State<PageDetail> with LocalNotificationView {
   double cartTotal = 0.0;
   double cartDeliver = 0.0;
-  String myID,
+  String? myID,
       myName,
       myProfilePic,
       myUserName,
@@ -57,7 +54,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       name1,
       message,
       dropdownValue;
-  Stream usersStream, chatRoomsStream;
+  Stream? usersStream, chatRoomsStream;
   List listOfCategories = [];
 
   @override
@@ -128,7 +125,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
     // pas déjà dans la liste
     for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
-      String categoryName = querySnapshot.docs[i]["categorie"];
+      String? categoryName = querySnapshot.docs[i]["categorie"];
       if (!listOfCategories.contains(categoryName)) {
         listOfCategories.add(querySnapshot.docs[i]["categorie"]);
       }
@@ -177,8 +174,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   int clickedNumber = 1;
   Widget getBody() {
     var pimpMyStore = widget.colorStore;
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Padding(
@@ -213,7 +208,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   },
                 ),
                 Text(
-                  widget.name,
+                  widget.name!,
                   style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
@@ -250,7 +245,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20)),
                     child: Image(
-                      image: NetworkImage(widget.img),
+                      image: NetworkImage(widget.img!),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -294,10 +289,10 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     width: 3,
                                   ),
                                   Icon(
-                                    widget.clickAndCollect
+                                    widget.clickAndCollect!
                                         ? Icons.check_circle
                                         : Icons.highlight_off,
-                                    color: widget.clickAndCollect
+                                    color: widget.clickAndCollect!
                                         ? Colors.green
                                         : Colors.red,
                                     size: 17,
@@ -328,10 +323,10 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     width: 3,
                                   ),
                                   Icon(
-                                    widget.livraison
+                                    widget.livraison!
                                         ? Icons.check_circle
                                         : Icons.highlight_off,
-                                    color: widget.livraison
+                                    color: widget.livraison!
                                         ? Colors.green
                                         : Colors.red,
                                     size: 17,
@@ -348,20 +343,20 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             "users": [myID, widget.sellerID],
                           };
                           DatabaseMethods().createChatRoom(
-                              widget.sellerID + myID, chatRoomInfoMap);
+                              widget.sellerID! + myID!, chatRoomInfoMap);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ChatRoom(
-                                      myID, //ID DE L'UTILISATEUR
-                                      myName, // NOM DE L'UTILISATEUR
-                                      selectedUserToken,
-                                      widget.sellerID, // TOKEN DU CORRESPONDANT
-                                      widget.sellerID + myID, //ID DE LA CONV
-                                      widget.name, // NOM DU CORRESPONDANT
+                                      myID!, //ID DE L'UTILISATEUR
+                                      myName!, // NOM DE L'UTILISATEUR
+                                      selectedUserToken!,
+                                      widget.sellerID!, // TOKEN DU CORRESPONDANT
+                                      widget.sellerID! + myID!, //ID DE LA CONV
+                                      widget.name!, // NOM DU CORRESPONDANT
                                       "", // LES COMMERCANTS N'ONT PAS DE LNAME
-                                      widget.img, // IMAGE DU CORRESPONDANT
-                                      myProfilePic // IMAGE DE L'UTILISATEUR
+                                      widget.img!, // IMAGE DU CORRESPONDANT
+                                      myProfilePic! // IMAGE DE L'UTILISATEUR
                                       )));
                         },
                         child: Icon(
@@ -381,7 +376,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       Container(
                         width: size.width - 30,
                         child: Text(
-                          widget.description,
+                          widget.description!,
                           style: TextStyle(fontSize: 14, height: 1.3),
                         ),
                       ),
@@ -521,7 +516,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               width: 8,
                             ),
                             Text(
-                              widget.adresse,
+                              widget.adresse!,
                               style: TextStyle(fontSize: 14),
                             )
                           ],
@@ -591,7 +586,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        for (String name in listOfCategories)
+                        for (String? name in listOfCategories as Iterable<String?>)
                           Padding(
                             padding: const EdgeInsets.only(
                               right: 15,
@@ -613,7 +608,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     padding: const EdgeInsets.only(
                                         left: 15, right: 15),
                                     child: Text(
-                                      name,
+                                      name!,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color:
@@ -949,22 +944,21 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   childAspectRatio: 1,
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 20),
-              itemCount: snapshot.data.docs.length,
+              itemCount: (snapshot.data! as QuerySnapshot).docs.length,
               itemBuilder: (context, index) {
-                var money = snapshot.data.docs[index]['prix'];
+                var money = (snapshot.data! as QuerySnapshot).docs[index]['prix'];
                 return GestureDetector(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => PageProduit(
-                                    imagesList: snapshot.data.docs[index]
+                                    imagesList: (snapshot.data! as QuerySnapshot).docs[index]
                                         ['images'],
-                                    nomProduit: snapshot.data.docs[index]
+                                    nomProduit: (snapshot.data! as QuerySnapshot).docs[index]
                                         ['nom'],
-                                    descriptionProduit: snapshot
-                                        .data.docs[index]['description'],
-                                    prixProduit: snapshot.data.docs[index]
+                                    descriptionProduit: (snapshot.data! as QuerySnapshot).docs[index]['description'],
+                                    prixProduit: (snapshot.data! as QuerySnapshot).docs[index]
                                         ['prix'],
                                     img: widget.img,
                                     name: widget.name,
@@ -973,7 +967,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     clickAndCollect: widget.clickAndCollect,
                                     livraison: widget.livraison,
                                     idCommercant: widget.sellerID,
-                                    idProduit: snapshot.data.docs[index]['id'],
+                                    idProduit: (snapshot.data! as QuerySnapshot).docs[index]['id'],
                                   )));
                     },
                     child: Container(
@@ -985,12 +979,12 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.network(
-                              snapshot.data.docs[index]["images"][0],
+                              (snapshot.data! as QuerySnapshot).docs[index]["images"][0],
                               width: MediaQuery.of(context).size.width,
                               height: 100,
                             ),
                             SizedBox(height: 5),
-                            Text(snapshot.data.docs[index]['nom'],
+                            Text((snapshot.data! as QuerySnapshot).docs[index]['nom'],
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: BuyandByeAppTheme.grey)),

@@ -7,20 +7,20 @@ import 'package:flip_card/flip_card.dart';
 class PageFidelite extends StatefulWidget {
   @override
   const PageFidelite(
-      {Key key,
+      {Key? key,
       this.firstName,
       this.lastName,
       this.eMail})
       : super(key: key);
 
-  final String firstName;
-  final String lastName;
-  final String eMail;
+  final String? firstName;
+  final String? lastName;
+  final String? eMail;
   _PageFideliteState createState() => _PageFideliteState();
 }
 
 class _PageFideliteState extends State<PageFidelite> {
-  String userid;
+  String? userid;
 
   @override
   void initState() {
@@ -205,7 +205,7 @@ class _PageFideliteState extends State<PageFidelite> {
                 Container(
                   margin: EdgeInsets.fromLTRB(20, 125, 0, 0),
                   child: Row(children: [
-                    Text(widget.firstName + " " + widget.lastName,
+                    Text(widget.firstName! + " " + widget.lastName!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,

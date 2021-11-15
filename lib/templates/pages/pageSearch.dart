@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,6 @@ import 'package:buyandbye/json/menu_json.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageCategorie.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
-import 'package:buyandbye/theme/styles.dart';
 
 import '../buyandbye_app_theme.dart';
 
@@ -17,16 +18,16 @@ class PageSearch extends StatefulWidget {
 
 class _PageSearchState extends State<PageSearch> {
   final TextEditingController searchController = TextEditingController();
-  QuerySnapshot snapshotData;
-  Stream streamStore;
+  QuerySnapshot? snapshotData;
+  Stream? streamStore;
   bool isExecuted = false;
   int activeMenu = 0;
 
   Widget searchedData({
-    String photoUrl,
-    name,
+    required String photoUrl,
+    required name,
     description,
-    adresse,
+    required adresse,
     clickAndCollect,
     livraison,
     colorStore,
@@ -66,7 +67,7 @@ class _PageSearchState extends State<PageSearch> {
   }
 
   Widget searchStoreList() {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
       stream: streamStore,
       builder: (context, snapshot) {
         return snapshot.hasData
@@ -102,8 +103,8 @@ class _PageSearchState extends State<PageSearch> {
     double longitude =
         await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
     setState(() {});
-    streamStore = await DatabaseMethods()
-        .searchBarGetStoreInfo(searchController.text, latitude, longitude);
+    streamStore = await (DatabaseMethods()
+        .searchBarGetStoreInfo(searchController.text, latitude, longitude) as Future<Stream<dynamic>?>);
 
     setState(() {});
   }

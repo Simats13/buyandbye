@@ -28,31 +28,31 @@ class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   var position;
   var radius = BehaviorSubject<double>.seeded(5);
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  int prevPage;
-  LocationPermission permission;
-  Stream<List<DocumentSnapshot>> stream;
-  BitmapDescriptor mapMaker;
+  int? prevPage;
+  LocationPermission? permission;
+  Stream<List<DocumentSnapshot>>? stream;
+  late BitmapDescriptor mapMaker;
   Set<Marker> _markers = Set<Marker>();
 
   double _value = 40.0;
   List magasins = [];
   String _label = 'kms';
   bool localisation = false;
-  double latitude, longitude;
+  late double latitude, longitude;
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
-  static SharedPreferences _preferences;
+  static late SharedPreferences _preferences;
   static const _keySlider = "UserSliderKey";
   static const _keyLabel = "UserSliderLabelKey";
 
   // firestore init
   final _firestore = FirebaseFirestore.instance;
 
-  GoogleMapController _mapController;
-  PageController _pageController;
+  GoogleMapController? _mapController;
+  PageController? _pageController;
 
   @override
   void setState(fn) {
@@ -74,8 +74,8 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   void _onScroll() {
-    if (_pageController.page.toInt() != prevPage) {
-      prevPage = _pageController.page.toInt();
+    if (_pageController!.page!.toInt() != prevPage) {
+      prevPage = _pageController!.page!.toInt();
     }
   }
 
@@ -94,15 +94,15 @@ class _PageExploreState extends State<PageExplore> {
     setState(() {
       _mapController = controller;
 
-      stream.listen((List<DocumentSnapshot> documentList) {
+      stream!.listen((List<DocumentSnapshot> documentList) {
         _updateMarkers(documentList);
       });
-      _mapController.setMapStyle(MapStyle.mapStyle);
+      _mapController!.setMapStyle(MapStyle.mapStyle);
     });
   }
 
   void showHome() async {
-    _mapController.animateCamera(CameraUpdate.newCameraPosition(
+    _mapController!.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(latitude, longitude),
         zoom: 15.0,
@@ -139,7 +139,7 @@ class _PageExploreState extends State<PageExplore> {
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
 
-  void _magasinAffichage(double lat, double lng, String name, idSeller) {
+  void _magasinAffichage(double lat, double lng, String? name, idSeller) {
     slideDialog.showSlideDialog(
       context: context,
       child: FutureBuilder(
@@ -156,7 +156,7 @@ class _PageExploreState extends State<PageExplore> {
             return ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: snapshot.data.docs.length,
+                itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                 itemBuilder: (context, index) {
                   return Container(
                     child: Column(
@@ -165,7 +165,7 @@ class _PageExploreState extends State<PageExplore> {
                       children: [
                         Center(
                           child: Text(
-                            name,
+                            name!,
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -180,7 +180,7 @@ class _PageExploreState extends State<PageExplore> {
                           height: 200,
                           child: Image(
                             image: NetworkImage(
-                                snapshot.data.docs[index]['imgUrl']),
+                                (snapshot.data! as QuerySnapshot).docs[index]['imgUrl']),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -189,14 +189,14 @@ class _PageExploreState extends State<PageExplore> {
                         ),
                         Container(
                           child: Text("Adresse : " +
-                              snapshot.data.docs[index]['adresse']),
+                              (snapshot.data! as QuerySnapshot).docs[index]['adresse']),
                         ),
                         SizedBox(
                           height: 5,
                         ),
                         Container(
                           child: Text("Description : " +
-                              snapshot.data.docs[index]['description']),
+                              (snapshot.data! as QuerySnapshot).docs[index]['description']),
                         ),
                         SizedBox(
                           height: 5,
@@ -208,21 +208,20 @@ class _PageExploreState extends State<PageExplore> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => PageDetail(
-                                            img: snapshot.data.docs[index]
+                                            img: (snapshot.data! as QuerySnapshot).docs[index]
                                                 ['imgUrl'],
-                                            name: snapshot.data.docs[index]
+                                            name: (snapshot.data! as QuerySnapshot).docs[index]
                                                 ['name'],
-                                            colorStore: snapshot
-                                                .data.docs[index]['colorStore'],
-                                            description: snapshot.data
+                                            colorStore: (snapshot.data! as QuerySnapshot).docs[index]['colorStore'],
+                                            description: (snapshot.data! as QuerySnapshot)
                                                 .docs[index]['description'],
-                                            adresse: snapshot.data.docs[index]
+                                            adresse: (snapshot.data! as QuerySnapshot).docs[index]
                                                 ['adresse'],
-                                            clickAndCollect: snapshot.data
+                                            clickAndCollect: (snapshot.data! as QuerySnapshot)
                                                 .docs[index]['ClickAndCollect'],
-                                            livraison: snapshot.data.docs[index]
+                                            livraison: (snapshot.data! as QuerySnapshot).docs[index]
                                                 ['livraison'],
-                                            sellerID: snapshot.data.docs[index]
+                                            sellerID: (snapshot.data! as QuerySnapshot).docs[index]
                                                 ['id'],
                                           )));
                             },
@@ -328,7 +327,7 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _addMarker(double lat, double lng, String name, String idSeller) {
+  void _addMarker(double lat, double lng, String? name, String? idSeller) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
         markerId: id,
@@ -348,7 +347,7 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   moveCamera(double lat, double lng) {
-    _mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+    _mapController!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(lat, lng), zoom: 14.0, bearing: 45.0, tilt: 45.0)));
   }
 
@@ -407,7 +406,7 @@ class _PageExploreState extends State<PageExplore> {
                     myLocationEnabled: true,
                   ),
                 ),
-                StreamBuilder(
+                StreamBuilder<dynamic>(
                     stream: stream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -441,7 +440,7 @@ class _PageExploreState extends State<PageExplore> {
                           width: MediaQuery.of(context).size.width,
                           child: ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: snapshot.data.length,
+                            itemCount: snapshot.data!().length,
                             itemBuilder: (context, index) {
                               double value = 1;
 
@@ -450,10 +449,10 @@ class _PageExploreState extends State<PageExplore> {
                                 width: MediaQuery.of(context).size.width,
                                 child: PageView.builder(
                                   controller: _pageController,
-                                  itemCount: snapshot.data.length,
+                                  itemCount: snapshot.data!().length,
                                   itemBuilder: (context, int index) {
                                     return AnimatedBuilder(
-                                      animation: _pageController,
+                                      animation: _pageController!,
                                       builder: (context, widget) {
                                         return Center(
                                           child: SizedBox(
@@ -474,13 +473,13 @@ class _PageExploreState extends State<PageExplore> {
                                           _magasinAffichage(
                                             geoPoint.latitude,
                                             geoPoint.longitude,
-                                            snapshot.data[index]['name'],
-                                            snapshot.data[index]['id'],
-                                            // snapshot.data[index]['adresse'],
-                                            // snapshot.data[index]['imgUrl'],
-                                            // snapshot.data[index]['description'],
-                                            // snapshot.data[index]['livraison'],
-                                            // snapshot.data[index]
+                                            snapshot.data!()[index]['name'],
+                                            snapshot.data!()[index]['id'],
+                                            // snapshot.data!()[index]['adresse'],
+                                            // snapshot.data!()[index]['imgUrl'],
+                                            // snapshot.data!()[index]['description'],
+                                            // snapshot.data!()[index]['livraison'],
+                                            // snapshot.data!()[index]
                                             //     ['ClickAndCollect'],
                                           );
                                         },
@@ -532,7 +531,7 @@ class _PageExploreState extends State<PageExplore> {
                                                           image:
                                                               DecorationImage(
                                                             image: NetworkImage(
-                                                                snapshot.data[
+                                                                snapshot.data!()[
                                                                         index]
                                                                     ['imgUrl']),
                                                             fit: BoxFit.cover,
@@ -551,7 +550,7 @@ class _PageExploreState extends State<PageExplore> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            snapshot.data[index]
+                                                            snapshot.data!()[index]
                                                                 ['name'],
                                                             style: TextStyle(
                                                                 color: BuyandByeAppTheme
@@ -562,7 +561,7 @@ class _PageExploreState extends State<PageExplore> {
                                                                         .bold),
                                                           ),
                                                           Text(
-                                                            snapshot.data[index]
+                                                            snapshot.data!()[index]
                                                                 ['adresse'],
                                                             style: TextStyle(
                                                                 color: BuyandByeAppTheme
@@ -575,7 +574,7 @@ class _PageExploreState extends State<PageExplore> {
                                                           Container(
                                                             width: 170.0,
                                                             child: Text(
-                                                              snapshot.data[
+                                                              snapshot.data!()[
                                                                       index][
                                                                   'description'],
                                                               style: TextStyle(

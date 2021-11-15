@@ -20,9 +20,9 @@ class PageMessagerie extends StatefulWidget {
 
 class _PageMessagerieState extends State<PageMessagerie>
     with LocalNotificationView {
-  String myID;
-  String myName, myUserName, myEmail;
-  String myProfilePic;
+  String? myID;
+  String? myName, myUserName, myEmail;
+  String? myProfilePic;
   bool messageExist = false;
   @override
   void initState() {
@@ -70,14 +70,14 @@ class _PageMessagerieState extends State<PageMessagerie>
               //METTRE UN SHIMMER
             }
             if (!userSnapshot.hasData) return ColorLoader3();
-            return countChatListUsers(myUserName, userSnapshot) > 0
+            return countChatListUsers(myUserName, userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) > 0
                 ? Stack(
                     children: [
                       ListView.builder(
-                        itemCount: userSnapshot.data.docs.length,
+                        itemCount: userSnapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot ds = userSnapshot.data.docs[index];
+                          DocumentSnapshot ds = userSnapshot.data!.docs[index];
                           return ChatRoomListTile(ds["lastMessage"], ds.id,
                               myUserName, ds["users"][1], index);
                         },
@@ -112,7 +112,7 @@ class _PageMessagerieState extends State<PageMessagerie>
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername, sellerID;
+  final String? lastMessage, chatRoomId, myUsername, sellerID;
   final int index;
   ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
       this.sellerID, this.index);
@@ -122,7 +122,7 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl, name, token, userid, myThumbnail;
+  String? profilePicUrl, name, token, userid, myThumbnail;
 
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
@@ -149,7 +149,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     super.initState();
   }
 
-  bool isActive;
+  bool? isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +178,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             //METTRE UN SHIMMER
           }
 
-          if (chatListSnapshot.data.docs[widget.index].get('badgeCount') != 0) {
+          if (chatListSnapshot.data!.docs[widget.index].get('badgeCount') != 0) {
             isActive = true;
           } else {
             isActive = false;
@@ -187,11 +187,11 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           return ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: ImageController.instance.cachedImage(profilePicUrl),
+              child: ImageController.instance.cachedImage(profilePicUrl!),
             ),
-            title: Text(name),
+            title: Text(name!),
             subtitle: Text(
-              widget.lastMessage,
+              widget.lastMessage!,
               style: isActive == true
                   ? TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
                   : TextStyle(),
@@ -199,7 +199,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             trailing: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
               child: (chatListSnapshot.hasData &&
-                      chatListSnapshot.data.docs.length > 0)
+                      chatListSnapshot.data!.docs.length > 0)
                   ? Container(
                       width: 80,
                       height: 50,
@@ -207,9 +207,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         children: [
                           Text(
                             (chatListSnapshot.hasData &&
-                                    chatListSnapshot.data.docs.length > 0)
+                                    chatListSnapshot.data!.docs.length > 0)
                                 ? readTimestamp(chatListSnapshot
-                                    .data.docs[widget.index]['timestamp'])
+                                    .data!.docs[widget.index]['timestamp'])
                                 : '',
                             style: TextStyle(fontSize: size.width * 0.03),
                           ),
@@ -218,23 +218,23 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                             child: CircleAvatar(
                               radius: 9,
                               child: Text(
-                                chatListSnapshot.data.docs[widget.index]
+                                chatListSnapshot.data!.docs[widget.index]
                                             .get('badgeCount') ==
                                         null
                                     ? ''
-                                    : ((chatListSnapshot.data.docs[widget.index]
+                                    : chatListSnapshot.data!.docs[widget.index]
                                                 .get('badgeCount') !=
                                             0
-                                        ? '${chatListSnapshot.data.docs[widget.index].get('badgeCount')}'
-                                        : '')),
+                                        ? '${chatListSnapshot.data!.docs[widget.index].get('badgeCount')}'
+                                        : '',
                                 style: TextStyle(fontSize: 10),
                               ),
                               backgroundColor: chatListSnapshot
-                                          .data.docs[widget.index]
+                                          .data!.docs[widget.index]
                                           .get('badgeCount') ==
                                       null
                                   ? Colors.transparent
-                                  : (chatListSnapshot.data.docs[0]
+                                  : (chatListSnapshot.data!.docs[0]
                                               ['badgeCount'] !=
                                           0
                                       ? Colors.red[400]
@@ -251,15 +251,15 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ChatRoom(
-                          userid, //ID DE L'UTILISATEUR
-                          widget.myUsername, // NOM DE L'UTILISATEUR
-                          token,
-                          widget.sellerID, // ID DU CORRESPONDANT
-                          widget.chatRoomId, //ID DE LA CONV
-                          name, // PRENOM DU CORRESPONDANT
+                          userid!, //ID DE L'UTILISATEUR
+                          widget.myUsername!, // NOM DE L'UTILISATEUR
+                          token!,
+                          widget.sellerID!, // ID DU CORRESPONDANT
+                          widget.chatRoomId!, //ID DE LA CONV
+                          name!, // PRENOM DU CORRESPONDANT
                           "", // NOM DU CORRESPONDANT
-                          profilePicUrl, // IMAGE DU CORRESPONDANT
-                          myThumbnail, // IMAGE DE L'UTILISATEUR
+                          profilePicUrl!, // IMAGE DU CORRESPONDANT
+                          myThumbnail!, // IMAGE DE L'UTILISATEUR
                         ))),
           );
         },

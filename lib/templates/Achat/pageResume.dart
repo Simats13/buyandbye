@@ -1,4 +1,3 @@
-import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,15 +8,15 @@ import 'package:buyandbye/templates/widgets/loader.dart';
 import '../buyandbye_app_theme.dart';
 
 class PageResume extends StatefulWidget {
-  final String idCommand,
+  final String? idCommand,
       userId,
       sellerID,
       nomBoutique,
       addressSeller,
       userAddressChoose;
-  final double latitude, longitude;
+  final double? latitude, longitude;
   const PageResume(
-      {Key key,
+      {Key? key,
       this.idCommand,
       this.userId,
       this.sellerID,
@@ -35,9 +34,9 @@ class PageResume extends StatefulWidget {
 class _PageResumeState extends State<PageResume> {
   var produits;
 
-  GoogleMapController _mapController;
+  late GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
-  BitmapDescriptor mapMarker;
+  BitmapDescriptor? mapMarker;
   @override
   void initState() {
     super.initState();
@@ -47,7 +46,7 @@ class _PageResumeState extends State<PageResume> {
 
   getCommand() async {
     print(widget.sellerID);
-    String id = widget.sellerID + widget.userId;
+    String id = widget.sellerID! + widget.userId!;
     produits = await FirebaseFirestore.instance
         .collection('commandes')
         .doc(id)
@@ -61,7 +60,7 @@ class _PageResumeState extends State<PageResume> {
         MarkerId(widget.latitude.toString() + widget.longitude.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(widget.latitude, widget.longitude),
+      position: LatLng(widget.latitude!, widget.longitude!),
       //icon: mapMarker,
     ));
 
@@ -128,7 +127,7 @@ class _PageResumeState extends State<PageResume> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
-                                    itemCount: snapshot.data.docs.length,
+                                    itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                                     itemBuilder: (context, index) {
                                       return Column(
                                         children: [
@@ -139,10 +138,10 @@ class _PageResumeState extends State<PageResume> {
                                                 Container(
                                                     child: Detail(
                                                         widget.sellerID,
-                                                        snapshot.data
+                                                        (snapshot.data! as QuerySnapshot)
                                                                 .docs[index]
                                                             ["produit"],
-                                                        snapshot.data
+                                                        (snapshot.data! as QuerySnapshot)
                                                                 .docs[index]
                                                             ["quantite"])),
                                               ])),
@@ -171,7 +170,7 @@ class _PageResumeState extends State<PageResume> {
                               Row(children: [
                                 widget.nomBoutique == null
                                     ? CircularProgressIndicator()
-                                    : Text("Vendeur : " + widget.nomBoutique,
+                                    : Text("Vendeur : " + widget.nomBoutique!,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -189,7 +188,7 @@ class _PageResumeState extends State<PageResume> {
                               Row(children: [
                                 widget.addressSeller == null
                                     ? CircularProgressIndicator()
-                                    : Text(widget.addressSeller,
+                                    : Text(widget.addressSeller!,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -213,7 +212,7 @@ class _PageResumeState extends State<PageResume> {
                               onMapCreated: _onMapCreated,
                               initialCameraPosition: CameraPosition(
                                   target:
-                                      LatLng(widget.latitude, widget.longitude),
+                                      LatLng(widget.latitude!, widget.longitude!),
                                   zoom: 15.0),
                               markers: _markers,
                               myLocationButtonEnabled: false,
@@ -234,14 +233,14 @@ class _PageResumeState extends State<PageResume> {
 // Affiche le détail de chaque produit commandé
 class Detail extends StatefulWidget {
   Detail(this.shopId, this.productId, this.quantite);
-  final String shopId, productId;
-  final int quantite;
+  final String? shopId, productId;
+  final int? quantite;
   _DetailState createState() => _DetailState();
 }
 
 class _DetailState extends State<Detail> {
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream:
             DatabaseMethods().getOneProduct(widget.shopId, widget.productId),
         builder: (context, snapshot) {
@@ -255,7 +254,7 @@ class _DetailState extends State<Detail> {
           }
           if (snapshot.hasData) {
             var amount = widget.quantite;
-            var money = snapshot.data["prix"];
+            var money = snapshot.data!()["prix"];
             var allMoneyForProduct = money * amount;
             return Expanded(
               child: Column(
@@ -278,7 +277,7 @@ class _DetailState extends State<Detail> {
                                   image: DecorationImage(
                                       fit: BoxFit.scaleDown,
                                       image: NetworkImage(
-                                          snapshot.data["images"][0])),
+                                          snapshot.data!()["images"][0])),
                                   borderRadius: BorderRadius.circular(20)),
                             ),
                           ),
@@ -293,7 +292,7 @@ class _DetailState extends State<Detail> {
                               Container(
                                 width: 100,
                                 child: Text(
-                                  snapshot.data["nom"],
+                                  snapshot.data!()["nom"],
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ),

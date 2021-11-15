@@ -7,12 +7,11 @@ import 'package:buyandbye/templates/pages/pageSearch.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:provider/provider.dart';
 
 class Accueil extends StatefulWidget {
-  final List<Widget> screens;
+  final List<Widget>? screens;
 
-  const Accueil({Key key, this.screens}) : super(key: key);
+  const Accueil({Key? key, this.screens}) : super(key: key);
   @override
   _AccueilState createState() => _AccueilState();
 }

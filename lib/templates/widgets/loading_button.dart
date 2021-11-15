@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class LoadingButton extends StatefulWidget {
-  final Future Function() onPressed;
-  final String text;
+  final Future Function()? onPressed;
+  final String? text;
 
-  const LoadingButton({Key key, this.onPressed, this.text}) : super(key: key);
+  const LoadingButton({Key? key, this.onPressed, this.text}) : super(key: key);
 
   @override
   _LoadingButtonState createState() => _LoadingButtonState();
@@ -34,7 +34,7 @@ class _LoadingButtonState extends State<LoadingButton> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                     ))
-                : Text(widget.text),
+                : Text(widget.text!),
           ),
         ),
       ],
@@ -47,7 +47,7 @@ class _LoadingButtonState extends State<LoadingButton> {
     });
 
     try {
-      await widget.onPressed();
+      await widget.onPressed!();
     } catch (e, s) {
       log(e.toString(), error: e, stackTrace: s);
       ScaffoldMessenger.of(context)

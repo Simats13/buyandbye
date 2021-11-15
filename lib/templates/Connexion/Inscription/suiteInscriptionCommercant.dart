@@ -16,7 +16,7 @@ class SuiteInscriptionCommercant extends StatefulWidget {
 class _SuiteInscriptionCommercantState
     extends State<SuiteInscriptionCommercant> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _email, _password;
+  String? _email, _password;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _SuiteInscriptionCommercantState
                     TextFormField(
                       // ignore: missing_return
                       validator: (input) {
-                        if (input.isEmpty) {
+                        if (input!.isEmpty) {
                           return 'Rentrez une adresse mail valide';
                         }
                       },
@@ -59,7 +59,7 @@ class _SuiteInscriptionCommercantState
                     TextFormField(
                       // ignore: missing_return
                       validator: (input) {
-                        if (input.length < 6 && input.length > 20) {
+                        if (input!.length < 6 && input.length > 20) {
                           return 'Rentrez un mot de passe \ncompris entre 6 et 20 carctères';
                         }
                       },
@@ -107,18 +107,18 @@ class _SuiteInscriptionCommercantState
             ),
             TextButton(
               onPressed: () async {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
                   try {
                     AuthMethods()
-                        .signUpWithMail(_email, _password, "fname", "lname");
+                        .signUpWithMail(_email!, _password!, "fname", "lname");
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
                                 PageSuiteIncriptionCommercant()));
                   } catch (e) {
-                    print(e.message);
+                    print(e);
                   }
                 }
               },

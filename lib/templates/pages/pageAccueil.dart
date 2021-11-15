@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:buyandbye/templates/pages/address_search.dart';
@@ -38,24 +39,22 @@ class PageAccueil extends StatefulWidget {
 }
 
 class _PageAccueilState extends State<PageAccueil> {
-  @override
-  LocationData _locationData;
+  late LocationData _locationData;
   Location location = Location();
-  bool permissionChecked;
+  late bool permissionChecked;
   bool chargementChecked = false;
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
-  static SharedPreferences _preferences;
+  static late SharedPreferences _preferences;
   static const _keyLatitude = "UserLatitudeKey";
   static const _keyLongitude = "UserLongitudeKey";
   static const _keyAddress = "UserAddressKey";
   static const _keyCity = "UserCityKey";
-  static const _infoCharged = "infoCharged";
 
   // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
 
-  String _currentAddress,
+  String? _currentAddress,
       _currentAddressLocation,
       _streetNumber,
       _street,
@@ -63,10 +62,10 @@ class _PageAccueilState extends State<PageAccueil> {
       zipCode,
       idAddress,
       userid;
-  double latitude, longitude, currentLatitude, currentLongitude;
-  Geoflutterfire geo;
+  double? latitude, longitude, currentLatitude, currentLongitude;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
   final _controller = TextEditingController();
   final serviceEnabled = Geolocator.isLocationServiceEnabled();
 
@@ -88,7 +87,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   positionCheck() async {
     geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+    GeoFirePoint center = geo.point(latitude: latitude!, longitude: longitude!);
     stream = radius.switchMap((rad) {
       var collectionReference =
           FirebaseFirestore.instance.collection('magasins');
@@ -131,7 +130,7 @@ class _PageAccueilState extends State<PageAccueil> {
     _locationData = await location.getLocation();
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(
-            _locationData.latitude, _locationData.longitude);
+            _locationData.latitude!, _locationData.longitude!);
     var first = addresses.first;
 
     setState(() {
@@ -151,20 +150,19 @@ class _PageAccueilState extends State<PageAccueil> {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
     QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
+        await (DatabaseMethods().getChosenAddress(userid) as FutureOr<QuerySnapshot<Object>>);
     latitude =
-        double.parse("${querySnapshot.docs[0]['latitude']}") ?? currentLatitude;
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}") ??
-        currentLongitude;
+        double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
 
     List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(latitude, longitude);
+        await geocoder.placemarkFromCoordinates(latitude!, longitude!);
 
     var first = addresses.first;
     _currentAddressLocation =
-        "${first.name}, ${first.locality}" ?? _currentAddress;
-    idAddress = "${querySnapshot.docs[0]['idDoc']}" ?? null;
-    _city = "${first.locality}" ?? _city;
+        "${first.name}, ${first.locality}";
+    idAddress = "${querySnapshot.docs[0]['idDoc']}";
+    _city = "${first.locality}";
     // chargementChecked = true;
     setState(() {});
   }
@@ -197,7 +195,7 @@ class _PageAccueilState extends State<PageAccueil> {
                   ),
                 );
 
-              if (snapshot.data.length > 0) {
+              if (snapshot.data!.length > 0) {
                 return ListView(
                   children: [
                     Column(
@@ -247,7 +245,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                                 padding:
                                                     EdgeInsets.only(top: 5),
                                                 child: Text(
-                                                  _currentAddressLocation,
+                                                  _currentAddressLocation!,
                                                   textAlign: TextAlign.left,
                                                 ),
                                               ),
@@ -471,7 +469,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                               width: size.width - 150,
                                               padding: EdgeInsets.only(top: 5),
                                               child: Text(
-                                                _currentAddressLocation,
+                                                _currentAddressLocation!,
                                                 textAlign: TextAlign.left,
                                               ),
                                             ),
@@ -595,7 +593,8 @@ class _PageAccueilState extends State<PageAccueil> {
                   SizedBox(
                     height: 12,
                   ),
-                  Padding(
+                  //TODO Réparer et remettre les adresses x2
+                  /*Padding(
                     padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                     child: SizedBox(
                       height: 40,
@@ -604,7 +603,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         onTap: () async {
                           // generate a new token here
                           final sessionToken = Uuid().v4();
-                          final Suggestion result = await showSearch(
+                          final Suggestion? result = await showSearch(
                             context: context,
                             delegate: AddressSearch(sessionToken),
                           );
@@ -615,7 +614,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                     .getPlaceDetailFromId(result.placeId);
 
                             setState(() {
-                              _controller.text = result.description;
+                              _controller.text = result.description!;
                               _streetNumber = placeDetails.streetNumber;
                               _street = placeDetails.street;
                               _city = placeDetails.city;
@@ -671,7 +670,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         ),
                       ),
                     ),
-                  ),
+                  ),*/
                   Divider(
                     color: Colors.black,
                     thickness: 2,
@@ -708,17 +707,17 @@ class _PageAccueilState extends State<PageAccueil> {
                                   onTap: () async {
                                     List<geocoder.Placemark> addresses =
                                         await geocoder.placemarkFromCoordinates(
-                                            latitude, longitude);
+                                            latitude!, longitude!);
                                     var first = addresses.first;
                                     setState(() {
                                       _city = first.locality;
 
                                       _currentAddressLocation =
-                                          "${first.name + ", " + first.locality}";
+                                          "${first.name! + ", " + first.locality!}";
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
-                                          latitude: latitude,
-                                          longitude: longitude);
+                                          latitude: latitude!,
+                                          longitude: longitude!);
                                       stream = radius.switchMap((rad) {
                                         var collectionReference =
                                             FirebaseFirestore.instance
@@ -739,28 +738,28 @@ class _PageAccueilState extends State<PageAccueil> {
                                         await SharedPreferences.getInstance();
 
                                     await _preferences.setDouble(
-                                        _keyLatitude, latitude);
+                                        _keyLatitude, latitude!);
 
                                     await _preferences.setDouble(
-                                        _keyLongitude, longitude);
+                                        _keyLongitude, longitude!);
 
                                     await _preferences.setString(
-                                        _keyAddress, _currentAddressLocation);
+                                        _keyAddress, _currentAddressLocation!);
 
                                     await _preferences.setString(
-                                        _keyCity, _city);
+                                        _keyCity, _city!);
 
                                     SharedPreferenceHelper()
-                                        .saveUserCity(_city);
+                                        .saveUserCity(_city!);
 
                                     SharedPreferenceHelper().saveUserAddress(
-                                        _currentAddressLocation);
+                                        _currentAddressLocation!);
 
                                     SharedPreferenceHelper()
-                                        .saveUserLatitude(latitude);
+                                        .saveUserLatitude(latitude!);
 
                                     SharedPreferenceHelper()
-                                        .saveUserLongitude(longitude);
+                                        .saveUserLongitude(longitude!);
                                     setState(() {});
                                     Navigator.of(context).pop();
 
@@ -769,9 +768,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 PageAddressNext(
-                                                  lat: currentLatitude,
-                                                  long: currentLongitude,
-                                                  adresse: _currentAddress,
+                                                  lat: currentLatitude!,
+                                                  long: currentLongitude!,
+                                                  adresse: _currentAddress!,
                                                 )));
                                   },
                                   child: Container(
@@ -793,7 +792,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
                                               _currentAddress != null
-                                                  ? Text(_currentAddress)
+                                                  ? Text(_currentAddress!)
                                                   : CircularProgressIndicator(),
                                             ]),
                                       ],
@@ -933,7 +932,7 @@ class _PageAccueilState extends State<PageAccueil> {
                           ),
                         ),
                       ),
-                      Row(
+                      /*Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 10),
@@ -941,7 +940,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               onPressed: () async {
                                 // generate a new token here
                                 final sessionToken = Uuid().v4();
-                                final Suggestion result = await showSearch(
+                                final Suggestion? result = await showSearch(
                                   context: context,
                                   delegate: AddressSearch(sessionToken),
                                 );
@@ -952,7 +951,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                           .getPlaceDetailFromId(result.placeId);
 
                                   setState(() {
-                                    _controller.text = result.description;
+                                    _controller.text = result.description!;
                                     _streetNumber = placeDetails.streetNumber;
                                     _street = placeDetails.street;
                                     _city = placeDetails.city;
@@ -980,7 +979,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               },
                               icon: Icon(Icons.home)),
                         ],
-                      ),
+                      ),*/
                     ],
                   ),
                   StreamBuilder(
@@ -1000,11 +999,11 @@ class _PageAccueilState extends State<PageAccueil> {
                           );
                         }
                         if (snapshot.hasData) {
-                          if (snapshot.data.docs.length > 0) {
+                          if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
                             return ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: snapshot.data.docs.length,
+                                itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                                 itemBuilder: (context, index) {
                                   return Row(
                                     children: [
@@ -1013,34 +1012,32 @@ class _PageAccueilState extends State<PageAccueil> {
                                           List<geocoder.Placemark> addresses =
                                               await geocoder
                                                   .placemarkFromCoordinates(
-                                                      snapshot.data.docs[index]
+                                                      (snapshot.data! as QuerySnapshot).docs[index]
                                                           ["latitude"],
-                                                      snapshot.data.docs[index]
+                                                      (snapshot.data! as QuerySnapshot).docs[index]
                                                           ["longitude"]);
                                           var first = addresses.first;
 
                                           await DatabaseMethods()
                                               .changeChosenAddress(
                                                   userid,
-                                                  snapshot.data.docs[index]
+                                                  (snapshot.data! as QuerySnapshot).docs[index]
                                                       ["idDoc"],
                                                   idAddress);
                                           setState(() {
                                             _city = first.locality;
-                                            idAddress = snapshot
-                                                .data.docs[index]["idDoc"];
-                                            latitude = snapshot.data.docs[index]
+                                            idAddress = (snapshot.data! as QuerySnapshot).docs[index]["idDoc"];
+                                            latitude = (snapshot.data! as QuerySnapshot).docs[index]
                                                 ["latitude"];
-                                            longitude = snapshot
-                                                .data.docs[index]["longitude"];
+                                            longitude = (snapshot.data! as QuerySnapshot).docs[index]["longitude"];
                                             _currentAddressLocation =
-                                                "${first.name + ", " + first.locality}";
+                                                "${first.name! + ", " + first.locality!}";
 
                                             geo = Geoflutterfire();
                                             GeoFirePoint center = geo.point(
-                                                latitude: snapshot.data
+                                                latitude: (snapshot.data! as QuerySnapshot)
                                                     .docs[index]["latitude"],
-                                                longitude: snapshot.data
+                                                longitude: (snapshot.data! as QuerySnapshot)
                                                     .docs[index]["longitude"]);
                                             stream = radius.switchMap((rad) {
                                               var collectionReference =
@@ -1063,33 +1060,33 @@ class _PageAccueilState extends State<PageAccueil> {
 
                                           await _preferences.setDouble(
                                               _keyLatitude,
-                                              snapshot.data.docs[index]
+                                              (snapshot.data! as QuerySnapshot).docs[index]
                                                   ["latitude"]);
 
                                           await _preferences.setString(
-                                              _keyCity, _city);
+                                              _keyCity, _city!);
 
                                           await _preferences.setDouble(
                                               _keyLongitude,
-                                              snapshot.data.docs[index]
+                                              (snapshot.data! as QuerySnapshot).docs[index]
                                                   ["longitude"]);
 
                                           await _preferences.setString(
                                               _keyAddress,
-                                              _currentAddressLocation);
+                                              _currentAddressLocation!);
 
                                           SharedPreferenceHelper()
                                               .saveUserAddress(
-                                                  _currentAddressLocation);
+                                                  _currentAddressLocation!);
                                           SharedPreferenceHelper()
-                                              .saveUserCity(_city);
+                                              .saveUserCity(_city!);
 
                                           SharedPreferenceHelper()
-                                              .saveUserLatitude(snapshot.data
+                                              .saveUserLatitude((snapshot.data! as QuerySnapshot)
                                                   .docs[index]["latitude"]);
 
                                           SharedPreferenceHelper()
-                                              .saveUserLongitude(snapshot.data
+                                              .saveUserLongitude((snapshot.data! as QuerySnapshot)
                                                   .docs[index]["longitude"]);
 
                                           Navigator.of(context).pop();
@@ -1121,7 +1118,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                                   SizedBox(height: 30),
                                                   Container(
                                                     child: Text(
-                                                      snapshot.data.docs[index]
+                                                      (snapshot.data! as QuerySnapshot).docs[index]
                                                           ["addressName"],
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -1134,8 +1131,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                                                   .size
                                                                   .width -
                                                               120,
-                                                      child: Text(snapshot
-                                                              .data.docs[index]
+                                                      child: Text((snapshot.data! as QuerySnapshot).docs[index]
                                                           ["address"]),
                                                     ),
                                                   ),
@@ -1153,43 +1149,35 @@ class _PageAccueilState extends State<PageAccueil> {
                                                         MaterialPageRoute(
                                                             builder: (context) =>
                                                                 PageAddressEdit(
-                                                                  adresse: snapshot
-                                                                          .data
+                                                                  adresse: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "address"],
-                                                                  adressTitle: snapshot
-                                                                          .data
+                                                                  adressTitle: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "addressName"],
-                                                                  buildingDetails: snapshot
-                                                                          .data
+                                                                  buildingDetails: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "buildingDetails"],
-                                                                  buildingName: snapshot
-                                                                          .data
+                                                                  buildingName: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "buildingName"],
-                                                                  familyName: snapshot
-                                                                          .data
+                                                                  familyName: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "familyName"],
-                                                                  lat: snapshot
-                                                                          .data
+                                                                  lat: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "latitude"],
-                                                                  long: snapshot
-                                                                          .data
+                                                                  long: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "longitude"],
-                                                                  iD: snapshot
-                                                                          .data
+                                                                  iD: (snapshot.data! as QuerySnapshot)
                                                                           .docs[index]
                                                                       ["idDoc"],
                                                                 )));
@@ -1253,8 +1241,8 @@ class SliderAccueil1 extends StatefulWidget {
     this.latitude,
     this.longitude,
   );
-  double latitude;
-  double longitude;
+  double? latitude;
+  double? longitude;
   @override
   _SliderAccueil1State createState() => _SliderAccueil1State();
 }
@@ -1263,9 +1251,9 @@ class SliderAccueil1 extends StatefulWidget {
 class _SliderAccueil1State extends State<SliderAccueil1> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1276,7 +1264,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
         var collectionReference = FirebaseFirestore.instance
             .collection('magasins')
@@ -1297,7 +1285,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         // ignore: missing_return
         builder: (context, snapshot) {
@@ -1319,13 +1307,13 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
-          if (snapshot.data.length > 0) {
+          // final documents = (snapshot.data! as QuerySnapshot)..shuffle();
+          if (snapshot.data!().length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1333,19 +1321,19 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                 primary: false,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data.length,
+                itemCount: snapshot.data!().length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: SlideItem(
-                      img: snapshot.data[index]["imgUrl"],
-                      name: snapshot.data[index]["name"],
-                      address: snapshot.data[index]["adresse"],
-                      description: snapshot.data[index]["description"],
-                      livraison: snapshot.data[index]["livraison"],
-                      sellerID: snapshot.data[index]["id"],
-                      colorStore: snapshot.data[index]["colorStore"],
-                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                      img: snapshot.data!()[index]["imgUrl"],
+                      name: snapshot.data!()[index]["name"],
+                      address: snapshot.data!()[index]["adresse"],
+                      description: snapshot.data!()[index]["description"],
+                      livraison: snapshot.data!()[index]["livraison"],
+                      sellerID: snapshot.data!()[index]["id"],
+                      colorStore: snapshot.data!()[index]["colorStore"],
+                      clickAndCollect: snapshot.data!()[index]["ClickAndCollect"],
                     ),
                   );
                 },
@@ -1386,8 +1374,8 @@ class SliderAccueil2 extends StatefulWidget {
     this.latitude,
     this.longitude,
   );
-  double latitude;
-  double longitude;
+  double? latitude;
+  double? longitude;
   @override
   _SliderAccueil2State createState() => _SliderAccueil2State();
 }
@@ -1396,9 +1384,9 @@ class SliderAccueil2 extends StatefulWidget {
 class _SliderAccueil2State extends State<SliderAccueil2> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1407,7 +1395,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
         var collectionReference =
             FirebaseFirestore.instance.collection('magasins');
@@ -1427,7 +1415,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1448,12 +1436,12 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
+          // final documents = (snapshot.data! as QuerySnapshot)..shuffle();
           if (snapshot.data.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
@@ -1516,8 +1504,8 @@ class SliderAccueil3 extends StatefulWidget {
     this.latitude,
     this.longitude,
   );
-  double latitude;
-  double longitude;
+  double? latitude;
+  double? longitude;
   @override
   _SliderAccueil3State createState() => _SliderAccueil3State();
 }
@@ -1525,9 +1513,9 @@ class SliderAccueil3 extends StatefulWidget {
 class _SliderAccueil3State extends State<SliderAccueil3> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1536,7 +1524,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
         var collectionReference =
             FirebaseFirestore.instance.collection('magasins');
@@ -1556,7 +1544,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1577,13 +1565,13 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
-          if (snapshot.data.length > 0) {
+          // final documents = (snapshot.data! as QuerySnapshot)..shuffle();
+          if (snapshot.data!.legth > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1656,7 +1644,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods().getStoreInfo(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1677,14 +1665,14 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
+          // final documents = (snapshot.data! as QuerySnapshot)..shuffle();
           if (snapshot.data.length > 0) {
-            List shopImages = listImages(snapshot.data);
+            List shopImages = listImages((snapshot.data! as QuerySnapshot));
             return CarouselSlider(
                 options: CarouselOptions(
                     height: 200,
@@ -1749,7 +1737,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
                                     child: Text(
-                                        snapshot.data[carouselItem]["name"],
+                                        snapshot.data!()[carouselItem]["name"],
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w700))),
@@ -1794,10 +1782,10 @@ class AllStores extends StatefulWidget {
 
 class _AllStoresState extends State<AllStores> {
   var currentLocation;
-  var position;
-  Geoflutterfire geo;
+  late var position;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1821,7 +1809,7 @@ class _AllStoresState extends State<AllStores> {
 
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData)
@@ -1842,8 +1830,8 @@ class _AllStoresState extends State<AllStores> {
                         height: 15,
                       ),
                       Shimmer.fromColors(
-                        baseColor: Colors.grey[300],
-                        highlightColor: Colors.grey[100],
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
                         child: Row(
                           children: [
                             Container(
@@ -1987,21 +1975,21 @@ class _AllStoresState extends State<AllStores> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: Image.network(
-                                snapshot.data[index]["imgUrl"],
+                                snapshot.data!()[index]["imgUrl"],
                                 fit: BoxFit.cover,
                               ),
                             ),
                             SizedBox(
                               height: 15,
                             ),
-                            Text(snapshot.data[index]['name'],
+                            Text(snapshot.data!()[index]['name'],
                                 style: TextStyle(
                                   fontSize: 20,
                                 )),
                             SizedBox(
                               height: 5,
                             ),
-                            Text(snapshot.data[index]['description'],
+                            Text(snapshot.data!()[index]['description'],
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w500)),

@@ -4,9 +4,9 @@ import 'package:buyandbye/templates/Pages/pageLogin.dart';
 import 'package:flutter/material.dart';
 
 class CenterNextButton extends StatelessWidget {
-  final AnimationController animationController;
-  final VoidCallback onNextClick;
-  const CenterNextButton({Key key, this.animationController, this.onNextClick})
+  final AnimationController? animationController;
+  final VoidCallback? onNextClick;
+  const CenterNextButton({Key? key, this.animationController, this.onNextClick})
       : super(key: key);
 
   @override
@@ -14,7 +14,7 @@ class CenterNextButton extends StatelessWidget {
     final _topMoveAnimation =
         Tween<Offset>(begin: Offset(0, 5), end: Offset(0, 0))
             .animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.0,
         0.2,
@@ -23,7 +23,7 @@ class CenterNextButton extends StatelessWidget {
     ));
     final _signUpMoveAnimation =
         Tween<double>(begin: 0, end: 1.0).animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.6,
         0.8,
@@ -33,7 +33,7 @@ class CenterNextButton extends StatelessWidget {
     final _loginTextMoveAnimation =
         Tween<Offset>(begin: Offset(0, 5), end: Offset(0, 0))
             .animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.6,
         0.8,
@@ -53,10 +53,10 @@ class CenterNextButton extends StatelessWidget {
             child: SlideTransition(
               position: _topMoveAnimation,
               child: AnimatedBuilder(
-                animation: animationController,
+                animation: animationController!,
                 builder: (context, child) => AnimatedOpacity(
-                  opacity: animationController.value >= 0.2 &&
-                          animationController.value <= 0.6
+                  opacity: animationController!.value >= 0.2 &&
+                          animationController!.value <= 0.6
                       ? 1
                       : 0,
                   duration: Duration(milliseconds: 480),
@@ -68,7 +68,7 @@ class CenterNextButton extends StatelessWidget {
           SlideTransition(
             position: _topMoveAnimation,
             child: AnimatedBuilder(
-              animation: animationController,
+              animation: animationController!,
               builder: (context, child) => Padding(
                 padding: EdgeInsets.only(
                     bottom: 38 - (38 * _signUpMoveAnimation.value)),
@@ -186,13 +186,13 @@ class CenterNextButton extends StatelessWidget {
   Widget _pageView() {
     int _selectedIndex = 0;
 
-    if (animationController.value >= 0.7) {
+    if (animationController!.value >= 0.7) {
       _selectedIndex = 3;
-    } else if (animationController.value >= 0.5) {
+    } else if (animationController!.value >= 0.5) {
       _selectedIndex = 2;
-    } else if (animationController.value >= 0.3) {
+    } else if (animationController!.value >= 0.3) {
       _selectedIndex = 1;
-    } else if (animationController.value >= 0.1) {
+    } else if (animationController!.value >= 0.1) {
       _selectedIndex = 0;
     }
 

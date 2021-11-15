@@ -15,7 +15,7 @@ class UserHistory extends StatefulWidget {
 }
 
 class _UserHistoryState extends State<UserHistory> {
-  String userid;
+  String? userid;
 
   void initState() {
     super.initState();
@@ -61,14 +61,14 @@ class _UserHistoryState extends State<UserHistory> {
               body: SingleChildScrollView(
                 padding:
                     EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
-                child: snapshot.data.docs.length > 0
+                child: (snapshot.data! as QuerySnapshot).docs.length > 0
                     ? ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: snapshot.data.docs.length,
+                        itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                         itemBuilder: (context, index) {
-                          String shopId = snapshot.data.docs[index]["shopID"];
-                          String commandId = snapshot.data.docs[index]["id"];
+                          String? shopId = (snapshot.data! as QuerySnapshot).docs[index]["shopID"];
+                          String? commandId = (snapshot.data! as QuerySnapshot).docs[index]["id"];
                           // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
                           return UserCommand(shopId, commandId, userid);
                         },
@@ -106,12 +106,12 @@ class _UserHistoryState extends State<UserHistory> {
 
 class UserCommand extends StatefulWidget {
   const UserCommand(this.shopId, this.commandId, this.userid);
-  final String shopId, commandId, userid;
+  final String? shopId, commandId, userid;
   _UserCommandState createState() => _UserCommandState();
 }
 
 class _UserCommandState extends State<UserCommand> {
-  String shopName /*, address*/;
+  late String shopName /*, address*/;
   String formatTimestamp(var timestamp) {
     var format = new DateFormat('d/MM/y');
     return format.format(timestamp.toDate());
@@ -131,7 +131,7 @@ class _UserCommandState extends State<UserCommand> {
 
   Widget build(BuildContext context) {
     getShopInfos(widget.shopId);
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods()
             .getCommandDetails(widget.userid, widget.commandId),
         builder: (context, snapshot) {
@@ -144,11 +144,11 @@ class _UserCommandState extends State<UserCommand> {
           //   );
           // }
           if (snapshot.hasData) {
-            int statut = snapshot.data["statut"];
+            int? statut = snapshot.data!()["statut"];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(formatTimestamp(snapshot.data["horodatage"]),
+                Text(formatTimestamp(snapshot.data!()["horodatage"]),
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 SizedBox(
@@ -164,11 +164,11 @@ class _UserCommandState extends State<UserCommand> {
                             widget.userid,
                             widget.commandId,
                             statut,
-                            snapshot.data["horodatage"],
+                            snapshot.data!()["horodatage"],
                             widget.shopId,
-                            snapshot.data["prix"],
-                            snapshot.data["livraison"],
-                            snapshot.data["adresse"]),
+                            snapshot.data!()["prix"],
+                            snapshot.data!()["livraison"],
+                            snapshot.data!()["adresse"]),
                       ),
                     );
                   },
@@ -202,19 +202,19 @@ class _UserCommandState extends State<UserCommand> {
                                     height: 20,
                                   ),
                                   // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
-                                  snapshot.data["articles"] == 1
+                                  snapshot.data!()["articles"] == 1
                                       ? Text(
-                                          snapshot.data["articles"].toString() +
+                                          snapshot.data!()["articles"].toString() +
                                               " article")
                                       : Text(
-                                          snapshot.data["articles"].toString() +
+                                          snapshot.data!()["articles"].toString() +
                                               " articles"),
                                 ],
                               ),
                               Column(
                                 children: [
                                   Text(
-                                    snapshot.data["prix"].toStringAsFixed(2) +
+                                    snapshot.data!()["prix"].toStringAsFixed(2) +
                                         "€",
                                     style: TextStyle(
                                         fontSize: 14,
@@ -256,8 +256,8 @@ class _UserCommandState extends State<UserCommand> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
         });

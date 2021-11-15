@@ -20,7 +20,7 @@ class PageCompte extends StatefulWidget {
 }
 
 class _PageCompteState extends State<PageCompte> {
-  String userid, myProfilePicture, fname, lname, email;
+  String? userid, myProfilePicture, fname, lname, email;
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _PageCompteState extends State<PageCompte> {
   }
 
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getMyInfo2(userid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -70,12 +70,12 @@ class _PageCompteState extends State<PageCompte> {
                   : Column(
                       children: [
                         Text(
-                          fname + " " + lname,
+                          fname! + " " + lname!,
                           style: kTitleTextStyle,
                         ),
                         SizedBox(height: 5),
                         Text(
-                          email,
+                          email!,
                           style: kCaption2TextStyle,
                         ),
                       ],

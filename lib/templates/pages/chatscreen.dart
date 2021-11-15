@@ -30,7 +30,7 @@ class ChatRoom extends StatefulWidget {
       this.selectedUserThumbnail,
       this.myThumbnail);
 
-  final String myID,
+  final String? myID,
       myName,
       selectedUserToken,
       selectedUserID,
@@ -84,13 +84,13 @@ class _ChatRoomState extends State<ChatRoom>
     // print("J'avais raison");
     // print(widget.selectedUserToken);
     // print(widget.selectedUserID);
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
     FBCloudStore.instanace
         .updateMyChatListValues(widget.myID, widget.chatID, true);
 
     if (mounted) {
       isShowLocalNotification = true;
-      _savedChatId(widget.chatID);
+      _savedChatId(widget.chatID!);
       checkLocalNotification(localNotificationAnimation, widget.chatID);
     }
     initializeDateFormatting('fr_FR');
@@ -118,7 +118,7 @@ class _ChatRoomState extends State<ChatRoom>
     FBCloudStore.instanace
         .updateMyChatListValues(widget.myID, widget.chatID, false);
     _savedChatId("");
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -133,8 +133,8 @@ class _ChatRoomState extends State<ChatRoom>
           top: false,
           child: Scaffold(
             appBar: AppBar(
-              title: Text(widget.selectedUserFname + widget.selectedUserLname),
-              backwardsCompatibility: false, // 1
+              title:
+                  Text(widget.selectedUserFname! + widget.selectedUserLname!),
               systemOverlayStyle: SystemUiOverlayStyle.light,
               backgroundColor: BuyandByeAppTheme.black_electrik,
               centerTitle: true,
@@ -143,7 +143,7 @@ class _ChatRoomState extends State<ChatRoom>
                 stream: FirebaseFirestore.instance
                     .collection('chatrooms')
                     .doc(widget.chatID)
-                    .collection(widget.chatID)
+                    .collection(widget.chatID!)
                     .orderBy('timestamp', descending: false)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -160,10 +160,10 @@ class _ChatRoomState extends State<ChatRoom>
                                 shrinkWrap: true,
                                 //padding: const EdgeInsets.fromLTRB(4.0, 10, 4, 1),
                                 controller: _chatListController,
-                                children:
-                                    addInstructionInSnapshot(snapshot.data.docs)
-                                        .map(_returnChatWidget)
-                                        .toList()),
+                                children: addInstructionInSnapshot(
+                                        snapshot.data!.docs)
+                                    .map(_returnChatWidget)
+                                    .toList() as List<Widget>),
                           ),
                           _buildTextComposer(),
                         ],
@@ -177,24 +177,22 @@ class _ChatRoomState extends State<ChatRoom>
     );
   }
 
-  Widget _returnChatWidget(dynamic data) {
-    Widget _returnWidget;
+  Widget? _returnChatWidget(dynamic data) {
+    Widget? _returnWidget;
 
     if (data is QueryDocumentSnapshot) {
       if (data['idTo'] == widget.myID && data['isread'] == false) {
-        if (data.reference != null) {
-          FirebaseFirestore.instance
-              .runTransaction((Transaction myTransaction) async {
-            myTransaction.update(data.reference, {'isread': true});
-          });
-        }
+        FirebaseFirestore.instance
+            .runTransaction((Transaction myTransaction) async {
+          myTransaction.update(data.reference, {'isread': true});
+        });
       }
 
       _returnWidget = data['idFrom'] == widget.selectedUserID
           ? peerUserListTile(
               context,
-              widget.selectedUserFname + widget.selectedUserLname,
-              widget.selectedUserThumbnail,
+              widget.selectedUserFname! + widget.selectedUserLname!,
+              widget.selectedUserThumbnail!,
               data['content'],
               returnTimeStamp(data['timestamp']),
               data['type'])
@@ -224,14 +222,10 @@ class _ChatRoomState extends State<ChatRoom>
                     ImageController.instance
                         .cropImageFromFile()
                         .then((croppedFile) {
-                      if (croppedFile != null) {
-                        setState(() {
-                          messageType = 'image';
-                        });
-                        _saveUserImageToFirebaseStorage(croppedFile);
-                      } else {
-                        showAlertDialog(context, 'Pick Image error');
-                      }
+                      setState(() {
+                        messageType = 'image';
+                      });
+                      _saveUserImageToFirebaseStorage(croppedFile);
                     });
                   }),
             ),
@@ -292,7 +286,7 @@ class _ChatRoomState extends State<ChatRoom>
       await FBCloudStore.instanace.sendMessageToChatRoom(
           widget.chatID, widget.myID, widget.selectedUserID, text, messageType);
       await FBCloudStore.instanace.updateUserChatListField(
-        widget.selectedUserID,
+        widget.selectedUserID!,
         messageType == 'text' ? text : 'A envoyé une photo',
         widget.chatID,
         widget.myID,
@@ -300,7 +294,7 @@ class _ChatRoomState extends State<ChatRoom>
       );
 
       await FBCloudStore.instanace.updateUserChatListField(
-          widget.myID,
+          widget.myID!,
           messageType == 'text' ? text : 'A envoyé une photo',
           widget.chatID,
           widget.myID,
@@ -327,7 +321,7 @@ class _ChatRoomState extends State<ChatRoom>
           widget.selectedUserToken,
           widget.selectedUserID);
     } catch (e) {
-      print(e.message);
+      print(e);
     }
     // _resetTextFieldAndLoading();
   }

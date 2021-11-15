@@ -43,7 +43,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -67,14 +67,14 @@ class _MyAppState extends State<MyApp> {
     _getFCMToken();
     super.initState();
 
-    AuthMethods.instanace.checkEmailVerification();
+    AuthMethods.instance.checkEmailVerification();
   }
 
   Future<void> _getFCMToken() async {
     // Go to Firebase console -> Project settings -> Cloud Messaging -> Web Push Certificates -> create key pair -> copy and paste
     const yourVapidKey =
         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA";
-    String _fcmToken =
+    String? _fcmToken =
         await FirebaseMessaging.instance.getToken(vapidKey: yourVapidKey);
     print('_FCMToken is $_fcmToken');
     // here you write the codes to input the data into firestore
@@ -158,19 +158,20 @@ class MainScreen extends StatelessWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasData) {
-                  final userDoc = snapshot.data;
-                  final user = userDoc;
-                  if (user['emailVerified'] == false) {
-                    return PageLogin();
-                  }
-                  if (user['firstConnection'] == true) {
-                    return PageFirstConnection();
-                  }
-                  if (user['admin'] == true) {
-                    return NavBar();
-                  } else {
-                    return Accueil();
-                  }
+                  // final userDoc = snapshot.data!;
+                  // final user = userDoc;
+                  // if (user['emailVerified'] == false) {
+                  //   return PageLogin();
+                  // }
+                  // if (user['firstConnection'] == true) {
+                  //   return PageFirstConnection();
+                  // }
+                  // if (user['admin'] == true) {
+                  //   return NavBar();
+                  // } else {
+                  //   return Accueil();
+                  // }
+                  return Accueil();
                 } else {
                   return PageLogin();
                 }

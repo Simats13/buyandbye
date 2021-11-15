@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
@@ -9,14 +11,14 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseMethods {
-  static DatabaseMethods get instanace => DatabaseMethods();
-  Map<String, dynamic> paymentIntentData;
+  static DatabaseMethods get instance => DatabaseMethods();
+  Map<String, dynamic>? paymentIntentData;
 
   Future userAuthData(String userId) async {
     return FirebaseFirestore.instance.collection("users").doc(userId).get();
   }
 
-  Future<QuerySnapshot> getMyInfo(String userid) async {
+  Future<QuerySnapshot> getMyInfo(String? userid) async {
     return await FirebaseFirestore.instance
         .collection("users")
         .where("id", isEqualTo: userid)
@@ -52,7 +54,7 @@ class DatabaseMethods {
         .delete();
   }
 
-  Future deleteAddress(String idDoc) async {
+  Future deleteAddress(String? idDoc) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
@@ -121,14 +123,14 @@ class DatabaseMethods {
         .doc(chatRoomId)
         .collection("chats")
         .doc(messageId)
-        .set(messageInfoMap);
+        .set(messageInfoMap as Map<String, dynamic>);
   }
 
   updateLastMessageSend(String chatRoomId, Map lastMessageInfoMap) {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
-        .update(lastMessageInfoMap);
+        .update(lastMessageInfoMap as Map<String, Object?>);
   }
 
   createChatRoom(String chatRoomId, Map chatRoomInfoMap) async {
@@ -145,7 +147,7 @@ class DatabaseMethods {
       return FirebaseFirestore.instance
           .collection("chatrooms")
           .doc(chatRoomId)
-          .set(chatRoomInfoMap);
+          .set(chatRoomInfoMap as Map<String, dynamic>);
     }
   }
 
@@ -159,7 +161,7 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String myUserName = await SharedPreferenceHelper().getUserName();
+    String? myUserName = await SharedPreferenceHelper().getUserName();
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .where("users", arrayContains: myUserName)
@@ -178,14 +180,14 @@ class DatabaseMethods {
         .update({"name": name, "email": email, "phone": phone});
   }
 
-  Future<QuerySnapshot> getMagasinInfo(String sellerId) async {
+  Future<QuerySnapshot> getMagasinInfo(String? sellerId) async {
     return await FirebaseFirestore.instance
         .collection("magasins")
         .where("id", isEqualTo: sellerId)
         .get();
   }
 
-  Future<QuerySnapshot> getMagasinInfoViaID(String id) async {
+  Future<QuerySnapshot> getMagasinInfoViaID(String? id) async {
     return await FirebaseFirestore.instance
         .collection("magasins")
         .where("id", isEqualTo: id)
@@ -245,7 +247,7 @@ class DatabaseMethods {
     } catch (e) {}
   }
 
-  Stream getProducts(String sellerId) {
+  Stream getProducts(String? sellerId) {
     return FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
@@ -254,7 +256,7 @@ class DatabaseMethods {
   }
 
   // On ne récupère que les produits que le commerçant a choisi comme étant visible par les clients
-  Stream getVisibleProducts(String sellerId, String categorie, int actualPage) {
+  Stream getVisibleProducts(String? sellerId, String? categorie, int actualPage) {
     Stream query = FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
@@ -433,8 +435,8 @@ class DatabaseMethods {
     print(myId);
   }
 
-  Future addCart(String nomProduit, num prixProduit, String imgProduit,
-      int amount, String idCommercant, String idProduit) async {
+  Future addCart(String? nomProduit, num? prixProduit, String imgProduit,
+      int amount, String? idCommercant, String? idProduit) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
@@ -453,13 +455,13 @@ class DatabaseMethods {
   }
 
   Future addAdresses(
-      String buildingDetails,
-      String buildingName,
-      String familyName,
-      String adressTitle,
-      double longitude,
-      double latitude,
-      String address) async {
+      String? buildingDetails,
+      String? buildingName,
+      String? familyName,
+      String? adressTitle,
+      double? longitude,
+      double? latitude,
+      String? address) async {
     final User user = await AuthMethods().getCurrentUser();
     String iD = Uuid().v4();
     final userid = user.uid;
@@ -486,10 +488,10 @@ class DatabaseMethods {
     String buildingName,
     String familyName,
     String adressTitle,
-    double longitude,
-    double latitude,
-    String address,
-    String id,
+    double? longitude,
+    double? latitude,
+    String? address,
+    String? id,
   ) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
@@ -529,12 +531,13 @@ class DatabaseMethods {
   }
 
   Future changeChosenAddress(userID, addressID, previousID) async {
-    var previousAddress = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(userID)
-        .collection("Address")
-        .doc(previousID)
-        .update({"chosen": false});
+    // INUTILISE
+    // var previousAddress = await FirebaseFirestore.instance
+    //     .collection("users")
+    //     .doc(userID)
+    //     .collection("Address")
+    //     .doc(previousID)
+    //     .update({"chosen": false});
 
     return FirebaseFirestore.instance
         .collection("users")
@@ -567,12 +570,12 @@ class DatabaseMethods {
           .get();
       List<QueryDocumentSnapshot> chatListDocuments = userChatList.docs;
       for (QueryDocumentSnapshot snapshot in chatListDocuments) {
-        unReadMSGCount = unReadMSGCount + snapshot['badgeCount'];
+        unReadMSGCount = unReadMSGCount + snapshot['badgeCount'] as int;
       }
       print('unread MSG count is $unReadMSGCount');
       return unReadMSGCount;
     } catch (e) {
-      print(e.message);
+      print(e);
     }
   }
 
@@ -594,13 +597,13 @@ class DatabaseMethods {
       }
     });
 
-    int unReadMSGCount = await DatabaseMethods.instanace
-        .getUnreadMSGCount(documentID, myUsername);
+    int unReadMSGCount = await (DatabaseMethods.instance
+        .getUnreadMSGCount(documentID, myUsername) as FutureOr<int>);
     FlutterAppBadger.updateBadgeCount(unReadMSGCount);
   }
 
   Future updateUserChatListField(String documentID, selectedUserID) async {
-    var userBadgeCount = 0;
+    int userBadgeCount = 0;
     var isRoom = false;
     DocumentSnapshot userDoc = await FirebaseFirestore.instance
         .collection('chatrooms')
@@ -611,7 +614,7 @@ class DatabaseMethods {
 
     if (userDoc.data() != null) {
       isRoom = userDoc.get('inRoom') ?? false;
-      if (userDoc != null && !userDoc['inRoom']) {
+      if (!userDoc['inRoom']) {
         userBadgeCount = userDoc['badgeCount'];
         userBadgeCount++;
       }
@@ -631,7 +634,7 @@ class DatabaseMethods {
     });
   }
 
-  Future addItem(String idProduit, int amount) async {
+  Future addItem(String? idProduit, int? amount) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
@@ -642,7 +645,7 @@ class DatabaseMethods {
         .update({"amount": amount});
   }
 
-  Future deleteCart(String nomProduit) async {
+  Future deleteCart(String? nomProduit) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
@@ -675,8 +678,8 @@ class DatabaseMethods {
         .get();
   }
 
-  Future acceptPayment(String idCommercant, double deliveryChoose,
-      double amount, String userAdress, String idCommand) async {
+  Future acceptPayment(String? idCommercant, double deliveryChoose,
+      double? amount, String? userAdress, String idCommand) async {
     int totalProduct = 0;
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
@@ -695,7 +698,7 @@ class DatabaseMethods {
         .get();
 
     for (var i in produits.docs) {
-      totalProduct = totalProduct + i["amount"];
+      totalProduct = totalProduct + i["amount"] as int;
     }
 
     //MET LES NOUVELLES INFORMATIONS DANS LA BDD DE L'UTILISATEUR
@@ -818,7 +821,7 @@ class DatabaseMethods {
             {"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
   }
 
-  Future allProductsCategory(String categorie) async {
+  Future allProductsCategory(String? categorie) async {
     return await FirebaseFirestore.instance
         .collection('magasins')
         .doc('CBODzxOryXcJuUTlpF2WIvoeYit2')

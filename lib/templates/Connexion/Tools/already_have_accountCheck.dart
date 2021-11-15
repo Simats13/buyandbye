@@ -3,9 +3,9 @@ import 'package:buyandbye/templates/widgets/constants.dart';
 
 class AlreadyHaveAnAccountCheck extends StatelessWidget {
   final bool login;
-  final Function press;
+  final Function? press;
   const AlreadyHaveAnAccountCheck({
-    Key key, 
+    Key? key, 
     this.login = true, 
     this.press,
   }) : super(key: key);
@@ -22,7 +22,7 @@ class AlreadyHaveAnAccountCheck extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: press,
+          onTap: press as void Function()?,
           child: Text(
             login ? "Créer en un !" : "Connectez-vous ! ",
             style: TextStyle(

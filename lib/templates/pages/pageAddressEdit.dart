@@ -8,12 +8,12 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+import 'package:geocoding/geocoding.dart' as geocoder;
 import '../buyandbye_app_theme.dart';
 
 class PageAddressEdit extends StatefulWidget {
   const PageAddressEdit(
-      {Key key,
+      {Key? key,
       this.lat,
       this.long,
       this.adresse,
@@ -23,40 +23,40 @@ class PageAddressEdit extends StatefulWidget {
       this.familyName,
       this.iD})
       : super(key: key);
-  final double lat;
-  final double long;
-  final String adresse;
-  final String buildingDetails;
-  final String buildingName;
-  final String adressTitle;
-  final String familyName;
-  final String iD;
+  final double? lat;
+  final double? long;
+  final String? adresse;
+  final String? buildingDetails;
+  final String? buildingName;
+  final String? adressTitle;
+  final String? familyName;
+  final String? iD;
   @override
   _PageAddressEditState createState() => _PageAddressEditState();
 }
 
 class _PageAddressEditState extends State<PageAddressEdit> {
-  GoogleMapController _mapController;
-  Stream<List<DocumentSnapshot>> stream;
+  late GoogleMapController _mapController;
+  Stream<List<DocumentSnapshot>>? stream;
   final _formKey = GlobalKey<FormState>();
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  Geoflutterfire? geo;
   bool mapToggle = false;
 
   Set<Marker> _markers = Set<Marker>();
-  BitmapDescriptor mapMarker;
-  String userAddress;
-  String buildingDetailsEdit;
-  String buildingNameEdit;
-  String adressTitleEdit;
-  String familyNameEdit;
+  BitmapDescriptor? mapMarker;
+  String? userAddress;
+  String? buildingDetailsEdit;
+  String? buildingNameEdit;
+  String? adressTitleEdit;
+  String? familyNameEdit;
 
   // Controlleur des champs de texte. Remplace ceux crée précédemment
-  TextEditingController buildingDetailsController;
-  TextEditingController buildingNameController;
-  TextEditingController familyNameController;
-  TextEditingController addressTitleController;
+  TextEditingController? buildingDetailsController;
+  TextEditingController? buildingNameController;
+  TextEditingController? familyNameController;
+  TextEditingController? addressTitleController;
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -91,7 +91,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     final idMarker = MarkerId(widget.lat.toString() + widget.long.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(widget.lat, widget.long),
+      position: LatLng(widget.lat!, widget.long!),
       //icon: mapMarker,
     ));
 
@@ -99,14 +99,11 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   }
 
   findAddress() async {
-    final coordinates = new geocode.Coordinates(widget.lat, widget.long);
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+    List<geocoder.Placemark> addresses =
+        await geocoder.placemarkFromCoordinates(widget.lat!, widget.long!);
     var first = addresses.first;
-
     setState(() {
-      userAddress =
-          "${first.featureName}, ${first.locality}, ${first.countryName}";
+      userAddress = "${first.name}, ${first.locality}, ${first.country}";
     });
   }
 
@@ -211,7 +208,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
-                        target: LatLng(widget.lat, widget.long), zoom: 15.0),
+                        target: LatLng(widget.lat!, widget.long!), zoom: 15.0),
                     myLocationButtonEnabled: false,
                     markers: _markers,
                   ),
@@ -249,7 +246,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                         border: InputBorder.none,
                         filled: true,
                         suffixIcon: IconButton(
-                          onPressed: buildingDetailsController.clear,
+                          onPressed: buildingDetailsController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         labelText: "Numéro d'appartement, porte, étage",
@@ -277,7 +274,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         suffixIcon: IconButton(
-                          onPressed: buildingNameController.clear,
+                          onPressed: buildingNameController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         filled: true,
@@ -307,7 +304,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                         border: InputBorder.none,
                         filled: true,
                         suffixIcon: IconButton(
-                          onPressed: familyNameController.clear,
+                          onPressed: familyNameController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         labelText: "Code porte et nom de famille",
@@ -358,7 +355,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         suffixIcon: IconButton(
-                          onPressed: addressTitleController.clear,
+                          onPressed: addressTitleController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         labelText: "Ajouter un intitulé (p. ex : Maison)",
@@ -382,25 +379,25 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                     // Si un champ est vide, on envoi la valeur déjà présente
 
                     var buildingDetailsEdit =
-                        buildingDetailsController.text == ""
+                        buildingDetailsController!.text == ""
                             ? ""
-                            : buildingDetailsController.text;
-                    var buildingNameEdit = buildingNameController.text == ""
+                            : buildingDetailsController!.text;
+                    var buildingNameEdit = buildingNameController!.text == ""
                         ? ""
-                        : buildingNameController.text;
-                    var familyNameEdit = familyNameController.text == ""
+                        : buildingNameController!.text;
+                    var familyNameEdit = familyNameController!.text == ""
                         ? ""
-                        : familyNameController.text;
-                    var adressTitleEdit = addressTitleController.text == ""
+                        : familyNameController!.text;
+                    var adressTitleEdit = addressTitleController!.text == ""
                         ? ""
-                        : addressTitleController.text;
+                        : addressTitleController!.text;
 
                     // Validate returns true if the form is valid, or false otherwise.
 
-                    final isValid = _formKey.currentState.validate();
+                    final isValid = _formKey.currentState!.validate();
 
                     if (isValid) {
-                      _formKey.currentState.save();
+                      _formKey.currentState!.save();
 
                       // final message =
                       //     "$buildingDetailsEdit, $buildingNameEdit, $familyNameEdit, $adressTitleEdit";
@@ -435,13 +432,13 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     String buildingName,
     String familyName,
     String adressTitle,
-    double latitude,
-    double longitude,
-    String address,
-    String id,
+    double? latitude,
+    double? longitude,
+    String? address,
+    String? id,
   ) async {
     try {
-      await DatabaseMethods.instanace.editAdresses(
+      await DatabaseMethods.instance.editAdresses(
           buildingDetails,
           buildingName,
           familyName,

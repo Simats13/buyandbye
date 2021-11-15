@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,7 +10,7 @@ class ImageController {
   static ImageController get instance => ImageController();
 
   Future<File> cropImageFromFile() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await (ImagePicker().pickImage(source: ImageSource.gallery) as FutureOr<XFile>);
     final File imageFileFromLibrary = File(pickedFile.path);
 
     // Start crop iamge then take the file.
@@ -32,7 +33,7 @@ class ImageController {
           minimumAspectRatio: 1.0,
         ));*/
     //return croppedFile != null ? croppedFile : null;
-    return imageFileFromLibrary != null ? imageFileFromLibrary : null;
+    return imageFileFromLibrary;
   }
 
   CachedNetworkImage cachedImage(String imageUrl) {

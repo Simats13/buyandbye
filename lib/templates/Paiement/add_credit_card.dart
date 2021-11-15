@@ -5,7 +5,7 @@ import 'package:flutter_credit_card/flutter_credit_card.dart';
 import '../buyandbye_app_theme.dart';
 
 class CreditCardAdd extends StatefulWidget {
-  CreditCardAdd({Key key}) : super(key: key);
+  CreditCardAdd({Key? key}) : super(key: key);
 
   @override
   _CreditCardAddState createState() => _CreditCardAddState();
@@ -47,6 +47,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                 showBackView: isCvvFocused,
                 obscureCardNumber: true,
                 obscureCardCvv: true,
+                onCreditCardWidgetChange: (creditCardBrand) {},
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -103,7 +104,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                         ),
                         onPressed: () {
                           try {
-                            if (formKey.currentState.validate()) {
+                            if (formKey.currentState!.validate()) {
                               print('valid!');
                               print(cardNumber);
                             } else {

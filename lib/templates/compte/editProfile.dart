@@ -18,7 +18,7 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sign_button/sign_button.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+import 'package:geocoding/geocoding.dart' as geocoder;
 import 'package:http/http.dart' as http;
 
 class EditProfilePage extends StatefulWidget {
@@ -27,7 +27,7 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  String myID,
+  String? myID,
       myFirstName,
       myLastName,
       myUserName,
@@ -39,11 +39,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       mail,
       customerID,
       myPhone;
-  Map<String, dynamic> paymentIntentData;
+  Map<String, dynamic>? paymentIntentData;
   final _controller = TextEditingController();
   String _streetNumber = '';
-  String _street;
-  String _city;
+  String? _street;
+  String? _city;
   // ignore: unused_field
   String _currentAddressLocation = "";
   // ignore: unused_field
@@ -215,7 +215,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           SizedBox(height: 20),
                           myLastName == null
                               ? CircularProgressIndicator()
-                              : Text(myLastName),
+                              : Text(myLastName!),
                           SizedBox(height: 20),
                           Text("Prénom :",
                               style: TextStyle(
@@ -223,7 +223,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           SizedBox(height: 20),
                           myFirstName == null
                               ? CircularProgressIndicator()
-                              : Text(myFirstName),
+                              : Text(myFirstName!),
                           SizedBox(height: 20),
                           Text("E-mail :",
                               style: TextStyle(
@@ -231,7 +231,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           SizedBox(height: 20),
                           myEmail == null
                               ? CircularProgressIndicator()
-                              : Text(myEmail),
+                              : Text(myEmail!),
                           SizedBox(height: 20),
                           Text("Numéro de téléphone :",
                               style: TextStyle(
@@ -260,7 +260,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ],
                                       ),
                                     )
-                                  : Text(myPhone),
+                                  : Text(myPhone!),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Méthode de connexion"),
@@ -273,7 +273,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.facebook,
                                         onPressed: () async {
-                                          await AuthMethods.instanace
+                                          await AuthMethods.instance
                                               .unlinkFacebook();
                                           showMessage("Lien Facebook",
                                               "Votre compte Facebook a bien été délié !");
@@ -292,7 +292,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         buttonType: ButtonType.facebook,
                                         onPressed: () async {
                                           try {
-                                            await AuthMethods.instanace
+                                            await AuthMethods.instance
                                                 .linkExistingToFacebook();
                                             showMessage("Lien Facebook",
                                                 "Votre compte Facebook a bien été lié !");
@@ -324,7 +324,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             ImagePosition.left, // left or right
                                         buttonType: ButtonType.google,
                                         onPressed: () async {
-                                          await AuthMethods.instanace
+                                          await AuthMethods.instance
                                               .unlinkGoogle();
                                           showMessage("Lien Google",
                                               "Votre compte Google a bien été délié !");
@@ -343,7 +343,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         buttonType: ButtonType.google,
                                         onPressed: () async {
                                           try {
-                                            await AuthMethods.instanace
+                                            await AuthMethods.instance
                                                 .linkExistingToGoogle();
                                             showMessage("Lien Google",
                                                 "Votre compte Google a bien été lié !");
@@ -429,7 +429,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         buttonType: ButtonType.apple,
                                         onPressed: () async {
                                           try {
-                                            await AuthMethods.instanace
+                                            await AuthMethods.instance
                                                 .unlinkApple();
                                             showMessage("Lien Apple",
                                                 "Votre compte Apple a bien été délié !");
@@ -447,13 +447,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               : Row(
                                   children: [
                                     SignInButton(
-                                        btnText: "Lier Apple",
-                                        imagePosition:
-                                            ImagePosition.left, // left or right
-                                        buttonType: ButtonType.apple,
-                                        onPressed: () async {
+                                      btnText: "Lier Apple",
+                                      imagePosition:
+                                          ImagePosition.left, // left or right
+                                      buttonType: ButtonType.apple,
+                                      onPressed: () {
+                                        // TODO Remettre fonction link Apple
+                                        print('editProfile.dart');
+                                      },
+                                      /*onPressed: () async {
                                           try {
-                                            await AuthMethods.instanace
+                                            await AuthMethods.instance
                                                 .linkExistingToApple();
                                             showMessage("Lien Apple",
                                                 "Votre compte Apple a bien été lié !");
@@ -473,13 +477,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               }
                                             }
                                           }
-                                        })
+                                        }*/
+                                    )
                                   ],
                                 ),
                           SizedBox(height: 20),
                           Divider(thickness: 0.5, color: Colors.black),
                           Text("Mes adresses"),
-                          Row(
+                          //TODO Réparer et remettre les adresses
+                          /*Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               SizedBox(width: 10),
@@ -487,7 +493,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   onPressed: () async {
                                     // generate a new token here
                                     final sessionToken = Uuid().v4();
-                                    final Suggestion result = await showSearch(
+                                    final Suggestion? result = await showSearch(
                                       context: context,
                                       delegate: AddressSearch(sessionToken),
                                     );
@@ -499,12 +505,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   result.placeId);
 
                                       setState(() {
-                                        _controller.text = result.description;
+                                        _controller.text = result.description!;
                                         _streetNumber =
-                                            placeDetails.streetNumber;
+                                            placeDetails.streetNumber!;
                                         _street = placeDetails.street;
                                         _city = placeDetails.city;
-                                        _zipCode = placeDetails.zipCode;
+                                        _zipCode = placeDetails.zipCode!;
                                         _currentAddressLocation =
                                             "$_streetNumber $_street, $_city ";
                                       });
@@ -512,27 +518,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       final query =
                                           "$_streetNumber $_street , $_city";
 
-                                      var addresses = await geocode
-                                          .Geocoder.local
-                                          .findAddressesFromQuery(query);
-                                      var first = addresses.first;
+                                      List<geocoder.Location> locations =
+                                          await geocoder
+                                              .locationFromAddress(query);
+                                      var first = locations.first;
 
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   PageAddressNext(
-                                                    lat: first
-                                                        .coordinates.latitude,
-                                                    long: first
-                                                        .coordinates.longitude,
-                                                    adresse: first.addressLine,
+                                                    lat: first.latitude,
+                                                    long: first.longitude,
+                                                    adresse: query,
                                                   )));
                                     }
                                   },
                                   icon: Icon(Icons.home)),
                             ],
-                          ),
+                          ),*/
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
                                   .collection("users")
@@ -541,12 +545,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   .snapshots(),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  if (snapshot.data.docs.length > 0) {
+                                  if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
                                     return ListView.builder(
                                         physics:
                                             const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount: snapshot.data.docs.length,
+                                        itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                                         itemBuilder: (context, index) {
                                           return Column(
                                             mainAxisAlignment:
@@ -573,7 +577,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                 height: 30),
                                                             Container(
                                                               child: Text(
-                                                                snapshot.data
+                                                                (snapshot.data! as QuerySnapshot)
                                                                             .docs[
                                                                         index][
                                                                     "addressName"],
@@ -586,8 +590,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                         .size
                                                                         .width -
                                                                     100,
-                                                                child: Text(snapshot
-                                                                            .data
+                                                                child: Text((snapshot.data! as QuerySnapshot)
                                                                             .docs[
                                                                         index][
                                                                     "address"])),
@@ -609,20 +612,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                       builder: (context) =>
                                                                           PageAddressEdit(
                                                                             adresse:
-                                                                                snapshot.data.docs[index]["address"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["address"],
                                                                             adressTitle:
-                                                                                snapshot.data.docs[index]["addressName"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["addressName"],
                                                                             buildingDetails:
-                                                                                snapshot.data.docs[index]["buildingDetails"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["buildingDetails"],
                                                                             buildingName:
-                                                                                snapshot.data.docs[index]["buildingName"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["buildingName"],
                                                                             familyName:
-                                                                                snapshot.data.docs[index]["familyName"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["familyName"],
                                                                             lat:
-                                                                                snapshot.data.docs[index]["latitude"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["latitude"],
                                                                             long:
-                                                                                snapshot.data.docs[index]["longitude"],
-                                                                            iD: snapshot.data.docs[index]["idDoc"],
+                                                                                (snapshot.data! as QuerySnapshot).docs[index]["longitude"],
+                                                                            iD: (snapshot.data! as QuerySnapshot).docs[index]["idDoc"],
                                                                           )));
                                                             },
                                                           ),
@@ -747,7 +750,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     ),
                                                     onPressed: () async {
                                                       final url =
-                                                          "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=${customerID}";
+                                                          "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=$customerID";
 
                                                       final response =
                                                           await http.post(
@@ -765,12 +768,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                               .toString());
                                                       User user =
                                                           await AuthMethods
-                                                              .instanace
+                                                              .instance
                                                               .getCurrentUser();
 
                                                       user.delete();
                                                       await DatabaseMethods
-                                                          .instanace
+                                                          .instance
                                                           .deleteUser(user.uid,
                                                               customerID);
                                                       SharedPreferences
@@ -827,11 +830,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               ),
                                               onPressed: () async {
                                                 User user = await AuthMethods
-                                                    .instanace
+                                                    .instance
                                                     .getCurrentUser();
 
                                                 user.delete();
-                                                await DatabaseMethods.instanace
+                                                await DatabaseMethods.instance
                                                     .deleteUser(
                                                         user.uid, customerID);
                                                 SharedPreferences preferences =
@@ -880,7 +883,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 class ModifyProfile extends StatefulWidget {
   ModifyProfile(
       this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myId);
-  final String myFirstName, myLastName, myEmail, myPhone, myId;
+  final String? myFirstName, myLastName, myEmail, myPhone, myId;
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
@@ -962,7 +965,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
   }
 
   // Fonction d'affichage des champs de texte
-  Widget buildTextField(String labelText, String placeholder, fieldController,
+  Widget buildTextField(String labelText, String? placeholder, fieldController,
       bool capitalization) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),

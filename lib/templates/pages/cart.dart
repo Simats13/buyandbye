@@ -15,8 +15,8 @@ class _CartPageState extends State<CartPage> {
   double cartTotal = 0.0;
   double cartDeliver = 0.0;
 
-  String idCommercant;
-  String customerID;
+  String? idCommercant;
+  String? customerID;
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _CartPageState extends State<CartPage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
-          if (snapshot.data.docs.length > 0) {
+          if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
             return Expanded(
               child: ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
@@ -54,9 +54,9 @@ class _CartPageState extends State<CartPage> {
                   itemCount: 1,
                   itemBuilder: (context, index) {
                     double total = 0.0;
-                    for (var i = 0; i < snapshot.data.docs.length; i++) {
-                      total += snapshot.data.docs[i]["prixProduit"] *
-                          snapshot.data.docs[i]["amount"];
+                    for (var i = 0; i < (snapshot.data! as QuerySnapshot).docs.length; i++) {
+                      total += (snapshot.data! as QuerySnapshot).docs[i]["prixProduit"] *
+                          (snapshot.data! as QuerySnapshot).docs[i]["amount"];
                     }
                     cartTotal = total;
                     return Padding(
@@ -211,19 +211,19 @@ class _CartPageState extends State<CartPage> {
               child: ListView.builder(
                   // physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: snapshot.data.docs.length,
+                  itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                   itemBuilder: (context, index) {
                     print("pas vide");
                     double total = 0.0;
-                    for (var i = 0; i < snapshot.data.docs.length; i++) {
-                      total += snapshot.data.docs[i]["prixProduit"] *
-                          snapshot.data.docs[i]["amount"];
+                    for (var i = 0; i < (snapshot.data! as QuerySnapshot).docs.length; i++) {
+                      total += (snapshot.data! as QuerySnapshot).docs[i]["prixProduit"] *
+                          (snapshot.data! as QuerySnapshot).docs[i]["amount"];
                     }
 
                     cartTotal = total;
 
-                    var amount = snapshot.data.docs[index]["amount"];
-                    var money = snapshot.data.docs[index]["prixProduit"];
+                    var amount = (snapshot.data! as QuerySnapshot).docs[index]["amount"];
+                    var money = (snapshot.data! as QuerySnapshot).docs[index]["prixProduit"];
                     var allMoneyForProduct = money * amount;
 
                     return Container(
@@ -243,8 +243,7 @@ class _CartPageState extends State<CartPage> {
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
                                         fit: BoxFit.scaleDown,
-                                        image: NetworkImage(snapshot
-                                            .data.docs[index]["imgProduit"])),
+                                        image: NetworkImage((snapshot.data! as QuerySnapshot).docs[index]["imgProduit"])),
                                     borderRadius: BorderRadius.circular(20)),
                               ),
                             ),
@@ -259,7 +258,7 @@ class _CartPageState extends State<CartPage> {
                                 Container(
                                   width: 100,
                                   child: Text(
-                                    snapshot.data.docs[index]["nomProduit"],
+                                    (snapshot.data! as QuerySnapshot).docs[index]["nomProduit"],
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
@@ -281,16 +280,16 @@ class _CartPageState extends State<CartPage> {
                                             color: Colors.black, size: 15),
                                         onPressed: () {
                                           var itemdelete =
-                                              snapshot.data.docs[index]["id"];
-                                          amount = (snapshot.data.docs[index]
+                                              (snapshot.data! as QuerySnapshot).docs[index]["id"];
+                                          amount = ((snapshot.data! as QuerySnapshot).docs[index]
                                                   ["amount"] -
                                               1);
                                           addItem(itemdelete, amount);
-                                          if (snapshot.data.docs[index]
+                                          if ((snapshot.data! as QuerySnapshot).docs[index]
                                                   ["amount"] ==
                                               1) {
                                             var itemdelete =
-                                                snapshot.data.docs[index]["id"];
+                                                (snapshot.data! as QuerySnapshot).docs[index]["id"];
                                             deleteItem(itemdelete);
                                           }
                                         },
@@ -319,8 +318,8 @@ class _CartPageState extends State<CartPage> {
                                             color: Colors.black, size: 15),
                                         onPressed: () {
                                           var itemdelete =
-                                              snapshot.data.docs[index]["id"];
-                                          amount = (snapshot.data.docs[index]
+                                              (snapshot.data! as QuerySnapshot).docs[index]["id"];
+                                          amount = ((snapshot.data! as QuerySnapshot).docs[index]
                                                   ["amount"] +
                                               1);
                                           addItem(itemdelete, amount);
@@ -350,13 +349,13 @@ class _CartPageState extends State<CartPage> {
   }
 
   addItem(itemdelete, amount) async {
-    String idProduit = itemdelete;
+    String? idProduit = itemdelete;
     DatabaseMethods().addItem(idProduit, amount);
     setState(() {});
   }
 
   deleteItem(itemdelete) {
-    String idProduit = itemdelete;
+    String? idProduit = itemdelete;
     DatabaseMethods().deleteCart(idProduit);
     setState(() {});
   }

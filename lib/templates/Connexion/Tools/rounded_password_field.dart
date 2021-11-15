@@ -4,22 +4,22 @@ import 'package:buyandbye/templates/Compte/constants.dart';
 import 'package:buyandbye/templates/Connexion/Tools/text_field_container.dart';
 
 class RoundedPasswordField extends StatelessWidget {
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onChanged;
   const RoundedPasswordField({
-    Key key,
+    Key? key,
     this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
-    String _password;
+    String? _password;
     return TextFieldContainer(
       child: TextFormField(
         obscureText: true,
         // ignore: missing_return
         validator: (input) {
-          if (input.isEmpty) {
+          if (input!.isEmpty) {
             return "Veuillez rentrer une adresse mail";
           }
         },

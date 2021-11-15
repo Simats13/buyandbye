@@ -4,7 +4,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 class PageCategorie extends StatefulWidget {
   const PageCategorie(
-      {Key key,
+      {Key? key,
       this.img,
       this.name,
       this.description,
@@ -12,7 +12,7 @@ class PageCategorie extends StatefulWidget {
       this.categorie})
       : super(key: key);
 
-  final String img, name, description, adresse, categorie;
+  final String? img, name, description, adresse, categorie;
 
   @override
   _PageCategorieState createState() => _PageCategorieState();
@@ -50,7 +50,7 @@ class _PageCategorieState extends State<PageCategorie> {
   }
 
   Widget getBody() {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods().allProductsCategory(widget.categorie),
         builder: (context, snapshot) {
           return ListView.builder(

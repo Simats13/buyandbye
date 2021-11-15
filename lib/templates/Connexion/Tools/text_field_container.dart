@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/widgets/constants.dart';
 
 class TextFieldContainer extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   const TextFieldContainer({
-    Key key, this.child,
+    Key? key, this.child,
   }) : super(key: key);
 
   @override
