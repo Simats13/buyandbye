@@ -101,9 +101,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
 
     paymentIntentData = jsonDecode(response.body);
-    print(paymentIntentData['paymentMethods']['data'][0]['billing_details']);
-    print(paymentIntentData['paymentMethods']['data'][0]['card']);
-    print(paymentIntentData['paymentMethods']['data'][1]['card']);
 
     setState(() {});
   }
