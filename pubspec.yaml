@@ -91,6 +91,7 @@ dependencies:
   geocoding:
   mailer:
   flutter_phoenix:
+  qr_flutter:
  
 
 flutter_native_splash:
