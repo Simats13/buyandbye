@@ -108,7 +108,7 @@ app.post("/list_cards", async (req, res) => {
 
   const cards = await stripe.customers.listSources(
       `${customers}`,
-      {object: "card"}
+      {object: "card", limit: 10}
   );
   // const paymentMethods = await stripe.paymentMethods.list({
   //   customer: `${customers}`,
