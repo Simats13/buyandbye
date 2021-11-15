@@ -241,6 +241,7 @@ class _PageFideliteState extends State<PageFidelite> {
               children: [
                 Container(
                   child: QrImage(
+                    foregroundColor: Colors.white,
                     data: "buyandbye.fr",
                     version: QrVersions.auto,
                     size: 150,

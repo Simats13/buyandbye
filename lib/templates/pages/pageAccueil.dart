@@ -206,103 +206,99 @@ class _PageAccueilState extends State<PageAccueil> {
               headerSliverBuilder:
                   (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
-                  CupertinoSliverNavigationBar(
-                    // leading: Material(
-                    //     child: IconButton(
-                    //   icon: Icon(Icons.home),
-                    //   onPressed: () {},
-                    // )),
-
-                    middle: Container(
-                      height: 100,
-                      width: MediaQuery.of(context).size.width - 70,
-                      decoration: BoxDecoration(
-                        color: textFieldColor,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        // mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                Icon(Icons.location_on,
-                                    color: BuyandByeAppTheme.orangeMiFonce),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                SizedBox(
-                                  height: 40,
-                                  // width: size.width - 150,
-                                  child: InkWell(
-                                    onTapCancel: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    onTap: () async {
-                                      // permissionChecked =
-                                      //     await _determinePermission();
-
-                                      affichageAddress();
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.only(top: 5),
-                                      child: Text(
-                                        _currentAddressLocation ?? "",
-                                        style: TextStyle(fontSize: 13.5),
-                                        textAlign: TextAlign.left,
+                  PreferredSize(
+                    preferredSize: const Size.fromHeight(10),
+                    child: CupertinoSliverNavigationBar(
+                      // leading: Material(
+                      //     child: IconButton(
+                      //   icon: Icon(Icons.home),
+                      //   onPressed: () {},
+                      // )),
+                  
+                      middle: Container(
+                          height: 45,
+                          width: MediaQuery.of(context).size.width - 70,
+                          decoration: BoxDecoration(
+                            color: textFieldColor,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.location_on,
+                                        color: BuyandByeAppTheme.orangeMiFonce),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    SizedBox(
+                                      height: 40,
+                                      // width: size.width - 150,
+                                      child: InkWell(
+                                        onTapCancel: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        onTap: () async {
+                                          // permissionChecked =
+                                          //     await _determinePermission();
+                      
+                                          affichageAddress();
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(top: 5),
+                                          child: Text(
+                                            _currentAddressLocation ?? "",
+                                            style: TextStyle(fontSize: 13.5),
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    trailing: Container(
-                      padding: EdgeInsets.only(
-                        left: 6,
-                        right: 6,
-                      ),
-                      child: IconButton(
-                        icon: Container(
-                          child: Center(
-                            child: Icon(Icons.shopping_cart,
-                                color: BuyandByeAppTheme.orangeMiFonce
-                                // size: 22,
-                                ),
-                          ),
+                              ),
                         ),
-                        onPressed: () {
-                          affichageCart();
-                        },
-                      ),
-                    ),
-
-                    largeTitle: RichText(
-                      text: TextSpan(
-                        // style: Theme.of(context).textTheme.bodyText2,
-                        children: [
-                          TextSpan(
-                              text: 'Bienvenue ',
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: BuyandByeAppTheme.orangeMiFonce,
-                                fontWeight: FontWeight.bold,
-                              )),
-                          TextSpan(
-                            text: username,
-                            style: TextStyle(
-                              fontSize: 23,
-                              color: BuyandByeAppTheme.black_electrik,
-                              fontWeight: FontWeight.bold,
+                      trailing: Container(
+                        padding: EdgeInsets.only(
+                          left: 6,
+                          right: 6,
+                        ),
+                        child: IconButton(
+                          icon: Container(
+                            child: Center(
+                              child: Icon(Icons.shopping_cart,
+                                  color: BuyandByeAppTheme.orangeMiFonce
+                                  // size: 22,
+                                  ),
                             ),
                           ),
-                        ],
+                          onPressed: () {
+                            affichageCart();
+                          },
+                        ),
+                      ),
+                  
+                      largeTitle: RichText(
+                        text: TextSpan(
+                          // style: Theme.of(context).textTheme.bodyText2,
+                          children: [
+                            TextSpan(
+                                text: 'Bienvenue ',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: BuyandByeAppTheme.orangeMiFonce,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            TextSpan(
+                              text: username,
+                              style: TextStyle(
+                                fontSize: 23,
+                                color: BuyandByeAppTheme.black_electrik,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -339,8 +335,9 @@ class _PageAccueilState extends State<PageAccueil> {
                   }
                   if (snapshot.data.length > 0) {
                     return ListView(
-                      shrinkWrap: true,
+                      padding: EdgeInsets.all(0.0),
                       children: [
+                        SizedBox(height: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
