@@ -55,7 +55,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
       facebook,
       mail,
       customerID,
-      myPhone;
+      myPhone,
+      nameCard = "",
+      streetCard = "",
+      streetCard2 = "",
+      cityCard = "",
+      postalCodeCard = "",
+      stateCard = "",
+      countryCard = "";
   Map<String, dynamic> paymentIntentData;
   final _controller = TextEditingController();
   String _streetNumber = '';
@@ -108,9 +115,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'a': 'a',
       }),
     );
-    print(response.body);
+
     paymentIntentData = jsonDecode(response.body);
-    print(paymentIntentData);
 
     setState(() {});
   }
@@ -825,7 +831,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                           );
                                                                           setState(
                                                                               () {
-                                                                            print(delete);
                                                                             if (delete ==
                                                                                 false) {
                                                                               Navigator.of(context).pop(false);
@@ -970,15 +975,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     height: 50,
                                                   ),
                                             title: Text(
-                                              paymentIntentData[
-                                                      'paymentMethods']['data']
-                                                  [index]['card']['brand'],
+                                              paymentIntentData['paymentMethods']
+                                                                      ['data']
+                                                                  [index]
+                                                              [
+                                                              'billing_details']
+                                                          ['name'] ==
+                                                      null
+                                                  ? "Aucun nom"
+                                                  : paymentIntentData[
+                                                              'paymentMethods']
+                                                          ['data'][index][
+                                                      'billing_details']['name'],
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20.0),
                                             ),
                                             subtitle: Text(
-                                              paymentIntentData['paymentMethods']
+                                              "****" +
+                                                  paymentIntentData[
+                                                              'paymentMethods']
+                                                          ['data'][index]
+                                                      ['card']['last4'] +
+                                                  ' ' +
+                                                  '\nExp: ' +
+                                                  paymentIntentData['paymentMethods']
                                                               ['data'][index]
                                                           ['card']['exp_month']
                                                       .toString() +
@@ -1002,13 +1023,173 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                                   actions: <BottomSheetAction>[
                                                     BottomSheetAction(
-                                                        title: const Text(
-                                                          'Modifier les informations de ma carte',
-                                                          style: TextStyle(
-                                                            color: Colors.blue,
-                                                          ),
+                                                      title: const Text(
+                                                        'Modifier la date et le CVV',
+                                                        style: TextStyle(
+                                                          color: Colors.blue,
                                                         ),
-                                                        onPressed: () {}),
+                                                      ),
+                                                      onPressed: () {},
+                                                    ),
+                                                    BottomSheetAction(
+                                                      title: const Text(
+                                                        'Modifier les informations de ma carte',
+                                                        style: TextStyle(
+                                                          color: Colors.blue,
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        showTextInputDialog(
+                                                          context: context,
+                                                          message:
+                                                              "Modification des coordonnées",
+                                                          textFields: [
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  nameCard == ""
+                                                                      ? null
+                                                                      : nameCard,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  nameCard =
+                                                                      value;
+                                                                });
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText:
+                                                                  'Nom du titulaire de la carte',
+                                                            ),
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  streetCard ==
+                                                                          ""
+                                                                      ? null
+                                                                      : streetCard,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  streetCard =
+                                                                      value;
+                                                                });
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText: 'Rue',
+                                                            ),
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  streetCard2 ==
+                                                                          ""
+                                                                      ? null
+                                                                      : streetCard2,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  streetCard2 =
+                                                                      value;
+                                                                });
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText:
+                                                                  'Rue (ligne 2)',
+                                                            ),
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  cityCard == ""
+                                                                      ? null
+                                                                      : cityCard,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  cityCard =
+                                                                      value;
+                                                                });
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText: 'Ville',
+                                                            ),
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  postalCodeCard ==
+                                                                          ""
+                                                                      ? null
+                                                                      : postalCodeCard,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  postalCodeCard =
+                                                                      value;
+                                                                });
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText:
+                                                                  'Code postal',
+                                                            ),
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  stateCard ==
+                                                                          ""
+                                                                      ? null
+                                                                      : stateCard,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  stateCard =
+                                                                      value;
+                                                                });
+
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText:
+                                                                  'Département',
+                                                            ),
+                                                            DialogTextField(
+                                                              initialText:
+                                                                  countryCard ==
+                                                                          ""
+                                                                      ? null
+                                                                      : countryCard,
+                                                              validator:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  countryCard =
+                                                                      value;
+                                                                });
+                                                                return null;
+                                                              },
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              hintText: 'Pays',
+                                                            ),
+                                                          ],
+                                                          okLabel: 'Modifier',
+                                                          cancelLabel:
+                                                              'Annuler',
+                                                        );
+                                                      },
+                                                    ),
+                                                    
                                                     BottomSheetAction(
                                                         title: const Text(
                                                           'Supprimer ma carte',
