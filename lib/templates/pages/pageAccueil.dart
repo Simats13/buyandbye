@@ -597,7 +597,23 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   void affichageCart() {
-    slideDialog.showSlideDialog(context: context, child: CartPage());
+    showGeneralDialog(
+      barrierLabel: "Label",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
+      context: context,
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
+            child: CartPage(),
+            margin: EdgeInsets.only(top: 100, left: 12, right: 12),
+          ),
+        );
+      },
+    );
   }
 
   void affichageAllStores() {
@@ -1381,8 +1397,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
-          if (snapshot.data.length > 0) {
+          final documents = snapshot.data..shuffle();
+          if (documents.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1390,19 +1406,19 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                 primary: false,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data.length,
+                itemCount: documents.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: SlideItem(
-                      img: snapshot.data[index]["imgUrl"],
-                      name: snapshot.data[index]["name"],
-                      address: snapshot.data[index]["adresse"],
-                      description: snapshot.data[index]["description"],
-                      livraison: snapshot.data[index]["livraison"],
-                      sellerID: snapshot.data[index]["id"],
-                      colorStore: snapshot.data[index]["colorStore"],
-                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                      img: documents[index]["imgUrl"],
+                      name: documents[index]["name"],
+                      address: documents[index]["adresse"],
+                      description: documents[index]["description"],
+                      livraison: documents[index]["livraison"],
+                      sellerID: documents[index]["id"],
+                      colorStore: documents[index]["colorStore"],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
                     ),
                   );
                 },
@@ -1510,8 +1526,8 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
-          if (snapshot.data.length > 0) {
+          final documents = snapshot.data..shuffle();
+          if (documents.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1519,19 +1535,19 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                 primary: false,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data.length,
+                itemCount: documents.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: SlideItem(
-                      img: snapshot.data[index]["imgUrl"],
-                      name: snapshot.data[index]["name"],
-                      address: snapshot.data[index]["adresse"],
-                      description: snapshot.data[index]["description"],
-                      livraison: snapshot.data[index]["livraison"],
-                      sellerID: snapshot.data[index]["id"],
-                      colorStore: snapshot.data[index]["colorStore"],
-                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                      img: documents[index]["imgUrl"],
+                      name: documents[index]["name"],
+                      address: documents[index]["adresse"],
+                      description: documents[index]["description"],
+                      livraison: documents[index]["livraison"],
+                      sellerID: documents[index]["id"],
+                      colorStore: documents[index]["colorStore"],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
                     ),
                   );
                 },
@@ -1639,8 +1655,8 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
-          if (snapshot.data.length > 0) {
+          final documents = snapshot.data..shuffle();
+          if (documents.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1648,19 +1664,19 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                 primary: false,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data.length,
+                itemCount: documents.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: SlideItem(
-                      img: snapshot.data[index]["imgUrl"],
-                      name: snapshot.data[index]["name"],
-                      address: snapshot.data[index]["adresse"],
-                      description: snapshot.data[index]["description"],
-                      livraison: snapshot.data[index]["livraison"],
-                      sellerID: snapshot.data[index]["id"],
-                      colorStore: snapshot.data[index]["colorStore"],
-                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
+                      img: documents[index]["imgUrl"],
+                      name: documents[index]["name"],
+                      address: documents[index]["adresse"],
+                      description: documents[index]["description"],
+                      livraison: documents[index]["livraison"],
+                      sellerID: documents[index]["id"],
+                      colorStore: documents[index]["colorStore"],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
                     ),
                   );
                 },
@@ -1739,9 +1755,9 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          // final documents = snapshot.data..shuffle();
-          if (snapshot.data.length > 0) {
-            List shopImages = listImages(snapshot.data);
+          final documents = snapshot.data..shuffle();
+          if (documents.length > 0) {
+            List shopImages = listImages(documents);
             return CarouselSlider(
                 options: CarouselOptions(
                     height: 200,
@@ -1760,22 +1776,22 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageDetail(
-                                        img: snapshot.data[carouselItem]
+                                        img: documents[carouselItem]
                                             ['imgUrl'],
-                                        colorStore: snapshot.data[carouselItem]
+                                        colorStore: documents[carouselItem]
                                             ['colorStore'],
-                                        name: snapshot.data[carouselItem]
+                                        name: documents[carouselItem]
                                             ['name'],
-                                        description: snapshot.data[carouselItem]
+                                        description: documents[carouselItem]
                                             ['description'],
-                                        adresse: snapshot.data[carouselItem]
+                                        adresse: documents[carouselItem]
                                             ['adresse'],
                                         clickAndCollect:
-                                            snapshot.data[carouselItem]
+                                            documents[carouselItem]
                                                 ['ClickAndCollect'],
-                                        livraison: snapshot.data[carouselItem]
+                                        livraison: documents[carouselItem]
                                             ['livraison'],
-                                        sellerID: snapshot.data[carouselItem]
+                                        sellerID: documents[carouselItem]
                                             ['id'],
                                       )));
                         },
@@ -1806,7 +1822,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
                                     child: Text(
-                                        snapshot.data[carouselItem]["name"],
+                                        documents[carouselItem]["name"],
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w700))),

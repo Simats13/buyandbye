@@ -1,4 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,14 +43,39 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: DatabaseMethods().allCartMoney(idCommercant),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator());
-          if (snapshot.data.docs.length > 0) {
-            return Expanded(
-              child: ListView.builder(
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: FutureBuilder(
+          future: DatabaseMethods().allCartMoney(idCommercant),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container(
+                constraints: BoxConstraints(maxHeight: 200),
+                child: Center(
+                  child: ColorLoader3(
+                    radius: 15.0,
+                    dotRadius: 6.0,
+                  ),
+                ),
+                margin: EdgeInsets.only(left: 12, right: 12),
+              );
+            }
+            if (!snapshot.hasData)
+              return Container(
+                constraints: BoxConstraints(maxHeight: 200),
+                child: Center(
+                  child: ColorLoader3(
+                    radius: 15.0,
+                    dotRadius: 6.0,
+                  ),
+                ),
+                margin: EdgeInsets.only(left: 12, right: 12),
+              );
+            if (snapshot.data.docs.length > 0) {
+              return ListView.builder(
+                  padding: EdgeInsets.all(0.0),
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: 1,
@@ -64,9 +90,9 @@ class _CartPageState extends State<CartPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: <Widget>[
-                          // SizedBox(
-                          //   height: 30,
-                          // ),
+                          SizedBox(
+                            height: 15,
+                          ),
                           Text(
                             "Mon Panier",
                             style: TextStyle(
@@ -74,12 +100,7 @@ class _CartPageState extends State<CartPage> {
                               fontSize: 21,
                             ),
                           ),
-                          SizedBox(
-                            height: 12,
-                          ),
-
                           cartItem(),
-
                           SizedBox(
                             height: 15,
                           ),
@@ -187,38 +208,42 @@ class _CartPageState extends State<CartPage> {
                                 ],
                               ),
                             ),
-                          )
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
                         ],
                       ),
                     );
-                  }),
-            );
-          } else {
-            cartTotal = 0.0;
-            return Container(
-              margin: EdgeInsets.only(top: 100),
-              child: Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.shopping_cart,
-                    color: Colors.grey[700],
-                    size: 64,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      "Votre panier est vide.\n Commencez à commercer dès maintenant avec les nombreux magasins présents sur la plateforme !",
-                      style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-                      textAlign: TextAlign.center,
+                  });
+            } else {
+              cartTotal = 0.0;
+              return Container(
+                constraints: BoxConstraints(maxHeight: 20),
+                // margin: EdgeInsets.only(top: 100),
+                child: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.shopping_cart,
+                      color: Colors.grey[700],
+                      size: 64,
                     ),
-                  ),
-                ],
-              )),
-            );
-          }
-        });
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "Votre panier est vide.\n Commencez à commercer dès maintenant avec les nombreux magasins présents sur la plateforme !",
+                        style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                )),
+              );
+            }
+          }),
+    );
   }
 
   cartItem() {
@@ -227,8 +252,11 @@ class _CartPageState extends State<CartPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
-              height: 150,
+              constraints: BoxConstraints(
+                maxHeight: 250,
+              ),
               child: ListView.builder(
+                  padding: EdgeInsets.all(0.0),
                   // physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,

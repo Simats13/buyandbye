@@ -1,15 +1,16 @@
 import 'dart:io';
 
+import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:buyandbye/json/menu_json.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/chatscreen.dart';
 import 'package:buyandbye/theme/colors.dart';
-import 'package:buyandbye/templates/Pages/cart.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
@@ -171,9 +172,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           child: Container(
             height: 60,
             width: size.width,
+            margin: EdgeInsets.only(left: 12, right: 12),
             decoration: BoxDecoration(
               color: white,
-              border: Border(top: BorderSide(color: black.withOpacity(0.1))),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
             ),
             child: Padding(
               padding: EdgeInsets.all(15),
@@ -565,7 +568,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   "assets/icons/pin_icon.svg",
                                   width: 15,
                                   color: Color(int.parse("0x$pimpMyStore"))
-                                      .withOpacity(0.5),
+                                      .withOpacity(0.8),
                                 ),
                                 SizedBox(
                                   width: 8,
@@ -597,9 +600,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           Row(
                             children: [
                               Icon(
-                                Icons.watch_later_outlined,
+                                Icons.watch_later_rounded,
                                 color: Color(int.parse("0x$pimpMyStore"))
-                                    .withOpacity(0.5),
+                                    .withOpacity(0.8),
                                 size: 17,
                               ),
                               SizedBox(
@@ -1075,9 +1078,29 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   void affichageCart() {
-    slideDialog.showSlideDialog(
+    showGeneralDialog(
+      barrierLabel: "Label",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
       context: context,
-      child: CartPage(),
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
+            child: CartPage(),
+            margin: EdgeInsets.only(left: 12, right: 12),
+          ),
+        );
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return SlideTransition(
+          position:
+              Tween(begin: Offset(0, 0), end: Offset(0, 0)).animate(anim1),
+          child: child,
+        );
+      },
     );
   }
 }
