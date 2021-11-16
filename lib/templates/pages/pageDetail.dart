@@ -220,8 +220,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           return <Widget>[
             PreferredSize(
               preferredSize: const Size.fromHeight(10),
-              child: CupertinoNavigationBarDetail(
-                automaticallyImplyLeading: false,
+              child: CupertinoSliverNavigationBarDetail(
+                automaticallyImplyTitle: false,
                 leading: IconButton(
                   icon: Container(
                     width: 50,
@@ -268,6 +268,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     // Navigator.pop(context);
                   },
                 ),
+                largeTitle: Text(""),
               ),
             ),
           ];
