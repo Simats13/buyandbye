@@ -49,11 +49,9 @@ class _AccueilState extends State<Accueil> {
 
     return Scaffold(
         //Empile les pages afin de les garder dans des états
-        body: Phoenix(
-          child: IndexedStack(
-            index: pageIndex,
-            children: pages,
-          ),
+        body: IndexedStack(
+          index: pageIndex,
+          children: pages,
         ),
         bottomNavigationBar: Container(
             decoration: BoxDecoration(boxShadow: [

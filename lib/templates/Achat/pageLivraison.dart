@@ -215,7 +215,8 @@ class _PageLivraisonState extends State<PageLivraison> {
                     SizedBox(height: 10),
                     Row(children: [
                       FutureBuilder(
-                          future: DatabaseMethods().getCartProducts(widget.idCommercant),
+                          future: DatabaseMethods()
+                              .getCartProducts(widget.idCommercant),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Expanded(
@@ -779,7 +780,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   payViaNewCard(BuildContext context) async {
     print(deliveryChoose);
-    ProgressDialog dialog = new ProgressDialog(context,isDismissible: false);
+    ProgressDialog dialog = new ProgressDialog(context, isDismissible: false);
     dialog.style(message: 'Veuillez patienter...');
     await dialog.show();
     print(widget.total.ceil() * 100);
@@ -824,7 +825,7 @@ class _PageLivraisonState extends State<PageLivraison> {
     try {
       // 3. display the payment sheet.
       await stripe.Stripe.instance.presentPaymentSheet();
- await dialog.show();
+      await dialog.show();
       DatabaseMethods().acceptPayment(widget.idCommercant, deliveryChoose,
           widget.total, userAddressChoose, idCommand);
 
@@ -851,7 +852,6 @@ class _PageLivraisonState extends State<PageLivraison> {
           print('Problem: ${p.code}: ${p.msg}');
         }
       }
-     
 
       Navigator.pushReplacement(
         context,
@@ -915,8 +915,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 //////////////////////////////////////////////////////////////////////
 
 class MapStyle {
-  static String mapStyle =
-      ''' [
+  static String mapStyle = ''' [
   {
     "elementType": "geometry",
     "stylers": [

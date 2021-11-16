@@ -92,7 +92,8 @@ dependencies:
   mailer:
   flutter_phoenix:
   qr_flutter:
- 
+  adaptive_dialog:
+  adaptive_action_sheet:
 
 flutter_native_splash:
   #color: "#42a5f5"

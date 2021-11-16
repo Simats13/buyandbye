@@ -79,14 +79,13 @@ app.post("/delete_cards", async (req, res) => {
     });
   }
 
-  const deleted = await stripe.customers.deleteSource(
-      `${customers}`,
+
+  const paymentMethod = await stripe.paymentMethods.detach(
       `${idCard}`,
   );
 
   res.json({
-    deleted: deleted,
-    customer: `${customers}`,
+    paymentMethod: paymentMethod,
   });
 });
 app.post("/list_cards", async (req, res) => {

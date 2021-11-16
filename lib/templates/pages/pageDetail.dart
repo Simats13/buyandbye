@@ -62,6 +62,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Stream<List<DocumentSnapshot>> stream;
   List listOfCategories = [];
   List<DocumentSnapshot> _myDocCount = [];
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -190,7 +198,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                 const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Icon(
                               Icons.shopping_basket,
-                              color: BuyandByeAppTheme.orangeMiFonce,
+                              color: Color(int.parse("0x$pimpMyStore"))
+                                  .withOpacity(0.8),
                               size: 25,
                             ),
                           ),
