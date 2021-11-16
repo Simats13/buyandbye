@@ -6,6 +6,7 @@ import 'package:buyandbye/templates/pages/pageMessagerie.dart';
 import 'package:buyandbye/templates/pages/pageSearch.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -48,9 +49,11 @@ class _AccueilState extends State<Accueil> {
 
     return Scaffold(
         //Empile les pages afin de les garder dans des états
-        body: IndexedStack(
-          index: pageIndex,
-          children: pages,
+        body: Phoenix(
+          child: IndexedStack(
+            index: pageIndex,
+            children: pages,
+          ),
         ),
         bottomNavigationBar: Container(
             decoration: BoxDecoration(boxShadow: [

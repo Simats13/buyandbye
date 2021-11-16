@@ -37,11 +37,9 @@ void main() async {
     badge: true,
   );
   runApp(
-    Phoenix(
-      child: ChangeNotifierProvider(
-        create: (context) => InfoWindowsModel(),
-        child: MyApp(),
-      ),
+    ChangeNotifierProvider(
+      create: (context) => InfoWindowsModel(),
+      child: MyApp(),
     ),
   );
 }

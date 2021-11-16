@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 import 'package:geocoding/geocoding.dart' as geocoder;
 
@@ -214,50 +215,50 @@ class _PageAccueilState extends State<PageAccueil> {
                       //   icon: Icon(Icons.home),
                       //   onPressed: () {},
                       // )),
-                  
+
                       middle: Container(
-                          height: 45,
-                          width: MediaQuery.of(context).size.width - 70,
-                          decoration: BoxDecoration(
-                            color: textFieldColor,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.location_on,
-                                        color: BuyandByeAppTheme.orangeMiFonce),
-                                    SizedBox(
-                                      width: 10,
+                        height: 45,
+                        width: MediaQuery.of(context).size.width - 70,
+                        decoration: BoxDecoration(
+                          color: textFieldColor,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(Icons.location_on,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              SizedBox(
+                                height: 40,
+                                // width: size.width - 150,
+                                child: InkWell(
+                                  onTapCancel: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  onTap: () async {
+                                    // permissionChecked =
+                                    //     await _determinePermission();
+
+                                    affichageAddress();
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.only(top: 5),
+                                    child: Text(
+                                      _currentAddressLocation ?? "",
+                                      style: TextStyle(fontSize: 13.5),
+                                      textAlign: TextAlign.left,
                                     ),
-                                    SizedBox(
-                                      height: 40,
-                                      // width: size.width - 150,
-                                      child: InkWell(
-                                        onTapCancel: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        onTap: () async {
-                                          // permissionChecked =
-                                          //     await _determinePermission();
-                      
-                                          affichageAddress();
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.only(top: 5),
-                                          child: Text(
-                                            _currentAddressLocation ?? "",
-                                            style: TextStyle(fontSize: 13.5),
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
                         ),
+                      ),
                       trailing: Container(
                         padding: EdgeInsets.only(
                           left: 6,
@@ -277,7 +278,7 @@ class _PageAccueilState extends State<PageAccueil> {
                           },
                         ),
                       ),
-                  
+
                       largeTitle: RichText(
                         text: TextSpan(
                           // style: Theme.of(context).textTheme.bodyText2,
@@ -1147,7 +1148,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                           SharedPreferenceHelper()
                                               .saveUserLongitude(snapshot.data
                                                   .docs[index]["longitude"]);
-
+                                          Phoenix.rebirth(context);
                                           Navigator.of(context).pop();
                                         },
                                         child: Row(
