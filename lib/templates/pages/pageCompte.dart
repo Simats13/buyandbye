@@ -176,8 +176,8 @@ class _PageCompteState extends State<PageCompte> {
                       border: Border.all(
                           color: BuyandByeAppTheme.orange, width: 2.0),
                     ),
-                    child: GestureDetector(
-                      onTap: () {
+                    child: MaterialButton(
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
