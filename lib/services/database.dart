@@ -847,6 +847,7 @@ class DatabaseMethods {
   Future acceptPayment(String idCommercant, double deliveryChoose,
       double amount, String userAdress, String idCommand) async {
     int totalProduct = 0;
+    String idProduit;
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
 
@@ -867,6 +868,7 @@ class DatabaseMethods {
 
     for (var i in produits.docs) {
       totalProduct = totalProduct + i["amount"];
+      idProduit = i['id'];
     }
 
     //MET LES NOUVELLES INFORMATIONS DANS LA BDD DE L'UTILISATEUR
@@ -940,14 +942,8 @@ class DatabaseMethods {
       });
     }
 
-    var snapshots = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userid)
-        .collection('cart')
-        .get();
-    for (var i in snapshots.docs) {
-      await i.reference.delete();
-    }
+    DatabaseMethods().deleteCartProduct(idProduit, idCommercant);
+    DatabaseMethods().deleteCart(idCommercant);
   }
 
   Future accountpremium() async {
