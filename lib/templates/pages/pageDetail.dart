@@ -214,18 +214,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     bool isDarkMode = brightness == Brightness.dark;
     bool isPressed = false;
     var size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(bottom: 100),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 40,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
+    return CupertinoPageScaffold(
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            PreferredSize(
+              preferredSize: const Size.fromHeight(10),
+              child: CupertinoSliverNavigationBarDetail(
+                automaticallyImplyTitle: false,
+                leading: IconButton(
                   icon: Container(
                     width: 50,
                     height: 50,
@@ -246,11 +243,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     Navigator.pop(context);
                   },
                 ),
-                Text(
+                middle: Text(
                   widget.name,
                   style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                 ),
-                IconButton(
+                trailing: IconButton(
                   icon: Container(
                     width: 50,
                     height: 50,
@@ -271,706 +268,724 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     // Navigator.pop(context);
                   },
                 ),
-              ],
+                largeTitle: Text(""),
+              ),
             ),
-            Stack(
+          ];
+        },
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 100),
+            child: Column(
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  width: size.width,
-                  height: 200,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                    child: Image(
-                      image: NetworkImage(widget.img),
-                      fit: BoxFit.cover,
+                Stack(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      width: size.width,
+                      height: 200,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                        child: Image(
+                          image: NetworkImage(widget.img),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Text(
-                      //   widget.name,
-                      //   style: TextStyle(
-                      //       fontSize: 21, fontWeight: FontWeight.bold),
-                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Text(
+                          //   widget.name,
+                          //   style: TextStyle(
+                          //       fontSize: 21, fontWeight: FontWeight.bold),
+                          // ),
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: textFieldColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Click and Collect",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      Icon(
+                                        widget.clickAndCollect
+                                            ? Icons.check_circle
+                                            : Icons.highlight_off,
+                                        color: widget.clickAndCollect
+                                            ? Colors.green
+                                            : Colors.red,
+                                        size: 17,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: textFieldColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Livraison",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      Icon(
+                                        widget.livraison
+                                            ? Icons.check_circle
+                                            : Icons.highlight_off,
+                                        color: widget.livraison
+                                            ? Colors.green
+                                            : Colors.red,
+                                        size: 17,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Map<String, dynamic> chatRoomInfoMap = {
+                                "users": [myID, widget.sellerID],
+                              };
+                              DatabaseMethods().createChatRoom(
+                                  widget.sellerID + myID, chatRoomInfoMap);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatRoom(
+                                          myID, //ID DE L'UTILISATEUR
+                                          myName, // NOM DE L'UTILISATEUR
+                                          selectedUserToken,
+                                          widget
+                                              .sellerID, // TOKEN DU CORRESPONDANT
+                                          widget.sellerID +
+                                              myID, //ID DE LA CONV
+                                          widget.name, // NOM DU CORRESPONDANT
+                                          "", // LES COMMERCANTS N'ONT PAS DE LNAME
+                                          widget.img, // IMAGE DU CORRESPONDANT
+                                          myProfilePic // IMAGE DE L'UTILISATEUR
+                                          )));
+                            },
+                            child: Icon(
+                              Icons.message,
+                              color: Color(int.parse("0x$pimpMyStore"))
+                                  .withOpacity(0.8),
+                              size: 25,
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
                       Row(
                         children: [
                           Container(
-                            decoration: BoxDecoration(
-                              color: textFieldColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Click and Collect",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Icon(
-                                    widget.clickAndCollect
-                                        ? Icons.check_circle
-                                        : Icons.highlight_off,
-                                    color: widget.clickAndCollect
-                                        ? Colors.green
-                                        : Colors.red,
-                                    size: 17,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: textFieldColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Livraison",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Icon(
-                                    widget.livraison
-                                        ? Icons.check_circle
-                                        : Icons.highlight_off,
-                                    color: widget.livraison
-                                        ? Colors.green
-                                        : Colors.red,
-                                    size: 17,
-                                  ),
-                                ],
-                              ),
+                            width: size.width - 30,
+                            child: Text(
+                              widget.description,
+                              style: TextStyle(fontSize: 14, height: 1.3),
                             ),
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Map<String, dynamic> chatRoomInfoMap = {
-                            "users": [myID, widget.sellerID],
-                          };
-                          DatabaseMethods().createChatRoom(
-                              widget.sellerID + myID, chatRoomInfoMap);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChatRoom(
-                                      myID, //ID DE L'UTILISATEUR
-                                      myName, // NOM DE L'UTILISATEUR
-                                      selectedUserToken,
-                                      widget.sellerID, // TOKEN DU CORRESPONDANT
-                                      widget.sellerID + myID, //ID DE LA CONV
-                                      widget.name, // NOM DU CORRESPONDANT
-                                      "", // LES COMMERCANTS N'ONT PAS DE LNAME
-                                      widget.img, // IMAGE DU CORRESPONDANT
-                                      myProfilePic // IMAGE DE L'UTILISATEUR
-                                      )));
-                        },
-                        child: Icon(
-                          Icons.message,
-                          color: Color(int.parse("0x$pimpMyStore"))
-                              .withOpacity(0.8),
-                          size: 25,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          // Container(
+                          //   decoration: BoxDecoration(
+                          //     color: textFieldColor,
+                          //     borderRadius: BorderRadius.circular(3),
+                          //   ),
+                          //   child: Padding(
+                          //     padding: EdgeInsets.all(5),
+                          //     child: Row(
+                          //       children: [
+                          //         Text(
+                          //           widget.rate,
+                          //           style: TextStyle(
+                          //             fontSize: 14,
+                          //           ),
+                          //         ),
+                          //         SizedBox(
+                          //           width: 3,
+                          //         ),
+                          //         Icon(
+                          //           Icons.star,
+                          //           color: yellowStar,
+                          //           size: 17,
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          // Container(
+                          //   decoration: BoxDecoration(
+                          //     color: textFieldColor,
+                          //     borderRadius: BorderRadius.circular(10),
+                          //   ),
+                          //   child: Padding(
+                          //     padding: EdgeInsets.all(5),
+                          //     child: Row(
+                          //       children: [
+                          //         Text(
+                          //           "Click and Collect",
+                          //           style: TextStyle(
+                          //             fontSize: 14,
+                          //           ),
+                          //         ),
+                          //         SizedBox(
+                          //           width: 3,
+                          //         ),
+                          //         Icon(
+                          //           widget.clickAndCollect
+                          //               ? Icons.check_circle
+                          //               : Icons.highlight_off,
+                          //           color: widget.clickAndCollect
+                          //               ? Colors.green
+                          //               : Colors.red,
+                          //           size: 17,
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
+                          // SizedBox(
+                          //   width: 8,
+                          // ),
+                          // Container(
+                          //   decoration: BoxDecoration(
+                          //     color: textFieldColor,
+                          //     borderRadius: BorderRadius.circular(10),
+                          //   ),
+                          //   child: Padding(
+                          //     padding: EdgeInsets.all(5),
+                          //     child: Row(
+                          //       children: [
+                          //         Text(
+                          //           "Livraison",
+                          //           style: TextStyle(
+                          //             fontSize: 14,
+                          //           ),
+                          //         ),
+                          //         SizedBox(
+                          //           width: 3,
+                          //         ),
+                          //         Icon(
+                          //           widget.livraison
+                          //               ? Icons.check_circle
+                          //               : Icons.highlight_off,
+                          //           color: widget.livraison
+                          //               ? Colors.green
+                          //               : Colors.red,
+                          //           size: 17,
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Divider(
+                        color: black.withOpacity(0.3),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        "Informations de la boutique",
+                        style: customContent,
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            width: (size.width) * 0.8,
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                  "assets/icons/pin_icon.svg",
+                                  width: 15,
+                                  color: Color(int.parse("0x$pimpMyStore"))
+                                      .withOpacity(0.5),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  widget.adresse,
+                                  style: TextStyle(fontSize: 14),
+                                )
+                              ],
+                            ),
+                          ),
+                          // Expanded(
+                          //   child: Text(
+                          //     "Plus d'infos",
+                          //     style: TextStyle(
+                          //         fontSize: 13,
+                          //         color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
+                          //         fontWeight: FontWeight.bold),
+                          //   ),
+                          // )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
                       Container(
-                        width: size.width - 30,
-                        child: Text(
-                          widget.description,
-                          style: TextStyle(fontSize: 14, height: 1.3),
+                        width: (size.width) * 0.8,
+                        child: Column(children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.watch_later_outlined,
+                                color: Color(int.parse("0x$pimpMyStore"))
+                                    .withOpacity(0.5),
+                                size: 17,
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                "Horaires d'ouverture",
+                                style: TextStyle(fontSize: 14),
+                              )
+                            ],
+                          ),
+                          // SizedBox(
+                          //   height: 10,
+                          // ),
+                          // Row(
+                          //   children: [
+                          //     Column(children: [
+                          //     Text("Lundi: 13h - 17h"),
+                          //     Text("Mardi: 10h - 19h"),
+                          //     Text("Mercredi: 9h - 14h"),
+                          //     Text("Jeudi: 9h - 17h"),
+                          //     Text("Vendredi: 8h30 - 18h"),
+                          //     ],)
+                          //   ],
+                          // ),
+                        ]),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        "Catégories",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (String name in listOfCategories)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 15,
+                                ),
+                                child: Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Color(
+                                      int.parse("0x$pimpMyStore"),
+                                    ).withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          dropdownValue = name;
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        child: Text(
+                                          name,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: dropdownValue == name
+                                                ? Color(
+                                                    int.parse("0x$pimpMyStore"),
+                                                  ).withOpacity(1)
+                                                : Color(
+                                                    int.parse("0x$pimpMyStore"),
+                                                  ).withOpacity(0.8),
+                                            fontWeight: dropdownValue == name
+                                                ? FontWeight.bold
+                                                : FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
                       // Container(
+                      //   width: size.width,
                       //   decoration: BoxDecoration(
-                      //     color: textFieldColor,
-                      //     borderRadius: BorderRadius.circular(3),
+                      //     borderRadius: BorderRadius.circular(5),
+                      //     border: Border.all(
+                      //       color: black.withOpacity(0.1),
+                      //     ),
                       //   ),
                       //   child: Padding(
-                      //     padding: EdgeInsets.all(5),
-                      //     child: Row(
+                      //     padding: const EdgeInsets.all(15.0),
+                      //     child: Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
                       //       children: [
                       //         Text(
-                      //           widget.rate,
+                      //           "Avis clients",
                       //           style: TextStyle(
-                      //             fontSize: 14,
+                      //             color: black.withOpacity(0.5),
                       //           ),
                       //         ),
                       //         SizedBox(
-                      //           width: 3,
+                      //           height: 15,
                       //         ),
-                      //         Icon(
-                      //           Icons.star,
-                      //           color: yellowStar,
-                      //           size: 17,
+                      //         Text(
+                      //           "Voir plus ...",
+                      //           style: TextStyle(
+                      //             color: Color(int.parse("0x$pimpMyStore")),
+                      //           ),
                       //         ),
                       //       ],
                       //     ),
                       //   ),
                       // ),
                       SizedBox(
-                        width: 8,
+                        height: 20,
                       ),
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     color: textFieldColor,
-                      //     borderRadius: BorderRadius.circular(10),
-                      //   ),
-                      //   child: Padding(
-                      //     padding: EdgeInsets.all(5),
-                      //     child: Row(
-                      //       children: [
-                      //         Text(
-                      //           "Click and Collect",
-                      //           style: TextStyle(
-                      //             fontSize: 14,
-                      //           ),
-                      //         ),
-                      //         SizedBox(
-                      //           width: 3,
-                      //         ),
-                      //         Icon(
-                      //           widget.clickAndCollect
-                      //               ? Icons.check_circle
-                      //               : Icons.highlight_off,
-                      //           color: widget.clickAndCollect
-                      //               ? Colors.green
-                      //               : Colors.red,
-                      //           size: 17,
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   width: 8,
-                      // ),
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     color: textFieldColor,
-                      //     borderRadius: BorderRadius.circular(10),
-                      //   ),
-                      //   child: Padding(
-                      //     padding: EdgeInsets.all(5),
-                      //     child: Row(
-                      //       children: [
-                      //         Text(
-                      //           "Livraison",
-                      //           style: TextStyle(
-                      //             fontSize: 14,
-                      //           ),
-                      //         ),
-                      //         SizedBox(
-                      //           width: 3,
-                      //         ),
-                      //         Icon(
-                      //           widget.livraison
-                      //               ? Icons.check_circle
-                      //               : Icons.highlight_off,
-                      //           color: widget.livraison
-                      //               ? Colors.green
-                      //               : Colors.red,
-                      //           size: 17,
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Divider(
-                    color: black.withOpacity(0.3),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "Informations de la boutique",
-                    style: customContent,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: (size.width) * 0.8,
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              "assets/icons/pin_icon.svg",
-                              width: 15,
-                              color: Color(int.parse("0x$pimpMyStore"))
-                                  .withOpacity(0.5),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              widget.adresse,
-                              style: TextStyle(fontSize: 14),
-                            )
-                          ],
-                        ),
-                      ),
-                      // Expanded(
-                      //   child: Text(
-                      //     "Plus d'infos",
-                      //     style: TextStyle(
-                      //         fontSize: 13,
-                      //         color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
-                      //         fontWeight: FontWeight.bold),
-                      //   ),
-                      // )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    width: (size.width) * 0.8,
-                    child: Column(children: [
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.watch_later_outlined,
-                            color: Color(int.parse("0x$pimpMyStore"))
-                                .withOpacity(0.5),
-                            size: 17,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
                           Text(
-                            "Horaires d'ouverture",
-                            style: TextStyle(fontSize: 14),
-                          )
-                        ],
-                      ),
-                      // SizedBox(
-                      //   height: 10,
-                      // ),
-                      // Row(
-                      //   children: [
-                      //     Column(children: [
-                      //     Text("Lundi: 13h - 17h"),
-                      //     Text("Mardi: 10h - 19h"),
-                      //     Text("Mercredi: 9h - 14h"),
-                      //     Text("Jeudi: 9h - 17h"),
-                      //     Text("Vendredi: 8h30 - 18h"),
-                      //     ],)
-                      //   ],
-                      // ),
-                    ]),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "Catégories",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (String name in listOfCategories)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              right: 15,
+                            "Produits disponibles",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
                             ),
-                            child: Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Color(
-                                  int.parse("0x$pimpMyStore"),
-                                ).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      dropdownValue = name;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 15, right: 15),
-                                    child: Text(
-                                      name,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: dropdownValue == name
-                                            ? Color(
-                                                int.parse("0x$pimpMyStore"),
-                                              ).withOpacity(1)
-                                            : Color(
-                                                int.parse("0x$pimpMyStore"),
-                                              ).withOpacity(0.8),
-                                        fontWeight: dropdownValue == name
-                                            ? FontWeight.bold
-                                            : FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                          ),
+                          SizedBox(height: 20),
+                          // listOfCategories == null || dropdownValue == null
+                          //     ? CircularProgressIndicator()
+                          //     : Platform.isIOS
+                          //         ? TextButton(
+                          //             child: Row(
+                          //               children: [
+                          //                 Text(dropdownValue,
+                          //                     style: TextStyle(
+                          //                         fontSize: 16,
+                          //                         color: isDarkMode
+                          //                             ? Colors.white
+                          //                             : Colors.black)),
+                          //                 SizedBox(width: 10),
+                          //                 Icon(Icons.arrow_drop_down,
+                          //                     size: 30,
+                          //                     color: isDarkMode
+                          //                         ? Colors.white
+                          //                         : Colors.black)
+                          //               ],
+                          //             ),
+                          //             onPressed: () {
+                          //               showCupertinoModalPopup(
+                          //                 context: context,
+                          //                 builder: (context) => Container(
+                          //                   width:
+                          //                       MediaQuery.of(context).size.width,
+                          //                   height: 200,
+                          //                   child: CupertinoPicker(
+                          //                       itemExtent: 50,
+                          //                       backgroundColor: isDarkMode
+                          //                           ? Color.fromRGBO(48, 48, 48, 1)
+                          //                           : Colors.white,
+                          //                       onSelectedItemChanged: (value) {
+                          //                         setState(() {
+                          //                           dropdownValue =
+                          //                               listOfCategories[value];
+                          //                         });
+                          //                       },
+                          //                       children: [
+                          //                         for (String name
+                          //                             in listOfCategories)
+                          //                           Padding(
+                          //                             padding:
+                          //                                 const EdgeInsets.only(
+                          //                                     top: 8.0),
+                          //                             child: Text(name,
+                          //                                 style: TextStyle(
+                          //                                     color: isDarkMode
+                          //                                         ? Colors.white
+                          //                                         : Colors.black)),
+                          //                           )
+                          //                       ]),
+                          //                 ),
+                          //               );
+                          //             },
+                          //           )
+                          //         : DropdownButton<String>(
+                          //             value: dropdownValue,
+                          //             icon: const Icon(
+                          //                 Icons.keyboard_arrow_down_rounded),
+                          //             iconSize: 24,
+                          //             elevation: 16,
+                          //             onChanged: (String newValue) {
+                          //               setState(() {
+                          //                 dropdownValue = newValue;
+                          //               });
+                          //             },
+                          //             items: categorieNames
+                          //                 .map<DropdownMenuItem<String>>(
+                          //                     (String value) {
+                          //               return DropdownMenuItem(
+                          //                 value: value,
+                          //                 child: Text(value),
+                          //               );
+                          //             }).toList(),
+                          //           ),
+                          // SizedBox(height: 20),
+                          dropdownValue == null
+                              ? CircularProgressIndicator()
+                              : produits(dropdownValue),
+                          SizedBox(height: 30),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 5),
+                                for (int i = 1; i < 6; i++)
+                                  Container(
+                                      height: 30,
+                                      width: 30,
+                                      margin:
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          fixedSize: Size(10, 10),
+                                        ),
+                                        child: Text((i).toString(),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                                color: i == clickedNumber
+                                                    ? Colors.black
+                                                    : Colors.grey)),
+                                        onPressed: () {
+                                          clickedNumber = i;
+                                          setState(() {});
+                                        },
+                                      ))
+                              ]),
+                          ////////// Design uniquement //////////
+                          SizedBox(height: 20),
+                          Text(
+                            "Meilleures ventes",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
                             ),
-                          )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  // Container(
-                  //   width: size.width,
-                  //   decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(5),
-                  //     border: Border.all(
-                  //       color: black.withOpacity(0.1),
-                  //     ),
-                  //   ),
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.all(15.0),
-                  //     child: Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       children: [
-                  //         Text(
-                  //           "Avis clients",
-                  //           style: TextStyle(
-                  //             color: black.withOpacity(0.5),
-                  //           ),
-                  //         ),
-                  //         SizedBox(
-                  //           height: 15,
-                  //         ),
-                  //         Text(
-                  //           "Voir plus ...",
-                  //           style: TextStyle(
-                  //             color: Color(int.parse("0x$pimpMyStore")),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Produits disponibles",
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      // listOfCategories == null || dropdownValue == null
-                      //     ? CircularProgressIndicator()
-                      //     : Platform.isIOS
-                      //         ? TextButton(
-                      //             child: Row(
-                      //               children: [
-                      //                 Text(dropdownValue,
-                      //                     style: TextStyle(
-                      //                         fontSize: 16,
-                      //                         color: isDarkMode
-                      //                             ? Colors.white
-                      //                             : Colors.black)),
-                      //                 SizedBox(width: 10),
-                      //                 Icon(Icons.arrow_drop_down,
-                      //                     size: 30,
-                      //                     color: isDarkMode
-                      //                         ? Colors.white
-                      //                         : Colors.black)
-                      //               ],
-                      //             ),
-                      //             onPressed: () {
-                      //               showCupertinoModalPopup(
-                      //                 context: context,
-                      //                 builder: (context) => Container(
-                      //                   width:
-                      //                       MediaQuery.of(context).size.width,
-                      //                   height: 200,
-                      //                   child: CupertinoPicker(
-                      //                       itemExtent: 50,
-                      //                       backgroundColor: isDarkMode
-                      //                           ? Color.fromRGBO(48, 48, 48, 1)
-                      //                           : Colors.white,
-                      //                       onSelectedItemChanged: (value) {
-                      //                         setState(() {
-                      //                           dropdownValue =
-                      //                               listOfCategories[value];
-                      //                         });
-                      //                       },
-                      //                       children: [
-                      //                         for (String name
-                      //                             in listOfCategories)
-                      //                           Padding(
-                      //                             padding:
-                      //                                 const EdgeInsets.only(
-                      //                                     top: 8.0),
-                      //                             child: Text(name,
-                      //                                 style: TextStyle(
-                      //                                     color: isDarkMode
-                      //                                         ? Colors.white
-                      //                                         : Colors.black)),
-                      //                           )
-                      //                       ]),
-                      //                 ),
-                      //               );
-                      //             },
-                      //           )
-                      //         : DropdownButton<String>(
-                      //             value: dropdownValue,
-                      //             icon: const Icon(
-                      //                 Icons.keyboard_arrow_down_rounded),
-                      //             iconSize: 24,
-                      //             elevation: 16,
-                      //             onChanged: (String newValue) {
-                      //               setState(() {
-                      //                 dropdownValue = newValue;
-                      //               });
-                      //             },
-                      //             items: categorieNames
-                      //                 .map<DropdownMenuItem<String>>(
-                      //                     (String value) {
-                      //               return DropdownMenuItem(
-                      //                 value: value,
-                      //                 child: Text(value),
-                      //               );
-                      //             }).toList(),
-                      //           ),
-                      // SizedBox(height: 20),
-                      dropdownValue == null
-                          ? CircularProgressIndicator()
-                          : produits(dropdownValue),
-                      SizedBox(height: 30),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 5),
-                            for (int i = 1; i < 6; i++)
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
                               Container(
-                                  height: 30,
-                                  width: 30,
-                                  margin: EdgeInsets.only(left: 10, right: 10),
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      fixedSize: Size(10, 10),
-                                    ),
-                                    child: Text((i).toString(),
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                            color: i == clickedNumber
-                                                ? Colors.black
-                                                : Colors.grey)),
-                                    onPressed: () {
-                                      clickedNumber = i;
-                                      setState(() {});
-                                    },
-                                  ))
-                          ]),
-                      ////////// Design uniquement //////////
-                      SizedBox(height: 20),
-                      Text(
-                        "Meilleures ventes",
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                          SizedBox(width: 15),
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 25),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                          SizedBox(width: 15),
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 30),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 5),
-                            for (int i = 0; i < 3; i++)
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
                               Container(
-                                  margin: EdgeInsets.only(left: 5, right: 5),
-                                  child: Icon(Icons.circle_rounded,
-                                      size: 12,
-                                      color:
-                                          i == 0 ? Colors.black : Colors.grey))
-                          ]),
-                      SizedBox(height: 30),
-                      Text(
-                        "Recommandations du commerçant",
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 15),
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 25),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                          SizedBox(width: 15),
-                          Container(
-                            height: 160,
-                            width: 160,
-                            decoration: BoxDecoration(
-                                color: BuyandByeAppTheme.white_grey,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Design uniquement")),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 30),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 5),
-                            for (int i = 0; i < 3; i++)
+                          SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
                               Container(
-                                  margin: EdgeInsets.only(left: 5, right: 5),
-                                  child: Icon(Icons.circle_rounded,
-                                      size: 12,
-                                      color:
-                                          i == 0 ? Colors.black : Colors.grey))
-                          ]),
-                      ////////// Design uniquement //////////
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 5),
+                                for (int i = 0; i < 3; i++)
+                                  Container(
+                                      margin:
+                                          EdgeInsets.only(left: 5, right: 5),
+                                      child: Icon(Icons.circle_rounded,
+                                          size: 12,
+                                          color: i == 0
+                                              ? Colors.black
+                                              : Colors.grey))
+                              ]),
+                          SizedBox(height: 30),
+                          Text(
+                            "Recommandations du commerçant",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 5),
+                                for (int i = 0; i < 3; i++)
+                                  Container(
+                                      margin:
+                                          EdgeInsets.only(left: 5, right: 5),
+                                      child: Icon(Icons.circle_rounded,
+                                          size: 12,
+                                          color: i == 0
+                                              ? Colors.black
+                                              : Colors.grey))
+                              ]),
+                          ////////// Design uniquement //////////
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

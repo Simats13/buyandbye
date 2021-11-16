@@ -482,62 +482,62 @@ class _PageAccueilState extends State<PageAccueil> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Row(
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 15),
-                                  height: 45,
-                                  width: size.width - 70,
-                                  decoration: BoxDecoration(
-                                    color: textFieldColor,
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(12),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            SizedBox(
-                                              height: 30,
-                                              width: size.width - 150,
-                                              child: InkWell(
-                                                onTap: () async {
-                                                  // permissionChecked =
-                                                  //     await _determinePermission();
+                            // SizedBox(
+                            //   height: 15,
+                            // ),
+                            // Row(
+                            //   children: [
+                            //     Container(
+                            //       margin: EdgeInsets.only(left: 15),
+                            //       height: 45,
+                            //       width: size.width - 70,
+                            //       decoration: BoxDecoration(
+                            //         color: textFieldColor,
+                            //         borderRadius: BorderRadius.circular(30),
+                            //       ),
+                            //       child: Row(
+                            //         mainAxisAlignment:
+                            //             MainAxisAlignment.spaceBetween,
+                            //         children: [
+                            //           Padding(
+                            //             padding: EdgeInsets.all(12),
+                            //             child: Row(
+                            //               children: [
+                            //                 Icon(
+                            //                   Icons.location_on,
+                            //                 ),
+                            //                 SizedBox(
+                            //                   width: 5,
+                            //                 ),
+                            //                 SizedBox(
+                            //                   height: 30,
+                            //                   width: size.width - 150,
+                            //                   child: InkWell(
+                            //                     onTap: () async {
+                            //                       // permissionChecked =
+                            //                       //     await _determinePermission();
 
-                                                  affichageAddress();
-                                                },
-                                                child: Container(
-                                                  width: size.width - 150,
-                                                  padding:
-                                                      EdgeInsets.only(top: 5),
-                                                  child: Text(
-                                                    _currentAddressLocation,
-                                                    textAlign: TextAlign.left,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                            //                       affichageAddress();
+                            //                     },
+                            //                     child: Container(
+                            //                       width: size.width - 150,
+                            //                       padding:
+                            //                           EdgeInsets.only(top: 5),
+                            //                       child: Text(
+                            //                         _currentAddressLocation,
+                            //                         textAlign: TextAlign.left,
+                            //                       ),
+                            //                     ),
+                            //                   ),
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                             SizedBox(
                               height: 15,
                             ),
