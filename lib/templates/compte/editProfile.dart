@@ -63,6 +63,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       postalCodeCard = "",
       stateCard = "",
       countryCard = "";
+  DateTime dateTime;
+
   Map<String, dynamic> paymentIntentData;
   final _controller = TextEditingController();
   String _streetNumber = '';
@@ -157,6 +159,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ],
               ));
     }
+  }
+
+  void _showDatePicker(ctx) {
+    // showCupertinoModalPopup is a built-in function of the cupertino library
+    showCupertinoModalPopup(
+        context: ctx,
+        builder: (_) => Container(
+              height: 500,
+              color: Color.fromARGB(255, 255, 255, 255),
+              child: Column(
+                children: [
+                  Container(
+                    height: 400,
+                    child: CupertinoDatePicker(
+                        initialDateTime: DateTime.now(),
+                        onDateTimeChanged: (val) {
+                          setState(() {
+                            dateTime = val;
+                          });
+                        }),
+                  ),
+
+                  // Close the modal
+                  CupertinoButton(
+                    child: Text('OK'),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  )
+                ],
+              ),
+            ));
   }
 
   // Première classe qui affiche les informations du commerçant
@@ -1187,9 +1219,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                           cancelLabel:
                                                               'Annuler',
                                                         );
+                                                        
                                                       },
                                                     ),
-                                                    
                                                     BottomSheetAction(
                                                         title: const Text(
                                                           'Supprimer ma carte',
