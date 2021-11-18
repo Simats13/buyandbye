@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:buyandbye/templates/Paiement/add_credit_card.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
-import 'package:buyandbye/templates/Pages/address_search.dart';
+//import 'package:buyandbye/templates/Pages/address_search.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
-import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
+//import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
-import 'package:buyandbye/templates/Pages/place_service.dart';
+//import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,9 +16,9 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
+//import 'package:uuid/uuid.dart';
 import 'package:sign_button/sign_button.dart';
-import 'package:geocoding/geocoding.dart' as geocoder;
+//import 'package:geocoding/geocoding.dart' as geocoder;
 import 'package:http/http.dart' as http;
 
 class EditProfilePage extends StatefulWidget {
@@ -40,14 +40,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       customerID,
       myPhone;
   Map<String, dynamic>? paymentIntentData;
-  final _controller = TextEditingController();
-  String _streetNumber = '';
-  String? _street;
-  String? _city;
-  // ignore: unused_field
-  String _currentAddressLocation = "";
-  // ignore: unused_field
-  String _zipCode = '';
+  final controller = TextEditingController();
+  String streetNumber = '';
+  String? street;
+  String? city;
+  String currentAddressLocation = "";
+  String zipCode = '';
   double longitude = 0;
   double latitude = 0;
   @override
@@ -545,12 +543,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   .snapshots(),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
+                                  if ((snapshot.data! as QuerySnapshot)
+                                          .docs
+                                          .length >
+                                      0) {
                                     return ListView.builder(
                                         physics:
                                             const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount: (snapshot.data! as QuerySnapshot).docs.length,
+                                        itemCount:
+                                            (snapshot.data! as QuerySnapshot)
+                                                .docs
+                                                .length,
                                         itemBuilder: (context, index) {
                                           return Column(
                                             mainAxisAlignment:
@@ -577,9 +581,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                 height: 30),
                                                             Container(
                                                               child: Text(
-                                                                (snapshot.data! as QuerySnapshot)
-                                                                            .docs[
-                                                                        index][
+                                                                (snapshot.data!
+                                                                            as QuerySnapshot)
+                                                                        .docs[index]
+                                                                    [
                                                                     "addressName"],
                                                               ),
                                                             ),
@@ -590,9 +595,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                         .size
                                                                         .width -
                                                                     100,
-                                                                child: Text((snapshot.data! as QuerySnapshot)
-                                                                            .docs[
-                                                                        index][
+                                                                child: Text((snapshot.data!
+                                                                            as QuerySnapshot)
+                                                                        .docs[index]
+                                                                    [
                                                                     "address"])),
                                                             SizedBox(
                                                                 height: 30),

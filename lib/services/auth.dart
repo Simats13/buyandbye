@@ -333,9 +333,9 @@ class AuthMethods {
   // Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
   // Sinon il renvoie false
   Future checkEmailVerification() async {
-    User user = await AuthMethods().getCurrentUser();
+    User? user = await AuthMethods().getCurrentUser();
 
-    if (user.emailVerified) {
+    if (user!.emailVerified) {
       FirebaseFirestore.instance.collection("users").doc(user.uid).update({
         "emailVerified": true,
       });

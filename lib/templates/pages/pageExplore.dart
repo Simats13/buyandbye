@@ -440,7 +440,7 @@ class _PageExploreState extends State<PageExplore> {
                           width: MediaQuery.of(context).size.width,
                           child: ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: snapshot.data!().length,
+                            itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
                               double value = 1;
 
@@ -449,7 +449,7 @@ class _PageExploreState extends State<PageExplore> {
                                 width: MediaQuery.of(context).size.width,
                                 child: PageView.builder(
                                   controller: _pageController,
-                                  itemCount: snapshot.data!().length,
+                                  itemCount: snapshot.data!.length,
                                   itemBuilder: (context, int index) {
                                     return AnimatedBuilder(
                                       animation: _pageController!,

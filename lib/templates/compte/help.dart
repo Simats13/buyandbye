@@ -317,11 +317,14 @@ class _QuestionState extends State<Question> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 25),
-                    Text((snapshot.data! as QuerySnapshot).docs[index]['question'],
+                    Text(
+                        (snapshot.data! as QuerySnapshot).docs[index]
+                            ['question'],
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w500)),
                     SizedBox(height: 15),
-                    Text((snapshot.data! as QuerySnapshot).docs[index]['answer'],
+                    Text(
+                        (snapshot.data! as QuerySnapshot).docs[index]['answer'],
                         style: TextStyle(fontSize: 16)),
                   ],
                 );
@@ -394,13 +397,12 @@ class _FormulaireState extends State<Formulaire> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
             SizedBox(height: 10),
             MyTextFormField(
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Veuillez écrire un message';
                 }
-                return null;
               },
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 suggestion = value;
               },
             ),

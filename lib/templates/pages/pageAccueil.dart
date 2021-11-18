@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,9 +28,6 @@ import 'package:buyandbye/theme/styles.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/custom_slider.dart';
 
-import 'package:buyandbye/templates/Pages/place_service.dart';
-import 'package:uuid/uuid.dart';
-
 class PageAccueil extends StatefulWidget {
   @override
   _PageAccueilState createState() => _PageAccueilState();
@@ -54,19 +49,19 @@ class _PageAccueilState extends State<PageAccueil> {
   // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
 
-  String? _currentAddress,
-      _currentAddressLocation,
-      _streetNumber,
-      _street,
-      _city,
-      zipCode,
-      idAddress,
-      userid;
-  double? latitude, longitude, currentLatitude, currentLongitude;
+  String _currentAddress = "",
+      _currentAddressLocation = "",
+      streetNumber = "",
+      street = "",
+      _city = "",
+      zipCode = "",
+      idAddress = "",
+      userid = "";
+  double latitude = 0, longitude = 0, currentLatitude = 0, currentLongitude = 0;
   late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
-  final _controller = TextEditingController();
+  final controller = TextEditingController();
   final serviceEnabled = Geolocator.isLocationServiceEnabled();
 
   @override
@@ -87,7 +82,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   positionCheck() async {
     geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: latitude!, longitude: longitude!);
+    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
     stream = radius.switchMap((rad) {
       var collectionReference =
           FirebaseFirestore.instance.collection('magasins');
@@ -135,9 +130,9 @@ class _PageAccueilState extends State<PageAccueil> {
 
     setState(() {
       //Latitude de l'utilisateur via la localisation
-      currentLatitude = _locationData.latitude;
+      currentLatitude = _locationData.latitude ?? 0;
       //Longitude de l'utilisateur via la localisation
-      currentLongitude = _locationData.longitude;
+      currentLongitude = _locationData.longitude ?? 0;
       //Adresse de l'utilisateur via la localisation
       _currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
@@ -150,13 +145,13 @@ class _PageAccueilState extends State<PageAccueil> {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
     QuerySnapshot querySnapshot =
-        await (DatabaseMethods().getChosenAddress(userid) as FutureOr<QuerySnapshot<Object>>);
+        await (DatabaseMethods().getChosenAddress(userid) /*as Future<QuerySnapshot<Object>>*/);
     latitude =
         double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
 
     List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(latitude!, longitude!);
+        await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
     _currentAddressLocation =
@@ -245,7 +240,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                                 padding:
                                                     EdgeInsets.only(top: 5),
                                                 child: Text(
-                                                  _currentAddressLocation!,
+                                                  _currentAddressLocation,
                                                   textAlign: TextAlign.left,
                                                 ),
                                               ),
@@ -469,7 +464,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                               width: size.width - 150,
                                               padding: EdgeInsets.only(top: 5),
                                               child: Text(
-                                                _currentAddressLocation!,
+                                                _currentAddressLocation,
                                                 textAlign: TextAlign.left,
                                               ),
                                             ),
@@ -707,17 +702,17 @@ class _PageAccueilState extends State<PageAccueil> {
                                   onTap: () async {
                                     List<geocoder.Placemark> addresses =
                                         await geocoder.placemarkFromCoordinates(
-                                            latitude!, longitude!);
+                                            latitude, longitude);
                                     var first = addresses.first;
                                     setState(() {
-                                      _city = first.locality;
+                                      _city = first.locality!;
 
                                       _currentAddressLocation =
                                           "${first.name! + ", " + first.locality!}";
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
-                                          latitude: latitude!,
-                                          longitude: longitude!);
+                                          latitude: latitude,
+                                          longitude: longitude);
                                       stream = radius.switchMap((rad) {
                                         var collectionReference =
                                             FirebaseFirestore.instance
@@ -738,28 +733,28 @@ class _PageAccueilState extends State<PageAccueil> {
                                         await SharedPreferences.getInstance();
 
                                     await _preferences.setDouble(
-                                        _keyLatitude, latitude!);
+                                        _keyLatitude, latitude);
 
                                     await _preferences.setDouble(
-                                        _keyLongitude, longitude!);
+                                        _keyLongitude, longitude);
 
                                     await _preferences.setString(
-                                        _keyAddress, _currentAddressLocation!);
+                                        _keyAddress, _currentAddressLocation);
 
                                     await _preferences.setString(
-                                        _keyCity, _city!);
+                                        _keyCity, _city);
 
                                     SharedPreferenceHelper()
-                                        .saveUserCity(_city!);
+                                        .saveUserCity(_city);
 
                                     SharedPreferenceHelper().saveUserAddress(
-                                        _currentAddressLocation!);
+                                        _currentAddressLocation);
 
                                     SharedPreferenceHelper()
-                                        .saveUserLatitude(latitude!);
+                                        .saveUserLatitude(latitude);
 
                                     SharedPreferenceHelper()
-                                        .saveUserLongitude(longitude!);
+                                        .saveUserLongitude(longitude);
                                     setState(() {});
                                     Navigator.of(context).pop();
 
@@ -768,9 +763,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 PageAddressNext(
-                                                  lat: currentLatitude!,
-                                                  long: currentLongitude!,
-                                                  adresse: _currentAddress!,
+                                                  lat: currentLatitude,
+                                                  long: currentLongitude,
+                                                  adresse: _currentAddress,
                                                 )));
                                   },
                                   child: Container(
@@ -792,7 +787,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
                                               _currentAddress != null
-                                                  ? Text(_currentAddress!)
+                                                  ? Text(_currentAddress)
                                                   : CircularProgressIndicator(),
                                             ]),
                                       ],
@@ -1025,7 +1020,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                                       ["idDoc"],
                                                   idAddress);
                                           setState(() {
-                                            _city = first.locality;
+                                            _city = first.locality!;
                                             idAddress = (snapshot.data! as QuerySnapshot).docs[index]["idDoc"];
                                             latitude = (snapshot.data! as QuerySnapshot).docs[index]
                                                 ["latitude"];
@@ -1064,7 +1059,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                                   ["latitude"]);
 
                                           await _preferences.setString(
-                                              _keyCity, _city!);
+                                              _keyCity, _city);
 
                                           await _preferences.setDouble(
                                               _keyLongitude,
@@ -1073,13 +1068,13 @@ class _PageAccueilState extends State<PageAccueil> {
 
                                           await _preferences.setString(
                                               _keyAddress,
-                                              _currentAddressLocation!);
+                                              _currentAddressLocation);
 
                                           SharedPreferenceHelper()
                                               .saveUserAddress(
-                                                  _currentAddressLocation!);
+                                                  _currentAddressLocation);
                                           SharedPreferenceHelper()
-                                              .saveUserCity(_city!);
+                                              .saveUserCity(_city);
 
                                           SharedPreferenceHelper()
                                               .saveUserLatitude((snapshot.data! as QuerySnapshot)
