@@ -94,6 +94,7 @@ dependencies:
   qr_flutter:
   adaptive_dialog:
   adaptive_action_sheet:
+  dropdown_date_picker:
 
 flutter_native_splash:
   #color: "#42a5f5"

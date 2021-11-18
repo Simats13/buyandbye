@@ -159,7 +159,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           : showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text("Suppression du compte"),
+                                title: Text("Suppression de l'adresse"),
                                 content: Text(
                                     "Souhaitez-vous réellement supprimer l'adresse ?"),
                                 actions: <Widget>[

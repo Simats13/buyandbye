@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:buyandbye/templates/Compte/pageCBEdit.dart';
 import 'package:buyandbye/templates/Paiement/add_credit_card.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
@@ -159,36 +160,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ],
               ));
     }
-  }
-
-  void _showDatePicker(ctx) {
-    // showCupertinoModalPopup is a built-in function of the cupertino library
-    showCupertinoModalPopup(
-        context: ctx,
-        builder: (_) => Container(
-              height: 500,
-              color: Color.fromARGB(255, 255, 255, 255),
-              child: Column(
-                children: [
-                  Container(
-                    height: 400,
-                    child: CupertinoDatePicker(
-                        initialDateTime: DateTime.now(),
-                        onDateTimeChanged: (val) {
-                          setState(() {
-                            dateTime = val;
-                          });
-                        }),
-                  ),
-
-                  // Close the modal
-                  CupertinoButton(
-                    child: Text('OK'),
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  )
-                ],
-              ),
-            ));
   }
 
   // Première classe qui affiche les informations du commerçant
@@ -989,6 +960,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 ['data']
                                             .length,
                                     itemBuilder: (context, index) {
+                                      print(paymentIntentData['paymentMethods']
+                                          );
                                       return Column(
                                         children: [
                                           ListTile(
@@ -1048,21 +1021,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             trailing: IconButton(
                                               icon: Icon(Icons.more_vert),
                                               onPressed: () async {
+                                                // Navigator.of(context)
+                                                //               .pop();
+
                                                 showAdaptiveActionSheet(
                                                   context: context,
                                                   title: const Text(
                                                       'Modification informations bancaires'),
 
                                                   actions: <BottomSheetAction>[
-                                                    BottomSheetAction(
-                                                      title: const Text(
-                                                        'Modifier la date et le CVV',
-                                                        style: TextStyle(
-                                                          color: Colors.blue,
-                                                        ),
-                                                      ),
-                                                      onPressed: () {},
-                                                    ),
                                                     BottomSheetAction(
                                                       title: const Text(
                                                         'Modifier les informations de ma carte',
@@ -1072,154 +1039,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       ),
                                                       onPressed: () {
                                                         Navigator.of(context)
-                                                            .pop();
-                                                        showTextInputDialog(
-                                                          context: context,
-                                                          message:
-                                                              "Modification des coordonnées",
-                                                          textFields: [
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  nameCard == ""
-                                                                      ? null
-                                                                      : nameCard,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  nameCard =
-                                                                      value;
-                                                                });
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText:
-                                                                  'Nom du titulaire de la carte',
-                                                            ),
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  streetCard ==
-                                                                          ""
-                                                                      ? null
-                                                                      : streetCard,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  streetCard =
-                                                                      value;
-                                                                });
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText: 'Rue',
-                                                            ),
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  streetCard2 ==
-                                                                          ""
-                                                                      ? null
-                                                                      : streetCard2,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  streetCard2 =
-                                                                      value;
-                                                                });
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText:
-                                                                  'Rue (ligne 2)',
-                                                            ),
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  cityCard == ""
-                                                                      ? null
-                                                                      : cityCard,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  cityCard =
-                                                                      value;
-                                                                });
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText: 'Ville',
-                                                            ),
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  postalCodeCard ==
-                                                                          ""
-                                                                      ? null
-                                                                      : postalCodeCard,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  postalCodeCard =
-                                                                      value;
-                                                                });
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText:
-                                                                  'Code postal',
-                                                            ),
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  stateCard ==
-                                                                          ""
-                                                                      ? null
-                                                                      : stateCard,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  stateCard =
-                                                                      value;
-                                                                });
-
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText:
-                                                                  'Département',
-                                                            ),
-                                                            DialogTextField(
-                                                              initialText:
-                                                                  countryCard ==
-                                                                          ""
-                                                                      ? null
-                                                                      : countryCard,
-                                                              validator:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  countryCard =
-                                                                      value;
-                                                                });
-                                                                return null;
-                                                              },
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .number,
-                                                              hintText: 'Pays',
-                                                            ),
-                                                          ],
-                                                          okLabel: 'Modifier',
-                                                          cancelLabel:
-                                                              'Annuler',
+                                                            .pop(false);
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      PageCBEdit(
+                                                                        customerID:customerID,
+                                                                        idCard: paymentIntentData['paymentMethods']['data'][index]
+                                                                            [
+                                                                            'card']['id'],
+                                                                        expYear:
+                                                                            paymentIntentData['paymentMethods']['data'][index]['card']['exp_year'],
+                                                                        expMonth:
+                                                                            paymentIntentData['paymentMethods']['data'][index]['card']['exp_month'],
+                                                                      )),
                                                         );
-                                                        
                                                       },
                                                     ),
                                                     BottomSheetAction(
