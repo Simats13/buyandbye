@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buyandbye/templates/Achat/pageLivraison.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -159,7 +160,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           : showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text("Suppression du compte"),
+                                title: Text("Suppression de l'adresse"),
                                 content: Text(
                                     "Souhaitez-vous réellement supprimer l'adresse ?"),
                                 actions: <Widget>[
@@ -459,6 +460,12 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     }
   }
 }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
 
 class MapStyle {
   static String mapStyle = ''' [

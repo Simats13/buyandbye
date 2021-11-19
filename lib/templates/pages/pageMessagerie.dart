@@ -46,12 +46,39 @@ class _PageMessagerieState extends State<PageMessagerie>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Messagerie'),
-        backgroundColor: BuyandByeAppTheme.black_electrik,
-        automaticallyImplyLeading: false,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        centerTitle: true,
+      backgroundColor: BuyandByeAppTheme.white,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: AppBar(
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: 'Messagerie',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.chat,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: BuyandByeAppTheme.white,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
+        ),
       ),
       body: StreamBuilder(
           stream: FirebaseFirestore.instance

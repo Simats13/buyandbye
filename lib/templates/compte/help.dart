@@ -35,18 +35,29 @@ class _HelpState extends State<Help> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: BuyandByeAppTheme.black_electrik,
-          title: Text("Aide / Support"),
-          elevation: 1,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: BuyandByeAppTheme.orange,
+        backgroundColor: BuyandByeAppTheme.white,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: AppBar(
+            title: Text(
+              'Aide / Support',
+              style: TextStyle(
+                color: BuyandByeAppTheme.orangeMiFonce,
+              ),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            backgroundColor: BuyandByeAppTheme.white,
+            automaticallyImplyLeading: false,
+            elevation: 0.0,
+            bottomOpacity: 0.0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: BuyandByeAppTheme.orange,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -304,7 +315,7 @@ class Question extends StatefulWidget {
 
 class _QuestionState extends State<Question> {
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods().getFAQ(widget.isAdmin),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
@@ -317,15 +328,16 @@ class _QuestionState extends State<Question> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 25),
-                    Text(
-                        (snapshot.data! as QuerySnapshot).docs[index]
-                            ['question'],
+                    Text(snapshot.data.docs[index]['question'],
+                        textAlign: TextAlign.justify,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w500)),
                     SizedBox(height: 15),
-                    Text(
-                        (snapshot.data! as QuerySnapshot).docs[index]['answer'],
-                        style: TextStyle(fontSize: 16)),
+                    Text(snapshot.data.docs[index]['answer'],
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          fontSize: 16,
+                        )),
                   ],
                 );
               });

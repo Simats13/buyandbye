@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:app_settings/app_settings.dart';
+import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,7 +16,6 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
-//import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -28,7 +28,7 @@ class PageExplore extends StatefulWidget {
 class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   var position;
-  var radius = BehaviorSubject<double>.seeded(5);
+  var radius = BehaviorSubject<double>.seeded(10);
   late Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -114,12 +114,16 @@ class _PageExploreState extends State<PageExplore> {
   userID() async {
     _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
     _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
-    latitude = await SharedPreferenceHelper().getUserLatitude() ?? 43.834647;
-    longitude = await SharedPreferenceHelper().getUserLongitude() ?? 4.359620;
+    final User user = await AuthMethods().getCurrentUser();
+    var userid = user.uid;
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
     setState(() {
       mapToggle = true;
       geo = Geoflutterfire();
 
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
         var collectionReference = _firestore.collection('magasins');
@@ -385,26 +389,53 @@ class _PageExploreState extends State<PageExplore> {
   Widget build(BuildContext context) {
     return mapToggle
         ? Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              centerTitle: true,
-              backgroundColor: BuyandByeAppTheme.black_electrik,
-              systemOverlayStyle: SystemUiOverlayStyle.light,
-              title: Text('Explorer'),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.add_location_outlined,
-                    color: BuyandByeAppTheme.white,
-                  ),
-                  onPressed: _mapController == null
-                      ? null
-                      : () {
-                          _perimeter();
-                        },
-                )
-              ],
-            ),
+            backgroundColor: BuyandByeAppTheme.white,
+            // appBar: PreferredSize(
+            //   preferredSize: Size.fromHeight(50.0),
+            //   child: AppBar(
+            //     title: RichText(
+            //       text: TextSpan(
+            //         // style: Theme.of(context).textTheme.bodyText2,
+            //         children: [
+            //           TextSpan(
+            //               text: 'Explorer',
+            //               style: TextStyle(
+            //                 fontSize: 20,
+            //                 color: BuyandByeAppTheme.orangeMiFonce,
+            //                 fontWeight: FontWeight.bold,
+            //               )),
+            //           WidgetSpan(
+            //             child: Padding(
+            //               padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            //               child: Icon(
+            //                 Icons.public,
+            //                 color: BuyandByeAppTheme.orangeFonce,
+            //                 size: 30,
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     // actions: <Widget>[
+            //     //   IconButton(
+            //     //     icon: Icon(
+            //     //       Icons.add_location_outlined,
+            //     //       color: BuyandByeAppTheme.orange,
+            //     //     ),
+            //     //     onPressed: _mapController == null
+            //     //         ? null
+            //     //         : () {
+            //     //             _perimeter();
+            //     //           },
+            //     //   )
+            //     // ],
+            //     backgroundColor: BuyandByeAppTheme.white,
+            //     automaticallyImplyLeading: false,
+            //     elevation: 0.0,
+            //     bottomOpacity: 0.0,
+            //   ),
+            // ),
             body: Stack(
               children: [
                 Container(
@@ -657,7 +688,8 @@ class _PageExploreState extends State<PageExplore> {
 }
 
 class MapStyle {
-  static String mapStyle = ''' [
+  static String mapStyle =
+      ''' [
   {
     "elementType": "geometry",
     "stylers": [

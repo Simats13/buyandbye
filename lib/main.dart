@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,8 +16,9 @@ import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
 
+import 'templates_commercant/nav_bar.dart';
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
@@ -147,7 +149,7 @@ class MainScreen extends StatelessWidget {
     return FutureBuilder(
         future: AuthMethods().getCurrentUser(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
+          if (snapshot.hasData && snapshot.data.uid != null) {
             return StreamBuilder<DocumentSnapshot>(
               stream: FirebaseFirestore.instance
                   .collection("users")
@@ -155,28 +157,28 @@ class MainScreen extends StatelessWidget {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData) {
-                  // final userDoc = snapshot.data!;
-                  // final user = userDoc;
-                  // if (user['emailVerified'] == false) {
-                  //   return PageLogin();
-                  // }
-                  // if (user['firstConnection'] == true) {
-                  //   return PageFirstConnection();
-                  // }
-                  // if (user['admin'] == true) {
-                  //   return NavBar();
-                  // } else {
-                  //   return Accueil();
-                  // }
-                  return Accueil();
+                if (snapshot.hasData &&
+                    snapshot.data!['emailVerified'] != null) {
+                  final user = snapshot.data;
+                  if (user!['emailVerified'] == false) {
+                    return PageLogin();
+                  }
+                  if (user['firstConnection'] == true) {
+                    return PageFirstConnection();
+                  }
+                  if (user['admin'] == true) {
+                    return NavBar();
+                  } else {
+                    return Accueil();
+                  }
                 } else {
                   return PageLogin();
                 }
               },
             );
+          } else {
+            return PageBienvenue();
           }
-          return PageBienvenue();
         });
   }
 }

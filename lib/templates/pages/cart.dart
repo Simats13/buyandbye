@@ -1,10 +1,10 @@
 import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/templates/Achat/pageLivraison.dart';
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/templates/Achat/pageLivraison.dart';
-import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 
 class CartPage extends StatefulWidget {

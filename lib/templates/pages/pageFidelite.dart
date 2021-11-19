@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class PageFidelite extends StatefulWidget {
   @override
@@ -214,12 +215,14 @@ class _PageFideliteState extends State<PageFidelite> {
                     SizedBox(
                       width: 100,
                     ),
-                    Text("180 pts",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        )),
+                    Container(
+                      child: Text("180 pts",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ),
                   ]),
                 ),
               ],
@@ -241,13 +244,13 @@ class _PageFideliteState extends State<PageFidelite> {
             child: Column(
               children: [
                 Container(
-                    margin: EdgeInsets.fromLTRB(10, 20, 10, 5),
-                    height: 120,
-                    width: 220,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage("assets/images/code_barre.png"),
-                    )))
+                  child: QrImage(
+                    foregroundColor: Colors.white,
+                    data: "buyandbye.fr",
+                    version: QrVersions.auto,
+                    size: 150,
+                  ),
+                )
               ],
             ),
           ),

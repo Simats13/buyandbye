@@ -22,7 +22,7 @@ String getDate(time) {
 }
 
 class _HistoryDetailsState extends State<HistoryDetails> {
-  String? shopName, profilePic, description, adresse;
+  String? shopName, profilePic, description, adresse, colorStore;
   bool? clickAndCollect, livraison;
 
   getShopInfos(sellerId) async {
@@ -34,6 +34,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
     profilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     description = "${querySnapshot.docs[0]["description"]}";
     adresse = "${querySnapshot.docs[0]["adresse"]}";
+    colorStore = "${querySnapshot.docs[0]["colorStore"]}";
     clickAndCollect = "${querySnapshot.docs[0]["ClickAndCollect"]}" == 'true';
     livraison = "${querySnapshot.docs[0]["livraison"]}" == 'true';
     if (mounted) {
@@ -44,10 +45,36 @@ class _HistoryDetailsState extends State<HistoryDetails> {
   Widget build(BuildContext context) {
     getShopInfos(widget.shopID);
     return Scaffold(
+        backgroundColor: BuyandByeAppTheme.white,
         appBar: AppBar(
-          backgroundColor: BuyandByeAppTheme.black_electrik,
-          title: Text("Détails de commande"),
-          elevation: 1,
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: "Détail de Commande",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.shopping_bag,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: BuyandByeAppTheme.white,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
@@ -84,7 +111,9 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              "Total : " + widget.prix!.toStringAsFixed(2) + "€",
+                              "Total : " +
+                                  widget.prix!.toStringAsFixed(2) +
+                                  "€",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                           SizedBox(height: 20),
@@ -113,6 +142,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                                                       name: shopName,
                                                       description: description,
                                                       adresse: adresse,
+                                                      colorStore: colorStore,
                                                       clickAndCollect:
                                                           clickAndCollect,
                                                       livraison: livraison,
@@ -137,7 +167,8 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                       ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: (snapshot.data! as QuerySnapshot).docs.length,
+                        itemCount:
+                            (snapshot.data! as QuerySnapshot).docs.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 15),
@@ -154,8 +185,10 @@ class _HistoryDetailsState extends State<HistoryDetails> {
                                 child: Padding(
                                   padding: EdgeInsets.all(30),
                                   child: ProductDetails(
-                                      (snapshot.data! as QuerySnapshot).docs[index]["produit"],
-                                      (snapshot.data! as QuerySnapshot).docs[index]["quantite"],
+                                      (snapshot.data! as QuerySnapshot)
+                                          .docs[index]["produit"],
+                                      (snapshot.data! as QuerySnapshot)
+                                          .docs[index]["quantite"],
                                       widget.shopID),
                                 )),
                           );

@@ -15,8 +15,10 @@ class PageResume extends StatefulWidget {
       nomBoutique,
       addressSeller,
       userAddressChoose;
+
   final double? deliveryChoose;
   final double? latitude, longitude;
+
   const PageResume(
       {Key? key,
       this.idCommand,

@@ -817,7 +817,7 @@ class _PageLivraisonState extends State<PageLivraison> {
       );
     }
 
-    print(paymentIntentData);
+    // print(paymentIntentData);
 
     setState(() {});
 
