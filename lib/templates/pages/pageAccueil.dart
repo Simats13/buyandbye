@@ -441,7 +441,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               height: 15,
                             ),
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                               child: RichText(
                                 text: TextSpan(
                                   style: Theme.of(context).textTheme.bodyText2,
