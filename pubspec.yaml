@@ -96,6 +96,7 @@ dependencies:
   adaptive_action_sheet:
   dropdown_date_picker:
 
+
 flutter_native_splash:
   #color: "#42a5f5"
   background_image: assets/images/splash.png

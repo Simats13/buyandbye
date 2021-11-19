@@ -68,6 +68,7 @@ class _PageAccueilState extends State<PageAccueil> {
       username;
   double latitude, longitude, currentLatitude, currentLongitude;
   Geoflutterfire geo;
+  bool checkFavoriteShop = false;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>> stream;
   final _controller = TextEditingController();
@@ -95,6 +96,9 @@ class _PageAccueilState extends State<PageAccueil> {
     stream = radius.switchMap((rad) {
       var collectionReference =
           FirebaseFirestore.instance.collection('magasins');
+      DatabaseMethods().checkFavoriteShop().then((value) {
+        checkFavoriteShop = value;
+      });
       return geo.collection(collectionRef: collectionReference).within(
           center: center, radius: 10, field: 'position', strictMode: true);
     });
@@ -161,6 +165,8 @@ class _PageAccueilState extends State<PageAccueil> {
     userid = user.uid;
     QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
     username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
+    checkFavoriteShop = await DatabaseMethods().checkFavoriteShop();
+    setState(() {});
   }
 
   getCoordinates() async {
@@ -198,7 +204,8 @@ class _PageAccueilState extends State<PageAccueil> {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-
+    print(checkFavoriteShop);
+    print("checkFavoriteShop");
     positionCheck();
 
     return latitude != null
@@ -427,26 +434,66 @@ class _PageAccueilState extends State<PageAccueil> {
                               padding: EdgeInsets.all(20),
                               child: SliderAccueil3(latitude, longitude),
                             ),
-
-                            SizedBox(
-                              height: 15,
-                            ),
-                            // Text(
-                            //   "    Vous avez acheté chez eux récemment",
-                            //   style: customTitle,
-                            // ),
-                            // Container(
-                            //   padding: EdgeInsets.all(20),
-                            //   child: SliderAccueil4(latitude, longitude),
-                            //   ),
-                            // SizedBox(
-                            //   height: 20,
-                            // ),
                             Container(
                               width: size.width,
                               height: 10,
                               decoration: BoxDecoration(color: textFieldColor),
                             ),
+
+                            checkFavoriteShop
+                                ? Column(
+                                  mainAxisAlignment : MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 0, 0),
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2,
+                                            children: [
+                                              TextSpan(
+                                                text: 'Mes magasins préférés',
+                                                style: customTitle,
+                                              ),
+                                              WidgetSpan(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 5.0),
+                                                  child: Icon(
+                                                    Icons.favorite,
+                                                    color: Colors.red,
+                                                    size: 30,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.all(20),
+                                        child: SliderFavorite(
+                                            latitude, longitude, userid),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Container(
+                                        width: size.width,
+                                        height: 10,
+                                        decoration: BoxDecoration(
+                                            color: textFieldColor),
+                                      ),
+                                    ],
+                                  )
+                                : Container(),
+
                             // SizedBox(
                             //   height: 20,
                             // ),
@@ -1339,7 +1386,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
   Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>> stream;
-
+  bool loved;
   @override
   void initState() {
     super.initState();
@@ -1712,6 +1759,134 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
   }
 }
 
+// ignore: must_be_immutable
+class SliderFavorite extends StatefulWidget {
+  SliderFavorite(
+    this.latitude,
+    this.longitude,
+    this.userID,
+  );
+  double latitude;
+  double longitude;
+  String userID;
+  @override
+  _SliderFavoriteState createState() => _SliderFavoriteState();
+}
+
+class _SliderFavoriteState extends State<SliderFavorite> {
+  var currentLocation;
+  var position;
+  Geoflutterfire geo;
+  final radius = BehaviorSubject<double>.seeded(1.0);
+  Stream<List<DocumentSnapshot>> stream;
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      geo = Geoflutterfire();
+      GeoFirePoint center =
+          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+      stream = radius.switchMap((rad) {
+        var collectionReference = FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userID)
+            .collection('liked');
+        return geo.collection(collectionRef: collectionReference).within(
+            center: center, radius: 10, field: 'position', strictMode: true);
+      });
+    });
+  }
+
+  List listImages(documents) {
+    List shopImages = [];
+    for (int i = 0; i < documents.length; i++) {
+      shopImages.add(documents[i]["imgUrl"]);
+    }
+    return shopImages;
+  }
+
+  int carouselItem = 0;
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Shimmer.fromColors(
+              child: Container(
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              baseColor: Colors.grey[300],
+              highlightColor: Colors.grey[100],
+            );
+          }
+          // Les éléments sont mélangés à chaque mouvement du carousel
+          final documents = snapshot.data..shuffle();
+          if (documents.length > 0) {
+            return Container(
+              height: MediaQuery.of(context).size.height / 2.4,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: SlideItem(
+                      img: documents[index]["imgUrl"],
+                      name: documents[index]["name"],
+                      address: documents[index]["adresse"],
+                      description: documents[index]["description"],
+                      livraison: documents[index]["livraison"],
+                      sellerID: documents[index]["id"],
+                      colorStore: documents[index]["colorStore"],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
+                    ),
+                  );
+                },
+              ),
+            );
+          } else {
+            return Container(
+              child: Center(
+                  child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Vous n'avez aucun magasin en favoris. Ajoutez en depuis leur vitrine",
+                      style: TextStyle(
+                        fontSize: 18,
+
+                        // color: Colors.grey[700]
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                ],
+              )),
+            );
+          }
+        });
+  }
+}
+
 class SliderAccueil4 extends StatefulWidget {
   @override
   _SliderAccueil4State createState() => _SliderAccueil4State();
@@ -1776,23 +1951,19 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageDetail(
-                                        img: documents[carouselItem]
-                                            ['imgUrl'],
+                                        img: documents[carouselItem]['imgUrl'],
                                         colorStore: documents[carouselItem]
                                             ['colorStore'],
-                                        name: documents[carouselItem]
-                                            ['name'],
+                                        name: documents[carouselItem]['name'],
                                         description: documents[carouselItem]
                                             ['description'],
                                         adresse: documents[carouselItem]
                                             ['adresse'],
-                                        clickAndCollect:
-                                            documents[carouselItem]
-                                                ['ClickAndCollect'],
+                                        clickAndCollect: documents[carouselItem]
+                                            ['ClickAndCollect'],
                                         livraison: documents[carouselItem]
                                             ['livraison'],
-                                        sellerID: documents[carouselItem]
-                                            ['id'],
+                                        sellerID: documents[carouselItem]['id'],
                                       )));
                         },
                         child: Container(
@@ -1821,8 +1992,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                 Padding(
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
-                                    child: Text(
-                                        documents[carouselItem]["name"],
+                                    child: Text(documents[carouselItem]["name"],
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w700))),

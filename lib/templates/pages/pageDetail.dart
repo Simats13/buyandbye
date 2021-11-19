@@ -16,6 +16,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
+import 'package:status_alert/status_alert.dart';
 
 import 'dart:async';
 
@@ -32,7 +33,9 @@ class PageDetail extends StatefulWidget {
       this.clickAndCollect,
       this.livraison,
       this.sellerID,
-      this.colorStore})
+      this.colorStore,
+      this.newData,
+      this.onNameChanged})
       : super(key: key);
 
   final String img;
@@ -43,6 +46,8 @@ class PageDetail extends StatefulWidget {
   final String colorStore;
   final bool livraison;
   final bool clickAndCollect;
+  final VoidCallback newData;
+  final Function(String) onNameChanged;
   _PageDetail createState() => _PageDetail();
 }
 
@@ -63,7 +68,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Stream<List<DocumentSnapshot>> stream;
   List listOfCategories = [];
   List<DocumentSnapshot> _myDocCount = [];
-
+  bool loved = true;
+  bool checkFavoriteShop = false;
   @override
   void setState(fn) {
     if (mounted) {
@@ -94,6 +100,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     bool cartEmpty = await DatabaseMethods().checkCartEmpty();
+    loved = await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
     print(cartEmpty);
   }
 
@@ -144,8 +151,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         .doc(widget.sellerID)
         .collection("produits")
         .get();
-    // name1 = "${querySnapshot.docs[0]["nom"]}";
-    // setState(() {});
 
     // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
     // pas déjà dans la liste
@@ -222,9 +227,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   int clickedNumber = 1;
   Widget getBody() {
     var pimpMyStore = widget.colorStore;
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
-    bool isPressed = false;
+
     var size = MediaQuery.of(context).size;
     return CupertinoPageScaffold(
       child: NestedScrollView(
@@ -251,7 +254,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       ),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    checkFavoriteShop =
+                        await DatabaseMethods().checkFavoriteShop();
                     Navigator.pop(context);
                   },
                 ),
@@ -259,27 +264,73 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   widget.name,
                   style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                 ),
-                trailing: IconButton(
-                  icon: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color:
-                          Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.favorite_border,
-                        size: 20,
-                        color: white,
+                trailing: loved
+                    ? IconButton(
+                        icon: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Color(int.parse("0x$pimpMyStore"))
+                                .withOpacity(0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.favorite_border,
+                              size: 20,
+                              color: white,
+                            ),
+                          ),
+                        ),
+                        onPressed: () async {
+                          await DatabaseMethods()
+                              .addFavoriteShop(myID, widget.sellerID, true);
+                          setState(() {
+                            loved = !loved;
+                          });
+                          StatusAlert.show(
+                            context,
+                            duration: Duration(seconds: 2),
+                            title: 'Favoris',
+                            subtitle: 'Ajouté au favoris',
+                            configuration:
+                                IconConfiguration(icon: Icons.favorite),
+                          );
+                        },
+                      )
+                    : IconButton(
+                        icon: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Color(int.parse("0x$pimpMyStore"))
+                                .withOpacity(0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.favorite,
+                              size: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        onPressed: () async {
+                          await DatabaseMethods()
+                              .addFavoriteShop(myID, widget.sellerID, false);
+                          setState(() {
+                            loved = !loved;
+                          });
+                          StatusAlert.show(
+                            context,
+                            duration: Duration(seconds: 2),
+                            title: 'Favoris',
+                            subtitle: 'Enlevé des favoris',
+                            configuration:
+                                IconConfiguration(icon: Icons.favorite_border),
+                          );
+                        },
                       ),
-                    ),
-                  ),
-                  onPressed: () {
-                    // Navigator.pop(context);
-                  },
-                ),
                 largeTitle: Text(""),
               ),
             ),
@@ -660,6 +711,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   ),
                                   child: Center(
                                     child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        primary: Color(
+                                          int.parse("0x$pimpMyStore"),
+                                        ).withOpacity(0.2),
+                                      ),
                                       onPressed: () {
                                         setState(() {
                                           dropdownValue = name;
