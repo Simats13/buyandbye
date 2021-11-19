@@ -68,7 +68,7 @@ class _PageAccueilState extends State<PageAccueil> {
       username;
   double latitude, longitude, currentLatitude, currentLongitude;
   Geoflutterfire geo;
-  bool checkFavoriteShop = false;
+
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>> stream;
   final _controller = TextEditingController();
@@ -96,9 +96,7 @@ class _PageAccueilState extends State<PageAccueil> {
     stream = radius.switchMap((rad) {
       var collectionReference =
           FirebaseFirestore.instance.collection('magasins');
-      DatabaseMethods().checkFavoriteShop().then((value) {
-        checkFavoriteShop = value;
-      });
+
       return geo.collection(collectionRef: collectionReference).within(
           center: center, radius: 10, field: 'position', strictMode: true);
     });
@@ -165,7 +163,7 @@ class _PageAccueilState extends State<PageAccueil> {
     userid = user.uid;
     QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
     username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
-    checkFavoriteShop = await DatabaseMethods().checkFavoriteShop();
+
     setState(() {});
   }
 
@@ -204,8 +202,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    print(checkFavoriteShop);
-    print("checkFavoriteShop");
+
     positionCheck();
 
     return latitude != null
@@ -440,59 +437,47 @@ class _PageAccueilState extends State<PageAccueil> {
                               decoration: BoxDecoration(color: textFieldColor),
                             ),
 
-                            checkFavoriteShop
-                                ? Column(
-                                  mainAxisAlignment : MainAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 0, 0, 0),
-                                        child: RichText(
-                                          text: TextSpan(
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText2,
-                                            children: [
-                                              TextSpan(
-                                                text: 'Mes magasins préférés',
-                                                style: customTitle,
-                                              ),
-                                              WidgetSpan(
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 5.0),
-                                                  child: Icon(
-                                                    Icons.favorite,
-                                                    color: Colors.red,
-                                                    size: 30,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                  children: [
+                                    TextSpan(
+                                      text: 'Mes magasins préférés',
+                                      style: customTitle,
+                                    ),
+                                    WidgetSpan(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        child: Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
+                                          size: 30,
                                         ),
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.all(20),
-                                        child: SliderFavorite(
-                                            latitude, longitude, userid),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Container(
-                                        width: size.width,
-                                        height: 10,
-                                        decoration: BoxDecoration(
-                                            color: textFieldColor),
-                                      ),
-                                    ],
-                                  )
-                                : Container(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(20),
+                              child:
+                                  SliderFavorite(latitude, longitude, userid),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
 
                             // SizedBox(
                             //   height: 20,
