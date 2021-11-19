@@ -457,7 +457,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                         child: Icon(
                                           Icons.favorite,
                                           color: Colors.red,
-                                          size: 30,
+                                          size: 25,
                                         ),
                                       ),
                                     ),
