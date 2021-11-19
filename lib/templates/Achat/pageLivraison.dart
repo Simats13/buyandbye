@@ -875,11 +875,11 @@ class _PageLivraisonState extends State<PageLivraison> {
           dialogPaymentCancelled();
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error from Stripe: ${e.error.localizedMessage}'),
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('Error from Stripe: ${e.error.localizedMessage}'),
+        //   ),
+        // );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
