@@ -1,18 +1,21 @@
+import 'dart:io';
+
 import 'package:buyandbye/templates/Achat/pageResume.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:stripe_platform_interface/stripe_platform_interface.dart'
     as platform;
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
-import 'package:truncate/truncate.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -21,10 +24,9 @@ import '../buyandbye_app_theme.dart';
 
 class PageLivraison extends StatefulWidget {
   const PageLivraison(
-      {Key? key, this.idCommercant, this.total, this.customerID})
+      {Key? key, this.idCommercant, this.total, this.customerID, this.email})
       : super(key: key);
-  final String? idCommercant;
-  final String? customerID;
+  final String? idCommercant, email, customerID;
   final double? total;
 
   @override
@@ -42,6 +44,7 @@ class _PageLivraisonState extends State<PageLivraison> {
   String? userAddressChoose;
   double? latitude;
   double? longitude;
+  String? emailUser;
   late GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
   BitmapDescriptor? mapMarker;
@@ -93,7 +96,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), '../assets/images/shop.png')
+            ImageConfiguration(), '../../assets/images/shop.png')
         .then((value) {
       mapMarker = value;
     });
@@ -101,22 +104,94 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.customerID);
-
     if (nomBoutique != null) {
       return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+        backgroundColor: BuyandByeAppTheme.white,
+        appBar: AppBar(
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: 'Livraison',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.local_shipping,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            title: Text('Choisir un mode de livraison'),
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            automaticallyImplyLeading: false,
           ),
+          backgroundColor: BuyandByeAppTheme.white,
+          leading: IconButton(
+            icon:
+                Icon(Icons.arrow_back, color: BuyandByeAppTheme.orangeMiFonce),
+            onPressed: () {
+              Platform.isIOS
+                  ? showCupertinoDialog(
+                      context: context,
+                      builder: (context) => CupertinoAlertDialog(
+                        title: Text("Annuler ma commande"),
+                        content: Text(
+                            "Souhaitez-vous annuler votre commande et revenir à l'accueil ?"),
+                        actions: [
+                          // Close the dialog
+                          CupertinoButton(
+                              child: Text('Non'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              }),
+                          CupertinoButton(
+                            child: Text(
+                              'Oui',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      ),
+                    )
+                  : showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Annuler ma commande"),
+                        content: Text(
+                            "Souhaitez-vous annuler votre commande et revenir à l'accueil ?"),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("Non"),
+                            onPressed: () => Navigator.of(context).pop(false),
+                          ),
+                          TextButton(
+                            child: Text(
+                              'Oui',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+            },
+          ),
+          elevation: 0.0,
+          bottomOpacity: 0.0,
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -136,8 +211,9 @@ class _PageLivraisonState extends State<PageLivraison> {
                     ]),
                     SizedBox(height: 10),
                     Row(children: [
-                      FutureBuilder(
-                          future: DatabaseMethods().getCart(),
+                      FutureBuilder<dynamic>(
+                          future: DatabaseMethods()
+                              .getCartProducts(widget.idCommercant),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Expanded(
@@ -145,16 +221,12 @@ class _PageLivraisonState extends State<PageLivraison> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
-                                    itemCount: (snapshot.data! as QuerySnapshot)
-                                        .docs
-                                        .length,
+                                    itemCount: snapshot.data.docs.length,
                                     itemBuilder: (context, index) {
                                       var amount =
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["amount"];
-                                      var money =
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["prixProduit"];
+                                          snapshot.data.docs[index]["amount"];
+                                      var money = snapshot.data.docs[index]
+                                          ["prixProduit"];
                                       var allMoneyForProduct = money * amount;
                                       return Column(
                                         children: [
@@ -180,12 +252,11 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                           image: DecorationImage(
                                                               fit: BoxFit
                                                                   .scaleDown,
-                                                              image: NetworkImage(
-                                                                  (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "imgProduit"])),
+                                                              image: NetworkImage(snapshot
+                                                                          .data
+                                                                          .docs[
+                                                                      index][
+                                                                  "imgProduit"])),
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(
@@ -205,8 +276,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                       Container(
                                                         width: 100,
                                                         child: Text(
-                                                          (snapshot.data!
-                                                                      as QuerySnapshot)
+                                                          snapshot.data
                                                                   .docs[index]
                                                               ["nomProduit"],
                                                           style: TextStyle(
@@ -343,8 +413,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                         child: GoogleMap(
                           onMapCreated: _onMapCreated,
                           initialCameraPosition: CameraPosition(
-                              target: LatLng(latitude!, longitude!),
-                              zoom: 15.0),
+                              target: LatLng(latitude!, longitude!), zoom: 15.0),
                           markers: _markers,
                           myLocationButtonEnabled: false,
                           myLocationEnabled: true,
@@ -358,9 +427,9 @@ class _PageLivraisonState extends State<PageLivraison> {
                 title: Text("Retrait en magasin chez " + nomBoutique!),
                 value: "0",
                 groupValue: val,
-                onChanged: (dynamic v) => {
+                onChanged: (v) => {
                   setState(() {
-                    val = v;
+                    val = v as String?;
                     deliveryChoose = 0;
                     print(deliveryChoose);
                     userAddressChoose = adresseBoutique;
@@ -410,7 +479,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                               ),
                             ],
                           ),
-                          StreamBuilder<QuerySnapshot>(
+                          StreamBuilder<dynamic>(
                               stream: FirebaseFirestore.instance
                                   .collection("users")
                                   .doc(userid)
@@ -421,10 +490,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                   return ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
-                                      itemCount:
-                                          (snapshot.data!)
-                                              .docs
-                                              .length,
+                                      itemCount: snapshot.data.docs.length,
                                       itemBuilder: (context, index) {
                                         return Padding(
                                           padding:
@@ -459,7 +525,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                       child:
                                                                           Text(
                                                                         snapshot
-                                                                            .data!
+                                                                            .data
                                                                             .docs[index]["addressName"],
                                                                       ),
                                                                     ),
@@ -467,14 +533,14 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                         child:
                                                                             Row(
                                                                       children: [
-                                                                        Text(truncate(
-                                                                            (snapshot.data!).docs[index][
-                                                                                "address"],
-                                                                            25,
-                                                                            omission:
-                                                                                "...",
-                                                                            position:
-                                                                                TruncatePosition.end)),
+                                                                        Container(
+                                                                          width:
+                                                                              MediaQuery.of(context).size.width - 200,
+                                                                          child:
+                                                                              Text(
+                                                                            snapshot.data.docs[index]["address"],
+                                                                          ),
+                                                                        ),
                                                                         Row(
                                                                             children: [
                                                                               IconButton(
@@ -484,14 +550,14 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                                       context,
                                                                                       MaterialPageRoute(
                                                                                           builder: (context) => PageAddressEdit(
-                                                                                                adresse: (snapshot.data!).docs[index]["address"],
-                                                                                                adressTitle: (snapshot.data!).docs[index]["addressName"],
-                                                                                                buildingDetails: (snapshot.data!).docs[index]["buildingDetails"],
-                                                                                                buildingName: (snapshot.data!).docs[index]["buildingName"],
-                                                                                                familyName: (snapshot.data!).docs[index]["familyName"],
-                                                                                                lat: (snapshot.data!).docs[index]["latitude"],
-                                                                                                long: (snapshot.data!).docs[index]["longitude"],
-                                                                                                iD: (snapshot.data!).docs[index]["idDoc"],
+                                                                                                adresse: snapshot.data.docs[index]["address"],
+                                                                                                adressTitle: snapshot.data.docs[index]["addressName"],
+                                                                                                buildingDetails: snapshot.data.docs[index]["buildingDetails"],
+                                                                                                buildingName: snapshot.data.docs[index]["buildingName"],
+                                                                                                familyName: snapshot.data.docs[index]["familyName"],
+                                                                                                lat: snapshot.data.docs[index]["latitude"],
+                                                                                                long: snapshot.data.docs[index]["longitude"],
+                                                                                                iD: snapshot.data.docs[index]["idDoc"],
                                                                                               )));
                                                                                 },
                                                                               ),
@@ -504,22 +570,27 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                         ],
                                                       ),
                                                       value: snapshot
-                                                              .data!.docs[index]
+                                                              .data.docs[index]
                                                           ["addressName"],
                                                       groupValue: val,
-                                                      onChanged: (dynamic v) =>
-                                                          {
+                                                      onChanged: (dynamic v) => {
                                                         setState(() {
-                                                          val = v;
+                                                          val = v as String?;
 
                                                           userAddressChoose =
-                                                              (snapshot.data!)
-                                                                      .docs[index]
+                                                              snapshot.data
+                                                                          .docs[
+                                                                      index]
                                                                   ["address"];
+                                                          latitude = snapshot
+                                                                  .data
+                                                                  .docs[index]
+                                                              ["latitude"];
+                                                          longitude = snapshot
+                                                                  .data
+                                                                  .docs[index]
+                                                              ["longitude"];
                                                           deliveryChoose = 2;
-                                                          print(
-                                                              userAddressChoose);
-                                                          print(deliveryChoose);
                                                         })
                                                       },
                                                     ),
@@ -540,15 +611,33 @@ class _PageLivraisonState extends State<PageLivraison> {
                             onPressed: () {
                               payViaNewCard(context);
                             },
-                            color: BuyandByeAppTheme.orange,
+                            color: Colors.deepOrangeAccent,
                             height: 50,
                             minWidth: MediaQuery.of(context).size.width - 50,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              "PASSER AU PAIEMENT",
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                                borderRadius: BorderRadius.circular(24)),
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'PASSER AU PAIEMENT',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  // color: BuyandByeAppTheme.orangeMiFonce,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                children: [
+                                  WidgetSpan(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: Icon(
+                                        Icons.credit_card,
+                                        color: BuyandByeAppTheme.white,
+                                        size: 25,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -601,11 +690,93 @@ class _PageLivraisonState extends State<PageLivraison> {
     }
   }
 
+  dialogPaymentCancelled() {
+    Platform.isIOS
+        ? showCupertinoDialog(
+            context: context,
+            builder: (context) => CupertinoAlertDialog(
+              title: Text("Paiement Annulé !"),
+              content:
+                  Text("Le paiement a été annulé, souhaitez-vous réssayer ?"),
+              actions: [
+                // Close the dialog
+                CupertinoButton(
+                    child: Text('Non'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    }),
+                CupertinoButton(
+                  child: Text(
+                    'Oui',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    // await dialog.show();
+                    try {
+                      await stripe.Stripe.instance.presentPaymentSheet();
+                    } on Exception catch (e) {
+                      if (e is stripe.StripeException) {
+                        if (e.error.localizedMessage ==
+                            "The payment has been canceled") {
+                          dialogPaymentCancelled();
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Unforeseen error: $e'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                )
+              ],
+            ),
+          )
+        : showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("Paiement Annulé !"),
+              content: Text(
+                  "Souhaitez-vous annuler votre commande et revenir à l'accueil ?"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Non"),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: Text(
+                    'Oui',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    try {
+                      await stripe.Stripe.instance.presentPaymentSheet();
+                    } on Exception catch (e) {
+                      if (e is stripe.StripeException) {
+                        if (e.error.localizedMessage ==
+                            "The payment has been canceled") {
+                          dialogPaymentCancelled();
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Unforeseen error: $e'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+  }
+
   payViaNewCard(BuildContext context) async {
     print(deliveryChoose);
-    // ProgressDialog dialog = new ProgressDialog(context);
-    // dialog.style(message: 'Veuillez patienter...');
-    // await dialog.show();
     ProgressDialog dialog = ProgressDialog(context: context);
     dialog.show(
         max: 100,
@@ -627,13 +798,11 @@ class _PageLivraisonState extends State<PageLivraison> {
       }),
     );
     paymentIntentData = json.decode(response.body.toString());
-
+    
     try {
       await stripe.Stripe.instance.initPaymentSheet(
           paymentSheetParameters: platform.SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData!['paymentIntent'],
-              // setupIntentClientSecret: paymentIntentData['client_secret'],
-
               applePay: true,
               googlePay: true,
               customerId: widget.customerID,
@@ -655,36 +824,54 @@ class _PageLivraisonState extends State<PageLivraison> {
     try {
       // 3. display the payment sheet.
       await stripe.Stripe.instance.presentPaymentSheet();
-
+      
       DatabaseMethods().acceptPayment(widget.idCommercant, deliveryChoose,
           widget.total, userAddressChoose, idCommand);
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-            SnackBar(
-              content: Text('Paiement Réussi !'),
-            ),
-          )
-          .closed
-          .then((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PageResume(
-              idCommand: idCommand,
-              sellerID: widget.idCommercant,
-              userId: userid,
-              latitude: latitude,
-              longitude: longitude,
-              nomBoutique: nomBoutique,
-              addressSeller: adresseBoutique,
-              userAddressChoose: userAddressChoose,
-            ),
+      final smtpServer = SmtpServer(
+        "mail.buyandbye.fr",
+        username: "no-reply@buyandbye.fr",
+        password: "0Wz7Bg&n(}-lOjn3NJ",
+      );
+
+      final message = Message()
+        ..from = Address("no-reply@buyandbye.fr", 'Buy&Bye')
+        ..recipients.add(widget.email)
+        ..subject = 'Résumé de votre commande du ${DateTime.now()}'
+        ..html = "<h1>Résumé</h1>\n<p>Hey! Here's some HTML content</p>";
+
+      try {
+        final sendReport = await send(message, smtpServer);
+        print('Message sent: ' + sendReport.toString());
+      } on MailerException catch (e) {
+        print('Message not sent.');
+        for (var p in e.problems) {
+          print('Problem: ${p.code}: ${p.msg}');
+        }
+      }
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PageResume(
+            deliveryChoose: deliveryChoose,
+            idCommand: idCommand,
+            sellerID: widget.idCommercant,
+            userId: userid,
+            latitude: latitude,
+            longitude: longitude,
+            nomBoutique: nomBoutique,
+            addressSeller: adresseBoutique,
+            userAddressChoose: userAddressChoose,
           ),
-        );
-      });
+        ),
+      );
     } on Exception catch (e) {
       if (e is stripe.StripeException) {
+        if (e.error.localizedMessage == "The payment has been canceled") {
+          dialogPaymentCancelled();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error from Stripe: ${e.error.localizedMessage}'),
@@ -699,7 +886,6 @@ class _PageLivraisonState extends State<PageLivraison> {
       }
     }
 
-    dialog.close();
     // ScaffoldMessenger.of(context)
     //     .showSnackBar(SnackBar(
     //       content: Text("response"),
@@ -726,7 +912,8 @@ class _PageLivraisonState extends State<PageLivraison> {
 //////////////////////////////////////////////////////////////////////
 
 class MapStyle {
-  static String mapStyle = ''' [
+  static String mapStyle =
+      ''' [
   {
     "elementType": "geometry",
     "stylers": [

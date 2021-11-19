@@ -139,7 +139,7 @@ class _ChatRoomState extends State<ChatRoom>
               backgroundColor: BuyandByeAppTheme.black_electrik,
               centerTitle: true,
             ),
-            body: StreamBuilder<QuerySnapshot>(
+            body: StreamBuilder<dynamic>(
                 stream: FirebaseFirestore.instance
                     .collection('chatrooms')
                     .doc(widget.chatID)
@@ -158,12 +158,11 @@ class _ChatRoomState extends State<ChatRoom>
                                     ScrollViewKeyboardDismissBehavior.onDrag,
                                 reverse: true,
                                 shrinkWrap: true,
-                                //padding: const EdgeInsets.fromLTRB(4.0, 10, 4, 1),
                                 controller: _chatListController,
                                 children: addInstructionInSnapshot(
-                                        snapshot.data!.docs)
+                                        snapshot.data.docs)
                                     .map(_returnChatWidget)
-                                    .toList() as List<Widget>),
+                                    .toList()),
                           ),
                           _buildTextComposer(),
                         ],
@@ -177,8 +176,8 @@ class _ChatRoomState extends State<ChatRoom>
     );
   }
 
-  Widget? _returnChatWidget(dynamic data) {
-    Widget? _returnWidget;
+  Widget _returnChatWidget(dynamic data) {
+    Widget returnWidget = Container();
 
     if (data is QueryDocumentSnapshot) {
       if (data['idTo'] == widget.myID && data['isread'] == false) {
@@ -188,7 +187,7 @@ class _ChatRoomState extends State<ChatRoom>
         });
       }
 
-      _returnWidget = data['idFrom'] == widget.selectedUserID
+      returnWidget = data['idFrom'] == widget.selectedUserID
           ? peerUserListTile(
               context,
               widget.selectedUserFname! + widget.selectedUserLname!,
@@ -199,9 +198,9 @@ class _ChatRoomState extends State<ChatRoom>
           : mineListTile(context, data['content'],
               returnTimeStamp(data['timestamp']), data['isread'], data['type']);
     } else if (data is String) {
-      _returnWidget = stringListTile(data);
+      returnWidget = stringListTile(data);
     }
-    return _returnWidget;
+    return returnWidget;
   }
 
   Widget _buildTextComposer() {

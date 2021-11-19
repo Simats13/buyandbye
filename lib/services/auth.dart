@@ -63,52 +63,52 @@ class AuthMethods {
       bool docExists = await (DatabaseMethods()
           .checkIfDocExists(userDetails.uid) as FutureOr<bool>);
 
-        if (docExists == false) {
-          Map<String, dynamic> userInfoMap = {
-            "id": userDetails.uid,
-            "email": userDetails.email,
-            "fname": userDetails.displayName!.split(" ")[0],
-            "lname": userDetails.displayName!.split(" ")[1],
-            "imgUrl": userDetails.photoURL,
-            "customerId": paymentIntentData!["id"],
-            "firstConnection": true,
-            "providers": {
-              'Google': true, //GOOGLE
-              'Facebook': false, //FACEBOOK
-              'Apple': false, //APPLE
-              'Mail': false, // MAIL
-            },
-            "admin": false,
-            "emailVerified": true,
-            "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-                vapidKey:
-                    "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-            "phone": ""
-          };
-          DatabaseMethods().addInfoToDB("users", userDetails.uid, userInfoMap);
+      if (docExists == false) {
+        Map<String, dynamic> userInfoMap = {
+          "id": userDetails.uid,
+          "email": userDetails.email,
+          "fname": userDetails.displayName!.split(" ")[0],
+          "lname": userDetails.displayName!.split(" ")[1],
+          "imgUrl": userDetails.photoURL,
+          "customerId": paymentIntentData!["id"],
+          "firstConnection": true,
+          "providers": {
+            'Google': true, //GOOGLE
+            'Facebook': false, //FACEBOOK
+            'Apple': false, //APPLE
+            'Mail': false, // MAIL
+          },
+          "admin": false,
+          "emailVerified": true,
+          "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+              vapidKey:
+                  "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+          "phone": ""
+        };
+        DatabaseMethods().addInfoToDB("users", userDetails.uid, userInfoMap);
 
-          updateStripeInfo(paymentIntentData!["id"], userDetails.email,
-              userDetails.displayName);
+        updateStripeInfo(paymentIntentData!["id"], userDetails.email,
+            userDetails.displayName);
+
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => MyApp()));
+      } else {
+        //Verifie si l'adresse mail a été vérifiée
+        bool checkEmail = await (AuthMethods.instance.checkEmailVerification()
+            as FutureOr<bool>);
+
+        if (checkEmail) {
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(userDetails.uid)
+              .update({
+            "providers.Google": true, //Facebook
+          });
 
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => MyApp()));
-        } else {
-          //Verifie si l'adresse mail a été vérifiée
-          bool checkEmail = await (AuthMethods.instance.checkEmailVerification()
-              as FutureOr<bool>);
-
-          if (checkEmail) {
-            FirebaseFirestore.instance
-                .collection("users")
-                .doc(userDetails.uid)
-                .update({
-              "providers.Google": true, //Facebook
-            });
-
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => MyApp()));
-          }
         }
+      }
 
       return userCredential.user!.displayName;
     } on FirebaseAuthException catch (e) {
@@ -162,50 +162,50 @@ class AuthMethods {
           var response = await http.post(Uri.parse(url), headers: headers);
           paymentIntentData = json.decode(response.body);
 
-            if (docExists == false) {
-              Map<String, dynamic> userInfoMap = {
-                "id": userDetails.uid,
-                "email": userDetails.email,
-                "fname": userDetails.displayName!.split(" ")[0],
-                "lname": userDetails.displayName!.split(" ")[1],
-                "imgUrl": userDetails.photoURL,
-                "customerId": paymentIntentData!["id"],
-                "firstConnection": true,
-                "providers": {
-                  'Google': false, //GOOGLE
-                  'Facebook': true, //FACEBOOK
-                  'Apple': false, //APPLE
-                  'Mail': false, // MAIL
-                },
-                "admin": false,
-                "emailVerified": false,
-                "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-                    vapidKey:
-                        "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-                "phone": ""
-              };
-              DatabaseMethods()
-                  .addInfoToDB("users", userDetails.uid, userInfoMap);
-              updateStripeInfo(paymentIntentData!["id"], userDetails.email,
-                  userDetails.displayName);
-              //Envoie un mail de confirmation d'adresse mail
-              sendEmailVerification();
-            } else {
-              //Verifie si l'adresse mail a été vérifiée
-              bool checkEmail = await (AuthMethods.instance
-                  .checkEmailVerification() as FutureOr<bool>);
+          if (docExists == false) {
+            Map<String, dynamic> userInfoMap = {
+              "id": userDetails.uid,
+              "email": userDetails.email,
+              "fname": userDetails.displayName!.split(" ")[0],
+              "lname": userDetails.displayName!.split(" ")[1],
+              "imgUrl": userDetails.photoURL,
+              "customerId": paymentIntentData!["id"],
+              "firstConnection": true,
+              "providers": {
+                'Google': false, //GOOGLE
+                'Facebook': true, //FACEBOOK
+                'Apple': false, //APPLE
+                'Mail': false, // MAIL
+              },
+              "admin": false,
+              "emailVerified": false,
+              "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+                  vapidKey:
+                      "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+              "phone": ""
+            };
+            DatabaseMethods()
+                .addInfoToDB("users", userDetails.uid, userInfoMap);
+            updateStripeInfo(paymentIntentData!["id"], userDetails.email,
+                userDetails.displayName);
+            //Envoie un mail de confirmation d'adresse mail
+            sendEmailVerification();
+          } else {
+            //Verifie si l'adresse mail a été vérifiée
+            bool checkEmail = await (AuthMethods.instance
+                .checkEmailVerification() as FutureOr<bool>);
 
-              if (checkEmail) {
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(userDetails.uid)
-                    .update({
-                  "providers.Facebook": true, //Facebook
-                });
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => MyApp()));
-              }
+            if (checkEmail) {
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDetails.uid)
+                  .update({
+                "providers.Facebook": true, //Facebook
+              });
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => MyApp()));
             }
+          }
 
           return userCredential.user!.displayName;
 
@@ -333,9 +333,9 @@ class AuthMethods {
   // Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
   // Sinon il renvoie false
   Future checkEmailVerification() async {
-    User? user = await AuthMethods().getCurrentUser();
+    User user = await AuthMethods().getCurrentUser();
 
-    if (user!.emailVerified) {
+    if (user.emailVerified) {
       FirebaseFirestore.instance.collection("users").doc(user.uid).update({
         "emailVerified": true,
       });

@@ -634,14 +634,55 @@ class DatabaseMethods {
     });
   }
 
-  Future addItem(String? idProduit, int? amount) async {
+    Future deleteCartProduct(String nomProduit, sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    return await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
-        .doc(idProduit)
+        .doc(sellerID)
+        .collection('products')
+        .doc(nomProduit)
+        .delete();
+    bool checkEmpty = await DatabaseMethods().checkCartProductEmpty(sellerID);
+
+    if (checkEmpty == true) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userid)
+          .collection('cart')
+          .doc(sellerID)
+          .delete();
+    }
+  }
+
+    Future checkCartProductEmpty(sellerID) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("cart")
+        .doc(sellerID)
+        .collection('products')
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future addItem(String? userID, sellerID, productID, int? amount) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .collection('cart')
+        .doc(sellerID)
+        .collection('products')
+        .doc(productID)
         .update({"amount": amount});
   }
 
@@ -667,15 +708,31 @@ class DatabaseMethods {
         .get();
   }
 
-  Future allCartMoney() async {
+  Future allCartMoney(String? idCommercant) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
         .collection('cart')
+        .doc(idCommercant)
+        .collection('products')
         .where("prixProduit")
         .get();
+  }
+
+    Future<QuerySnapshot> getCartProducts(String? sellerID) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("cart")
+        .doc(sellerID)
+        .collection('products')
+        .get();
+
+    return querySnapshot;
   }
 
   Future acceptPayment(String? idCommercant, double deliveryChoose,

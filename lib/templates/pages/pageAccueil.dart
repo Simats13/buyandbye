@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
+import 'package:buyandbye/templates/widgets/slider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +15,6 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Pages/cart.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
@@ -144,22 +145,32 @@ class _PageAccueilState extends State<PageAccueil> {
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot =
-        await (DatabaseMethods().getChosenAddress(userid) /*as Future<QuerySnapshot<Object>>*/);
-    latitude =
-        double.parse("${querySnapshot.docs[0]['latitude']}");
+    QuerySnapshot querySnapshot = await (DatabaseMethods()
+        .getChosenAddress(userid) /*as Future<QuerySnapshot<Object>>*/);
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
 
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
-    _currentAddressLocation =
-        "${first.name}, ${first.locality}";
+    _currentAddressLocation = "${first.name}, ${first.locality}";
     idAddress = "${querySnapshot.docs[0]['idDoc']}";
     _city = "${first.locality}";
     // chargementChecked = true;
     setState(() {});
+  }
+
+  double _sliderSize = 20.0;
+  void showCartSlider() async {
+    final dialog = await showDialog(
+        context: context, builder: (context) => PopupSlider(_sliderSize));
+
+    if (dialog != null) {
+      setState(() {
+        _sliderSize = dialog;
+      });
+    }
   }
 
   Widget getBody() {
@@ -259,12 +270,10 @@ class _PageAccueilState extends State<PageAccueil> {
                                     right: 6,
                                   ),
                                   child: IconButton(
-                                    icon: Container(
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.shopping_cart,
-                                          // size: 22,
-                                        ),
+                                    icon: Center(
+                                      child: Icon(
+                                        Icons.shopping_cart,
+                                        // size: 22,
                                       ),
                                     ),
                                     onPressed: () {
@@ -277,11 +286,9 @@ class _PageAccueilState extends State<PageAccueil> {
                         SizedBox(
                           height: 15,
                         ),
-
                         SizedBox(
                           height: 15,
                         ),
-
                         Padding(
                           padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                           child: Text(
@@ -532,8 +539,38 @@ class _PageAccueilState extends State<PageAccueil> {
     );
   }
 
+  // void affichageCart() {
+  //   slideDialog.showSlideDialog(context: context, child: CartPage());
+  // }
+
   void affichageCart() {
-    slideDialog.showSlideDialog(context: context, child: CartPage());
+    showGeneralDialog(
+      barrierLabel: "Label",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
+      context: context,
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
+            child: CartPage(),
+            // child: Container(
+            //     decoration: BoxDecoration(color: Colors.blue),
+            //     child: Text("teeeeest")),
+            margin: EdgeInsets.only(left: 12, right: 12),
+          ),
+        );
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return SlideTransition(
+          position:
+              Tween(begin: Offset(0, 0), end: Offset(0, 0)).animate(anim1),
+          child: child,
+        );
+      },
+    );
   }
 
   void affichageAllStores() {
@@ -786,9 +823,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             children: [
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
-                                              _currentAddress != null
-                                                  ? Text(_currentAddress)
-                                                  : CircularProgressIndicator(),
+                                              Text(_currentAddress)
                                             ]),
                                       ],
                                     ),
@@ -994,45 +1029,58 @@ class _PageAccueilState extends State<PageAccueil> {
                           );
                         }
                         if (snapshot.hasData) {
-                          if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
+                          if ((snapshot.data! as QuerySnapshot).docs.length >
+                              0) {
                             return ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: (snapshot.data! as QuerySnapshot).docs.length,
+                                itemCount: (snapshot.data! as QuerySnapshot)
+                                    .docs
+                                    .length,
                                 itemBuilder: (context, index) {
                                   return Row(
                                     children: [
                                       InkWell(
                                         onTap: () async {
                                           List<geocoder.Placemark> addresses =
-                                              await geocoder
-                                                  .placemarkFromCoordinates(
-                                                      (snapshot.data! as QuerySnapshot).docs[index]
-                                                          ["latitude"],
-                                                      (snapshot.data! as QuerySnapshot).docs[index]
-                                                          ["longitude"]);
+                                              await geocoder.placemarkFromCoordinates(
+                                                  (snapshot.data!
+                                                          as QuerySnapshot)
+                                                      .docs[index]["latitude"],
+                                                  (snapshot.data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]
+                                                      ["longitude"]);
                                           var first = addresses.first;
 
                                           await DatabaseMethods()
                                               .changeChosenAddress(
                                                   userid,
-                                                  (snapshot.data! as QuerySnapshot).docs[index]
-                                                      ["idDoc"],
+                                                  (snapshot.data!
+                                                          as QuerySnapshot)
+                                                      .docs[index]["idDoc"],
                                                   idAddress);
                                           setState(() {
                                             _city = first.locality!;
-                                            idAddress = (snapshot.data! as QuerySnapshot).docs[index]["idDoc"];
-                                            latitude = (snapshot.data! as QuerySnapshot).docs[index]
-                                                ["latitude"];
-                                            longitude = (snapshot.data! as QuerySnapshot).docs[index]["longitude"];
+                                            idAddress = (snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["idDoc"];
+                                            latitude = (snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["latitude"];
+                                            longitude = (snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["longitude"];
                                             _currentAddressLocation =
                                                 "${first.name! + ", " + first.locality!}";
 
                                             geo = Geoflutterfire();
                                             GeoFirePoint center = geo.point(
-                                                latitude: (snapshot.data! as QuerySnapshot)
+                                                latitude: (snapshot.data!
+                                                        as QuerySnapshot)
                                                     .docs[index]["latitude"],
-                                                longitude: (snapshot.data! as QuerySnapshot)
+                                                longitude: (snapshot.data!
+                                                        as QuerySnapshot)
                                                     .docs[index]["longitude"]);
                                             stream = radius.switchMap((rad) {
                                               var collectionReference =
@@ -1055,16 +1103,16 @@ class _PageAccueilState extends State<PageAccueil> {
 
                                           await _preferences.setDouble(
                                               _keyLatitude,
-                                              (snapshot.data! as QuerySnapshot).docs[index]
-                                                  ["latitude"]);
+                                              (snapshot.data! as QuerySnapshot)
+                                                  .docs[index]["latitude"]);
 
                                           await _preferences.setString(
                                               _keyCity, _city);
 
                                           await _preferences.setDouble(
                                               _keyLongitude,
-                                              (snapshot.data! as QuerySnapshot).docs[index]
-                                                  ["longitude"]);
+                                              (snapshot.data! as QuerySnapshot)
+                                                  .docs[index]["longitude"]);
 
                                           await _preferences.setString(
                                               _keyAddress,
@@ -1077,11 +1125,13 @@ class _PageAccueilState extends State<PageAccueil> {
                                               .saveUserCity(_city);
 
                                           SharedPreferenceHelper()
-                                              .saveUserLatitude((snapshot.data! as QuerySnapshot)
+                                              .saveUserLatitude((snapshot.data!
+                                                      as QuerySnapshot)
                                                   .docs[index]["latitude"]);
 
                                           SharedPreferenceHelper()
-                                              .saveUserLongitude((snapshot.data! as QuerySnapshot)
+                                              .saveUserLongitude((snapshot.data!
+                                                      as QuerySnapshot)
                                                   .docs[index]["longitude"]);
 
                                           Navigator.of(context).pop();
@@ -1113,7 +1163,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                                   SizedBox(height: 30),
                                                   Container(
                                                     child: Text(
-                                                      (snapshot.data! as QuerySnapshot).docs[index]
+                                                      (snapshot.data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
                                                           ["addressName"],
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -1126,8 +1178,10 @@ class _PageAccueilState extends State<PageAccueil> {
                                                                   .size
                                                                   .width -
                                                               120,
-                                                      child: Text((snapshot.data! as QuerySnapshot).docs[index]
-                                                          ["address"]),
+                                                      child: Text((snapshot
+                                                                  .data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]["address"]),
                                                     ),
                                                   ),
                                                   SizedBox(height: 30),
@@ -1144,35 +1198,42 @@ class _PageAccueilState extends State<PageAccueil> {
                                                         MaterialPageRoute(
                                                             builder: (context) =>
                                                                 PageAddressEdit(
-                                                                  adresse: (snapshot.data! as QuerySnapshot)
+                                                                  adresse: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "address"],
-                                                                  adressTitle: (snapshot.data! as QuerySnapshot)
+                                                                  adressTitle: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "addressName"],
-                                                                  buildingDetails: (snapshot.data! as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "buildingDetails"],
-                                                                  buildingName: (snapshot.data! as QuerySnapshot)
+                                                                  buildingDetails:
+                                                                      (snapshot.data!
+                                                                              as QuerySnapshot)
+                                                                          .docs[index]["buildingDetails"],
+                                                                  buildingName: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "buildingName"],
-                                                                  familyName: (snapshot.data! as QuerySnapshot)
+                                                                  familyName: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "familyName"],
-                                                                  lat: (snapshot.data! as QuerySnapshot)
+                                                                  lat: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "latitude"],
-                                                                  long: (snapshot.data! as QuerySnapshot)
+                                                                  long: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "longitude"],
-                                                                  iD: (snapshot.data! as QuerySnapshot)
+                                                                  iD: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       ["idDoc"],
                                                                 )));
@@ -1308,7 +1369,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
           // final documents = (snapshot.data! as QuerySnapshot)..shuffle();
-          if (snapshot.data!().length > 0) {
+          if (snapshot.data!.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1316,19 +1377,19 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                 primary: false,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data!().length,
+                itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: SlideItem(
-                      img: snapshot.data!()[index]["imgUrl"],
-                      name: snapshot.data!()[index]["name"],
-                      address: snapshot.data!()[index]["adresse"],
-                      description: snapshot.data!()[index]["description"],
-                      livraison: snapshot.data!()[index]["livraison"],
-                      sellerID: snapshot.data!()[index]["id"],
-                      colorStore: snapshot.data!()[index]["colorStore"],
-                      clickAndCollect: snapshot.data!()[index]["ClickAndCollect"],
+                      img: snapshot.data[index]["imgUrl"],
+                      name: snapshot.data[index]["name"],
+                      address: snapshot.data[index]["adresse"],
+                      description: snapshot.data[index]["description"],
+                      livraison: snapshot.data[index]["livraison"],
+                      sellerID: snapshot.data[index]["id"],
+                      colorStore: snapshot.data[index]["colorStore"],
+                      clickAndCollect: snapshot.data[index]["ClickAndCollect"],
                     ),
                   );
                 },
@@ -1566,7 +1627,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
           // final documents = (snapshot.data! as QuerySnapshot)..shuffle();
-          if (snapshot.data!.legth > 0) {
+          if (snapshot.data!.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1732,7 +1793,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                     padding:
                                         EdgeInsets.only(bottom: 10, top: 40),
                                     child: Text(
-                                        snapshot.data!()[carouselItem]["name"],
+                                        snapshot.data[carouselItem]["name"],
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w700))),
@@ -1970,21 +2031,21 @@ class _AllStoresState extends State<AllStores> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: Image.network(
-                                snapshot.data!()[index]["imgUrl"],
+                                snapshot.data[index]["imgUrl"],
                                 fit: BoxFit.cover,
                               ),
                             ),
                             SizedBox(
                               height: 15,
                             ),
-                            Text(snapshot.data!()[index]['name'],
+                            Text(snapshot.data[index]['name'],
                                 style: TextStyle(
                                   fontSize: 20,
                                 )),
                             SizedBox(
                               height: 5,
                             ),
-                            Text(snapshot.data!()[index]['description'],
+                            Text(snapshot.data[index]['description'],
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w500)),

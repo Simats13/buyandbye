@@ -65,10 +65,13 @@ class _UserHistoryState extends State<UserHistory> {
                     ? ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: (snapshot.data! as QuerySnapshot).docs.length,
+                        itemCount:
+                            (snapshot.data! as QuerySnapshot).docs.length,
                         itemBuilder: (context, index) {
-                          String? shopId = (snapshot.data! as QuerySnapshot).docs[index]["shopID"];
-                          String? commandId = (snapshot.data! as QuerySnapshot).docs[index]["id"];
+                          String? shopId = (snapshot.data! as QuerySnapshot)
+                              .docs[index]["shopID"];
+                          String? commandId = (snapshot.data! as QuerySnapshot)
+                              .docs[index]["id"];
                           // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
                           return UserCommand(shopId, commandId, userid);
                         },
@@ -144,11 +147,12 @@ class _UserCommandState extends State<UserCommand> {
           //   );
           // }
           if (snapshot.hasData) {
-            int? statut = snapshot.data!()["statut"];
+            Map data = snapshot.data!.data() as Map;
+            //int? statut = snapshot.data!.data()["statut"];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(formatTimestamp(snapshot.data!()["horodatage"]),
+                Text(formatTimestamp(snapshot.data["horodatage"]),
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 SizedBox(
@@ -163,12 +167,12 @@ class _UserCommandState extends State<UserCommand> {
                         builder: (context) => HistoryDetails(
                             widget.userid,
                             widget.commandId,
-                            statut,
-                            snapshot.data!()["horodatage"],
+                            data['statut'],
+                            snapshot.data["horodatage"],
                             widget.shopId,
-                            snapshot.data!()["prix"],
-                            snapshot.data!()["livraison"],
-                            snapshot.data!()["adresse"]),
+                            snapshot.data["prix"],
+                            snapshot.data["livraison"],
+                            snapshot.data["adresse"]),
                       ),
                     );
                   },
@@ -202,19 +206,20 @@ class _UserCommandState extends State<UserCommand> {
                                     height: 20,
                                   ),
                                   // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
-                                  snapshot.data!()["articles"] == 1
-                                      ? Text(
-                                          snapshot.data!()["articles"].toString() +
-                                              " article")
-                                      : Text(
-                                          snapshot.data!()["articles"].toString() +
-                                              " articles"),
+                                  snapshot.data["articles"] == 1
+                                      ? Text(snapshot.data["articles"]
+                                              .toString() +
+                                          " article")
+                                      : Text(snapshot.data["articles"]
+                                              .toString() +
+                                          " articles"),
                                 ],
                               ),
                               Column(
                                 children: [
                                   Text(
-                                    snapshot.data!()["prix"].toStringAsFixed(2) +
+                                    snapshot.data["prix"]
+                                            .toStringAsFixed(2) +
                                         "€",
                                     style: TextStyle(
                                         fontSize: 14,
@@ -225,9 +230,9 @@ class _UserCommandState extends State<UserCommand> {
                             ],
                           ),
                           Center(
-                              child: Text(statut == 0
+                              child: Text(data['statut'] == 0
                                   ? "Statut : En attente"
-                                  : statut == 1
+                                  : data['statut'] == 1
                                       ? "Statut : En cours"
                                       : "Statut : Terminé")),
                         ],

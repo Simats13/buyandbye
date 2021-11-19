@@ -85,11 +85,13 @@ dependencies:
   flip_card: ^0.6.0
   stripe_platform_interface:
   geocoding:
+  sliding_up_panel: ^2.0.0+1
   slide_popup_dialog:
     git:
       url: git://github.com/kw2019ltd/slide_popup_dialog.git
       ref: master
   crypto: ^3.0.1
+  mailer: ^5.0.2
 
 flutter_native_splash:
   #color: "#42a5f5"

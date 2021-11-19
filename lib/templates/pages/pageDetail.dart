@@ -12,6 +12,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
+//import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'dart:async';
 
@@ -351,7 +352,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                       myID!, //ID DE L'UTILISATEUR
                                       myName!, // NOM DE L'UTILISATEUR
                                       selectedUserToken!,
-                                      widget.sellerID!, // TOKEN DU CORRESPONDANT
+                                      widget
+                                          .sellerID!, // TOKEN DU CORRESPONDANT
                                       widget.sellerID! + myID!, //ID DE LA CONV
                                       widget.name!, // NOM DU CORRESPONDANT
                                       "", // LES COMMERCANTS N'ONT PAS DE LNAME
@@ -586,7 +588,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        for (String? name in listOfCategories as Iterable<String?>)
+                        for (String? name in listOfCategories)
                           Padding(
                             padding: const EdgeInsets.only(
                               right: 15,
@@ -946,20 +948,26 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   crossAxisSpacing: 20),
               itemCount: (snapshot.data! as QuerySnapshot).docs.length,
               itemBuilder: (context, index) {
-                var money = (snapshot.data! as QuerySnapshot).docs[index]['prix'];
+                var money =
+                    (snapshot.data! as QuerySnapshot).docs[index]['prix'];
                 return GestureDetector(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => PageProduit(
-                                    imagesList: (snapshot.data! as QuerySnapshot).docs[index]
-                                        ['images'],
-                                    nomProduit: (snapshot.data! as QuerySnapshot).docs[index]
-                                        ['nom'],
-                                    descriptionProduit: (snapshot.data! as QuerySnapshot).docs[index]['description'],
-                                    prixProduit: (snapshot.data! as QuerySnapshot).docs[index]
-                                        ['prix'],
+                                    imagesList:
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]['images'],
+                                    nomProduit:
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]['nom'],
+                                    descriptionProduit:
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]['description'],
+                                    prixProduit:
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]['prix'],
                                     img: widget.img,
                                     name: widget.name,
                                     description: widget.description,
@@ -967,7 +975,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     clickAndCollect: widget.clickAndCollect,
                                     livraison: widget.livraison,
                                     idCommercant: widget.sellerID,
-                                    idProduit: (snapshot.data! as QuerySnapshot).docs[index]['id'],
+                                    idProduit: (snapshot.data! as QuerySnapshot)
+                                        .docs[index]['id'],
                                   )));
                     },
                     child: Container(
@@ -979,12 +988,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.network(
-                              (snapshot.data! as QuerySnapshot).docs[index]["images"][0],
+                              (snapshot.data! as QuerySnapshot).docs[index]
+                                  ["images"][0],
                               width: MediaQuery.of(context).size.width,
                               height: 100,
                             ),
                             SizedBox(height: 5),
-                            Text((snapshot.data! as QuerySnapshot).docs[index]['nom'],
+                            Text(
+                                (snapshot.data! as QuerySnapshot).docs[index]
+                                    ['nom'],
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: BuyandByeAppTheme.grey)),

@@ -397,7 +397,7 @@ class _FormulaireState extends State<Formulaire> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
             SizedBox(height: 10),
             MyTextFormField(
-              validator: (String? value) {
+              validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Veuillez écrire un message';
                 }
@@ -517,7 +517,7 @@ class _Formulaire2State extends State<Formulaire2> {
                 }
                 return null;
               },
-              onSaved: (String value) {
+              onSaved: (value) {
                 problem = value;
               },
             ),
