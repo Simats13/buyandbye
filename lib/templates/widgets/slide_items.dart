@@ -88,77 +88,19 @@ class _SlideItemState extends State<SlideItem> {
                       Positioned(
                         top: 6.0,
                         right: 6.0,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Container(
+                        child: Container(
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.8),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsets.all(5),
+                                  padding: EdgeInsets.all(2),
                                   child: Row(
                                     children: [
-                                      Text(
-                                        "Click and Collect",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      Icon(
-                                        widget.clickAndCollect
-                                            ? Icons.check_circle
-                                            : Icons.highlight_off,
-                                        color: widget.clickAndCollect
-                                            ? Colors.green
-                                            : Colors.red,
-                                        size: 17,
-                                      ),
+                                      Icon(Icons.sell_outlined),
+                                      Text("-50%",style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                                     ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "Livraison",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      Icon(
-                                        widget.livraison
-                                            ? Icons.check_circle
-                                            : Icons.highlight_off,
-                                        color: widget.livraison
-                                            ? Colors.green
-                                            : Colors.red,
-                                        size: 17,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ),
+                                  )))),
                       Positioned(
                         top: 6.0,
                         left: 6.0,
@@ -185,13 +127,59 @@ class _SlideItemState extends State<SlideItem> {
                     padding: EdgeInsets.only(left: 15.0),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      child: Text(
-                        "${widget.name}",
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        textAlign: TextAlign.left,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${widget.name}",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          Row(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.screen_search_desktop_outlined),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    widget.clickAndCollect
+                                        ? Icons.check_circle
+                                        : Icons.highlight_off,
+                                    color: widget.clickAndCollect
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.delivery_dining),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    widget.livraison
+                                        ? Icons.check_circle
+                                        : Icons.highlight_off,
+                                    color: widget.livraison
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -203,15 +191,16 @@ class _SlideItemState extends State<SlideItem> {
                         child: Row(
                           children: [
                             for (String categorie in widget.mainCategorie)
-                            Card(
-                              shadowColor: Colors.grey.withOpacity(0.2),
-                              color: Colors.grey.withOpacity(0.2),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.0)),
-                          child:Padding(
-                            padding: const EdgeInsets.all(3.0),
-                            child: Text(" $categorie "),
-                          ),)
+                              Card(
+                                shadowColor: Colors.grey.withOpacity(0.2),
+                                color: Colors.grey.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: Text(" $categorie "),
+                                ),
+                              )
                           ],
                         )),
                   ),
