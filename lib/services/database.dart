@@ -262,6 +262,18 @@ class DatabaseMethods {
     return query;
   }
 
+  Stream getBestSeller(String sellerId, String categorie,) {
+    Stream query = FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(sellerId)
+        .collection("produits")
+        .where("visible", isEqualTo: true)
+        .where("nbSell", isGreaterThan: 0)
+        .limit(6)
+        .snapshots();
+    return query;
+  }
+
   Stream getOneProduct(sellerId, productId) {
     return FirebaseFirestore.instance
         .collection("magasins")

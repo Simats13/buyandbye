@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:buyandbye/templates/pages/cart.dart';
+import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -794,7 +795,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         children: [
                           ////////// Design uniquement //////////
 
-                         
                           Text(
                             "Recommandations du commerçant",
                             style: TextStyle(
@@ -864,7 +864,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           //                     : Colors.grey))
                           //     ]),
                           ////////// Design uniquement //////////
-                           SizedBox(height: 30),
+                          SizedBox(height: 30),
                           Text(
                             "Meilleures ventes",
                             style: TextStyle(
@@ -872,52 +872,54 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+
                           SizedBox(height: 30),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 25),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
+                          bestSeller(dropdownValue),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          //   children: [
+                          //     Container(
+                          //       height: 160,
+                          //       width: 160,
+                          //       decoration: BoxDecoration(
+                          //           color: BuyandByeAppTheme.white_grey,
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       child: Center(child: Text("Design uniquement")),
+                          //     ),
+                          //     SizedBox(width: 15),
+                          //     Container(
+                          //       height: 160,
+                          //       width: 160,
+                          //       decoration: BoxDecoration(
+                          //           color: BuyandByeAppTheme.white_grey,
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       child: Center(child: Text("Design uniquement")),
+                          //     ),
+                          //   ],
+                          // ),
+                          // SizedBox(height: 25),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          //   children: [
+                          //     Container(
+                          //       height: 160,
+                          //       width: 160,
+                          //       decoration: BoxDecoration(
+                          //           color: BuyandByeAppTheme.white_grey,
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       child: Center(child: Text("Design uniquement")),
+                          //     ),
+                          //     SizedBox(width: 15),
+                          //     Container(
+                          //       height: 160,
+                          //       width: 160,
+                          //       decoration: BoxDecoration(
+                          //           color: BuyandByeAppTheme.white_grey,
+                          //           borderRadius: BorderRadius.circular(10)),
+                          //       child: Center(child: Text("Design uniquement")),
+                          //     ),
+                          //   ],
+                          // ),
                           SizedBox(height: 20),
 
                           Text(
@@ -1046,6 +1048,89 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         )));
               });
         });
+  }
+
+  Widget bestSeller(categorie) {
+    return StreamBuilder(
+      stream: DatabaseMethods().getBestSeller(widget.sellerID, categorie),
+      builder: (context, snapshot) {
+          // if (snapshot.connectionState == ConnectionState.waiting) {
+          //     return Center(
+          //       child: ColorLoader3(
+          //         radius: 15.0,
+          //         dotRadius: 6.0,
+          //       ),
+          //     );
+          //   }
+        if (!snapshot.hasData) return CircularProgressIndicator();
+        return GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200,
+              childAspectRatio: 1,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 20),
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (context, index) {
+            // print(snapshot.data.docs[index]);
+            var money = snapshot.data.docs[index]['prix'];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PageProduit(
+                              userid: userid,
+                              imagesList: snapshot.data.docs[index]['images'],
+                              nomProduit: snapshot.data.docs[index]['nom'],
+                              descriptionProduit: snapshot.data.docs[index]
+                                  ['description'],
+                              prixProduit: snapshot.data.docs[index]['prix'],
+                              img: widget.img,
+                              name: widget.name,
+                              description: widget.description,
+                              adresse: widget.adresse,
+                              clickAndCollect: widget.clickAndCollect,
+                              livraison: widget.livraison,
+                              idCommercant: widget.sellerID,
+                              idProduit: snapshot.data.docs[index]['id'],
+                            )));
+              },
+              child: Container(
+                // margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: BuyandByeAppTheme.white_grey,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.network(
+                      snapshot.data.docs[index]["images"][0],
+                      width: MediaQuery.of(context).size.width,
+                      height: 100,
+                    ),
+                    SizedBox(height: 5),
+                    Text(snapshot.data.docs[index]['nom'],
+                        style: TextStyle(
+                            fontSize: 16, color: BuyandByeAppTheme.grey)),
+                    SizedBox(height: 5),
+                    Text(
+                      "$money€",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void affichageCart() {
