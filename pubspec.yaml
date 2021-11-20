@@ -95,7 +95,7 @@ dependencies:
   adaptive_dialog:
   adaptive_action_sheet:
   dropdown_date_picker:
-
+  sliding_up_panel:
 
 flutter_native_splash:
   #color: "#42a5f5"

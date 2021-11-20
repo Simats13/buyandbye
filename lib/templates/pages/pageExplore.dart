@@ -123,8 +123,8 @@ class _PageExploreState extends State<PageExplore> {
       mapToggle = true;
       geo = Geoflutterfire();
 
-    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+      latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+      longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
         var collectionReference = _firestore.collection('magasins');
@@ -504,6 +504,7 @@ class _PageExploreState extends State<PageExplore> {
                                         onTap: () {
                                           GeoPoint geoPoint = magasins[index]
                                               ['position']['geopoint'];
+                                         
                                           _magasinAffichage(
                                             geoPoint.latitude,
                                             geoPoint.longitude,
