@@ -792,194 +792,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Produits disponibles",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          // listOfCategories == null || dropdownValue == null
-                          //     ? CircularProgressIndicator()
-                          //     : Platform.isIOS
-                          //         ? TextButton(
-                          //             child: Row(
-                          //               children: [
-                          //                 Text(dropdownValue,
-                          //                     style: TextStyle(
-                          //                         fontSize: 16,
-                          //                         color: isDarkMode
-                          //                             ? Colors.white
-                          //                             : Colors.black)),
-                          //                 SizedBox(width: 10),
-                          //                 Icon(Icons.arrow_drop_down,
-                          //                     size: 30,
-                          //                     color: isDarkMode
-                          //                         ? Colors.white
-                          //                         : Colors.black)
-                          //               ],
-                          //             ),
-                          //             onPressed: () {
-                          //               showCupertinoModalPopup(
-                          //                 context: context,
-                          //                 builder: (context) => Container(
-                          //                   width:
-                          //                       MediaQuery.of(context).size.width,
-                          //                   height: 200,
-                          //                   child: CupertinoPicker(
-                          //                       itemExtent: 50,
-                          //                       backgroundColor: isDarkMode
-                          //                           ? Color.fromRGBO(48, 48, 48, 1)
-                          //                           : Colors.white,
-                          //                       onSelectedItemChanged: (value) {
-                          //                         setState(() {
-                          //                           dropdownValue =
-                          //                               listOfCategories[value];
-                          //                         });
-                          //                       },
-                          //                       children: [
-                          //                         for (String name
-                          //                             in listOfCategories)
-                          //                           Padding(
-                          //                             padding:
-                          //                                 const EdgeInsets.only(
-                          //                                     top: 8.0),
-                          //                             child: Text(name,
-                          //                                 style: TextStyle(
-                          //                                     color: isDarkMode
-                          //                                         ? Colors.white
-                          //                                         : Colors.black)),
-                          //                           )
-                          //                       ]),
-                          //                 ),
-                          //               );
-                          //             },
-                          //           )
-                          //         : DropdownButton<String>(
-                          //             value: dropdownValue,
-                          //             icon: const Icon(
-                          //                 Icons.keyboard_arrow_down_rounded),
-                          //             iconSize: 24,
-                          //             elevation: 16,
-                          //             onChanged: (String newValue) {
-                          //               setState(() {
-                          //                 dropdownValue = newValue;
-                          //               });
-                          //             },
-                          //             items: categorieNames
-                          //                 .map<DropdownMenuItem<String>>(
-                          //                     (String value) {
-                          //               return DropdownMenuItem(
-                          //                 value: value,
-                          //                 child: Text(value),
-                          //               );
-                          //             }).toList(),
-                          //           ),
-                          // SizedBox(height: 20),
-                          dropdownValue == null
-                              ? CircularProgressIndicator()
-                              : produits(dropdownValue),
-                          SizedBox(height: 30),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 5),
-                                for (int i = 1; i < 6; i++)
-                                  Container(
-                                      height: 30,
-                                      width: 30,
-                                      margin:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          fixedSize: Size(10, 10),
-                                        ),
-                                        child: Text((i).toString(),
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: i == clickedNumber
-                                                    ? Colors.black
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          clickedNumber = i;
-                                          setState(() {});
-                                        },
-                                      ))
-                              ]),
                           ////////// Design uniquement //////////
-                          SizedBox(height: 20),
-                          Text(
-                            "Meilleures ventes",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 25),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 5),
-                                for (int i = 0; i < 3; i++)
-                                  Container(
-                                      margin:
-                                          EdgeInsets.only(left: 5, right: 5),
-                                      child: Icon(Icons.circle_rounded,
-                                          size: 12,
-                                          color: i == 0
-                                              ? Colors.black
-                                              : Colors.grey))
-                              ]),
-                          SizedBox(height: 30),
+
+                         
                           Text(
                             "Recommandations du commerçant",
                             style: TextStyle(
@@ -1033,22 +848,119 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ],
                           ),
+                          // SizedBox(height: 30),
+                          // Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       SizedBox(width: 5),
+                          //       for (int i = 0; i < 3; i++)
+                          //         Container(
+                          //             margin:
+                          //                 EdgeInsets.only(left: 5, right: 5),
+                          //             child: Icon(Icons.circle_rounded,
+                          //                 size: 12,
+                          //                 color: i == 0
+                          //                     ? Colors.black
+                          //                     : Colors.grey))
+                          //     ]),
+                          ////////// Design uniquement //////////
+                           SizedBox(height: 30),
+                          Text(
+                            "Meilleures ventes",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+
+                          Text(
+                            "Produits disponibles",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 20),
+
+                          dropdownValue == null
+                              ? CircularProgressIndicator()
+                              : produits(dropdownValue),
                           SizedBox(height: 30),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 SizedBox(width: 5),
-                                for (int i = 0; i < 3; i++)
+                                for (int i = 1; i < 6; i++)
                                   Container(
+                                      height: 30,
+                                      width: 30,
                                       margin:
-                                          EdgeInsets.only(left: 5, right: 5),
-                                      child: Icon(Icons.circle_rounded,
-                                          size: 12,
-                                          color: i == 0
-                                              ? Colors.black
-                                              : Colors.grey))
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          fixedSize: Size(10, 10),
+                                        ),
+                                        child: Text((i).toString(),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                                color: i == clickedNumber
+                                                    ? Colors.black
+                                                    : Colors.grey)),
+                                        onPressed: () {
+                                          clickedNumber = i;
+                                          setState(() {});
+                                        },
+                                      ))
                               ]),
-                          ////////// Design uniquement //////////
                         ],
                       ),
                     ],

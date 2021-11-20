@@ -1,5 +1,6 @@
 
 
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -44,7 +45,7 @@ Widget mineListTile(BuildContext context, String message, String time, bool isRe
               child: Container(
                 constraints: BoxConstraints(maxWidth: size.width - size.width*0.28),
                 decoration: BoxDecoration(
-                  color: type == 'text' ? Colors.green[700] : Colors.transparent,
+                  color: type == 'text' ? BuyandByeAppTheme.orangeMiFonce : Colors.transparent,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: Padding(
