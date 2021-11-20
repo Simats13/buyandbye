@@ -262,16 +262,19 @@ class DatabaseMethods {
     return query;
   }
 
-  Stream getBestSeller(String sellerId, String categorie,) {
-    Stream query = FirebaseFirestore.instance
+  Stream getBestSeller(String sellerId)  {
+    return FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
         .collection("produits")
-        .where("visible", isEqualTo: true)
-        .where("nbSell", isGreaterThan: 0)
-        .limit(6)
+        .where("mathis", isEqualTo: true)
+        .where("nbSell",isGreaterThan: 0)
+      
+        .where("prix", isGreaterThan: 0)
+        .orderBy("nbSell", descending: true)
+        .limit(4)
         .snapshots();
-    return query;
+    
   }
 
   Stream getOneProduct(sellerId, productId) {

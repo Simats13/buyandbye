@@ -874,7 +874,99 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
 
                           SizedBox(height: 30),
-                          bestSeller(dropdownValue),
+                          // bestSeller(dropdownValue),
+                          StreamBuilder(
+                            stream: DatabaseMethods()
+                                .getBestSeller(widget.sellerID),
+                            builder: (context, snapshot) {
+                              print(snapshot.data);
+
+                              if (!snapshot.hasData)
+                                return CircularProgressIndicator();
+                              return GridView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 200,
+                                        childAspectRatio: 1,
+                                        mainAxisSpacing: 20,
+                                        crossAxisSpacing: 20),
+                                itemCount: snapshot.data.docs.length,
+                                itemBuilder: (context, index) {
+                                  // print(snapshot.data.docs[index]);
+                                  var money = snapshot.data.docs[index]['prix'];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => PageProduit(
+                                                    userid: userid,
+                                                    imagesList: snapshot.data
+                                                        .docs[index]['images'],
+                                                    nomProduit: snapshot.data
+                                                        .docs[index]['nom'],
+                                                    descriptionProduit: snapshot
+                                                            .data.docs[index]
+                                                        ['description'],
+                                                    prixProduit: snapshot.data
+                                                        .docs[index]['prix'],
+                                                    img: widget.img,
+                                                    name: widget.name,
+                                                    description:
+                                                        widget.description,
+                                                    adresse: widget.adresse,
+                                                    clickAndCollect:
+                                                        widget.clickAndCollect,
+                                                    livraison: widget.livraison,
+                                                    idCommercant:
+                                                        widget.sellerID,
+                                                    idProduit: snapshot
+                                                        .data.docs[index]['id'],
+                                                  )));
+                                    },
+                                    child: Container(
+                                      // margin: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: BuyandByeAppTheme.white_grey,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Image.network(
+                                            snapshot.data.docs[index]["images"]
+                                                [0],
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 100,
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(snapshot.data.docs[index]['nom'],
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color:
+                                                      BuyandByeAppTheme.grey)),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            "$money€",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                           // Row(
                           //   mainAxisAlignment: MainAxisAlignment.spaceAround,
                           //   children: [
@@ -977,9 +1069,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   Widget produits(selectedCategorie) {
-    setState(() {
-      countCart();
-    });
+    // setState(() {
+    //   countCart();
+    // });
     return StreamBuilder(
         stream: DatabaseMethods().getVisibleProducts(
             widget.sellerID, selectedCategorie, clickedNumber),
@@ -1050,88 +1142,82 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         });
   }
 
-  Widget bestSeller(categorie) {
-    return StreamBuilder(
-      stream: DatabaseMethods().getBestSeller(widget.sellerID, categorie),
-      builder: (context, snapshot) {
-          // if (snapshot.connectionState == ConnectionState.waiting) {
-          //     return Center(
-          //       child: ColorLoader3(
-          //         radius: 15.0,
-          //         dotRadius: 6.0,
-          //       ),
-          //     );
-          //   }
-        if (!snapshot.hasData) return CircularProgressIndicator();
-        return GridView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200,
-              childAspectRatio: 1,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20),
-          itemCount: snapshot.data.docs.length,
-          itemBuilder: (context, index) {
-            // print(snapshot.data.docs[index]);
-            var money = snapshot.data.docs[index]['prix'];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PageProduit(
-                              userid: userid,
-                              imagesList: snapshot.data.docs[index]['images'],
-                              nomProduit: snapshot.data.docs[index]['nom'],
-                              descriptionProduit: snapshot.data.docs[index]
-                                  ['description'],
-                              prixProduit: snapshot.data.docs[index]['prix'],
-                              img: widget.img,
-                              name: widget.name,
-                              description: widget.description,
-                              adresse: widget.adresse,
-                              clickAndCollect: widget.clickAndCollect,
-                              livraison: widget.livraison,
-                              idCommercant: widget.sellerID,
-                              idProduit: snapshot.data.docs[index]['id'],
-                            )));
-              },
-              child: Container(
-                // margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: BuyandByeAppTheme.white_grey,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.network(
-                      snapshot.data.docs[index]["images"][0],
-                      width: MediaQuery.of(context).size.width,
-                      height: 100,
-                    ),
-                    SizedBox(height: 5),
-                    Text(snapshot.data.docs[index]['nom'],
-                        style: TextStyle(
-                            fontSize: 16, color: BuyandByeAppTheme.grey)),
-                    SizedBox(height: 5),
-                    Text(
-                      "$money€",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+  // Widget bestSeller(categorie) {
+  //   return StreamBuilder(
+  //     stream: DatabaseMethods().getBestSeller(widget.sellerID, categorie),
+  //     builder: (context, snapshot) {
+  //       print(snapshot.data);
+
+  //       if (!snapshot.hasData) return CircularProgressIndicator();
+  //       return GridView.builder(
+  //         padding: EdgeInsets.zero,
+  //         shrinkWrap: true,
+  //         physics: NeverScrollableScrollPhysics(),
+  //         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+  //             maxCrossAxisExtent: 200,
+  //             childAspectRatio: 1,
+  //             mainAxisSpacing: 20,
+  //             crossAxisSpacing: 20),
+  //         itemCount: snapshot.data.docs.length,
+  //         itemBuilder: (context, index) {
+  //           // print(snapshot.data.docs[index]);
+  //           var money = snapshot.data.docs[index]['prix'];
+  //           return GestureDetector(
+  //             onTap: () {
+  //               Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                       builder: (context) => PageProduit(
+  //                             userid: userid,
+  //                             imagesList: snapshot.data.docs[index]['images'],
+  //                             nomProduit: snapshot.data.docs[index]['nom'],
+  //                             descriptionProduit: snapshot.data.docs[index]
+  //                                 ['description'],
+  //                             prixProduit: snapshot.data.docs[index]['prix'],
+  //                             img: widget.img,
+  //                             name: widget.name,
+  //                             description: widget.description,
+  //                             adresse: widget.adresse,
+  //                             clickAndCollect: widget.clickAndCollect,
+  //                             livraison: widget.livraison,
+  //                             idCommercant: widget.sellerID,
+  //                             idProduit: snapshot.data.docs[index]['id'],
+  //                           )));
+  //             },
+  //             child: Container(
+  //               // margin: EdgeInsets.all(10),
+  //               decoration: BoxDecoration(
+  //                   color: BuyandByeAppTheme.white_grey,
+  //                   borderRadius: BorderRadius.circular(10)),
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: <Widget>[
+  //                   Image.network(
+  //                     snapshot.data.docs[index]["images"][0],
+  //                     width: MediaQuery.of(context).size.width,
+  //                     height: 100,
+  //                   ),
+  //                   SizedBox(height: 5),
+  //                   Text(snapshot.data.docs[index]['nom'],
+  //                       style: TextStyle(
+  //                           fontSize: 16, color: BuyandByeAppTheme.grey)),
+  //                   SizedBox(height: 5),
+  //                   Text(
+  //                     "$money€",
+  //                     style: TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   void affichageCart() {
     showGeneralDialog(
