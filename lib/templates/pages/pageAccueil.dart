@@ -1451,6 +1451,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: documents[index]["mainCategorie"] 
                     ),
                   );
                 },
@@ -1580,6 +1581,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: documents[index]["mainCategorie"] 
                     ),
                   );
                 },
@@ -1709,6 +1711,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: documents[index]["mainCategorie"] 
                     ),
                   );
                 },
@@ -1842,6 +1845,7 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: documents[index]["mainCategorie"] 
                     ),
                   );
                 },

@@ -1,11 +1,12 @@
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
+import 'package:buyandbye/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class SlideItem extends StatefulWidget {
   final String img;
   final String name;
   final String address;
-
+  final List mainCategorie;
   final String colorStore;
   final String description;
   final bool clickAndCollect;
@@ -17,6 +18,7 @@ class SlideItem extends StatefulWidget {
     @required this.img,
     @required this.name,
     @required this.address,
+    @required this.mainCategorie,
     @required this.colorStore,
     @required this.description,
     @required this.clickAndCollect,
@@ -29,6 +31,13 @@ class SlideItem extends StatefulWidget {
 }
 
 class _SlideItemState extends State<SlideItem> {
+  mainCategorie() {
+    for (String categorie in widget.mainCategorie) {
+      print(categorie);
+      return Text(categorie);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -63,7 +72,7 @@ class _SlideItemState extends State<SlideItem> {
                   Stack(
                     children: <Widget>[
                       Container(
-                        height: MediaQuery.of(context).size.height / 3.7,
+                        height: MediaQuery.of(context).size.height / 3.2,
                         width: MediaQuery.of(context).size.width,
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(
@@ -79,27 +88,76 @@ class _SlideItemState extends State<SlideItem> {
                       Positioned(
                         top: 6.0,
                         right: 6.0,
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.0)),
-                          child: Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.star,
-                                  size: 10,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                Text(
-                                  " ${widget.name}",
-                                  style: TextStyle(
-                                    fontSize: 10.0,
+                                child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Click and Collect",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      Icon(
+                                        widget.clickAndCollect
+                                            ? Icons.check_circle
+                                            : Icons.highlight_off,
+                                        color: widget.clickAndCollect
+                                            ? Colors.green
+                                            : Colors.red,
+                                        size: 17,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Livraison",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      Icon(
+                                        widget.livraison
+                                            ? Icons.check_circle
+                                            : Icons.highlight_off,
+                                        color: widget.livraison
+                                            ? Colors.green
+                                            : Colors.red,
+                                        size: 17,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
                       ),
                       Positioned(
                         top: 6.0,
@@ -137,21 +195,26 @@ class _SlideItemState extends State<SlideItem> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 7.0),
+                  // SizedBox(height: 7.0),
                   Padding(
                     padding: EdgeInsets.only(left: 15.0),
                     child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Text(
-                        "${widget.address}",
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ),
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          children: [
+                            for (String categorie in widget.mainCategorie)
+                            Card(
+                              shadowColor: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withOpacity(0.2),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.0)),
+                          child:Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Text(" $categorie "),
+                          ),)
+                          ],
+                        )),
                   ),
-                  SizedBox(height: 10.0),
                 ],
               ),
             ),
