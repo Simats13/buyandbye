@@ -1,19 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:buyandbye/templates/Compte/pageCBEdit.dart';
+import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/pages/pageAddressNext.dart';
+import 'package:buyandbye/templates/pages/place_service.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
-//import 'package:buyandbye/templates/Pages/address_search.dart';
+import 'package:uuid/uuid.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
-//import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
-//import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
+import 'package:geocoding/geocoding.dart' as geocoder;
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -319,7 +320,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
                                   )
-                                : Text(myLastName),
+                                : Text(myLastName!),
                             SizedBox(height: 20),
                             Text("Prénom :",
                                 style: TextStyle(
@@ -347,7 +348,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
                                   )
-                                : Text(myFirstName),
+                                : Text(myFirstName!),
                             SizedBox(height: 20),
                             Text("E-mail :",
                                 style: TextStyle(
@@ -375,7 +376,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
                                   )
-                                : Text(myEmail),
+                                : Text(myEmail!),
                             SizedBox(height: 20),
                             Text("Numéro de téléphone :",
                                 style: TextStyle(
@@ -424,7 +425,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           ],
                                         ),
                                       )
-                                    : Text(myPhone),
+                                    : Text(myPhone!),
                             SizedBox(height: 20),
                             Divider(thickness: 0.5, color: Colors.black),
                             Text("Méthode de connexion"),
@@ -615,7 +616,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           imagePosition: ImagePosition
                                               .left, // left or right
                                           buttonType: ButtonType.apple,
-                                          onPressed: () async {
+                                          // TODO Refaire la fonction linkExisting to Apple avec sign_in_with_apple
+                                          onPressed: () {}
+                                          /*onPressed: () async {
                                             try {
                                               await AuthMethods.instance
                                                   .linkExistingToApple();
@@ -637,7 +640,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 }
                                               }
                                             }
-                                          })
+                                          }*/)
                                     ],
                                   ),
                             SizedBox(height: 20),
@@ -653,48 +656,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         // generate a new token here
                                         final sessionToken = Uuid().v4();
                                         final Suggestion result =
-                                            await showSearch(
+                                            (await showSearch(
                                           context: context,
                                           delegate: AddressSearch(sessionToken),
-                                        );
+                                        )) as Suggestion;
                                         // This will change the text displayed in the TextField
-                                        if (result != null) {
-                                          final placeDetails =
-                                              await PlaceApiProvider(
-                                                      sessionToken)
-                                                  .getPlaceDetailFromId(
-                                                      result.placeId);
+                                        final placeDetails =
+                                            await PlaceApiProvider(
+                                                    sessionToken)
+                                                .getPlaceDetailFromId(
+                                                    result.placeId!);
 
-                                          setState(() {
-                                            controller.text =
-                                                result.description;
-                                            streetNumber =
-                                                placeDetails.streetNumber;
-                                            street = placeDetails.street;
-                                            city = placeDetails.city;
-                                            zipCode = placeDetails.zipCode;
-                                            currentAddressLocation =
-                                                "$streetNumber $street, $city ";
-                                          });
+                                        setState(() {
+                                          controller.text =
+                                              result.description!;
+                                          streetNumber =
+                                              placeDetails.streetNumber!;
+                                          street = placeDetails.street;
+                                          city = placeDetails.city;
+                                          zipCode = placeDetails.zipCode!;
+                                          currentAddressLocation =
+                                              "$streetNumber $street, $city ";
+                                        });
 
-                                          final query =
-                                              "$streetNumber $street , $city";
+                                        final query =
+                                            "$streetNumber $street , $city";
 
-                                          List<geocoder.Location> locations =
-                                              await geocoder
-                                                  .locationFromAddress(query);
-                                          var first = locations.first;
+                                        List<geocoder.Location> locations =
+                                            await geocoder
+                                                .locationFromAddress(query);
+                                        var first = locations.first;
 
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PageAddressNext(
-                                                        lat: first.latitude,
-                                                        long: first.longitude,
-                                                        adresse: query,
-                                                      )));
-                                        }
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PageAddressNext(
+                                                      lat: first.latitude,
+                                                      long: first.longitude,
+                                                      adresse: query,
+                                                    )));
                                       },
                                       child: Icon(Icons.add),
                                     ),
@@ -974,7 +975,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                           ['name'] ==
                                                       null
                                                   ? "Aucun nom"
-                                                  : paymentIntentData[
+                                                  : paymentIntentData![
                                                               'paymentMethods']
                                                           ['data'][index][
                                                       'billing_details']['name'],
@@ -984,18 +985,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             ),
                                             subtitle: Text(
                                               "****" +
-                                                  paymentIntentData[
+                                                  paymentIntentData![
                                                               'paymentMethods']
                                                           ['data'][index]
                                                       ['card']['last4'] +
                                                   ' ' +
                                                   '\nExp: ' +
-                                                  paymentIntentData['paymentMethods']
+                                                  paymentIntentData!['paymentMethods']
                                                               ['data'][index]
                                                           ['card']['exp_month']
                                                       .toString() +
                                                   '/' +
-                                                  paymentIntentData[
+                                                  paymentIntentData![
                                                                   'paymentMethods']
                                                               ['data'][index]
                                                           ['card']['exp_year']
@@ -1032,14 +1033,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                               builder:
                                                                   (context) =>
                                                                       PageCBEdit(
-                                                                        customerID:customerID,
-                                                                        idCard: paymentIntentData['paymentMethods']['data'][index]
+                                                                        customerID:customerID!,
+                                                                        idCard: paymentIntentData!['paymentMethods']['data'][index]
                                                                             [
                                                                             'card']['id'],
                                                                         expYear:
-                                                                            paymentIntentData['paymentMethods']['data'][index]['card']['exp_year'],
+                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_year'],
                                                                         expMonth:
-                                                                            paymentIntentData['paymentMethods']['data'][index]['card']['exp_month'],
+                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_month'],
                                                                       )),
                                                         );
                                                       },
@@ -1058,7 +1059,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                       ['data']
                                                                   [index]['id'];
                                                           final url =
-                                                              "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?idCard=${paymentIntentData['paymentMethods']['data'][index]['id']}";
+                                                              "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?idCard=${paymentIntentData!['paymentMethods']['data'][index]['id']}";
 
                                                           await http.post(
                                                             Uri.parse(url),
@@ -1078,22 +1079,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                                           for (var i = 0;
                                                               i <
-                                                                  paymentIntentData[
+                                                                  paymentIntentData![
                                                                               'paymentMethods']
                                                                           [
                                                                           'data']
                                                                       .length;
                                                               i++) {
-                                                            if (paymentIntentData[
+                                                            if (paymentIntentData![
                                                                         'paymentMethods']
                                                                     [
                                                                     'data'][i] ==
                                                                 id) {
-                                                              int index = i;
                                                             }
                                                           }
                                                           List data =
-                                                              paymentIntentData[
+                                                              paymentIntentData![
                                                                       'paymentMethods']
                                                                   ['data'];
                                                           data.removeAt(index);
@@ -1154,7 +1154,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 ),
                                                 onPressed: () async {
                                                   final url =
-                                                      "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=${customerID}";
+                                                      "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=$customerID";
 
                                                   final response =
                                                       await http.post(

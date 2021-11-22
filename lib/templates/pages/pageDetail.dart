@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/theme/styles.dart';
@@ -161,7 +159,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
     var size = MediaQuery.of(context).size;
-    bool isPressed = false;
     return Stack(children: [
       GestureDetector(
           onTap: () {

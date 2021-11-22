@@ -30,7 +30,6 @@ dependencies:
   flutter_spinkit:
   cloud_firestore:
   firebase_storage:
-  google_sign_in:
   provider:
   firebase_core:
   curved_navigation_bar:
@@ -44,6 +43,7 @@ dependencies:
   flutter_svg:
   flutter_launcher_icons:
   firebase_messaging: 
+  google_sign_in: 5.1.0
   line_awesome_flutter: ^2.0.0
   flutter_screenutil: ^5.0.0+2
   theme_provider:

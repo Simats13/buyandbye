@@ -30,23 +30,20 @@ class AuthMethods {
 
   // Connexion via Google
   Future<String?> signInwithGoogle(BuildContext context) async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
     try {
-      final GoogleSignInAccount googleSignInAccount =
-          await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
-
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
       final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
+          await googleSignInAccount!.authentication;
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
 
+      // Getting users credential
       UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      User userDetails = userCredential.user!;
+          await auth.signInWithCredential(authCredential);
+      User? userDetails = userCredential.user;
 
       final url = "https://api.stripe.com/v1/customers";
 
@@ -61,7 +58,7 @@ class AuthMethods {
       paymentIntentData = json.decode(response.body);
 
       bool docExists = await (DatabaseMethods()
-          .checkIfDocExists(userDetails.uid) as FutureOr<bool>);
+          .checkIfDocExists(userDetails!.uid) as Future<bool>);
 
       if (docExists == false) {
         Map<String, dynamic> userInfoMap = {
@@ -96,6 +93,7 @@ class AuthMethods {
         //Verifie si l'adresse mail a été vérifiée
         bool checkEmail = await (AuthMethods.instance.checkEmailVerification()
             as FutureOr<bool>);
+        print("checkEmail : " + checkEmail.toString());
 
         if (checkEmail) {
           FirebaseFirestore.instance
@@ -333,18 +331,13 @@ class AuthMethods {
   // Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
   // Sinon il renvoie false
   Future checkEmailVerification() async {
-    User user = await AuthMethods().getCurrentUser();
-    if (user == null) {
-      return false;
-    }
-    if (user.emailVerified != null && user.uid != null) {
+    User? user = await AuthMethods().getCurrentUser();
+    if (user != null) {
       FirebaseFirestore.instance.collection("users").doc(user.uid).update({
         "emailVerified": true,
       });
-      return true;
-    } else {
-      return false;
     }
+    return true;
   }
 
   // Lie un compte identifé avec Facebook avec un compte Google

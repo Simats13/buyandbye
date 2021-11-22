@@ -14,7 +14,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
@@ -38,16 +37,10 @@ class _PageExploreState extends State<PageExplore> {
   late BitmapDescriptor mapMaker;
   Set<Marker> _markers = Set<Marker>();
 
-  double _value = 40.0;
   List magasins = [];
-  String _label = 'kms';
+  String label = 'kms';
   bool localisation = false;
   late double latitude, longitude;
-
-  // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
-  static late SharedPreferences _preferences;
-  static const _keySlider = "UserSliderKey";
-  static const _keyLabel = "UserSliderLabelKey";
 
   // firestore init
   final _firestore = FirebaseFirestore.instance;
@@ -112,8 +105,7 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   userID() async {
-    _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
-    _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
+    label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
     final User user = await AuthMethods().getCurrentUser();
     var userid = user.uid;
     QuerySnapshot querySnapshot =
@@ -260,81 +252,6 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   //FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
-  void _perimeter() async {
-    _preferences = await SharedPreferences.getInstance();
-
-    slideDialog.showSlideDialog(
-      context: context,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Changer de périmètre",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          StatefulBuilder(builder: (context, innerSetState) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Slider(
-                  min: 1,
-                  max: 200,
-                  divisions: 10,
-                  value: _value,
-                  label: _label,
-                  activeColor: Colors.blue,
-                  inactiveColor: Colors.blue.withOpacity(0.2),
-                  onChanged: (value) async {
-                    innerSetState(() {
-                      setState(() {
-                        _value = value;
-
-                        _label = '${_value.toInt().toString()} kms';
-                        markers.clear();
-                      });
-                      radius.add(value);
-                    });
-                    // await _preferences.setString(_keyLabel, _label);
-                    // await _preferences.setDouble(_keySlider, _value);
-                    _preferences.setDouble(_keySlider, _value);
-                    _preferences.setString(_keyLabel, _label);
-                  }),
-            );
-          }),
-          Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: Card(
-                    elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 8),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - 30,
-                      height: MediaQuery.of(context).size.height * (1 / 3),
-                      child: GoogleMap(
-                        onMapCreated: _onMapCreated,
-                        initialCameraPosition: CameraPosition(
-                            target: LatLng(latitude, longitude), zoom: 15.0),
-                        markers: Set<Marker>.of(markers.values),
-                        myLocationButtonEnabled: false,
-                        myLocationEnabled: true,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(

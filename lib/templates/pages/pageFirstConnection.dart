@@ -11,13 +11,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:flutter/services.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:location/location.dart';
-import 'package:uuid/uuid.dart';
 import 'package:geocoding/geocoding.dart' as geocoder;
-import 'package:buyandbye/templates/pages/address_search.dart';
 
 class PageFirstConnection extends StatefulWidget {
   const PageFirstConnection({Key? key}) : super(key: key);
@@ -417,20 +414,19 @@ class _AddressChooseState extends State<AddressChoose> {
       //Adresse de l'utilisateur via la localisation
       _currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
-      _city = "${first.locality}";
+      city = "${first.locality}";
       permissionChecked = true;
     });
   }
 
   String? _currentAddress,
       currentAddressLocation,
-      _streetNumber,
-      _street,
-      _city,
+      streetNumber,
+      street,
+      city,
       zipCode,
       idAddress,
       userid;
-  final _controller = TextEditingController();
   double? latitude, longitude, currentLatitude, currentLongitude;
   bool permissionChecked = false;
   Geoflutterfire? geo;
@@ -671,15 +667,15 @@ class _AddressChooseState extends State<AddressChoose> {
 
                   setState(() {
                     _controller.text = result.description!;
-                    _streetNumber = placeDetails.streetNumber;
-                    _street = placeDetails.street;
-                    _city = placeDetails.city;
+                    streetNumber = placeDetails.streetNumber;
+                    street = placeDetails.street;
+                    city = placeDetails.city;
                     zipCode = placeDetails.zipCode;
                     currentAddressLocation =
-                        "$_streetNumber $_street, $_city ";
+                        "$streetNumber $street, $city ";
                   });
 
-                  final query = "$_streetNumber $_street , $_city";
+                  final query = "$streetNumber $street , $city";
 
                   List<geocoder.Location> locations =
                       await geocoder.locationFromAddress(query);

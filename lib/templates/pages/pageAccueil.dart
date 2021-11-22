@@ -148,14 +148,6 @@ class _PageAccueilState extends State<PageAccueil> {
     });
   }
 
-  userinfo() async {
-    final User user = await AuthMethods().getCurrentUser();
-    userid = user.uid;
-    QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
-    String username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
-    return username;
-  }
-
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
@@ -197,9 +189,16 @@ class _PageAccueilState extends State<PageAccueil> {
     }
   }
 
+  String? username;
+  userinfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+    QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
+    username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
+  }
+
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-    String username = userinfo();
     positionCheck();
 
     return CupertinoPageScaffold(

@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:dropdown_date_picker/dropdown_date_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 
 class PageCBEdit extends StatefulWidget {
-  final int expYear, expMonth;
-  final String idCard,
+  final int? expYear, expMonth;
+  final String? idCard,
       customerID,
       nameCard,
       streetCard,
@@ -18,7 +16,7 @@ class PageCBEdit extends StatefulWidget {
       postalCodeCard,
       stateCard;
   const PageCBEdit(
-      {Key key,
+      {Key? key,
       this.expYear,
       this.expMonth,
       this.idCard,
@@ -36,7 +34,7 @@ class PageCBEdit extends StatefulWidget {
 }
 
 class _PageCBEditState extends State<PageCBEdit> {
-  String nameCardEdit,
+  String? nameCardEdit,
       streetCardEdit,
       streetCard2Edit,
       postalCodeCardEdit,
@@ -45,7 +43,7 @@ class _PageCBEditState extends State<PageCBEdit> {
       dropdownYear,
       dropdownMonth;
 
-  int chooseYear, chooseMonth;
+  int? chooseYear, chooseMonth;
   var year = [];
   var month = [];
   bool isEnabled1 = false;
@@ -214,7 +212,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                               ? TextButton(
                                   child: Row(
                                     children: [
-                                      Text(dropdownMonth,
+                                      Text(dropdownMonth!,
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.black)),
@@ -235,7 +233,8 @@ class _PageCBEditState extends State<PageCBEdit> {
                                           backgroundColor: Colors.white,
                                           scrollController:
                                               FixedExtentScrollController(
-                                                  initialItem: widget.expMonth),
+                                                  initialItem:
+                                                      widget.expMonth!),
                                           children: [
                                             for (String name in month)
                                               Padding(
@@ -258,7 +257,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                                     );
                                   },
                                 )
-                              : DropdownButton<String>(
+                              : DropdownButton<Object>(
                                   value: dropdownYear,
                                   icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded),
@@ -266,7 +265,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                                   elevation: 16,
                                   onChanged: (newValue) {
                                     setState(() {
-                                      dropdownMonth = newValue;
+                                      dropdownMonth = newValue as String?;
                                     });
                                   },
                                   items: month.map((map) {
@@ -288,7 +287,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                               ? TextButton(
                                   child: Row(
                                     children: [
-                                      Text(dropdownYear,
+                                      Text(dropdownYear!,
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.black)),
@@ -308,7 +307,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                                             scrollController:
                                                 FixedExtentScrollController(
                                                     initialItem:
-                                                        widget.expYear),
+                                                        widget.expYear!),
                                             itemExtent: 50,
                                             backgroundColor: Colors.white,
                                             onSelectedItemChanged: (value) {
@@ -691,10 +690,10 @@ class _PageCBEditState extends State<PageCBEdit> {
 
                     // Validate returns true if the form is valid, or false otherwise.
 
-                    final isValid = _formKey.currentState.validate();
+                    final isValid = _formKey.currentState!.validate();
 
                     if (isValid) {
-                      _formKey.currentState.save();
+                      _formKey.currentState!.save();
                       final url =
                           "https://us-central1-oficium-11bf9.cloudfunctions.net/app/update_cards?idCard=${widget.idCard}&customerCard=${widget.customerID}&monthCard=$chooseMonth&yearCard=$chooseYear&streetCard=$streetCardEdit&streetCard2=$streetCard2Edit&cityCard=$cityCardEdit&postalCodeCard=$postalCodeCardEdit&stateCard=$stateCardEdit&countryCard=$countryCardEdit&nameCard=$nameCardEdit";
 

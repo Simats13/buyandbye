@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
@@ -77,7 +76,6 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                 showBackView: isCvvFocused,
                 obscureCardNumber: true,
                 obscureCardCvv: true,
-                onCreditCardWidgetChange: (creditCardBrand) {},
               ),
               Expanded(
                 child: SingleChildScrollView(
