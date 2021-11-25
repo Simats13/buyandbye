@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:app_settings/app_settings.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
@@ -114,8 +113,8 @@ class _PageExploreState extends State<PageExplore> {
       mapToggle = true;
       geo = Geoflutterfire();
 
-    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+      latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+      longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
         var collectionReference = _firestore.collection('magasins');
@@ -589,12 +588,10 @@ class _PageExploreState extends State<PageExplore> {
                         Platform.isIOS
                             ? CupertinoButton(
                                 child: Text('Activer la localisation'),
-                                onPressed: () {
-                                  AppSettings.openLocationSettings();
-                                })
+                                onPressed: () {})
                             : TextButton(
                                 child: Text("Activer la localisation"),
-                                onPressed: () => AppSettings.openAppSettings(),
+                                onPressed: () {},
                               ),
                       ],
                     )

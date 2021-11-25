@@ -78,8 +78,7 @@ dependencies:
   http:
   truncate:
   flutter_native_splash:
-  wave: 
-  app_settings:
+  wave:
   sign_button:
   badges:
   flip_card: ^0.6.0
