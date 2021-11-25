@@ -7,9 +7,13 @@ import 'dart:convert';
 
 class PageCBEdit extends StatefulWidget {
   final int? expYear, expMonth;
+  final VoidCallback? newData;
+  final Function(String)? onNameChanged;
+  final Function(String)? onDateChanged;
   final String? idCard,
       customerID,
       nameCard,
+      newNameCard,
       streetCard,
       streetCard2,
       cityCard,
@@ -26,7 +30,11 @@ class PageCBEdit extends StatefulWidget {
       this.streetCard2,
       this.cityCard,
       this.postalCodeCard,
-      this.stateCard})
+      this.stateCard,
+      this.newNameCard,
+      this.newData,
+      this.onDateChanged,
+      this.onNameChanged})
       : super(key: key);
 
   @override
@@ -63,6 +71,7 @@ class _PageCBEditState extends State<PageCBEdit> {
   TextEditingController countryCard = new TextEditingController();
   final dateTime = DateTime.now();
   final _formKey = GlobalKey<FormState>();
+  late Map<String, dynamic> paymentIntentData;
   List code = [
     "'AF','AX','AL','DZ','AS','AD','AO','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','BD','BB','BY','BE','BZ','BJ','BM','BT','BA','BW','BV','BR','IO','BN','BG','BF','BI','KH','CM','CA','CV','KY','CF','TD','CL','CN','CX','CC','CO','KM','CG','CK','CR','CI','HR','CU','CW','CY','CZ','DK','DJ','DM','DO','EC','EG','SV','GQ','ER','EE','ET','FK','FO','FJ','FI','FR','GF','PF','TF','GA','GM','GE','DE','GH','GI','GR','GL','GD','GP','GU','GT','GG','GN','GW','GY','HT','HM','VA','HN','HK','HU','IS','IN','ID','IQ','IE','IM','IL','IT','JM','JP','JE','JO','KZ','KE','KI','KW','KG','LA','LV','LB','LS','LR','LY','LI','LT','LU','MO','MG','MW','MY','MV','ML','MT','MH','MQ','MR','MU','YT','MX','MC','MN','ME','MS','MA','MZ','MM','NA','NR','NP','NL','NC','NZ','NI','NE','NG','NU','NF','MP','NO','OM','PK','PW','PA','PG','PY','PE','PH','PN','PL','PT','PR','QA','RE','RO','RU','RW','BL','KN','LC','MF','PM','VC','WS','SM','ST','SA','SN','RS','SC','SL','SG','SX','SK','SI','SB','SO','ZA','GS','SS','ES','LK','SD','SR','SJ','SZ','SE','CH','SY','TJ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','GB','US','UM','UY','UZ','VU','VN','WF','EH','YE','ZM','ZW',"
   ];
@@ -80,6 +89,7 @@ class _PageCBEditState extends State<PageCBEdit> {
     }
     dropdownYear = widget.expYear.toString();
     dropdownMonth = widget.expMonth.toString();
+    print(widget.nameCard);
   }
 
   @override
@@ -231,10 +241,6 @@ class _PageCBEditState extends State<PageCBEdit> {
                                         child: CupertinoPicker(
                                           itemExtent: 50,
                                           backgroundColor: Colors.white,
-                                          scrollController:
-                                              FixedExtentScrollController(
-                                                  initialItem:
-                                                      widget.expMonth!),
                                           children: [
                                             for (String name in month)
                                               Padding(
@@ -257,8 +263,8 @@ class _PageCBEditState extends State<PageCBEdit> {
                                     );
                                   },
                                 )
-                              : DropdownButton<Object>(
-                                  value: dropdownYear,
+                              : DropdownButton(
+                                  value: dropdownMonth,
                                   icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded),
                                   iconSize: 24,
@@ -304,10 +310,6 @@ class _PageCBEditState extends State<PageCBEdit> {
                                             MediaQuery.of(context).size.width,
                                         height: 200,
                                         child: CupertinoPicker(
-                                            scrollController:
-                                                FixedExtentScrollController(
-                                                    initialItem:
-                                                        widget.expYear!),
                                             itemExtent: 50,
                                             backgroundColor: Colors.white,
                                             onSelectedItemChanged: (value) {
@@ -371,6 +373,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                   width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     child: TextFormField(
+                      // initialValue: widget.nameCard,
                       onChanged: (value) {
                         setState(() {
                           if (value.length > 0) {
@@ -406,216 +409,92 @@ class _PageCBEditState extends State<PageCBEdit> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 50,
-                  child: Container(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 0) {
-                            isEnabled2 = true;
-                          } else {
-                            isEnabled2 = false;
-                          }
-                        });
-                      },
-                      controller: streetCard,
-                      autofocus: false,
-                      style: TextStyle(fontSize: 15.0),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        filled: true,
-                        suffixIcon: isEnabled2
-                            ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    streetCard.clear();
-                                    isEnabled2 = !isEnabled2;
-                                  });
-                                },
-                                icon: Icon(Icons.clear),
-                              )
-                            : null,
-                        labelText: "Rue",
-                        fillColor: Colors.grey.withOpacity(0.15),
-                        contentPadding: const EdgeInsets.only(
-                            left: 14.0, bottom: 6.0, top: 8.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 50,
-                  child: Container(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 0) {
-                            isEnabled3 = true;
-                          } else {
-                            isEnabled3 = false;
-                          }
-                        });
-                      },
-                      autofocus: false,
-                      controller: streetCard2,
-                      style: TextStyle(fontSize: 15.0),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        suffixIcon: isEnabled3
-                            ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    streetCard2.clear();
-                                    isEnabled3 = !isEnabled3;
-                                  });
-                                },
-                                icon: Icon(Icons.clear),
-                              )
-                            : null,
-                        labelText: "Rue (Ligne 2)",
-                        filled: true,
-                        fillColor: Colors.grey.withOpacity(0.15),
-                        contentPadding: const EdgeInsets.only(
-                            left: 14.0, bottom: 6.0, top: 8.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 50,
-                  child: Container(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 0) {
-                            isEnabled4 = true;
-                          } else {
-                            isEnabled4 = false;
-                          }
-                        });
-                      },
-                      autofocus: false,
-                      controller: cityCard,
-                      style: TextStyle(fontSize: 15.0),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        suffixIcon: isEnabled4
-                            ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    cityCard.clear();
-                                    isEnabled4 = !isEnabled4;
-                                  });
-                                },
-                                icon: Icon(Icons.clear),
-                              )
-                            : null,
-                        labelText: "Ville",
-                        filled: true,
-                        fillColor: Colors.grey.withOpacity(0.15),
-                        contentPadding: const EdgeInsets.only(
-                            left: 14.0, bottom: 6.0, top: 8.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 50,
-                  child: Container(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 0) {
-                            isEnabled5 = true;
-                          } else {
-                            isEnabled5 = false;
-                          }
-                        });
-                      },
-                      autofocus: false,
-                      controller: postalCodeCard,
-                      style: TextStyle(fontSize: 15.0),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        suffixIcon: isEnabled5
-                            ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    postalCodeCard.clear();
-                                    isEnabled5 = !isEnabled5;
-                                  });
-                                },
-                                icon: Icon(Icons.clear),
-                              )
-                            : null,
-                        labelText: "Code postal",
-                        filled: true,
-                        fillColor: Colors.grey.withOpacity(0.15),
-                        contentPadding: const EdgeInsets.only(
-                            left: 14.0, bottom: 6.0, top: 8.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 50,
-                  child: Container(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          if (value.length > 0) {
-                            isEnabled6 = true;
-                          } else {
-                            isEnabled6 = false;
-                          }
-                        });
-                      },
-                      autofocus: false,
-                      controller: stateCard,
-                      style: TextStyle(fontSize: 15.0),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        suffixIcon: isEnabled6
-                            ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    stateCard.clear();
-                                    isEnabled6 = !isEnabled6;
-                                  });
-                                },
-                                icon: Icon(Icons.clear),
-                              )
-                            : null,
-                        labelText: "Département",
-                        filled: true,
-                        fillColor: Colors.grey.withOpacity(0.15),
-                        contentPadding: const EdgeInsets.only(
-                            left: 14.0, bottom: 6.0, top: 8.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+              //   child: SizedBox(
+              //     height: 50,
+              //     width: MediaQuery.of(context).size.width - 50,
+              //     child: Container(
+              //       child: TextFormField(
+              //         // initialValue: widget.streetCard,
+              //         onChanged: (value) {
+              //           setState(() {
+              //             if (value.length > 0) {
+              //               isEnabled2 = true;
+              //             } else {
+              //               isEnabled2 = false;
+              //             }
+              //           });
+              //         },
+              //         controller: streetCard,
+              //         autofocus: false,
+              //         style: TextStyle(fontSize: 15.0),
+              //         decoration: InputDecoration(
+              //           border: InputBorder.none,
+              //           filled: true,
+              //           suffixIcon: isEnabled2
+              //               ? IconButton(
+              //                   onPressed: () {
+              //                     setState(() {
+              //                       streetCard.clear();
+              //                       isEnabled2 = !isEnabled2;
+              //                     });
+              //                   },
+              //                   icon: Icon(Icons.clear),
+              //                 )
+              //               : null,
+              //           labelText: "Rue",
+              //           fillColor: Colors.grey.withOpacity(0.15),
+              //           contentPadding: const EdgeInsets.only(
+              //               left: 14.0, bottom: 6.0, top: 8.0),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+              //   child: SizedBox(
+              //     height: 50,
+              //     width: MediaQuery.of(context).size.width - 50,
+              //     child: Container(
+              //       child: TextFormField(
+              //         // initialValue: widget.streetCard2,
+              //         onChanged: (value) {
+              //           setState(() {
+              //             if (value.length > 0) {
+              //               isEnabled3 = true;
+              //             } else {
+              //               isEnabled3 = false;
+              //             }
+              //           });
+              //         },
+              //         autofocus: false,
+              //         controller: streetCard2,
+              //         style: TextStyle(fontSize: 15.0),
+              //         decoration: InputDecoration(
+              //           border: InputBorder.none,
+              //           suffixIcon: isEnabled3
+              //               ? IconButton(
+              //                   onPressed: () {
+              //                     setState(() {
+              //                       streetCard2.clear();
+              //                       isEnabled3 = !isEnabled3;
+              //                     });
+              //                   },
+              //                   icon: Icon(Icons.clear),
+              //                 )
+              //               : null,
+              //           labelText: "Rue (Ligne 2)",
+              //           filled: true,
+              //           fillColor: Colors.grey.withOpacity(0.15),
+              //           contentPadding: const EdgeInsets.only(
+              //               left: 14.0, bottom: 6.0, top: 8.0),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               // Padding(
               //   padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
               //   child: SizedBox(
@@ -626,29 +505,113 @@ class _PageCBEditState extends State<PageCBEdit> {
               //         onChanged: (value) {
               //           setState(() {
               //             if (value.length > 0) {
-              //               isEnabled7 = true;
+              //               isEnabled4 = true;
               //             } else {
-              //               isEnabled7 = false;
+              //               isEnabled4 = false;
               //             }
               //           });
               //         },
               //         autofocus: false,
-              //         controller: countryCard,
+              //         controller: cityCard,
               //         style: TextStyle(fontSize: 15.0),
               //         decoration: InputDecoration(
               //           border: InputBorder.none,
-              //           suffixIcon: isEnabled7
+              //           suffixIcon: isEnabled4
               //               ? IconButton(
               //                   onPressed: () {
               //                     setState(() {
-              //                       countryCard.clear();
-              //                       isEnabled7 = !isEnabled7;
+              //                       cityCard.clear();
+              //                       isEnabled4 = !isEnabled4;
               //                     });
               //                   },
               //                   icon: Icon(Icons.clear),
               //                 )
               //               : null,
-              //           labelText: "Pays",
+              //           labelText: "Ville",
+              //           filled: true,
+              //           fillColor: Colors.grey.withOpacity(0.15),
+              //           contentPadding: const EdgeInsets.only(
+              //               left: 14.0, bottom: 6.0, top: 8.0),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+              //   child: SizedBox(
+              //     height: 50,
+              //     width: MediaQuery.of(context).size.width - 50,
+              //     child: Container(
+              //       child: TextFormField(
+              //         onChanged: (value) {
+              //           setState(() {
+              //             if (value.length > 0) {
+              //               isEnabled5 = true;
+              //             } else {
+              //               isEnabled5 = false;
+              //             }
+              //           });
+              //         },
+              //         autofocus: false,
+              //         controller: postalCodeCard,
+              //         style: TextStyle(fontSize: 15.0),
+              //         decoration: InputDecoration(
+              //           border: InputBorder.none,
+              //           suffixIcon: isEnabled5
+              //               ? IconButton(
+              //                   onPressed: () {
+              //                     setState(() {
+              //                       postalCodeCard.clear();
+              //                       isEnabled5 = !isEnabled5;
+              //                     });
+              //                   },
+              //                   icon: Icon(Icons.clear),
+              //                 )
+              //               : null,
+              //           labelText: "Code postal",
+              //           filled: true,
+              //           fillColor: Colors.grey.withOpacity(0.15),
+              //           contentPadding: const EdgeInsets.only(
+              //               left: 14.0, bottom: 6.0, top: 8.0),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+              //   child: SizedBox(
+              //     height: 50,
+              //     width: MediaQuery.of(context).size.width - 50,
+              //     child: Container(
+              //       child: TextFormField(
+              //         onChanged: (value) {
+              //           setState(() {
+              //             if (value.length > 0) {
+              //               isEnabled6 = true;
+              //             } else {
+              //               isEnabled6 = false;
+              //             }
+              //           });
+              //         },
+              //         autofocus: false,
+              //         controller: stateCard,
+              //         style: TextStyle(fontSize: 15.0),
+              //         decoration: InputDecoration(
+              //           border: InputBorder.none,
+              //           suffixIcon: isEnabled6
+              //               ? IconButton(
+              //                   onPressed: () {
+              //                     setState(() {
+              //                       stateCard.clear();
+              //                       isEnabled6 = !isEnabled6;
+              //                     });
+              //                   },
+              //                   icon: Icon(Icons.clear),
+              //                 )
+              //               : null,
+              //           labelText: "Département",
               //           filled: true,
               //           fillColor: Colors.grey.withOpacity(0.15),
               //           contentPadding: const EdgeInsets.only(
@@ -666,27 +629,13 @@ class _PageCBEditState extends State<PageCBEdit> {
                       textStyle:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   onPressed: () async {
-                    // Si un champ est vide, on envoi la valeur déjà présente
 
+                    // Si un champ est vide, on envoi la valeur déjà présente
                     var nameCardEdit =
                         nameCard.text == "" ? widget.nameCard : nameCard.text;
 
-                    var streetCardEdit = streetCard.text == ""
-                        ? widget.streetCard
-                        : streetCard.text;
-
-                    var streetCard2Edit = streetCard2.text == ""
-                        ? widget.streetCard2
-                        : streetCard2.text;
-                    var cityCardEdit =
-                        cityCard.text == "" ? widget.cityCard : cityCard.text;
-                    var postalCodeCardEdit =
-                        cityCard.text == "" ? widget.cityCard : cityCard.text;
-                    var stateCardEdit = stateCard.text == ""
-                        ? widget.stateCard
-                        : stateCard.text;
-                    // var countryCardEdit =
-                    // countryCard.text == "" ? widget.count : countryCard.text;
+                    widget.onNameChanged!(nameCardEdit!);
+                    // widget.onDateChanged(date);
 
                     // Validate returns true if the form is valid, or false otherwise.
 
@@ -695,9 +644,9 @@ class _PageCBEditState extends State<PageCBEdit> {
                     if (isValid) {
                       _formKey.currentState!.save();
                       final url =
-                          "https://us-central1-oficium-11bf9.cloudfunctions.net/app/update_cards?idCard=${widget.idCard}&customerCard=${widget.customerID}&monthCard=$chooseMonth&yearCard=$chooseYear&streetCard=$streetCardEdit&streetCard2=$streetCard2Edit&cityCard=$cityCardEdit&postalCodeCard=$postalCodeCardEdit&stateCard=$stateCardEdit&countryCard=$countryCardEdit&nameCard=$nameCardEdit";
+                          "https://us-central1-oficium-11bf9.cloudfunctions.net/app/update_cards?customerCard=${widget.customerID}&idCard=${widget.idCard}&monthCard=$dropdownMonth&yearCard=$dropdownYear&nameCard=$nameCardEdit";
 
-                      await http.post(
+                      final response = await http.post(
                         Uri.parse(url),
                         headers: {
                           'Content-Type': 'application/json',
@@ -706,21 +655,8 @@ class _PageCBEditState extends State<PageCBEdit> {
                           'a': 'a',
                         }),
                       );
-                      // final message =
-                      //     "$buildingDetailsEdit, $buildingNameEdit, $familyNameEdit, $adressTitleEdit";
-
-                      // final snackBar = SnackBar(content: Text(message));
-                      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                      // editToDatabaseAddress(
-                      //     buildingDetailsEdit,
-                      //     buildingNameEdit,
-                      //     familyNameEdit,
-                      //     adressTitleEdit,
-                      //     widget.long,
-                      //     widget.lat,
-                      //     userAddress,
-                      //     widget.iD);
+                      widget.newData!();
+                      paymentIntentData = jsonDecode(response.body);
                       Navigator.of(context).pop();
                     }
                   },

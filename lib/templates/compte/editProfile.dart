@@ -947,8 +947,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 ['data']
                                             .length,
                                     itemBuilder: (context, index) {
-                                      print(paymentIntentData!['paymentMethods']
-                                          );
+                                      nameCard =
+                                          paymentIntentData['paymentMethods']
+                                                  ['data'][index]
+                                              ['billing_details']['name'];
+                                      print(nameCard);
+                                      print("nameCard");
+                                      // print(paymentIntentData['paymentMethods']
+                                      //     ['data'][index]['id']);
                                       return Column(
                                         children: [
                                           ListTile(
@@ -967,18 +973,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     height: 50,
                                                   ),
                                             title: Text(
-                                              paymentIntentData!['paymentMethods']
-                                                                      ['data']
-                                                                  [index]
-                                                              [
-                                                              'billing_details']
-                                                          ['name'] ==
-                                                      null
+                                              nameCard == null
                                                   ? "Aucun nom"
-                                                  : paymentIntentData![
-                                                              'paymentMethods']
-                                                          ['data'][index][
-                                                      'billing_details']['name'],
+                                                  : nameCard,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20.0),
@@ -1030,18 +1027,55 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      PageCBEdit(
-                                                                        customerID:customerID!,
-                                                                        idCard: paymentIntentData!['paymentMethods']['data'][index]
-                                                                            [
-                                                                            'card']['id'],
-                                                                        expYear:
-                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_year'],
-                                                                        expMonth:
-                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_month'],
-                                                                      )),
+                                                            builder:
+                                                                (context) =>
+                                                                    PageCBEdit(
+                                                              customerID:
+                                                                  customerID,
+                                                              newNameCard:
+                                                                  nameCard,
+                                                              newData: () {
+                                                                print("hello");
+                                                              },
+                                                              onNameChanged:
+                                                                  (String
+                                                                      value) {
+                                                                setState(() {
+                                                                  nameCard =
+                                                                      value;
+                                                                });
+                                                              },
+                                                              onDateChanged:
+                                                                  (String
+                                                                      value) {
+                                                                print(value);
+                                                              },
+                                                              idCard: paymentIntentData[
+                                                                          'paymentMethods']
+                                                                      ['data']
+                                                                  [index]['id'],
+                                                              expYear: paymentIntentData[
+                                                                              'paymentMethods']
+                                                                          [
+                                                                          'data']
+                                                                      [
+                                                                      index]['card']
+                                                                  ['exp_year'],
+                                                              expMonth: paymentIntentData[
+                                                                              'paymentMethods']
+                                                                          [
+                                                                          'data']
+                                                                      [
+                                                                      index]['card']
+                                                                  ['exp_month'],
+                                                              nameCard: paymentIntentData[
+                                                                          'paymentMethods']
+                                                                      [
+                                                                      'data'][index]
+                                                                  [
+                                                                  'billing_details']['name'],
+                                                            ),
+                                                          ),
                                                         );
                                                       },
                                                     ),

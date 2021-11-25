@@ -103,12 +103,6 @@ app.post("/update_cards", async (req, res) => {
   const monthCard = req.query.monthCard;
   const yearCard = req.query.yearCard;
   const nameCard = req.query.nameCard;
-  const streetCard = req.query.streetCard;
-  const street2Card = req.query.street2Card;
-  const cityCard = req.query.cityCard;
-  const postalCodeCard = req.query.postalCodeCard;
-  const stateCard = req.query.stateCard;
-  const countryCard = req.query.countryCard;
 
 
   if (!idCard) {
@@ -121,14 +115,9 @@ app.post("/update_cards", async (req, res) => {
       `${idCard}`,
       {
         name: `${nameCard}`,
-        address_country: `${countryCard}`,
-        address_zip: `${postalCodeCard}`,
-        address_city: `${cityCard}`,
-        address_line1: `${streetCard}`,
-        address_line2: `${street2Card}`,
+
         exp_month: `${monthCard}`,
         exp_year: `${yearCard}`,
-        address_state: `${stateCard}`,
 
       }
   );
