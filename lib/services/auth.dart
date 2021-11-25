@@ -28,8 +28,30 @@ class AuthMethods {
     return auth.currentUser;
   }
 
+  Future loginGoogle({Function? success, ValueChanged<String>? fail}) async {
+    try {
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      GoogleSignInAuthentication? googleAuth = await googleUser!.authentication;
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      final result = await auth.signInWithCredential(credential);
+
+      if (!result.user!.emailVerified) {
+        print('Login Cancelled');
+      } else if (result.additionalUserInfo!.isNewUser) {
+        // CRAETE USER
+        print('SUCCESSFULYY CREATED USER');
+      } else {
+        print('ALL READY EXISTS THE USER');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   // Connexion via Google
-  Future<String?> signInwithGoogle(BuildContext context) async {
+  Future signInwithGoogle(
+      {Function? success, ValueChanged<String>? fail}) async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleSignInAccount =
@@ -45,72 +67,72 @@ class AuthMethods {
           await auth.signInWithCredential(authCredential);
       User? userDetails = userCredential.user;
 
-      final url = "https://api.stripe.com/v1/customers";
+      bool docExists =
+          await DatabaseMethods().checkIfDocExists(userDetails!.uid);
 
-      var secret =
-          'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+      if (!userCredential.user!.emailVerified) {
+        print('Login Cancelled');
+        return false;
+      } else if (userCredential.additionalUserInfo!.isNewUser) {
+        if (docExists == false) {
+          final url = "https://api.stripe.com/v1/customers";
 
-      Map<String, String> headers = {
-        'Authorization': 'Bearer $secret',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      };
-      var response = await http.post(Uri.parse(url), headers: headers);
-      paymentIntentData = json.decode(response.body);
+          var secret =
+              'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
 
-      bool docExists = await (DatabaseMethods()
-          .checkIfDocExists(userDetails!.uid) as Future<bool>);
+          Map<String, String> headers = {
+            'Authorization': 'Bearer $secret',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          };
+          var response = await http.post(Uri.parse(url), headers: headers);
+          paymentIntentData = json.decode(response.body);
+          Map<String, dynamic> userInfoMap = {
+            "id": userDetails.uid,
+            "email": userDetails.email,
+            "fname": userDetails.displayName!.split(" ")[0],
+            "lname": userDetails.displayName!.split(" ")[1],
+            "imgUrl": userDetails.photoURL,
+            "customerId": paymentIntentData!["id"],
+            "firstConnection": true,
+            "providers": {
+              'Google': true, //GOOGLE
+              'Facebook': false, //FACEBOOK
+              'Apple': false, //APPLE
+              'Mail': false, // MAIL
+            },
+            "admin": false,
+            "emailVerified": true,
+            "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+                vapidKey:
+                    "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+            "phone": ""
+          };
+          DatabaseMethods().addInfoToDB("users", userDetails.uid, userInfoMap);
 
-      if (docExists == false) {
-        Map<String, dynamic> userInfoMap = {
-          "id": userDetails.uid,
-          "email": userDetails.email,
-          "fname": userDetails.displayName!.split(" ")[0],
-          "lname": userDetails.displayName!.split(" ")[1],
-          "imgUrl": userDetails.photoURL,
-          "customerId": paymentIntentData!["id"],
-          "firstConnection": true,
-          "providers": {
-            'Google': true, //GOOGLE
-            'Facebook': false, //FACEBOOK
-            'Apple': false, //APPLE
-            'Mail': false, // MAIL
-          },
-          "admin": false,
-          "emailVerified": true,
-          "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-              vapidKey:
-                  "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-          "phone": ""
-        };
-        DatabaseMethods().addInfoToDB("users", userDetails.uid, userInfoMap);
-
-        updateStripeInfo(paymentIntentData!["id"], userDetails.email,
-            userDetails.displayName);
-
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MyApp()));
+          updateStripeInfo(paymentIntentData!["id"], userDetails.email,
+              userDetails.displayName);
+          print('Login ');
+          return true;
+        }
       } else {
         //Verifie si l'adresse mail a été vérifiée
-        bool checkEmail = await (AuthMethods.instance.checkEmailVerification()
-            as FutureOr<bool>);
+        bool checkEmail = await AuthMethods.instance.checkEmailVerification();
         print("checkEmail : " + checkEmail.toString());
 
         if (checkEmail) {
           FirebaseFirestore.instance
               .collection("users")
               .doc(userDetails.uid)
-              .update({
-            "providers.Google": true, //Facebook
-          });
-
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => MyApp()));
+              .update(
+            {
+              "providers.Google": true, //Facebook
+            },
+          );
         }
+        return true;
       }
-
-      return userCredential.user!.displayName;
-    } on FirebaseAuthException catch (e) {
-      throw e;
+    } catch (e) {
+      print(e.toString());
     }
   }
 

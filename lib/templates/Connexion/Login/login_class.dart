@@ -169,7 +169,17 @@ class _LoginState extends State<Login> {
                           showMessage("Adresse mail non validé",
                               "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                         } else {
-                          await AuthMethods.instance.signInwithGoogle(context);
+                          // await AuthMethods.instance.signInwithGoogle(context);
+                          bool googleCheck = await AuthMethods.instance.signInwithGoogle();
+
+                          if (googleCheck == true) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MyApp(),
+                              ),
+                            );
+                          }
                         }
                       } catch (e) {
                         if (e is FirebaseAuthException) {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
+import 'package:buyandbye/main.dart';
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -126,8 +127,8 @@ class _BodyInscriptionState extends State<BodyInscription> {
                     try {
                       await AuthMethods.instance.signInWithFacebook(context);
 
-                      bool checkEmail =
-                          await (AuthMethods.instance.checkEmailVerification() as FutureOr<bool>);
+                      bool checkEmail = await (AuthMethods.instance
+                          .checkEmailVerification() as FutureOr<bool>);
 
                       if (checkEmail == false) {
                         showMessage("Vérification du mail",
@@ -161,7 +162,17 @@ class _BodyInscriptionState extends State<BodyInscription> {
                         showMessage("Adresse mail non validé",
                             "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                       } else {
-                        await AuthMethods.instance.signInwithGoogle(context);
+                        bool googleCheck =
+                            await AuthMethods.instance.signInwithGoogle();
+
+                        if (googleCheck == true) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MyApp(),
+                            ),
+                          );
+                        }
                       }
                     } catch (e) {
                       if (e is FirebaseAuthException) {
