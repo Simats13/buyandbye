@@ -153,7 +153,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot =
+    var querySnapshot =
         await DatabaseMethods().getMagasinInfo(widget.sellerID);
     name = "${querySnapshot.docs[0]["name"]}";
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";

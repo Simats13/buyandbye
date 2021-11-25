@@ -87,8 +87,9 @@ class _PageProduitState extends State<PageProduit> {
             .get();
         QueryDocumentSnapshot doc = docId.docs[0];
         DocumentReference docRef = doc.reference;
-        QuerySnapshot querySnapshot =
-            await DatabaseMethods().getMagasinInfo(docRef.id);
+        var querySnapshot =
+            await DatabaseMethods().getMagasinInfo(widget.userid);
+        //String sellerNameCart = "Informatique";
         String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
         Platform.isIOS
             ? showCupertinoDialog(
@@ -110,7 +111,6 @@ class _PageProduitState extends State<PageProduit> {
                         style: TextStyle(color: Colors.red),
                       ),
                       onPressed: () async {
-                        print(docRef.id);
                         await DatabaseMethods().deleteCart(docRef.id);
                         await DatabaseMethods().addCart(
                             nomProduit,

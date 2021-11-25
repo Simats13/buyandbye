@@ -13,7 +13,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -136,118 +135,139 @@ class _PageExploreState extends State<PageExplore> {
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
 
   void _magasinAffichage(double lat, double lng, String? name, idSeller) {
-    slideDialog.showSlideDialog(
-      context: context,
-      child: FutureBuilder(
-          future: DatabaseMethods().getMagasinInfo(idSeller),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: ColorLoader3(
-                  radius: 15.0,
-                  dotRadius: 6.0,
-                ),
-              );
-            }
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: (snapshot.data! as QuerySnapshot).docs.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Center(
-                          child: Text(
-                            name!,
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
+    Size size = MediaQuery.of(context).size;
+    showGeneralDialog(
+        barrierLabel: "Affichage magasins",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: Duration(milliseconds: 400),
+        context: context,
+        pageBuilder: (context, anim1, anim2) {
+          return Card(
+            margin: EdgeInsets.only(
+                top: size.height / 1.9, left: 20, right: 20, bottom: 30),
+            child: Align(
+              child: Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                child: FutureBuilder(
+                    future: DatabaseMethods().getMagasinInfo(idSeller),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: ColorLoader3(
+                            radius: 15.0,
+                            dotRadius: 6.0,
                           ),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 200,
-                          child: Image(
-                            image: NetworkImage(
-                                (snapshot.data! as QuerySnapshot).docs[index]
-                                    ['imgUrl']),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          child: Text("Adresse : " +
-                              (snapshot.data! as QuerySnapshot).docs[index]
-                                  ['adresse']),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          child: Text("Description : " +
-                              (snapshot.data! as QuerySnapshot).docs[index]
-                                  ['description']),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageDetail(
-                                            img: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['imgUrl'],
-                                            name: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['name'],
-                                            colorStore: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['colorStore'],
-                                            description: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['description'],
-                                            adresse: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['adresse'],
-                                            clickAndCollect: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['ClickAndCollect'],
-                                            livraison: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['livraison'],
-                                            sellerID: (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]['id'],
-                                          )));
-                            },
-                            child: Center(
-                              child: Text(
-                                "Accéder au magasin",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                });
-          }),
-    );
+                        );
+                      }
+                      return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              (snapshot.data! as QuerySnapshot).docs.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    name!,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 25,
+                                ),
+                                Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 200,
+                                  child: Image(
+                                    image: NetworkImage(
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]['imgUrl']),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child: Text("Adresse : " +
+                                      (snapshot.data! as QuerySnapshot)
+                                          .docs[index]['adresse']),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child: Text("Description : " +
+                                      (snapshot.data! as QuerySnapshot)
+                                          .docs[index]['description']),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => PageDetail(
+                                                    img: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['imgUrl'],
+                                                    name: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['name'],
+                                                    colorStore: (snapshot.data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['colorStore'],
+                                                    description: (snapshot.data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['description'],
+                                                    adresse: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['adresse'],
+                                                    clickAndCollect: (snapshot
+                                                                    .data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['ClickAndCollect'],
+                                                    livraison: (snapshot.data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['livraison'],
+                                                    sellerID: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['id'],
+                                                  )));
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "Accéder au magasin",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    }),
+              ),
+            ),
+          );
+        });
   }
 
   //FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
@@ -436,12 +456,6 @@ class _PageExploreState extends State<PageExplore> {
                                             geoPoint.longitude,
                                             snapshot.data[index]['name'],
                                             snapshot.data[index]['id'],
-                                            // snapshot.data[index]['adresse'],
-                                            // snapshot.data[index]['imgUrl'],
-                                            // snapshot.data[index]['description'],
-                                            // snapshot.data[index]['livraison'],
-                                            // snapshot.data[index]
-                                            //     ['ClickAndCollect'],
                                           );
                                         },
                                         child: Stack(

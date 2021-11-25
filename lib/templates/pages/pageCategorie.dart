@@ -27,7 +27,7 @@ class _PageCategorieState extends State<PageCategorie> {
   double latitude = 0.0, longitude = 0.0;
 
   final radius = BehaviorSubject<double>.seeded(1.0);
-  late Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
   @override
   void initState() {
     super.initState();

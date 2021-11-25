@@ -219,10 +219,10 @@ class _ProductDetailsState extends State<ProductDetails> {
       builder: (context, snapshot) {
         String? image, nom, prix, description;
         if (snapshot.hasData) {
-          image = snapshot.data!()["images"][0];
-          nom = snapshot.data!()["nom"];
-          prix = snapshot.data!()["prix"].toStringAsFixed(2);
-          description = snapshot.data!()["description"];
+          image = snapshot.data["images"][0];
+          nom = snapshot.data["nom"];
+          prix = snapshot.data["prix"].toStringAsFixed(2);
+          description = snapshot.data["description"];
         }
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -72,6 +72,7 @@ class _PageAccueilState extends State<PageAccueil> {
     super.initState();
     _determinePermission();
     getCoordinates();
+    userinfo();
   }
 
   @override
@@ -440,11 +441,11 @@ class _PageAccueilState extends State<PageAccueil> {
                       // SizedBox(
                       //   height: 20,
                       // ),
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
+                      // Container(
+                      //   width: size.width,
+                      //   height: 10,
+                      //   decoration: BoxDecoration(color: textFieldColor),
+                      // ),
                       // SizedBox(
                       //   height: 20,
                       // ),
@@ -582,13 +583,9 @@ class _PageAccueilState extends State<PageAccueil> {
     );
   }
 
-  // void affichageCart() {
-  //   slideDialog.showSlideDialog(context: context, child: CartPage());
-  // }
-
   void affichageCart() {
     showGeneralDialog(
-      barrierLabel: "Label",
+      barrierLabel: "Panier",
       barrierDismissible: true,
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: Duration(milliseconds: 400),
@@ -2008,11 +2005,11 @@ class _AllStoresState extends State<AllStores> {
                               height: 15,
                             ),
                             //trait gris de séparation
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
+                            // Container(
+                            //   width: size.width,
+                            //   height: 10,
+                            //   decoration: BoxDecoration(color: textFieldColor),
+                            // ),
                           ],
                         ),
                       ),

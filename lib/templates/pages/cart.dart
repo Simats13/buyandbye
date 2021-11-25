@@ -29,7 +29,6 @@ class _CartPageState extends State<CartPage> {
   getMyInfoCart() async {
     QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
     idCommercant = "${querySnapshot.docs[0].id}";
-    print(idCommercant);
     setState(() {});
   }
 
@@ -273,8 +272,6 @@ class _CartPageState extends State<CartPage> {
                     var amount = snapshot.data.docs[index]["amount"];
                     var money = snapshot.data.docs[index]["prixProduit"];
                     var allMoneyForProduct = money * amount;
-                    print("allMoneyForProduct");
-                    print(money);
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 10),
                       child: Row(

@@ -224,9 +224,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           return <Widget>[
             PreferredSize(
               preferredSize: const Size.fromHeight(10),
-              // N'existe pas :
-              //child: CupertinoSliverNavigationBarDetail(
-              child: CupertinoSliverNavigationBar(
+              child: CupertinoSliverNavigationBarDetail(
                 automaticallyImplyTitle: false,
                 leading: IconButton(
                   icon: Container(
@@ -249,11 +247,10 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     Navigator.pop(context);
                   },
                 ),
-                // N'a rien à faire là :
-                // Text(
-                //   widget.name!,
-                //   style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
-                // ),
+                middle: Text(
+                  widget.name!,
+                  style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                ),
                 trailing: IconButton(
                   icon: Container(
                     width: 50,
