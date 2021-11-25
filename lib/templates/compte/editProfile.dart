@@ -1,28 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:buyandbye/templates/Compte/pageCBEdit.dart';
-import 'package:buyandbye/templates/pages/address_search.dart';
-import 'package:buyandbye/templates/pages/pageAddressNext.dart';
-import 'package:buyandbye/templates/pages/place_service.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
-import 'package:uuid/uuid.dart';
+import 'package:buyandbye/templates/Pages/address_search.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
+import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
-import 'package:geocoding/geocoding.dart' as geocoder;
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:uuid/uuid.dart';
+import 'package:sign_button/sign_button.dart';
+import 'package:geocoding/geocoding.dart' as geocoder;
 import 'package:http/http.dart' as http;
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
-import 'package:sign_button/sign_button.dart';
 
 class Customer {
   String name;
@@ -53,13 +53,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
       facebook,
       mail,
       customerID,
-      myPhone;
+      myPhone,
+      nameCard = "",
+      streetCard = "",
+      streetCard2 = "",
+      cityCard = "",
+      postalCodeCard = "",
+      stateCard = "",
+      countryCard = "";
+  DateTime? dateTime;
+
   Map<String, dynamic>? paymentIntentData;
   final controller = TextEditingController();
   String streetNumber = '';
-  String? street;
-  String? city;
+  String street = '';
+  String city = '';
   String currentAddressLocation = "";
+  // ignore: unused_field
   String zipCode = '';
   double longitude = 0;
   double latitude = 0;
@@ -616,9 +626,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           imagePosition: ImagePosition
                                               .left, // left or right
                                           buttonType: ButtonType.apple,
-                                          // TODO Refaire la fonction linkExisting to Apple avec sign_in_with_apple
-                                          onPressed: () {}
-                                          /*onPressed: () async {
+                                          onPressed:
+                                              () {} /*async {
                                             try {
                                               await AuthMethods.instance
                                                   .linkExistingToApple();
@@ -640,7 +649,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 }
                                               }
                                             }
-                                          }*/)
+                                          }*/
+                                          )
                                     ],
                                   ),
                             SizedBox(height: 20),
@@ -656,24 +666,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         // generate a new token here
                                         final sessionToken = Uuid().v4();
                                         final Suggestion result =
-                                            (await showSearch(
+                                            await showSearch(
                                           context: context,
                                           delegate: AddressSearch(sessionToken),
-                                        )) as Suggestion;
+                                        ) as Suggestion;
                                         // This will change the text displayed in the TextField
                                         final placeDetails =
-                                            await PlaceApiProvider(
-                                                    sessionToken)
+                                            await PlaceApiProvider(sessionToken)
                                                 .getPlaceDetailFromId(
                                                     result.placeId!);
 
                                         setState(() {
-                                          controller.text =
-                                              result.description!;
+                                          controller.text = result.description!;
                                           streetNumber =
                                               placeDetails.streetNumber!;
-                                          street = placeDetails.street;
-                                          city = placeDetails.city;
+                                          street = placeDetails.street!;
+                                          city = placeDetails.city!;
                                           zipCode = placeDetails.zipCode!;
                                           currentAddressLocation =
                                               "$streetNumber $street, $city ";
@@ -711,7 +719,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     .snapshots(),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
-                                    if (snapshot.data!.docs.length > 0) {
+                                    if (snapshot.data.docs.length > 0) {
                                       return ListView.builder(
                                           physics:
                                               const NeverScrollableScrollPhysics(),
@@ -743,10 +751,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                 height: 30),
                                                             Container(
                                                               child: Text(
-                                                                (snapshot.data!
-                                                                            as QuerySnapshot)
-                                                                        .docs[index]
-                                                                    [
+                                                                snapshot.data
+                                                                            .docs[
+                                                                        index][
                                                                     "addressName"],
                                                               ),
                                                             ),
@@ -948,7 +955,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             .length,
                                     itemBuilder: (context, index) {
                                       nameCard =
-                                          paymentIntentData['paymentMethods']
+                                          paymentIntentData!['paymentMethods']
                                                   ['data'][index]
                                               ['billing_details']['name'];
                                       print(nameCard);
@@ -975,7 +982,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             title: Text(
                                               nameCard == null
                                                   ? "Aucun nom"
-                                                  : nameCard,
+                                                  : nameCard!,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20.0),
@@ -983,9 +990,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             subtitle: Text(
                                               "****" +
                                                   paymentIntentData![
-                                                              'paymentMethods']
-                                                          ['data'][index]
-                                                      ['card']['last4'] +
+                                                          'paymentMethods']['data']
+                                                      [index]['card']['last4'] +
                                                   ' ' +
                                                   '\nExp: ' +
                                                   paymentIntentData!['paymentMethods']
@@ -1032,43 +1038,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                     PageCBEdit(
                                                               customerID:
                                                                   customerID,
-                                                              newNameCard:
-                                                                  nameCard,
-                                                              newData: () {
-                                                                print("hello");
-                                                              },
-                                                              onNameChanged:
-                                                                  (String
-                                                                      value) {
-                                                                setState(() {
-                                                                  nameCard =
-                                                                      value;
-                                                                });
-                                                              },
-                                                              onDateChanged:
-                                                                  (String
-                                                                      value) {
-                                                                print(value);
-                                                              },
-                                                              idCard: paymentIntentData[
+                                                              idCard: paymentIntentData![
                                                                           'paymentMethods']
                                                                       ['data']
                                                                   [index]['id'],
-                                                              expYear: paymentIntentData[
+                                                              expYear: paymentIntentData![
                                                                               'paymentMethods']
                                                                           [
                                                                           'data']
                                                                       [
                                                                       index]['card']
                                                                   ['exp_year'],
-                                                              expMonth: paymentIntentData[
+                                                              expMonth: paymentIntentData![
                                                                               'paymentMethods']
                                                                           [
                                                                           'data']
                                                                       [
                                                                       index]['card']
                                                                   ['exp_month'],
-                                                              nameCard: paymentIntentData[
+                                                              nameCard: paymentIntentData![
                                                                           'paymentMethods']
                                                                       [
                                                                       'data'][index]
@@ -1123,8 +1111,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                         'paymentMethods']
                                                                     [
                                                                     'data'][i] ==
-                                                                id) {
-                                                            }
+                                                                id) {}
                                                           }
                                                           List data =
                                                               paymentIntentData![
@@ -1209,8 +1196,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       .getCurrentUser();
 
                                                   user.delete();
-                                                  await DatabaseMethods
-                                                      .instance
+                                                  await DatabaseMethods.instance
                                                       .deleteUser(
                                                           user.uid, customerID);
                                                   SharedPreferences
@@ -1271,8 +1257,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       .getCurrentUser();
 
                                                   user.delete();
-                                                  await DatabaseMethods
-                                                      .instance
+                                                  await DatabaseMethods.instance
                                                       .deleteUser(
                                                           user.uid, customerID);
                                                   SharedPreferences
@@ -1309,7 +1294,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 Visibility(
                     visible: !isVisible,
                     child: ModifyProfile(
-                        myFirstName, myLastName, myEmail, myPhone, myID))
+                        myFirstName!, myLastName!, myEmail!, myPhone!, myID!))
               ],
             ),
             // ),
@@ -1323,7 +1308,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 class ModifyProfile extends StatefulWidget {
   ModifyProfile(
       this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myId);
-  final String? myFirstName, myLastName, myEmail, myPhone, myId;
+  final String myFirstName, myLastName, myEmail, myPhone, myId;
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
@@ -1405,7 +1390,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
   }
 
   // Fonction d'affichage des champs de texte
-  Widget buildTextField(String labelText, String? placeholder, fieldController,
+  Widget buildTextField(String labelText, String placeholder, fieldController,
       bool capitalization) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
