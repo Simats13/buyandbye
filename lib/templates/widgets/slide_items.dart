@@ -2,21 +2,22 @@ import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:flutter/material.dart';
 
 class SlideItem extends StatefulWidget {
-  final String? img;
-  final String? name;
-  final String? address;
-
-  final String? colorStore;
-  final String? description;
-  final bool? clickAndCollect;
-  final bool? livraison;
-  final String? sellerID;
+  final String img;
+  final String name;
+  final String address;
+  final List mainCategorie;
+  final String colorStore;
+  final String description;
+  final bool clickAndCollect;
+  final bool livraison;
+  final String sellerID;
 
   SlideItem({
     Key? key,
     required this.img,
     required this.name,
     required this.address,
+    required this.mainCategorie,
     required this.colorStore,
     required this.description,
     required this.clickAndCollect,
@@ -29,6 +30,13 @@ class SlideItem extends StatefulWidget {
 }
 
 class _SlideItemState extends State<SlideItem> {
+  mainCategorie() {
+    for (String categorie in widget.mainCategorie) {
+      print(categorie);
+      return Text(categorie);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -46,14 +54,14 @@ class _SlideItemState extends State<SlideItem> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PageDetail(
-                      img: widget.img!,
-                      colorStore: widget.colorStore!,
-                      name: widget.name!,
-                      description: widget.description!,
-                      adresse: widget.address!,
-                      clickAndCollect: widget.clickAndCollect!,
-                      livraison: widget.livraison!,
-                      sellerID: widget.sellerID!,
+                      img: widget.img,
+                      colorStore: widget.colorStore,
+                      name: widget.name,
+                      description: widget.description,
+                      adresse: widget.address,
+                      clickAndCollect: widget.clickAndCollect,
+                      livraison: widget.livraison,
+                      sellerID: widget.sellerID,
                     ),
                   ),
                 );
@@ -63,7 +71,7 @@ class _SlideItemState extends State<SlideItem> {
                   Stack(
                     children: <Widget>[
                       Container(
-                        height: MediaQuery.of(context).size.height / 3.7,
+                        height: MediaQuery.of(context).size.height / 3.2,
                         width: MediaQuery.of(context).size.width,
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(
@@ -71,36 +79,30 @@ class _SlideItemState extends State<SlideItem> {
                             topRight: Radius.circular(10.0),
                           ),
                           child: Image.network(
-                            widget.img!,
+                            widget.img,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       Positioned(
-                        top: 6.0,
-                        right: 6.0,
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.0)),
-                          child: Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.star,
-                                  size: 10,
-                                ),
-                                Text(
-                                  " ${widget.name}",
-                                  style: TextStyle(
-                                    fontSize: 10.0,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                          top: 6.0,
+                          right: 6.0,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                  padding: EdgeInsets.all(2),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.sell_outlined),
+                                      Text("-50%",
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold)),
+                                    ],
+                                  )))),
                       Positioned(
                         top: 6.0,
                         left: 6.0,
@@ -127,31 +129,83 @@ class _SlideItemState extends State<SlideItem> {
                     padding: EdgeInsets.only(left: 15.0),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      child: Text(
-                        "${widget.name}",
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        textAlign: TextAlign.left,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${widget.name}",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          Row(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.screen_search_desktop_outlined),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    widget.clickAndCollect
+                                        ? Icons.check_circle
+                                        : Icons.highlight_off,
+                                    color: widget.clickAndCollect
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.delivery_dining),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Icon(
+                                    widget.livraison
+                                        ? Icons.check_circle
+                                        : Icons.highlight_off,
+                                    color: widget.livraison
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 17,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 7.0),
+                  // SizedBox(height: 7.0),
                   Padding(
                     padding: EdgeInsets.only(left: 15.0),
                     child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Text(
-                        "${widget.address}",
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ),
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          children: [
+                            for (String categorie in widget.mainCategorie)
+                              Card(
+                                shadowColor: Colors.grey.withOpacity(0.2),
+                                color: Colors.grey.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: Text(" $categorie "),
+                                ),
+                              )
+                          ],
+                        )),
                   ),
-                  SizedBox(height: 10.0),
                 ],
               ),
             ),

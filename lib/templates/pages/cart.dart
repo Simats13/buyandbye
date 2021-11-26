@@ -28,7 +28,11 @@ class _CartPageState extends State<CartPage> {
 
   getMyInfoCart() async {
     QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
-    idCommercant = "${querySnapshot.docs[0].id}";
+    if (querySnapshot.docs.isEmpty) {
+      idCommercant = "empty";
+    } else {
+      idCommercant = "${querySnapshot.docs[0].id}";
+    }
     setState(() {});
   }
 

@@ -1419,7 +1419,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
                     ),
                   );
                 },
@@ -1548,7 +1548,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
                     ),
                   );
                 },
@@ -1677,7 +1677,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
                     ),
                   );
                 },
