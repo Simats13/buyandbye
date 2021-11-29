@@ -41,15 +41,8 @@ class _PageFideliteState extends State<PageFidelite> {
       body: Container(
         child: ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
+            Row(
                 children: [
-                  Text(
-                    "Compte de Fidélité",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
                   MaterialButton(
                     child: Container(
                         padding: EdgeInsets.all(10),
@@ -69,10 +62,16 @@ class _PageFideliteState extends State<PageFidelite> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                  )
+                  ),
+                  Text(
+                    "Compte de Fidélité",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),               
                 ],
               ),
-            ),
+              SizedBox(
+                height: 20,
+              ),
             Padding(
               padding: const EdgeInsets.only(left: 20.0, right: 20),
               child: Text(
