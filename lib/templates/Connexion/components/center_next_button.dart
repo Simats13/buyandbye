@@ -1,6 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:buyandbye/templates/Pages/pageInscription.dart';
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:flutter/material.dart';
 
 class CenterNextButton extends StatelessWidget {
@@ -100,7 +100,7 @@ class CenterNextButton extends StatelessWidget {
                         ? InkWell(
                             key: ValueKey('Sign Up button'),
                             onTap: () {
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) => SignUpScreen()));
                             },
@@ -148,7 +148,7 @@ class CenterNextButton extends StatelessWidget {
                   InkWell(
                       key: ValueKey('Sign Up button'),
                       onTap: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => PageLogin()));
                       },
                       child: Padding(

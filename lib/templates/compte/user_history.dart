@@ -210,9 +210,7 @@ class _UserCommandState extends State<UserCommand> {
                 Text(formatTimestamp(snapshot.data["horodatage"]),
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
                 MaterialButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
@@ -242,49 +240,43 @@ class _UserCommandState extends State<UserCommand> {
                               offset: Offset(4, 4))
                         ]),
                     child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      shopName,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
-                                    snapshot.data["articles"] == 1
-                                        ? Text(snapshot.data["articles"]
-                                                .toString() +
-                                            " article")
-                                        : Text(snapshot.data["articles"]
-                                                .toString() +
-                                            " articles"),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      snapshot.data["prix"].toStringAsFixed(2) +
-                                          "€",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        shopName,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      SizedBox(height: 30),
+                                      // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
+                                      snapshot.data["articles"] == 1
+                                          ? Text(snapshot.data["articles"]
+                                                  .toString() +
+                                              " article")
+                                          : Text(snapshot.data["articles"]
+                                                  .toString() +
+                                              " articles"),
+                                    ],
+                                  ),
+                                  Text(
+                                    snapshot.data["prix"].toStringAsFixed(2) +
+                                        "€",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700),
+                                  )
+                                ]),
+                                SizedBox(height: 15),
                             Center(
                                 child: Text(snapshot.data['statut'] == 0
                                     ? "Statut : En attente"
@@ -292,11 +284,60 @@ class _UserCommandState extends State<UserCommand> {
                                         ? "Statut : En cours"
                                         : "Statut : Terminé")),
                           ],
+                        )
+                        // child: Column(children: [
+                        //   Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     children: [
+                        //       Row(
+                        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //         children: [
+                        //           Column(
+                        //             crossAxisAlignment: CrossAxisAlignment.start,
+                        //             children: [
+                        //               Text(
+                        //                 shopName,
+                        //                 style: TextStyle(
+                        //                     fontSize: 16,
+                        //                     fontWeight: FontWeight.w700),
+                        //               ),
+                        //               SizedBox(height: 60),
+                        //               // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
+                        //               snapshot.data["articles"] == 1
+                        //                   ? Text(snapshot.data["articles"]
+                        //                           .toString() +
+                        //                       " article")
+                        //                   : Text(snapshot.data["articles"]
+                        //                           .toString() +
+                        //                       " articles"),
+                        //             ],
+                        //           ),
+                        //           Column(
+                        //             children: [
+                        //               Text(
+                        //                 snapshot.data["prix"].toStringAsFixed(2) +
+                        //                     "€",
+                        //                 style: TextStyle(
+                        //                     fontSize: 14,
+                        //                     fontWeight: FontWeight.w700),
+                        //               )
+                        //             ],
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       Center(
+                        //           child: Text(snapshot.data['statut'] == 0
+                        //               ? "Statut : En attente"
+                        //               : snapshot.data['statut'] == 1
+                        //                   ? "Statut : En cours"
+                        //                   : "Statut : Terminé")),
+                        //     ],
+                        //   ),
+                        // ]),
                         ),
-                      ]),
-                    ),
                   ),
-                )
+                ),
+                SizedBox(height: 20),
               ],
             );
           } else {

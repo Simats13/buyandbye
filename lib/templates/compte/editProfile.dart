@@ -6,7 +6,7 @@ import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
 import 'package:buyandbye/templates/Pages/address_search.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

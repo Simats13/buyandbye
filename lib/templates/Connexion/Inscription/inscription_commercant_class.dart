@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 
 import 'package:buyandbye/templates/Connexion/Tools/text_field_container.dart';
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 

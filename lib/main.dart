@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
