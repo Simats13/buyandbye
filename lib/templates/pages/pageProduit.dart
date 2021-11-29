@@ -79,6 +79,8 @@ class _PageProduitState extends State<PageProduit> {
           widget.idCommercant,
           widget.idProduit);
 
+      print(addProductToCart);
+
       if (addProductToCart == false) {
         var docId = await FirebaseFirestore.instance
             .collection('users')
