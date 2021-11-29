@@ -94,59 +94,64 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                       );
                     },
-                    child: Container(
-                      height: 140,
-                      width: 140,
-                      decoration: BoxDecoration(
-                        color: BuyandByeAppTheme.black_electrik,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            LineAwesomeIcons.address_card,
-                            size: 35,
-                            color: Colors.white
-                          ),
-                          Text(
-                            'Mon Compte',
-                            style: kTitleTextStyle.copyWith(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.white
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  MaterialButton(
                       child: Container(
                         height: 140,
                         width: 140,
                         decoration: BoxDecoration(
-                          color: BuyandByeAppTheme.black_electrik,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.redeem,
-                            size: 35,
-                            color: Colors.white
-                          ),
-                          Text(
-                            'Compte Fidélité',
-                            style: kTitleTextStyle.copyWith(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.white
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(LineAwesomeIcons.address_card,
+                                size: 35,
+                                color: BuyandByeAppTheme.orangeMiFonce),
+                            SizedBox(height: 5),
+                            Text(
+                              'Mon Compte',
+                              style: kTitleTextStyle.copyWith(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: BuyandByeAppTheme.orangeMiFonce,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                    ),
+                  ),
+                  MaterialButton(
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Container(
+                          height: 140,
+                          width: 140,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(Icons.redeem,
+                                  size: 35,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
+                              SizedBox(height: 5),
+                              Text(
+                                'Compte Fidélité',
+                                style: kTitleTextStyle.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: BuyandByeAppTheme.orangeMiFonce),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -169,30 +174,32 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                       );
                     },
-                    child: Container(
-                      height: 140,
-                      width: 140,
-                      decoration: BoxDecoration(
-                        color: BuyandByeAppTheme.black_electrik,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            LineAwesomeIcons.shopping_bag,
-                            size: 35,
-                            color: Colors.white
-                          ),
-                          Text(
-                            'Mes commandes',
-                            style: kTitleTextStyle.copyWith(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.white
+                      child: Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(LineAwesomeIcons.shopping_bag,
+                                size: 35,
+                                color: BuyandByeAppTheme.orangeMiFonce),
+                            SizedBox(height: 5),
+                            Text(
+                              'Mes commandes',
+                              style: kTitleTextStyle.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -205,31 +212,32 @@ class _PageCompteState extends State<PageCompte> {
                         ),
                       );
                     },
-                    child: Container(
-                      height: 140,
-                      width: 140,
-                      decoration: BoxDecoration(
-                        color: BuyandByeAppTheme.black_electrik,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            LineAwesomeIcons.question_circle,
-                            size: 35,
-                            color: Colors.white
-                          ),
-                          SizedBox(width: 15),
-                          Text(
-                            'Aide / Support',
-                            style: kTitleTextStyle.copyWith(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.white
+                      child: Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(LineAwesomeIcons.question_circle,
+                                size: 35,
+                                color: BuyandByeAppTheme.orangeMiFonce),
+                            SizedBox(height: 5),
+                            Text(
+                              'Aide / Support',
+                              style: kTitleTextStyle.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -239,9 +247,7 @@ class _PageCompteState extends State<PageCompte> {
                 height: 60,
                 width: 275,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.red
-                ),
+                    borderRadius: BorderRadius.circular(20), color: Colors.red),
                 child: MaterialButton(
                   onPressed: () async {
                     if (!Platform.isIOS) {
@@ -311,26 +317,19 @@ class _PageCompteState extends State<PageCompte> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(
-                        LineAwesomeIcons.alternate_sign_out,
-                        size: 30,
-                        color: Colors.white
-                      ),
+                      Icon(LineAwesomeIcons.alternate_sign_out,
+                          size: 30, color: Colors.white),
                       SizedBox(width: 15),
                       Text(
                         'Se déconnecter',
                         style: kTitleTextStyle.copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: Colors.white
-                        ),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Colors.white),
                       ),
                       SizedBox(width: 15),
-                      Icon(
-                        LineAwesomeIcons.angle_right,
-                        size: 30,
-                        color: Colors.white
-                      ),
+                      Icon(LineAwesomeIcons.angle_right,
+                          size: 30, color: Colors.white),
                     ],
                   ),
                 ),
