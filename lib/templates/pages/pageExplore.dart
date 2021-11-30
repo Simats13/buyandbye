@@ -451,6 +451,7 @@ class _PageExploreState extends State<PageExplore> {
                                         onTap: () {
                                           GeoPoint geoPoint = magasins[index]
                                               ['position']['geopoint'];
+                                         
                                           _magasinAffichage(
                                             geoPoint.latitude,
                                             geoPoint.longitude,

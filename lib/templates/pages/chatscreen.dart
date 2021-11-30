@@ -46,7 +46,7 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom>
     with WidgetsBindingObserver, LocalNotificationView {
-  final TextEditingController _msgTextController = new TextEditingController();
+  final TextEditingController _msgTextController = TextEditingController();
   final ScrollController _chatListController = ScrollController();
   String messageType = 'text';
   int chatListLength = 20;
@@ -133,11 +133,44 @@ class _ChatRoomState extends State<ChatRoom>
           top: false,
           child: Scaffold(
             appBar: AppBar(
-              title:
-                  Text(widget.selectedUserFname! + widget.selectedUserLname!),
-              systemOverlayStyle: SystemUiOverlayStyle.light,
-              backgroundColor: BuyandByeAppTheme.black_electrik,
-              centerTitle: true,
+              title: RichText(
+                text: TextSpan(
+                  // style: Theme.of(context).textTheme.bodyText2,
+                  children: [
+                    TextSpan(
+                        text:
+                            widget.selectedUserFname + widget.selectedUserLname,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: BuyandByeAppTheme.orangeMiFonce,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    WidgetSpan(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Icon(
+                          Icons.message,
+                          color: BuyandByeAppTheme.orangeMiFonce,
+                          size: 25,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              backgroundColor: BuyandByeAppTheme.white,
+              automaticallyImplyLeading: false,
+              elevation: 0.0,
+              bottomOpacity: 0.0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: BuyandByeAppTheme.orange,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
             body: StreamBuilder<dynamic>(
                 stream: FirebaseFirestore.instance
@@ -204,18 +237,18 @@ class _ChatRoomState extends State<ChatRoom>
   }
 
   Widget _buildTextComposer() {
-    return new IconTheme(
-      data: new IconThemeData(color: Theme.of(context).accentColor),
-      child: new Container(
+    return IconTheme(
+      data: IconThemeData(color: Theme.of(context).accentColor),
+      child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: new Row(
+        child: Row(
           children: <Widget>[
-            new Container(
-              margin: new EdgeInsets.symmetric(horizontal: 2.0),
-              child: new IconButton(
-                  icon: new Icon(
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 2.0),
+              child: IconButton(
+                  icon: Icon(
                     Icons.photo,
-                    color: Colors.cyan[900],
+                    color: BuyandByeAppTheme.orangeMiFonce,
                   ),
                   onPressed: () {
                     ImageController.instance
@@ -228,8 +261,8 @@ class _ChatRoomState extends State<ChatRoom>
                     });
                   }),
             ),
-            new Flexible(
-              child: new TextField(
+            Flexible(
+              child: TextField(
                 onChanged: (value) {
                   setState(() {
                     if (value.length > 0) {
@@ -244,14 +277,14 @@ class _ChatRoomState extends State<ChatRoom>
                 onSubmitted: _handleSubmitted,
                 minLines: 1,
                 maxLines: 5,
-                decoration: new InputDecoration.collapsed(
-                    hintText: "Envoyer un message"),
+                decoration:
+                    InputDecoration.collapsed(hintText: "Envoyer un message"),
               ),
             ),
-            new Container(
-              //margin: new EdgeInsets.symmetric(horizontal: 2.0),
-              child: new IconButton(
-                icon: new Icon(Icons.send),
+            Container(
+              //margin:  EdgeInsets.symmetric(horizontal: 2.0),
+              child: IconButton(
+                icon: Icon(Icons.send,color:celafonctionne ? BuyandByeAppTheme.orangeMiFonce : null,),
                 onPressed: celafonctionne
                     ? () {
                         setState(() {

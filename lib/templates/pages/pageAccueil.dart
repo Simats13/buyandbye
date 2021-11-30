@@ -26,7 +26,6 @@ import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:buyandbye/theme/styles.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/custom_slider.dart';
@@ -88,6 +87,7 @@ class _PageAccueilState extends State<PageAccueil> {
     stream = radius.switchMap((rad) {
       var collectionReference =
           FirebaseFirestore.instance.collection('magasins');
+
       return geo.collection(collectionRef: collectionReference).within(
           center: center, radius: 10, field: 'position', strictMode: true);
     });
@@ -1339,7 +1339,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
   var position;
   late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>>? stream;
+  Stream<List<DocumentSnapshot>> stream;
+  bool loved;
 
   @override
   void initState() {
@@ -1697,6 +1698,135 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                     padding: const EdgeInsets.all(10.0),
                     child: Text(
                       "Aucun commerce n'est disponible près de chez vous pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                      style: TextStyle(
+                        fontSize: 18,
+
+                        // color: Colors.grey[700]
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                ],
+              )),
+            );
+          }
+        });
+  }
+}
+
+// ignore: must_be_immutable
+class SliderFavorite extends StatefulWidget {
+  SliderFavorite(
+    this.latitude,
+    this.longitude,
+    this.userID,
+  );
+  double latitude;
+  double longitude;
+  String userID;
+  @override
+  _SliderFavoriteState createState() => _SliderFavoriteState();
+}
+
+class _SliderFavoriteState extends State<SliderFavorite> {
+  var currentLocation;
+  var position;
+  Geoflutterfire geo;
+  final radius = BehaviorSubject<double>.seeded(1.0);
+  Stream<List<DocumentSnapshot>> stream;
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      geo = Geoflutterfire();
+      GeoFirePoint center =
+          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+      stream = radius.switchMap((rad) {
+        var collectionReference = FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userID)
+            .collection('liked');
+        return geo.collection(collectionRef: collectionReference).within(
+            center: center, radius: 10, field: 'position', strictMode: true);
+      });
+    });
+  }
+
+  List listImages(documents) {
+    List shopImages = [];
+    for (int i = 0; i < documents.length; i++) {
+      shopImages.add(documents[i]["imgUrl"]);
+    }
+    return shopImages;
+  }
+
+  int carouselItem = 0;
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Shimmer.fromColors(
+              child: Container(
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              baseColor: Colors.grey[300],
+              highlightColor: Colors.grey[100],
+            );
+          }
+          // Les éléments sont mélangés à chaque mouvement du carousel
+          final documents = snapshot.data..shuffle();
+          if (documents.length > 0) {
+            return Container(
+              height: MediaQuery.of(context).size.height / 2.4,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: SlideItem(
+                      img: documents[index]["imgUrl"],
+                      name: documents[index]["name"],
+                      address: documents[index]["adresse"],
+                      description: documents[index]["description"],
+                      livraison: documents[index]["livraison"],
+                      sellerID: documents[index]["id"],
+                      colorStore: documents[index]["colorStore"],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: documents[index]["mainCategorie"] 
+                    ),
+                  );
+                },
+              ),
+            );
+          } else {
+            return Container(
+              child: Center(
+                  child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Vous n'avez aucun magasin en favoris. Ajoutez en depuis leur vitrine",
                       style: TextStyle(
                         fontSize: 18,
 

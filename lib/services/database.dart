@@ -262,6 +262,18 @@ class DatabaseMethods {
     return query;
   }
 
+  Stream getBestSeller(String sellerId) {
+    var test = FirebaseFirestore.instance
+        .collection("magasins")
+        .doc(sellerId)
+        .collection("produits")
+        .where("nbSell", isGreaterThan: 0)
+        .orderBy("nbSell", descending: true)
+        .limit(4);
+
+    test.where("mathis", isEqualTo: true).get();
+  }
+
   Stream getOneProduct(sellerId, productId) {
     return FirebaseFirestore.instance
         .collection("magasins")
@@ -484,20 +496,99 @@ class DatabaseMethods {
         .update({"statut": newStatut});
   }
 
-// Récupérer l'ID d'un document
-// Possible d'utiliser cette valeur au lieu de la rentrer dans le document ?
-  testDb() {
-    DocumentReference ref = FirebaseFirestore.instance
-        .collection("magasins")
-        .doc("Fnac")
-        .collection("categories")
-        .doc("abcde12345");
-    String myId = ref.id;
-    print(myId);
+
+  // ignore: slash_for_doc_comments
+  /**Fonction permettant l'ajout de magasin en favoris
+   * Elle récupère l'id de l'utilisateur, l'id du commerçant et si la variable est true ou false
+   * Avec ses infos elle ajoute dans la collection de l'utilisateur les informations du magasins et les supprime s'il n'aime plus
+   */
+
+  Future addFavoriteShop(String userID, sellerID, bool addFavorite) async {
+    if (addFavorite == true) {
+      var seller = await FirebaseFirestore.instance
+          .collection('magasins')
+          .doc(sellerID)
+          .get();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .collection('liked')
+          .doc(sellerID)
+          .set({
+        'ClickAndCollect': seller['ClickAndCollect'],
+        'FCMToken': seller['FCMToken'],
+        'admin': seller['admin'],
+        'adresse': seller['adresse'],
+        'colorStore': seller['colorStore'],
+        'commandNb': seller['commandNb'].toInt(),
+        'description': seller['description'],
+        'email': seller['email'],
+        'id': seller['id'],
+        'imgUrl': seller['imgUrl'],
+        'livraison': seller['livraison'],
+        'mainCategorie': seller['mainCategorie'],
+        'name': seller['name'],
+        'nameSearch': seller['nameSearch'],
+        'phone': seller['phone'],
+        'position': {
+          'geohash': seller['position']['geohash'],
+          'geopoint': seller['position']['geopoint']
+        },
+        'sponsored': seller['sponsored'],
+      });
+    } else {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .collection('liked')
+          .doc(sellerID)
+          .delete();
+    }
   }
+
+  Future checkFavoriteShop() async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userid = user.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("liked")
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future checkFavoriteShopSeller(String sellerID) async {
+    final User user = await AuthMethods().getCurrentUser();
+    final userID = user.uid;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userID)
+        .collection("liked")
+        .where('id', isEqualTo: sellerID)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+// ignore: slash_for_doc_comments
+/**Fonction Ajout d'un produit au panier
+ * Cette fonction récupère l'id du produit et des infos le concernant, l'ID de l'user et celui du commerçant
+ * La fonction vérfie sur le panier est vide, s'il est vide ou non
+ * S'il est vide il ajoute un produit du même magasin sinon il proposera à l'utilisateur le vider au profit d'un autre commerçant
+ */
 
   Future addCart(String? nomProduit, num? prixProduit, String imgProduit,
       int amount, String? idCommercant, String? idProduit) async {
+
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     bool checkEmpty = await DatabaseMethods().checkCartEmpty();
