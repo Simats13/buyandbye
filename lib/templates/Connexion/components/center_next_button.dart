@@ -1,5 +1,5 @@
 import 'package:animations/animations.dart';
-import 'package:buyandbye/templates/Pages/pageInscription.dart';
+import 'package:buyandbye/templates/Connexion/Inscription/inscription_class.dart';
 import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:flutter/material.dart';
 
