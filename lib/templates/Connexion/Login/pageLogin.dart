@@ -181,17 +181,16 @@ class _PageLoginState extends State<PageLogin> {
                               showMessage("Adresse mail non validé",
                                   "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                             } else {
-                              // await AuthMethods.instance.signInwithGoogle(context);
                               bool googleCheck =
                                   await AuthMethods.instance.signInwithGoogle();
 
                               if (googleCheck == true) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MyApp(),
-                                  ),
-                                );
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            Accueil()),
+                                    (Route<dynamic> route) => false);
                               }
                             }
                           } catch (e) {
@@ -319,8 +318,11 @@ class _PageLoginState extends State<PageLogin> {
                         AuthMethods()
                             .signInWithMail(_email!, _password!)
                             .then((User user) {
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (_) => MyApp()));
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => Accueil()),
+                              (Route<dynamic> route) => false);
                         }).catchError((e) {
                           switch (e.code) {
                             case "user-not-found":

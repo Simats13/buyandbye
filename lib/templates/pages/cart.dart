@@ -193,7 +193,6 @@ class _CartPageState extends State<CartPage> {
                                 text: 'CHOISIR LE MODE DE LIVRAISON',
                                 style: TextStyle(
                                   fontSize: 15,
-                                  // color: BuyandByeAppTheme.orangeMiFonce,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 children: [

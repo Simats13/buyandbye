@@ -848,8 +848,6 @@ class _PageLivraisonState extends State<PageLivraison> {
       QuerySnapshot querySnapshot =
           await DatabaseMethods().getCartProducts(widget.idCommercant);
 
-      String? nameUser = userName;
-      String? nameSeller = nomBoutique;
       String? userchoose;
 
       if (deliveryChoose == 0) {
@@ -857,15 +855,7 @@ class _PageLivraisonState extends State<PageLivraison> {
       } else {
         userchoose = "Livraison à domicile";
       }
-
-      DateTime _parseDateStr(String inputString) {
-        DateFormat format = DateFormat.yMMMMd();
-        print(format.parse(inputString));
-        return format.parse(inputString);
-      }
-
-      // String? subTotal = amount * 100);
-      String? total = amount;
+      
       String? numCommand = idCommand;
       DateTime now = DateTime.now();
       String? month = DateFormat('MMM').format(DateTime(0, now.month));
@@ -980,6 +970,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                         </td>
                                     </tr>""";
         productsList += productsList;
+        
       }
 
       String? corpsDuMail = """<!DOCTYPE html
@@ -1492,12 +1483,6 @@ class _PageLivraisonState extends State<PageLivraison> {
         if (e.error.localizedMessage == "The payment has been canceled") {
           dialogPaymentCancelled();
         }
-
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('Error from Stripe: ${e.error.localizedMessage}'),
-        //   ),
-        // );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1506,25 +1491,6 @@ class _PageLivraisonState extends State<PageLivraison> {
         );
       }
     }
-
-    // ScaffoldMessenger.of(context)
-    //     .showSnackBar(SnackBar(
-    //       content: Text("response"),
-    //       duration: new Duration(milliseconds: 1200),
-    //     ))
-    //     .closed
-    //     .then((_) {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => PageResume(
-    //         idCommand: idCommand,
-    //         sellerID: widget.idCommercant,
-    //         userId: userid,
-    //       ),
-    //     ),
-    //   );
-    // });
   }
 }
 
