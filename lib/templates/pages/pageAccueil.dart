@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:buyandbye/templates/pages/user_address.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 
 import 'package:geocoding/geocoding.dart' as geocoder;
 
@@ -605,8 +605,8 @@ class _PageAccueilState extends State<PageAccueil> {
           alignment: Alignment.topCenter,
           child: Container(
             constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
-            child: CartPage(),
             margin: EdgeInsets.only(top: 100, left: 12, right: 12),
+            child: CartPage(),
           ),
         );
       },
@@ -614,7 +614,21 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   void affichageAddress() {
-    slideDialog.showSlideDialog(context: context, child: Container());
+    showGeneralDialog(
+        barrierLabel: "Adresse",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: Duration(milliseconds: 400),
+        context: context,
+        pageBuilder: (context, anim1, anim2) {
+          return Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
+                margin: EdgeInsets.only(top: 100, left: 12, right: 12),
+                child: UserAddress(),
+              ));
+        });
   }
 }
 
