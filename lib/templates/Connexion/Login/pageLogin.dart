@@ -300,58 +300,67 @@ class _PageLoginState extends State<PageLogin> {
                                         fontSize: 12))
                               ])
                             : SizedBox.shrink(),
-                        SizedBox(height: 5)
                       ],
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      AuthMethods()
-                          .signInWithMail(_email!, _password!)
-                          .then((User user) {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (_) => MyApp()));
-                      }).catchError((e) {
-                        switch (e.code) {
-                          case "user-not-found":
-                            setState(() {
-                              errorMessage = "Utilisateur introuvable";
-                            });
-                            print(e.code);
-                            break;
-                          case "wrong-password":
-                            setState(() {
-                              errorMessage = "Mauvais mot de passe";
-                            });
-                            print(e.code);
-                            break;
-                          case "too-many-requests":
-                            setState(() {
-                              errorMessage =
-                                  "Trop de tentatives. Réessayez plus tard";
-                            });
-                            print(e.code);
-                            break;
-                          case "invalid-email":
-                            setState(() {
-                              errorMessage = "Le mail n'est pas au bon format";
-                            });
-                            print(e.code);
-                            break;
-                          default:
-                            setState(() {
-                              errorMessage = "Erreur indéfinie";
-                            });
-                            print(e.code);
-                            break;
-                        }
-                      });
-                    }
-                  },
-                  child: Text('CONNEXION'),
+                SizedBox(height: 20),
+                Container(
+                  height: size.height / 25,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: BuyandByeAppTheme.orange,
+                  ),
+                  child: MaterialButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        AuthMethods()
+                            .signInWithMail(_email!, _password!)
+                            .then((User user) {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (_) => MyApp()));
+                        }).catchError((e) {
+                          switch (e.code) {
+                            case "user-not-found":
+                              setState(() {
+                                errorMessage = "Utilisateur introuvable";
+                              });
+                              print(e.code);
+                              break;
+                            case "wrong-password":
+                              setState(() {
+                                errorMessage = "Mauvais mot de passe";
+                              });
+                              print(e.code);
+                              break;
+                            case "too-many-requests":
+                              setState(() {
+                                errorMessage =
+                                    "Trop de tentatives. Réessayez plus tard";
+                              });
+                              print(e.code);
+                              break;
+                            case "invalid-email":
+                              setState(() {
+                                errorMessage =
+                                    "Le mail n'est pas au bon format";
+                              });
+                              print(e.code);
+                              break;
+                            default:
+                              setState(() {
+                                errorMessage = "Erreur indéfinie";
+                              });
+                              print(e.code);
+                              break;
+                          }
+                        });
+                      }
+                    },
+                    child: Text('CONNEXION'),
+                  ),
                 ),
                 SizedBox(
                   height: size.height * 0.05,

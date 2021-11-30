@@ -244,9 +244,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100),
                           child: Image.network(
-                        myProfilePic ??
-                            "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                      ),
+                            myProfilePic ??
+                                "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
+                          ),
                         ),
                       ),
                       // Boutons de changement d'image quand on est en mode modification
@@ -1356,9 +1356,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
                   )),
               Container(
                   height: 35,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: BuyandByeAppTheme.orangeFonce,
