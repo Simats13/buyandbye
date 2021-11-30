@@ -95,6 +95,7 @@ class _PageCompteState extends State<PageCompte> {
                       );
                     },
                     child: Card(
+                      margin: EdgeInsets.all(1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -126,6 +127,7 @@ class _PageCompteState extends State<PageCompte> {
                   ),
                   MaterialButton(
                       child: Card(
+                        margin: EdgeInsets.all(1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -175,6 +177,7 @@ class _PageCompteState extends State<PageCompte> {
                       );
                     },
                     child: Card(
+                      margin: EdgeInsets.all(1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -213,6 +216,7 @@ class _PageCompteState extends State<PageCompte> {
                       );
                     },
                     child: Card(
+                      margin: EdgeInsets.all(1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
