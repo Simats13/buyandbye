@@ -250,7 +250,8 @@ class DatabaseMethods {
   }
 
   // On ne récupère que les produits que le commerçant a choisi comme étant visible par les clients
-  Stream getVisibleProducts(String? sellerId, String? categorie, int actualPage) {
+  Stream getVisibleProducts(
+      String? sellerId, String? categorie, int actualPage) {
     Stream query = FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)
@@ -260,18 +261,6 @@ class DatabaseMethods {
         .limit(6)
         .snapshots();
     return query;
-  }
-
-  Stream getBestSeller(String sellerId) {
-    var test = FirebaseFirestore.instance
-        .collection("magasins")
-        .doc(sellerId)
-        .collection("produits")
-        .where("nbSell", isGreaterThan: 0)
-        .orderBy("nbSell", descending: true)
-        .limit(4);
-
-    test.where("mathis", isEqualTo: true).get();
   }
 
   Stream getOneProduct(sellerId, productId) {
@@ -496,14 +485,13 @@ class DatabaseMethods {
         .update({"statut": newStatut});
   }
 
-
   // ignore: slash_for_doc_comments
   /**Fonction permettant l'ajout de magasin en favoris
    * Elle récupère l'id de l'utilisateur, l'id du commerçant et si la variable est true ou false
    * Avec ses infos elle ajoute dans la collection de l'utilisateur les informations du magasins et les supprime s'il n'aime plus
    */
 
-  Future addFavoriteShop(String userID, sellerID, bool addFavorite) async {
+  Future addFavoriteShop(String? userID, sellerID, bool addFavorite) async {
     if (addFavorite == true) {
       var seller = await FirebaseFirestore.instance
           .collection('magasins')
@@ -562,7 +550,7 @@ class DatabaseMethods {
     }
   }
 
-  Future checkFavoriteShopSeller(String sellerID) async {
+  Future checkFavoriteShopSeller(String? sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userID = user.uid;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -588,7 +576,6 @@ class DatabaseMethods {
 
   Future addCart(String? nomProduit, num? prixProduit, String imgProduit,
       int amount, String? idCommercant, String? idProduit) async {
-
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     bool checkEmpty = await DatabaseMethods().checkCartEmpty();

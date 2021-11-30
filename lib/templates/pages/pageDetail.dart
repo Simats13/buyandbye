@@ -13,7 +13,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:status_alert/status_alert.dart';
 
 import 'dart:async';
 
@@ -30,9 +30,7 @@ class PageDetail extends StatefulWidget {
       this.clickAndCollect,
       this.livraison,
       this.sellerID,
-      this.colorStore,
-      this.newData,
-      this.onNameChanged})
+      this.colorStore,})
       : super(key: key);
   final String? img;
   final String? name;
@@ -276,7 +274,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         ),
                         onPressed: () async {
                           await DatabaseMethods()
-                              .addFavoriteShop(myID, widget.sellerID, true);
+                              .addFavoriteShop(myID!, widget.sellerID, true);
                           setState(() {
                             loved = !loved;
                           });
@@ -865,144 +863,143 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
 
                           SizedBox(height: 30),
-                          // bestSeller(dropdownValue),
-                          StreamBuilder(
-                            stream: DatabaseMethods()
-                                .getBestSeller(widget.sellerID),
-                            builder: (context, snapshot) {
-                              print(snapshot.data);
+                          // StreamBuilder(
+                          //   stream: DatabaseMethods()
+                          //       .getBestSeller(widget.sellerID),
+                          //   builder: (context, snapshot) {
+                          //     print(snapshot.data);
 
-                              if (!snapshot.hasData)
-                                return CircularProgressIndicator();
-                              return GridView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithMaxCrossAxisExtent(
-                                        maxCrossAxisExtent: 200,
-                                        childAspectRatio: 1,
-                                        mainAxisSpacing: 20,
-                                        crossAxisSpacing: 20),
-                                itemCount: snapshot.data.docs.length,
-                                itemBuilder: (context, index) {
-                                  // print(snapshot.data.docs[index]);
-                                  var money = snapshot.data.docs[index]['prix'];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => PageProduit(
-                                                    userid: userid,
-                                                    imagesList: snapshot.data
-                                                        .docs[index]['images'],
-                                                    nomProduit: snapshot.data
-                                                        .docs[index]['nom'],
-                                                    descriptionProduit: snapshot
-                                                            .data.docs[index]
-                                                        ['description'],
-                                                    prixProduit: snapshot.data
-                                                        .docs[index]['prix'],
-                                                    img: widget.img,
-                                                    name: widget.name,
-                                                    description:
-                                                        widget.description,
-                                                    adresse: widget.adresse,
-                                                    clickAndCollect:
-                                                        widget.clickAndCollect,
-                                                    livraison: widget.livraison,
-                                                    idCommercant:
-                                                        widget.sellerID,
-                                                    idProduit: snapshot
-                                                        .data.docs[index]['id'],
-                                                  )));
-                                    },
-                                    child: Container(
-                                      // margin: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          color: BuyandByeAppTheme.white_grey,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Image.network(
-                                            snapshot.data.docs[index]["images"]
-                                                [0],
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            height: 100,
-                                          ),
-                                          SizedBox(height: 5),
-                                          Text(snapshot.data.docs[index]['nom'],
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color:
-                                                      BuyandByeAppTheme.grey)),
-                                          SizedBox(height: 5),
-                                          Text(
-                                            "$money€",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
+                          //     if (!snapshot.hasData)
+                          //       return CircularProgressIndicator();
+                          //     return GridView.builder(
+                          //       padding: EdgeInsets.zero,
+                          //       shrinkWrap: true,
+                          //       physics: NeverScrollableScrollPhysics(),
+                          //       gridDelegate:
+                          //           SliverGridDelegateWithMaxCrossAxisExtent(
+                          //               maxCrossAxisExtent: 200,
+                          //               childAspectRatio: 1,
+                          //               mainAxisSpacing: 20,
+                          //               crossAxisSpacing: 20),
+                          //       itemCount: snapshot.data.docs.length,
+                          //       itemBuilder: (context, index) {
+                          //         // print(snapshot.data.docs[index]);
+                          //         var money = snapshot.data.docs[index]['prix'];
+                          //         return GestureDetector(
+                          //           onTap: () {
+                          //             Navigator.push(
+                          //                 context,
+                          //                 MaterialPageRoute(
+                          //                     builder: (context) => PageProduit(
+                          //                           userid: userid,
+                          //                           imagesList: snapshot.data
+                          //                               .docs[index]['images'],
+                          //                           nomProduit: snapshot.data
+                          //                               .docs[index]['nom'],
+                          //                           descriptionProduit: snapshot
+                          //                                   .data.docs[index]
+                          //                               ['description'],
+                          //                           prixProduit: snapshot.data
+                          //                               .docs[index]['prix'],
+                          //                           img: widget.img,
+                          //                           name: widget.name,
+                          //                           description:
+                          //                               widget.description,
+                          //                           adresse: widget.adresse,
+                          //                           clickAndCollect:
+                          //                               widget.clickAndCollect,
+                          //                           livraison: widget.livraison,
+                          //                           idCommercant:
+                          //                               widget.sellerID,
+                          //                           idProduit: snapshot
+                          //                               .data.docs[index]['id'],
+                          //                         )));
+                          //           },
+                          //           child: Container(
+                          //             // margin: EdgeInsets.all(10),
+                          //             decoration: BoxDecoration(
+                          //                 color: BuyandByeAppTheme.white_grey,
+                          //                 borderRadius:
+                          //                     BorderRadius.circular(10)),
+                          //             child: Column(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: <Widget>[
+                          //                 Image.network(
+                          //                   snapshot.data.docs[index]["images"]
+                          //                       [0],
+                          //                   width: MediaQuery.of(context)
+                          //                       .size
+                          //                       .width,
+                          //                   height: 100,
+                          //                 ),
+                          //                 SizedBox(height: 5),
+                          //                 Text(snapshot.data.docs[index]['nom'],
+                          //                     style: TextStyle(
+                          //                         fontSize: 16,
+                          //                         color:
+                          //                             BuyandByeAppTheme.grey)),
+                          //                 SizedBox(height: 5),
+                          //                 Text(
+                          //                   "$money€",
+                          //                   style: TextStyle(
+                          //                     fontSize: 16,
+                          //                     fontWeight: FontWeight.w500,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ),
+                          //         );
+                          //       },
+                          //     );
+                          //   },
+                          // ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
                           ),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //   children: [
-                          //     Container(
-                          //       height: 160,
-                          //       width: 160,
-                          //       decoration: BoxDecoration(
-                          //           color: BuyandByeAppTheme.white_grey,
-                          //           borderRadius: BorderRadius.circular(10)),
-                          //       child: Center(child: Text("Design uniquement")),
-                          //     ),
-                          //     SizedBox(width: 15),
-                          //     Container(
-                          //       height: 160,
-                          //       width: 160,
-                          //       decoration: BoxDecoration(
-                          //           color: BuyandByeAppTheme.white_grey,
-                          //           borderRadius: BorderRadius.circular(10)),
-                          //       child: Center(child: Text("Design uniquement")),
-                          //     ),
-                          //   ],
-                          // ),
-                          // SizedBox(height: 25),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //   children: [
-                          //     Container(
-                          //       height: 160,
-                          //       width: 160,
-                          //       decoration: BoxDecoration(
-                          //           color: BuyandByeAppTheme.white_grey,
-                          //           borderRadius: BorderRadius.circular(10)),
-                          //       child: Center(child: Text("Design uniquement")),
-                          //     ),
-                          //     SizedBox(width: 15),
-                          //     Container(
-                          //       height: 160,
-                          //       width: 160,
-                          //       decoration: BoxDecoration(
-                          //           color: BuyandByeAppTheme.white_grey,
-                          //           borderRadius: BorderRadius.circular(10)),
-                          //       child: Center(child: Text("Design uniquement")),
-                          //     ),
-                          //   ],
-                          // ),
+                          SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 160,
+                                width: 160,
+                                decoration: BoxDecoration(
+                                    color: BuyandByeAppTheme.white_grey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(child: Text("Design uniquement")),
+                              ),
+                            ],
+                          ),
                           SizedBox(height: 20),
 
                           Text(

@@ -47,7 +47,7 @@ class PageProduit extends StatefulWidget {
 class _PageProduitState extends State<PageProduit> {
   AddToCartButtonStateId stateId = AddToCartButtonStateId.idle;
 
-  returnDetailPage() async {
+  returnDetailPage(id) async {
     String? nomProduit = widget.nomProduit;
     num? prixProduit = widget.prixProduit;
     String imgProduit = widget.imagesList![0];
@@ -78,7 +78,6 @@ class _PageProduitState extends State<PageProduit> {
           amount,
           widget.idCommercant,
           widget.idProduit);
-
       print(addProductToCart);
 
       if (addProductToCart == false) {
@@ -90,8 +89,7 @@ class _PageProduitState extends State<PageProduit> {
         QueryDocumentSnapshot doc = docId.docs[0];
         DocumentReference docRef = doc.reference;
         var querySnapshot =
-            await DatabaseMethods().getMagasinInfo(widget.userid);
-        //String sellerNameCart = "Informatique";
+            await DatabaseMethods().getMagasinInfo(widget.idCommercant);
         String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
         Platform.isIOS
             ? showCupertinoDialog(
@@ -162,7 +160,26 @@ class _PageProduitState extends State<PageProduit> {
                 ),
               );
       } else {
-        Navigator.of(context).pop();
+        if (id == AddToCartButtonStateId.idle) {
+          //handle logic when pressed on idle state button.
+          setState(() {
+            stateId = AddToCartButtonStateId.loading;
+            Future.delayed(Duration(seconds: 1), () {
+              setState(() {
+                stateId = AddToCartButtonStateId.done;
+              });
+              Future.delayed(Duration(seconds: 1), () {
+                Navigator.of(context).pop();
+              });
+            });
+          });
+        } else if (id == AddToCartButtonStateId.done) {
+          //handle logic when pressed on done state button.
+
+          setState(() {
+            stateId = AddToCartButtonStateId.idle;
+          });
+        }
       }
     }
   }
@@ -329,23 +346,10 @@ class _PageProduitState extends State<PageProduit> {
                     height: 20,
                   ),
                   Container(
-                    // margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    // height: 48,
-                    // width: double.infinity,
-                    // decoration: BoxDecoration(
-                    //   borderRadius: BorderRadius.circular(15.0),
-                    //   color: Colors.black,
-                    // ),
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: AddToCartButton(
-                          // trolley: Image.asset(
-                          //   'assets/icons/ic_cart.png',
-                          //   width: 24,
-                          //   height: 24,
-                          //   color: Colors.white,
-                          // ),
                           trolley: Icon(Icons.add_shopping_cart),
                           text: Text(
                             'Ajouter au panier',
@@ -368,26 +372,27 @@ class _PageProduitState extends State<PageProduit> {
                           borderRadius: BorderRadius.circular(24),
                           backgroundColor: Colors.deepOrangeAccent,
                           onPressed: (id) {
-                            if (id == AddToCartButtonStateId.idle) {
-                              //handle logic when pressed on idle state button.
-                              setState(() {
-                                stateId = AddToCartButtonStateId.loading;
-                                Future.delayed(Duration(seconds: 1), () {
-                                  setState(() {
-                                    stateId = AddToCartButtonStateId.done;
-                                  });
-                                  Future.delayed(Duration(seconds: 1), () {
-                                    returnDetailPage();
-                                  });
-                                });
-                              });
-                            } else if (id == AddToCartButtonStateId.done) {
-                              //handle logic when pressed on done state button.
+                            returnDetailPage(id);
+                            // if (id == AddToCartButtonStateId.idle) {
+                            //   //handle logic when pressed on idle state button.
+                            //   setState(() {
+                            //     stateId = AddToCartButtonStateId.loading;
+                            //     Future.delayed(Duration(seconds: 1), () {
+                            //       setState(() {
+                            //         stateId = AddToCartButtonStateId.done;
+                            //       });
+                            //       Future.delayed(Duration(seconds: 1), () {
+                            //         returnDetailPage();
+                            //       });
+                            //     });
+                            //   });
+                            // } else if (id == AddToCartButtonStateId.done) {
+                            //   //handle logic when pressed on done state button.
 
-                              setState(() {
-                                stateId = AddToCartButtonStateId.idle;
-                              });
-                            }
+                            //   setState(() {
+                            //     stateId = AddToCartButtonStateId.idle;
+                            //   });
+                            // }
                           },
                           stateId: stateId,
                         ),

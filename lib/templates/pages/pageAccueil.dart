@@ -1,24 +1,19 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
-import 'package:buyandbye/templates/widgets/slider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 
 import 'package:geocoding/geocoding.dart' as geocoder;
 
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
-import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:buyandbye/theme/colors.dart';
@@ -45,20 +40,18 @@ class _PageAccueilState extends State<PageAccueil> {
   static late SharedPreferences _preferences;
   static const _keyLatitude = "UserLatitudeKey";
   static const _keyLongitude = "UserLongitudeKey";
-  static const _keyAddress = "UserAddressKey";
-  static const _keyCity = "UserCityKey";
 
   // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
 
-  String _currentAddress = "",
-      _currentAddressLocation = "",
-      streetNumber = "",
-      street = "",
-      _city = "",
-      zipCode = "",
-      idAddress = "",
-      userid = "";
+  String? currentAddress,
+      currentAddressLocation = "",
+      streetNumber,
+      street,
+      city,
+      zipCode,
+      idAddress,
+      userid;
   double latitude = 0, longitude = 0, currentLatitude = 0, currentLongitude = 0;
   late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
@@ -142,9 +135,9 @@ class _PageAccueilState extends State<PageAccueil> {
       //Longitude de l'utilisateur via la localisation
       currentLongitude = _locationData.longitude ?? 0;
       //Adresse de l'utilisateur via la localisation
-      _currentAddress = "${first.name}, ${first.locality}";
+      currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
-      _city = "${first.locality}";
+      city = "${first.locality}";
       chargementChecked = true;
     });
   }
@@ -157,37 +150,19 @@ class _PageAccueilState extends State<PageAccueil> {
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
 
-    _preferences = await SharedPreferences.getInstance();
-
     await _preferences.setDouble(_keyLatitude, latitude);
 
     await _preferences.setDouble(_keyLongitude, longitude);
-
-    SharedPreferenceHelper().saveUserLatitude(latitude);
-
-    SharedPreferenceHelper().saveUserLongitude(longitude);
 
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
-    _currentAddressLocation = "${first.name}, ${first.locality}";
+    currentAddressLocation = "${first.name}, ${first.locality}";
     idAddress = "${querySnapshot.docs[0]['idDoc']}";
-    _city = "${first.locality}";
+    city = "${first.locality}";
     // chargementChecked = true;
     setState(() {});
-  }
-
-  double _sliderSize = 20.0;
-  void showCartSlider() async {
-    final dialog = await showDialog(
-        context: context, builder: (context) => PopupSlider(_sliderSize));
-
-    if (dialog != null) {
-      setState(() {
-        _sliderSize = dialog;
-      });
-    }
   }
 
   String? username;
@@ -209,12 +184,6 @@ class _PageAccueilState extends State<PageAccueil> {
             PreferredSize(
               preferredSize: const Size.fromHeight(10),
               child: CupertinoSliverNavigationBar(
-                // leading: Material(
-                //     child: IconButton(
-                //   icon: Icon(Icons.home),
-                //   onPressed: () {},
-                // )),
-
                 middle: Container(
                   height: 45,
                   width: MediaQuery.of(context).size.width - 70,
@@ -247,7 +216,7 @@ class _PageAccueilState extends State<PageAccueil> {
                             child: Container(
                               padding: EdgeInsets.only(top: 5),
                               child: Text(
-                                _currentAddressLocation,
+                                currentAddressLocation!,
                                 style: TextStyle(fontSize: 13.5),
                                 textAlign: TextAlign.left,
                               ),
@@ -277,7 +246,6 @@ class _PageAccueilState extends State<PageAccueil> {
                     },
                   ),
                 ),
-
                 largeTitle: RichText(
                   text: TextSpan(
                     // style: Theme.of(context).textTheme.bodyText2,
@@ -341,6 +309,7 @@ class _PageAccueilState extends State<PageAccueil> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Slider bons plans
                       Padding(
                         padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                         child: Text(
@@ -351,11 +320,10 @@ class _PageAccueilState extends State<PageAccueil> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                         child: Text(
-                          "Des bons plans à $_city  🤲",
+                          "Des bons plans à $city  🤲",
                           style: TextStyle(fontSize: 15),
                         ),
                       ),
-
                       Container(
                         padding: EdgeInsets.all(20),
                         child: SliderAccueil1(latitude, longitude),
@@ -380,6 +348,8 @@ class _PageAccueilState extends State<PageAccueil> {
                       SizedBox(
                         height: 15,
                       ),
+
+                      // Slider près de chez vous
                       Padding(
                         padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                         child: Text(
@@ -398,7 +368,6 @@ class _PageAccueilState extends State<PageAccueil> {
                         padding: EdgeInsets.all(20),
                         child: SliderAccueil2(latitude, longitude),
                       ),
-
                       //trait gris de séparation
                       Container(
                         width: size.width,
@@ -408,6 +377,8 @@ class _PageAccueilState extends State<PageAccueil> {
                       SizedBox(
                         height: 15,
                       ),
+
+                      // Slider plus à découvrir
                       Padding(
                         padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                         child: Text(
@@ -426,9 +397,48 @@ class _PageAccueilState extends State<PageAccueil> {
                         padding: EdgeInsets.all(20),
                         child: SliderAccueil3(latitude, longitude),
                       ),
-
                       SizedBox(
                         height: 15,
+                      ),
+                      //trait gris de séparation
+                      Container(
+                        width: size.width,
+                        height: 10,
+                        decoration: BoxDecoration(color: textFieldColor),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+
+                      // Slider favoris
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: RichText(
+                          text: TextSpan(
+                            style: Theme.of(context).textTheme.bodyText2,
+                            children: [
+                              TextSpan(
+                                text: 'Mes magasins préférés',
+                                style: customTitle,
+                              ),
+                              WidgetSpan(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  child: Icon(
+                                    Icons.favorite,
+                                    color: Colors.red,
+                                    size: 25,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: SliderFavorite(latitude, longitude, userid),
                       ),
                       // Text(
                       //   "    Vous avez acheté chez eux récemment",
@@ -603,721 +613,8 @@ class _PageAccueilState extends State<PageAccueil> {
     );
   }
 
-  void affichageAllStores() {
-    slideDialog.showSlideDialog(
-        context: context,
-        child: Expanded(
-          child: SingleChildScrollView(
-            child: Column(children: [
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Tous les commerçants",
-                style: customTitle,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text("À proximité de vous",
-                  style: TextStyle(
-                    fontSize: 15,
-                  )),
-              SizedBox(
-                height: 10,
-              ),
-              AllStores(),
-            ]),
-          ),
-        ));
-  }
-
   void affichageAddress() {
-    slideDialog.showSlideDialog(
-        context: context,
-        child: Expanded(
-          child: SingleChildScrollView(
-            child: Column(children: [
-              Column(
-                children: [
-                  Row(children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 10, 0, 5),
-                      child: Text(
-                        "Mes Adresses",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 21,
-                        ),
-                      ),
-                    ),
-                  ]),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  //TODO Réparer et remettre les adresses x2
-                  /*Padding(
-                    padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                    child: SizedBox(
-                      height: 40,
-                      width: MediaQuery.of(context).size.width - 50,
-                      child: InkWell(
-                        onTap: () async {
-                          // generate a new token here
-                          final sessionToken = Uuid().v4();
-                          final Suggestion? result = await showSearch(
-                            context: context,
-                            delegate: AddressSearch(sessionToken),
-                          );
-                          // This will change the text displayed in the TextField
-                          if (result != null) {
-                            final placeDetails =
-                                await PlaceApiProvider(sessionToken)
-                                    .getPlaceDetailFromId(result.placeId);
-
-                            setState(() {
-                              _controller.text = result.description!;
-                              _streetNumber = placeDetails.streetNumber;
-                              _street = placeDetails.street;
-                              _city = placeDetails.city;
-                              zipCode = placeDetails.zipCode;
-                              _currentAddressLocation =
-                                  "$_streetNumber $_street, $_city ";
-                            });
-
-                            final query = "$_streetNumber $_street , $_city";
-
-                            List<geocoder.Location> locations =
-                                await geocoder.locationFromAddress(query);
-                            var first = locations.first;
-
-                            Navigator.of(context).pop();
-
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PageAddressNext(
-                                          lat: first.latitude,
-                                          long: first.longitude,
-                                          adresse: query,
-                                        )));
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey.withOpacity(0.15),
-                          ),
-                          padding: EdgeInsets.only(left: 10),
-                          child: Row(children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.search),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Saisir une nouvelle adresse",
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                          ]),
-                        ),
-                      ),
-                    ),
-                  ),*/
-                  Divider(
-                    color: Colors.black,
-                    thickness: 2,
-                    indent: 10,
-                    endIndent: 10,
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
-                        child: Container(
-                          child: Text(
-                            "Proche de vous",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  permissionChecked
-                      ? Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(20, 10, 0, 5),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width - 50,
-                                child: InkWell(
-                                  onTap: () async {
-                                    List<geocoder.Placemark> addresses =
-                                        await geocoder.placemarkFromCoordinates(
-                                            latitude, longitude);
-                                    var first = addresses.first;
-                                    setState(() {
-                                      _city = first.locality!;
-
-                                      _currentAddressLocation =
-                                          "${first.name! + ", " + first.locality!}";
-                                      geo = Geoflutterfire();
-                                      GeoFirePoint center = geo.point(
-                                          latitude: latitude,
-                                          longitude: longitude);
-                                      stream = radius.switchMap((rad) {
-                                        var collectionReference =
-                                            FirebaseFirestore.instance
-                                                .collection('magasins');
-                                        return geo
-                                            .collection(
-                                                collectionRef:
-                                                    collectionReference)
-                                            .within(
-                                                center: center,
-                                                radius: 100,
-                                                field: 'position',
-                                                strictMode: true);
-                                      });
-                                    });
-
-                                    _preferences =
-                                        await SharedPreferences.getInstance();
-
-                                    await _preferences.setDouble(
-                                        _keyLatitude, latitude);
-
-                                    await _preferences.setDouble(
-                                        _keyLongitude, longitude);
-
-                                    await _preferences.setString(
-                                        _keyAddress, _currentAddressLocation);
-
-                                    await _preferences.setString(
-                                        _keyCity, _city);
-
-                                    SharedPreferenceHelper()
-                                        .saveUserCity(_city);
-
-                                    SharedPreferenceHelper().saveUserAddress(
-                                        _currentAddressLocation);
-
-                                    SharedPreferenceHelper()
-                                        .saveUserLatitude(latitude);
-
-                                    SharedPreferenceHelper()
-                                        .saveUserLongitude(longitude);
-                                    setState(() {});
-                                    Navigator.of(context).pop();
-
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PageAddressNext(
-                                                  lat: currentLatitude,
-                                                  long: currentLongitude,
-                                                  adresse: _currentAddress,
-                                                )));
-                                  },
-                                  child: Container(
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    padding: EdgeInsets.only(top: 5),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.near_me_rounded),
-                                        SizedBox(width: 10),
-                                        Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text("Position actuelle"),
-                                              SizedBox(height: 10),
-                                              Text(_currentAddress)
-                                            ]),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(20, 10, 0, 5),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width - 50,
-                                child: InkWell(
-                                  onTap: () async {
-                                    Navigator.of(context).pop();
-                                    if (!Platform.isIOS) {
-                                      return showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title:
-                                              Text("Localisation desactivée"),
-                                          content: Text(
-                                              "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: Text("Annuler"),
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pop(false),
-                                            ),
-                                            TextButton(
-                                                child: Text("Activer"),
-                                                onPressed: () async {
-                                                  await Geolocator
-                                                      .openLocationSettings();
-                                                  Navigator.of(context)
-                                                      .pop(true);
-                                                }),
-                                          ],
-                                        ),
-                                      );
-                                    }
-
-                                    // todo : showDialog for ios
-                                    return showCupertinoDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            CupertinoAlertDialog(
-                                              title: Text(
-                                                  "Localisation desactivée"),
-                                              content: Text(
-                                                  "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
-                                              actions: [
-                                                // Close the dialog
-                                                // You can use the CupertinoDialogAction widget instead
-                                                CupertinoButton(
-                                                    child: Text('Annuler'),
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    }),
-                                                CupertinoButton(
-                                                  child: Text('Activer'),
-                                                  onPressed: () async {
-                                                    await Geolocator
-                                                        .openLocationSettings();
-
-                                                    // Then close the dialog
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                )
-                                              ],
-                                            ));
-                                  },
-                                  child: Container(
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    padding: EdgeInsets.only(top: 5),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.near_me_rounded),
-                                        SizedBox(width: 10),
-                                        Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text("Position actuelle"),
-                                              SizedBox(height: 10),
-                                              Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width -
-                                                    100,
-                                                child: Text(
-                                                    "Vous devez activer la localisation sur votre téléphone"),
-                                              )
-                                            ]),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Divider(
-                    color: Colors.black,
-                    thickness: 2,
-                    indent: 10,
-                    endIndent: 10,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                        child: Container(
-                          child: Text(
-                            "Mes adresses enregistrées",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ),
-                      /*Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(width: 10),
-                          IconButton(
-                              onPressed: () async {
-                                // generate a new token here
-                                final sessionToken = Uuid().v4();
-                                final Suggestion? result = await showSearch(
-                                  context: context,
-                                  delegate: AddressSearch(sessionToken),
-                                );
-                                // This will change the text displayed in the TextField
-                                if (result != null) {
-                                  final placeDetails =
-                                      await PlaceApiProvider(sessionToken)
-                                          .getPlaceDetailFromId(result.placeId);
-
-                                  setState(() {
-                                    _controller.text = result.description!;
-                                    _streetNumber = placeDetails.streetNumber;
-                                    _street = placeDetails.street;
-                                    _city = placeDetails.city;
-                                    zipCode = placeDetails.zipCode;
-                                    _currentAddressLocation =
-                                        "$_streetNumber $_street, $_city ";
-                                  });
-
-                                  final query =
-                                      "$_streetNumber $_street , $_city";
-
-                                  List<geocoder.Location> locations =
-                                      await geocoder.locationFromAddress(query);
-                                  var first = locations.first;
-
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PageAddressNext(
-                                                lat: first.latitude,
-                                                long: first.longitude,
-                                                adresse: query,
-                                              )));
-                                }
-                              },
-                              icon: Icon(Icons.home)),
-                        ],
-                      ),*/
-                    ],
-                  ),
-                  StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(userid)
-                          .collection("Address")
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: ColorLoader3(
-                              radius: 15.0,
-                              dotRadius: 6.0,
-                            ),
-                          );
-                        }
-                        if (snapshot.hasData) {
-                          if ((snapshot.data! as QuerySnapshot).docs.length >
-                              0) {
-                            return ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: (snapshot.data! as QuerySnapshot)
-                                    .docs
-                                    .length,
-                                itemBuilder: (context, index) {
-                                  return Row(
-                                    children: [
-                                      InkWell(
-                                        onTap: () async {
-                                          List<geocoder.Placemark> addresses =
-                                              await geocoder.placemarkFromCoordinates(
-                                                  (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]["latitude"],
-                                                  (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]
-                                                      ["longitude"]);
-                                          var first = addresses.first;
-
-                                          await DatabaseMethods()
-                                              .changeChosenAddress(
-                                                  userid,
-                                                  (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]["idDoc"],
-                                                  idAddress);
-                                          setState(() {
-                                            _city = first.locality!;
-                                            idAddress = (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]["idDoc"];
-                                            latitude = (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]["latitude"];
-                                            longitude = (snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]["longitude"];
-                                            _currentAddressLocation =
-                                                "${first.name! + ", " + first.locality!}";
-
-                                            geo = Geoflutterfire();
-                                            GeoFirePoint center = geo.point(
-                                                latitude: (snapshot.data!
-                                                        as QuerySnapshot)
-                                                    .docs[index]["latitude"],
-                                                longitude: (snapshot.data!
-                                                        as QuerySnapshot)
-                                                    .docs[index]["longitude"]);
-                                            stream = radius.switchMap((rad) {
-                                              var collectionReference =
-                                                  FirebaseFirestore.instance
-                                                      .collection('magasins');
-                                              return geo
-                                                  .collection(
-                                                      collectionRef:
-                                                          collectionReference)
-                                                  .within(
-                                                      center: center,
-                                                      radius: 100,
-                                                      field: 'position',
-                                                      strictMode: true);
-                                            });
-                                          });
-
-                                          _preferences = await SharedPreferences
-                                              .getInstance();
-
-                                          await _preferences.setDouble(
-                                              _keyLatitude,
-                                              (snapshot.data! as QuerySnapshot)
-                                                  .docs[index]["latitude"]);
-
-                                          await _preferences.setString(
-                                              _keyCity, _city);
-
-                                          await _preferences.setDouble(
-                                              _keyLongitude,
-                                              (snapshot.data! as QuerySnapshot)
-                                                  .docs[index]["longitude"]);
-
-                                          await _preferences.setString(
-                                              _keyAddress,
-                                              _currentAddressLocation);
-
-                                          SharedPreferenceHelper()
-                                              .saveUserAddress(
-                                                  _currentAddressLocation);
-                                          SharedPreferenceHelper()
-                                              .saveUserCity(_city);
-
-                                          SharedPreferenceHelper()
-                                              .saveUserLatitude((snapshot.data!
-                                                      as QuerySnapshot)
-                                                  .docs[index]["latitude"]);
-
-                                          SharedPreferenceHelper()
-                                              .saveUserLongitude((snapshot.data!
-                                                      as QuerySnapshot)
-                                                  .docs[index]["longitude"]);
-                                          Phoenix.rebirth(context);
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          10, 0, 0, 0),
-                                                  child:
-                                                      Icon(Icons.place_rounded),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(width: 20),
-                                            Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(height: 30),
-                                                  Container(
-                                                    child: Text(
-                                                      (snapshot.data!
-                                                                  as QuerySnapshot)
-                                                              .docs[index]
-                                                          ["addressName"],
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                  Center(
-                                                    child: Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width -
-                                                              120,
-                                                      child: Text((snapshot
-                                                                  .data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]["address"]),
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 30),
-                                                ]),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                IconButton(
-                                                  icon: Icon(Icons.edit),
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                PageAddressEdit(
-                                                                  adresse: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "address"],
-                                                                  adressTitle: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "addressName"],
-                                                                  buildingDetails:
-                                                                      (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]["buildingDetails"],
-                                                                  buildingName: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "buildingName"],
-                                                                  familyName: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "familyName"],
-                                                                  lat: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "latitude"],
-                                                                  long: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      [
-                                                                      "longitude"],
-                                                                  iD: (snapshot.data!
-                                                                              as QuerySnapshot)
-                                                                          .docs[index]
-                                                                      ["idDoc"],
-                                                                )));
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                });
-                          } else {
-                            return Column(
-                              children: [
-                                SizedBox(height: 20),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20.0),
-                                  child: Container(
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText2,
-                                        children: [
-                                          TextSpan(
-                                              text:
-                                                  "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
-                                          WidgetSpan(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 2.0),
-                                              child: Icon(Icons.home),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                        } else {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                      }),
-                ],
-              )
-            ]),
-          ),
-        ));
+    slideDialog.showSlideDialog(context: context, child: Container());
   }
 }
 
@@ -1339,8 +636,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
   var position;
   late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
-  bool loved;
+  Stream<List<DocumentSnapshot>>? stream;
+  bool? loved;
 
   @override
   void initState() {
@@ -1420,7 +717,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: [],
                     ),
                   );
                 },
@@ -1549,7 +847,8 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: [],
                     ),
                   );
                 },
@@ -1678,7 +977,8 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
+                      clickAndCollect: documents[index]["ClickAndCollect"],
+                      mainCategorie: [],
                     ),
                   );
                 },
@@ -1723,7 +1023,7 @@ class SliderFavorite extends StatefulWidget {
   );
   double latitude;
   double longitude;
-  String userID;
+  String? userID;
   @override
   _SliderFavoriteState createState() => _SliderFavoriteState();
 }
@@ -1731,9 +1031,9 @@ class SliderFavorite extends StatefulWidget {
 class _SliderFavoriteState extends State<SliderFavorite> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  Geoflutterfire? geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1742,13 +1042,13 @@ class _SliderFavoriteState extends State<SliderFavorite> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo!.point(latitude: widget.latitude, longitude: widget.longitude);
       stream = radius.switchMap((rad) {
         var collectionReference = FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userID)
             .collection('liked');
-        return geo.collection(collectionRef: collectionReference).within(
+        return geo!.collection(collectionRef: collectionReference).within(
             center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
@@ -1764,7 +1064,7 @@ class _SliderFavoriteState extends State<SliderFavorite> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1785,12 +1085,12 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          final documents = snapshot.data..shuffle();
+          final documents = snapshot.data!..shuffle();
           if (documents.length > 0) {
             return Container(
               height: MediaQuery.of(context).size.height / 2.4,
@@ -1804,16 +1104,15 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: SlideItem(
-                      img: documents[index]["imgUrl"],
-                      name: documents[index]["name"],
-                      address: documents[index]["adresse"],
-                      description: documents[index]["description"],
-                      livraison: documents[index]["livraison"],
-                      sellerID: documents[index]["id"],
-                      colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
-                      mainCategorie: documents[index]["mainCategorie"] 
-                    ),
+                        img: documents[index]["imgUrl"],
+                        name: documents[index]["name"],
+                        address: documents[index]["adresse"],
+                        description: documents[index]["description"],
+                        livraison: documents[index]["livraison"],
+                        sellerID: documents[index]["id"],
+                        colorStore: documents[index]["colorStore"],
+                        clickAndCollect: documents[index]["ClickAndCollect"],
+                        mainCategorie: documents[index]["mainCategorie"]),
                   );
                 },
               ),

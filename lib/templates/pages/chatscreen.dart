@@ -139,7 +139,7 @@ class _ChatRoomState extends State<ChatRoom>
                   children: [
                     TextSpan(
                         text:
-                            widget.selectedUserFname + widget.selectedUserLname,
+                            widget.selectedUserFname! + widget.selectedUserLname!,
                         style: TextStyle(
                           fontSize: 20,
                           color: BuyandByeAppTheme.orangeMiFonce,
