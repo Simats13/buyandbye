@@ -19,7 +19,6 @@ import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:buyandbye/services/database.dart';
@@ -35,11 +34,6 @@ class _PageAccueilState extends State<PageAccueil> {
   Location location = Location();
   late bool permissionChecked;
   bool chargementChecked = false;
-
-  // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
-  static late SharedPreferences _preferences;
-  static const _keyLatitude = "UserLatitudeKey";
-  static const _keyLongitude = "UserLongitudeKey";
 
   // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
@@ -150,10 +144,6 @@ class _PageAccueilState extends State<PageAccueil> {
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
 
-    await _preferences.setDouble(_keyLatitude, latitude);
-
-    await _preferences.setDouble(_keyLongitude, longitude);
-
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(latitude, longitude);
 
@@ -207,10 +197,7 @@ class _PageAccueilState extends State<PageAccueil> {
                             onTapCancel: () {
                               Navigator.of(context).pop();
                             },
-                            onTap: () async {
-                              // permissionChecked =
-                              //     await _determinePermission();
-
+                            onTap: () {
                               affichageAddress();
                             },
                             child: Container(
@@ -624,7 +611,7 @@ class _PageAccueilState extends State<PageAccueil> {
           return Align(
               alignment: Alignment.topCenter,
               child: Container(
-                constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
+                constraints: BoxConstraints(minHeight: 400, maxHeight: 600),
                 margin: EdgeInsets.only(top: 100, left: 12, right: 12),
                 child: UserAddress(),
               ));
