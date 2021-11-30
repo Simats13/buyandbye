@@ -139,11 +139,10 @@ class _PageAccueilState extends State<PageAccueil> {
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot = await (DatabaseMethods()
-        .getChosenAddress(userid) /*as Future<QuerySnapshot<Object>>*/);
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(latitude, longitude);
 
