@@ -555,6 +555,7 @@ class DatabaseMethods {
           "idCommercant": idCommercant,
         });
       }
+      return true;
     }
   }
 
