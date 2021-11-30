@@ -8,12 +8,12 @@ import 'package:buyandbye/services/auth.dart';
 class EditProfileComPage extends StatefulWidget {
   @override
   const EditProfileComPage(this.premium);
-  final bool premium;
+  final bool? premium;
   _EditProfileComPageState createState() => _EditProfileComPageState();
 }
 
 class _EditProfileComPageState extends State<EditProfileComPage> {
-  String myID,
+  String? myID,
       myName,
       myUserName,
       myEmail,
@@ -44,7 +44,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
-    String dropdownValue = colorStoreName;
+    String? dropdownValue = colorStoreName;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,
@@ -141,7 +141,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                           SizedBox(height: 20),
                           myName == null
                               ? CircularProgressIndicator()
-                              : Text(myName),
+                              : Text(myName!),
                           SizedBox(height: 20),
                           Text("E-mail :",
                               style: TextStyle(
@@ -149,7 +149,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                           SizedBox(height: 20),
                           myEmail == null
                               ? CircularProgressIndicator()
-                              : Text(myEmail),
+                              : Text(myEmail!),
                           SizedBox(height: 20),
                           Text("Numéro de téléphone :",
                               style: TextStyle(
@@ -157,7 +157,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                           SizedBox(height: 20),
                           myPhone == null
                               ? CircularProgressIndicator()
-                              : Text(myPhone),
+                              : Text(myPhone!),
                           SizedBox(height: 20),
                           widget.premium == true
                               ? Text("Couleur de mon magasin :",
@@ -173,7 +173,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                                         Icons.keyboard_arrow_down_rounded),
                                     iconSize: 24,
                                     elevation: 16,
-                                    onChanged: (String newValue) {
+                                    onChanged: (String? newValue) {
                                       setState(() {
                                         dropdownValue = newValue;
                                         getMyInfo();
@@ -222,7 +222,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
 
 class ModifyProfile extends StatefulWidget {
   ModifyProfile(this.myName, this.myEmail, this.myPhone, this.myID);
-  final String myName, myEmail, myPhone, myID;
+  final String? myName, myEmail, myPhone, myID;
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
@@ -297,7 +297,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
   }
 
   // Fonction d'affichage des champs de texte
-  Widget buildTextField(String labelText, String placeholder, fieldController,
+  Widget buildTextField(String labelText, String? placeholder, fieldController,
       bool capitalization) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),

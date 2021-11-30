@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:app_settings/app_settings.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
@@ -8,15 +7,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -30,31 +26,25 @@ class _PageExploreState extends State<PageExplore> {
   var currentLocation;
   var position;
   var radius = BehaviorSubject<double>.seeded(10);
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  int prevPage;
-  LocationPermission permission;
-  Stream<List<DocumentSnapshot>> stream;
-  BitmapDescriptor mapMaker;
+  int? prevPage;
+  LocationPermission? permission;
+  Stream<List<DocumentSnapshot>>? stream;
+  late BitmapDescriptor mapMaker;
   Set<Marker> _markers = Set<Marker>();
 
-  double _value = 40.0;
   List magasins = [];
-  String _label = 'kms';
+  String label = 'kms';
   bool localisation = false;
-  double latitude, longitude;
-
-  // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
-  static SharedPreferences _preferences;
-  static const _keySlider = "UserSliderKey";
-  static const _keyLabel = "UserSliderLabelKey";
+  late double latitude, longitude;
 
   // firestore init
   final _firestore = FirebaseFirestore.instance;
 
-  GoogleMapController _mapController;
-  PageController _pageController;
+  GoogleMapController? _mapController;
+  PageController? _pageController;
 
   @override
   void setState(fn) {
@@ -76,8 +66,8 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   void _onScroll() {
-    if (_pageController.page.toInt() != prevPage) {
-      prevPage = _pageController.page.toInt();
+    if (_pageController!.page!.toInt() != prevPage) {
+      prevPage = _pageController!.page!.toInt();
     }
   }
 
@@ -96,15 +86,15 @@ class _PageExploreState extends State<PageExplore> {
     setState(() {
       _mapController = controller;
 
-      stream.listen((List<DocumentSnapshot> documentList) {
+      stream!.listen((List<DocumentSnapshot> documentList) {
         _updateMarkers(documentList);
       });
-      _mapController.setMapStyle(MapStyle.mapStyle);
+      _mapController!.setMapStyle(MapStyle.mapStyle);
     });
   }
 
   void showHome() async {
-    _mapController.animateCamera(CameraUpdate.newCameraPosition(
+    _mapController!.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(latitude, longitude),
         zoom: 15.0,
@@ -113,8 +103,7 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   userID() async {
-    _value = await SharedPreferenceHelper().getUserSlider() ?? 1.0;
-    _label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
+    label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
     final User user = await AuthMethods().getCurrentUser();
     var userid = user.uid;
     QuerySnapshot querySnapshot =
@@ -145,186 +134,143 @@ class _PageExploreState extends State<PageExplore> {
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
 
-  void _magasinAffichage(double lat, double lng, String name, idSeller) {
-    slideDialog.showSlideDialog(
-      context: context,
-      child: FutureBuilder(
-          future: DatabaseMethods().getMagasinInfo(idSeller),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: ColorLoader3(
-                  radius: 15.0,
-                  dotRadius: 6.0,
-                ),
-              );
-            }
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Center(
-                          child: Text(
-                            name,
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
+  void _magasinAffichage(double lat, double lng, String? name, idSeller) {
+    Size size = MediaQuery.of(context).size;
+    showGeneralDialog(
+        barrierLabel: "Affichage magasins",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: Duration(milliseconds: 400),
+        context: context,
+        pageBuilder: (context, anim1, anim2) {
+          return Card(
+            margin: EdgeInsets.only(
+                top: size.height / 1.9, left: 20, right: 20, bottom: 30),
+            child: Align(
+              child: Container(
+                margin: EdgeInsets.only(left: 16, right: 16),
+                child: FutureBuilder(
+                    future: DatabaseMethods().getMagasinInfo(idSeller),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: ColorLoader3(
+                            radius: 15.0,
+                            dotRadius: 6.0,
                           ),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 200,
-                          child: Image(
-                            image: NetworkImage(
-                                snapshot.data.docs[index]['imgUrl']),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          child: Text("Adresse : " +
-                              snapshot.data.docs[index]['adresse']),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          child: Text("Description : " +
-                              snapshot.data.docs[index]['description']),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageDetail(
-                                            img: snapshot.data.docs[index]
-                                                ['imgUrl'],
-                                            name: snapshot.data.docs[index]
-                                                ['name'],
-                                            colorStore: snapshot
-                                                .data.docs[index]['colorStore'],
-                                            description: snapshot.data
-                                                .docs[index]['description'],
-                                            adresse: snapshot.data.docs[index]
-                                                ['adresse'],
-                                            clickAndCollect: snapshot.data
-                                                .docs[index]['ClickAndCollect'],
-                                            livraison: snapshot.data.docs[index]
-                                                ['livraison'],
-                                            sellerID: snapshot.data.docs[index]
-                                                ['id'],
-                                          )));
-                            },
-                            child: Center(
-                              child: Text(
-                                "Accéder au magasin",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                });
-          }),
-    );
+                        );
+                      }
+                      return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              (snapshot.data! as QuerySnapshot).docs.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    name!,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 25,
+                                ),
+                                Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 200,
+                                  child: Image(
+                                    image: NetworkImage(
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]['imgUrl']),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child: Text("Adresse : " +
+                                      (snapshot.data! as QuerySnapshot)
+                                          .docs[index]['adresse']),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child: Text("Description : " +
+                                      (snapshot.data! as QuerySnapshot)
+                                          .docs[index]['description']),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => PageDetail(
+                                                    img: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['imgUrl'],
+                                                    name: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['name'],
+                                                    colorStore: (snapshot.data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['colorStore'],
+                                                    description: (snapshot.data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['description'],
+                                                    adresse: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['adresse'],
+                                                    clickAndCollect: (snapshot
+                                                                    .data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['ClickAndCollect'],
+                                                    livraison: (snapshot.data!
+                                                                as QuerySnapshot)
+                                                            .docs[index]
+                                                        ['livraison'],
+                                                    sellerID: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]['id'],
+                                                  )));
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "Accéder au magasin",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    }),
+              ),
+            ),
+          );
+        });
   }
 
   //FONCTION ALERT PERMETTANT DE MODIFIER LE PERIMETRE DES MARQUEURS
-  void _perimeter() async {
-    _preferences = await SharedPreferences.getInstance();
-
-    slideDialog.showSlideDialog(
-      context: context,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Changer de périmètre",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          StatefulBuilder(builder: (context, innerSetState) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Slider(
-                  min: 1,
-                  max: 200,
-                  divisions: 10,
-                  value: _value,
-                  label: _label,
-                  activeColor: Colors.blue,
-                  inactiveColor: Colors.blue.withOpacity(0.2),
-                  onChanged: (value) async {
-                    innerSetState(() {
-                      setState(() {
-                        _value = value;
-
-                        _label = '${_value.toInt().toString()} kms';
-                        markers.clear();
-                      });
-                      radius.add(value);
-                    });
-                    // await _preferences.setString(_keyLabel, _label);
-                    // await _preferences.setDouble(_keySlider, _value);
-                    _preferences.setDouble(_keySlider, _value);
-                    _preferences.setString(_keyLabel, _label);
-                  }),
-            );
-          }),
-          Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: Card(
-                    elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 8),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - 30,
-                      height: MediaQuery.of(context).size.height * (1 / 3),
-                      child: GoogleMap(
-                        onMapCreated: _onMapCreated,
-                        initialCameraPosition: CameraPosition(
-                            target: LatLng(latitude, longitude), zoom: 15.0),
-                        markers: Set<Marker>.of(markers.values),
-                        myLocationButtonEnabled: false,
-                        myLocationEnabled: true,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
@@ -334,7 +280,7 @@ class _PageExploreState extends State<PageExplore> {
     });
   }
 
-  void _addMarker(double lat, double lng, String name, String idSeller) {
+  void _addMarker(double lat, double lng, String? name, String? idSeller) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
         markerId: id,
@@ -354,7 +300,7 @@ class _PageExploreState extends State<PageExplore> {
   }
 
   moveCamera(double lat, double lng) {
-    _mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+    _mapController!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(lat, lng), zoom: 14.0, bearing: 45.0, tilt: 45.0)));
   }
 
@@ -440,7 +386,7 @@ class _PageExploreState extends State<PageExplore> {
                     myLocationEnabled: true,
                   ),
                 ),
-                StreamBuilder(
+                StreamBuilder<dynamic>(
                     stream: stream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -467,6 +413,7 @@ class _PageExploreState extends State<PageExplore> {
                         //METTRE UN SHIMMER
                       }
                       if (!snapshot.hasData) return Container();
+                      //Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
                       return Positioned(
                         bottom: 10.0,
                         child: Container(
@@ -483,10 +430,10 @@ class _PageExploreState extends State<PageExplore> {
                                 width: MediaQuery.of(context).size.width,
                                 child: PageView.builder(
                                   controller: _pageController,
-                                  itemCount: snapshot.data.length,
+                                  itemCount: snapshot.data!.length,
                                   itemBuilder: (context, int index) {
                                     return AnimatedBuilder(
-                                      animation: _pageController,
+                                      animation: _pageController!,
                                       builder: (context, widget) {
                                         return Center(
                                           child: SizedBox(
@@ -510,12 +457,6 @@ class _PageExploreState extends State<PageExplore> {
                                             geoPoint.longitude,
                                             snapshot.data[index]['name'],
                                             snapshot.data[index]['id'],
-                                            // snapshot.data[index]['adresse'],
-                                            // snapshot.data[index]['imgUrl'],
-                                            // snapshot.data[index]['description'],
-                                            // snapshot.data[index]['livraison'],
-                                            // snapshot.data[index]
-                                            //     ['ClickAndCollect'],
                                           );
                                         },
                                         child: Stack(
@@ -662,12 +603,10 @@ class _PageExploreState extends State<PageExplore> {
                         Platform.isIOS
                             ? CupertinoButton(
                                 child: Text('Activer la localisation'),
-                                onPressed: () {
-                                  AppSettings.openLocationSettings();
-                                })
+                                onPressed: () {})
                             : TextButton(
                                 child: Text("Activer la localisation"),
-                                onPressed: () => AppSettings.openAppSettings(),
+                                onPressed: () {},
                               ),
                       ],
                     )

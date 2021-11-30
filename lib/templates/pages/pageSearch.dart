@@ -1,13 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:buyandbye/json/menu_json.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageCategorie.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
-import 'package:buyandbye/theme/styles.dart';
 import 'package:shimmer/shimmer.dart';
-import 'dart:convert';
 import '../buyandbye_app_theme.dart';
 
 class PageSearch extends StatefulWidget {
@@ -17,20 +16,21 @@ class PageSearch extends StatefulWidget {
 
 class _PageSearchState extends State<PageSearch> {
   final TextEditingController searchController = TextEditingController();
-  QuerySnapshot snapshotData;
-  Stream streamStore;
+  QuerySnapshot? snapshotData;
+  Stream? streamStore;
   bool isExecuted = false;
   int activeMenu = 0;
 
-  Widget searchedData(
-      {String photoUrl,
-      name,
-      description,
-      adresse,
-      clickAndCollect,
-      livraison,
-      colorStore,
-      sellerID}) {
+  Widget searchedData({
+    required String photoUrl,
+    required name,
+    description,
+    required adresse,
+    clickAndCollect,
+    livraison,
+    colorStore,
+    sellerID,
+  }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -65,7 +65,7 @@ class _PageSearchState extends State<PageSearch> {
   }
 
   Widget searchStoreList() {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
       stream: streamStore,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -94,8 +94,8 @@ class _PageSearchState extends State<PageSearch> {
                 ],
               ),
             ),
-            baseColor: Colors.grey[300],
-            highlightColor: Colors.grey[100],
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
           );
         }
         if (snapshot.data.docs.length > 0) {
@@ -307,3 +307,9 @@ class CategoryStore extends StatelessWidget {
     )));
   }
 }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }

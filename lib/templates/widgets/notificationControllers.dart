@@ -16,17 +16,15 @@ class NotificationController {
   Future takeFCMTokenWhenAppLaunch() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userToken = prefs.get('FCMToken');
+    String? userToken = prefs.get('FCMToken') as String?;
     if (userToken == null) {
       FirebaseMessaging.instance.getToken().then((val) async {
-        print('Token: ' + val);
+        print('Token: ' + val!);
         prefs.setString('FCMToken', val);
-        final User user = auth.currentUser;
+        final User user = auth.currentUser!;
         final uid = user.uid;
         print('UserID :' + uid);
-        if (uid != null) {
-          AuthMethods.instanace.updateUserToken(uid, val);
-        }
+        AuthMethods.instance.updateUserToken(uid, val);
       });
     }
   }
@@ -61,9 +59,9 @@ class NotificationController {
   }
 
   Future _onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) async {}
+      int id, String? title, String? body, String? payload) async {}
 
-  Future _selectNotification(String payload) async {}
+  Future _selectNotification(String? payload) async {}
 
   Future<void> sendNotificationMessage(messageType, myName, tokenUser) async {
     const yourServerKey =

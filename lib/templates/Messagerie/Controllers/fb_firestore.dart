@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FBCloudStore {
   static FBCloudStore get instanace => FBCloudStore();
   // About Firebase Database
-  Future<List<String>> saveUserDataToFirebaseDatabase(
+  Future<List<String?>?> saveUserDataToFirebaseDatabase(
       userEmail, userId, userName, userIntro, downloadUrl) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -14,7 +14,7 @@ class FBCloudStore {
           .where('userId', isEqualTo: prefs.get('userId'))
           .get();
       final List<DocumentSnapshot> documents = result.docs;
-      String myID = userId;
+      String? myID = userId;
       if (documents.length == 0) {
         await prefs.setString('userId', userId);
         await FirebaseFirestore.instance.collection('users').doc(userId).set({
@@ -28,7 +28,7 @@ class FBCloudStore {
         });
       } else {
         myID = documents[0]['userId'];
-        await prefs.setString('userId', myID);
+        await prefs.setString('userId', myID!);
         await FirebaseFirestore.instance.collection('users').doc(myID).update({
           'email': userEmail,
           'name': userName,
@@ -40,13 +40,13 @@ class FBCloudStore {
       }
       return [myID, downloadUrl];
     } catch (e) {
-      print(e.message);
+      print(e);
       return null;
     }
   }
 
   Future<void> updateMyChatListValues(
-      String documentID, String chatID, bool isInRoom) async {
+      String? documentID, String? chatID, bool isInRoom) async {
     var updateData =
         isInRoom ? {'inRoom': isInRoom, 'badgeCount': 0} : {'inRoom': isInRoom};
     final DocumentReference result = FirebaseFirestore.instance
@@ -89,7 +89,7 @@ class FBCloudStore {
   }
 
   // ignore: missing_return
-  Future<int> getUnreadMSGCount(String peerUserID) async {
+  Future getUnreadMSGCount(String? peerUserID) async {
     try {
       int unReadMSGCount = 0;
       QuerySnapshot userChatList = await FirebaseFirestore.instance
@@ -99,18 +99,18 @@ class FBCloudStore {
           .get();
       List<QueryDocumentSnapshot> chatListDocuments = userChatList.docs;
       for (QueryDocumentSnapshot snapshot in chatListDocuments) {
-        unReadMSGCount = unReadMSGCount + snapshot['badgeCount'];
+        unReadMSGCount = unReadMSGCount + snapshot['badgeCount'] as int;
       }
       print('unread MSG count is $unReadMSGCount');
       return unReadMSGCount;
     } catch (e) {
-      print(e.message);
+      print(e);
     }
   }
 
   Future updateUserChatListField(String documentID, String lastMessage, chatID,
       myID, selectedUserID) async {
-    var userBadgeCount = 0;
+    int userBadgeCount = 0;
     var isRoom = false;
 
     print("myID : " + documentID);
@@ -125,7 +125,7 @@ class FBCloudStore {
 
     if (userDoc.data() != null) {
       isRoom = userDoc.get('inRoom') ?? false;
-      if (userDoc != null && selectedUserID != myID && !userDoc['inRoom']) {
+      if (selectedUserID != myID && !userDoc['inRoom']) {
         userBadgeCount = userDoc['badgeCount'];
         userBadgeCount++;
       }

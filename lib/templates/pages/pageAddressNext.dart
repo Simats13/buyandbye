@@ -9,31 +9,31 @@ import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import '../buyandbye_app_theme.dart';
 
 class PageAddressNext extends StatefulWidget {
-  const PageAddressNext({Key key, this.lat, this.long, this.adresse})
+  const PageAddressNext({Key? key, this.lat, this.long, this.adresse})
       : super(key: key);
-  final double lat;
-  final double long;
-  final String adresse;
+  final double? lat;
+  final double? long;
+  final String? adresse;
   @override
   _PageAddressNextState createState() => _PageAddressNextState();
 }
 
 class _PageAddressNextState extends State<PageAddressNext> {
-  GoogleMapController _mapController;
-  Stream<List<DocumentSnapshot>> stream;
+  late GoogleMapController _mapController;
+  Stream<List<DocumentSnapshot>>? stream;
   final _formKey = GlobalKey<FormState>();
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  Geoflutterfire? geo;
   bool mapToggle = false;
   Set<Marker> _markers = Set<Marker>();
   bool isEnabled = false;
-  String buildingDetails = "";
-  String buildingName = "";
-  String adressTitle = "";
-  String familyName = "";
+  String? buildingDetails = "";
+  String? buildingName = "";
+  String? adressTitle = "";
+  String? familyName = "";
 
-  BitmapDescriptor mapMarker;
+  BitmapDescriptor? mapMarker;
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -64,7 +64,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
     final idMarker = MarkerId(widget.lat.toString() + widget.long.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(widget.lat, widget.long),
+      position: LatLng(widget.lat!, widget.long!),
       //icon: mapMarker,
     ));
 
@@ -104,7 +104,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
-                        target: LatLng(widget.lat, widget.long), zoom: 15.0),
+                        target: LatLng(widget.lat!, widget.long!), zoom: 15.0),
                     myLocationButtonEnabled: false,
                     markers: _markers,
                   ),
@@ -116,7 +116,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                   Padding(
                     padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
                     child: Container(
-                      child: Text(widget.adresse,
+                      child: Text(widget.adresse!,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
@@ -294,10 +294,10 @@ class _PageAddressNextState extends State<PageAddressNext> {
                       ? () {
                           // Validate returns true if the form is valid, or false otherwise.
 
-                          final isValid = _formKey.currentState.validate();
+                          final isValid = _formKey.currentState!.validate();
 
                           if (isValid) {
-                            _formKey.currentState.save();
+                            _formKey.currentState!.save();
 
                             sendToDatabaseAddress(
                                 buildingDetails,
@@ -322,15 +322,15 @@ class _PageAddressNextState extends State<PageAddressNext> {
   }
 
   Future<void> sendToDatabaseAddress(
-      String buildingDetails,
-      String buildingName,
-      String familyName,
-      String adressTitle,
-      double longitude,
-      double latitude,
-      String address) async {
+      String? buildingDetails,
+      String? buildingName,
+      String? familyName,
+      String? adressTitle,
+      double? longitude,
+      double? latitude,
+      String? address) async {
     try {
-      await DatabaseMethods.instanace.addAdresses(buildingDetails, buildingName,
+      await DatabaseMethods.instance.addAdresses(buildingDetails, buildingName,
           familyName, adressTitle, widget.long, widget.lat, address);
     } catch (e) {
       showAlertDialog(context, 'Error user information to database');

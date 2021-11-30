@@ -1,4 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +22,7 @@ String getDate(time) {
 
 class _CommandesCommercantState extends State<CommandesCommercant> {
   var clickedCategorie = 0;
-  String userid;
+  String? userid;
 
   void initState() {
     super.initState();
@@ -181,8 +182,8 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                       ],
                     ),
                   ),
-                  baseColor: Colors.grey[300],
-                  highlightColor: Colors.grey[100],
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
                 );
               }
             }));
@@ -191,7 +192,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
 
 class Command extends StatefulWidget {
   const Command(this.clickedCategorie, this.sellerId);
-  final String sellerId;
+  final String? sellerId;
   final int clickedCategorie;
   _CommandState createState() => _CommandState();
 }
@@ -205,7 +206,7 @@ class _CommandState extends State<Command> {
           .getSellerCommandDetails(widget.sellerId, widget.clickedCategorie),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return snapshot.data.docs.length == 0
+          return (snapshot.data!as QuerySnapshot).docs.length == 0
               ? //Affiche un message s'il n'y a aucune commande dans une catégorie
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -220,18 +221,18 @@ class _CommandState extends State<Command> {
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: snapshot.data.docs.length,
+                      itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                       itemBuilder: (context, index) {
                         // Récupération des valeurs de la bdd
-                        int reference = snapshot.data.docs[index]["reference"];
-                        int statut = snapshot.data.docs[index]["statut"];
+                        int? reference = (snapshot.data as QuerySnapshot).docs[index]["reference"];
+                        int? statut = (snapshot.data! as QuerySnapshot).docs[index]["statut"];
                         String date =
-                            getDate((snapshot.data.docs[index]["horodatage"]));
-                        int nbArticles = snapshot.data.docs[index]["articles"];
-                        double prix = snapshot.data.docs[index]["prix"];
-                        int livraison = snapshot.data.docs[index]["livraison"];
-                        String commandId = snapshot.data.docs[index]["id"];
-                        String clientId = snapshot.data.docs[index]["clientID"];
+                            getDate(((snapshot.data! as QuerySnapshot).docs[index]["horodatage"]));
+                        int nbArticles = (snapshot.data! as QuerySnapshot).docs[index]["articles"];
+                        double prix = (snapshot.data! as QuerySnapshot).docs[index]["prix"];
+                        int? livraison = (snapshot.data! as QuerySnapshot).docs[index]["livraison"];
+                        String? commandId = (snapshot.data! as QuerySnapshot).docs[index]["id"];
+                        String? clientId = (snapshot.data! as QuerySnapshot).docs[index]["clientID"];
                         // Toutes les commandes sont récupérées mais on affiche seulement
                         // celles dont le statut est le même que celui de la catégorie selectionnée
                         return MaterialButton(
@@ -350,7 +351,7 @@ class _CommandState extends State<Command> {
                     SizedBox(height: 20),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       for (int i = 1;
-                          i < ((snapshot.data.docs.length + 1) / 3).ceil() + 1;
+                          i < (((snapshot.data! as QuerySnapshot).docs.length + 1) / 3).ceil() + 1;
                           i++)
                         Container(
                             height: 30,
@@ -395,8 +396,8 @@ class _CommandState extends State<Command> {
                 ],
               ),
             ),
-            baseColor: Colors.grey[300],
-            highlightColor: Colors.grey[100],
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
           );
         }
       },

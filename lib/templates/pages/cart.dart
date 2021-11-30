@@ -1,10 +1,10 @@
 import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/templates/Achat/pageLivraison.dart';
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/templates/Achat/pageLivraison.dart';
-import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 
 class CartPage extends StatefulWidget {
@@ -16,8 +16,8 @@ class _CartPageState extends State<CartPage> {
   double cartTotal = 0.0;
   double cartDeliver = 0.0;
 
-  String idCommercant;
-  String customerID, email, userid;
+  String? idCommercant;
+  String? customerID, email, userid;
 
   @override
   void initState() {
@@ -28,8 +28,11 @@ class _CartPageState extends State<CartPage> {
 
   getMyInfoCart() async {
     QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
-    idCommercant = "${querySnapshot.docs[0].id}";
-    print(idCommercant);
+    if (querySnapshot.docs.isEmpty) {
+      idCommercant = "empty";
+    } else {
+      idCommercant = "${querySnapshot.docs[0].id}";
+    }
     setState(() {});
   }
 
@@ -47,7 +50,7 @@ class _CartPageState extends State<CartPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30),
       ),
-      child: FutureBuilder(
+      child: FutureBuilder<dynamic>(
           future: DatabaseMethods().allCartMoney(idCommercant),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -190,7 +193,6 @@ class _CartPageState extends State<CartPage> {
                                 text: 'CHOISIR LE MODE DE LIVRAISON',
                                 style: TextStyle(
                                   fontSize: 15,
-                                  // color: BuyandByeAppTheme.orangeMiFonce,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 children: [
@@ -247,7 +249,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   cartItem() {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods().getCartProducts(idCommercant),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -273,8 +275,6 @@ class _CartPageState extends State<CartPage> {
                     var amount = snapshot.data.docs[index]["amount"];
                     var money = snapshot.data.docs[index]["prixProduit"];
                     var allMoneyForProduct = money * amount;
-                    print("allMoneyForProduct");
-                    print(money);
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 10),
                       child: Row(

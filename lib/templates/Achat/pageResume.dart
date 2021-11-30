@@ -1,8 +1,6 @@
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
-import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
@@ -11,16 +9,18 @@ import 'package:url_launcher/url_launcher.dart';
 import '../buyandbye_app_theme.dart';
 
 class PageResume extends StatefulWidget {
-  final String idCommand,
+  final String? idCommand,
       userId,
       sellerID,
       nomBoutique,
       addressSeller,
       userAddressChoose;
-  final double deliveryChoose;
-  final double latitude, longitude;
+
+  final double? deliveryChoose;
+  final double? latitude, longitude;
+
   const PageResume(
-      {Key key,
+      {Key? key,
       this.idCommand,
       this.userId,
       this.sellerID,
@@ -39,11 +39,11 @@ class PageResume extends StatefulWidget {
 class _PageResumeState extends State<PageResume> {
   var produits;
 
-  GoogleMapController _mapController;
+  late GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
-  BitmapDescriptor mapMarker;
-  String shopName, profilePic, description, adresse, colorStore;
-  bool clickAndCollect, livraison;
+  BitmapDescriptor? mapMarker;
+  String? shopName, profilePic, description, adresse, colorStore;
+  bool? clickAndCollect, livraison;
   @override
   void initState() {
     super.initState();
@@ -54,7 +54,7 @@ class _PageResumeState extends State<PageResume> {
 
   getCommand() async {
     print(widget.sellerID);
-    String id = widget.sellerID + widget.userId;
+    String id = widget.sellerID! + widget.userId!;
     produits = await FirebaseFirestore.instance
         .collection('commandes')
         .doc(id)
@@ -68,7 +68,7 @@ class _PageResumeState extends State<PageResume> {
         MarkerId(widget.latitude.toString() + widget.longitude.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(widget.latitude, widget.longitude),
+      position: LatLng(widget.latitude!, widget.longitude!),
       //icon: mapMarker,
     ));
 
@@ -168,7 +168,7 @@ class _PageResumeState extends State<PageResume> {
                     ]),
                     SizedBox(height: 10),
                     Row(children: [
-                      FutureBuilder(
+                      FutureBuilder<dynamic>(
                           future: DatabaseMethods().getPurchaseDetails(
                               "users", widget.userId, widget.idCommand),
                           builder: (context, snapshot) {
@@ -188,7 +188,7 @@ class _PageResumeState extends State<PageResume> {
                                               child: Row(children: [
                                                 Container(
                                                     child: Detail(
-                                                        widget.sellerID,
+                                                        widget.sellerID!,
                                                         snapshot.data
                                                                 .docs[index]
                                                             ["produit"],
@@ -232,7 +232,7 @@ class _PageResumeState extends State<PageResume> {
                                 widget.nomBoutique == null
                                     ? CircularProgressIndicator()
                                     : TextButton(
-                                        child: Text(widget.nomBoutique,
+                                        child: Text(widget.nomBoutique!,
                                             style: TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w700,
@@ -279,20 +279,20 @@ class _PageResumeState extends State<PageResume> {
                                     : widget.deliveryChoose == 0
                                         ? TextButton.icon(
                                             onPressed: () {
-                                              MapUtils.openMap(widget.latitude,
-                                                  widget.longitude);
+                                              MapUtils.openMap(widget.latitude!,
+                                                  widget.longitude!);
                                             },
                                             icon: Icon(Icons.storefront),
-                                            label: Text(widget.addressSeller),
+                                            label: Text(widget.addressSeller!),
                                           )
                                         : TextButton.icon(
                                             onPressed: () {
-                                              MapUtils.openMap(widget.latitude,
-                                                  widget.longitude);
+                                              MapUtils.openMap(widget.latitude!,
+                                                  widget.longitude!);
                                             },
                                             icon: Icon(Icons.home),
                                             label:
-                                                Text(widget.userAddressChoose),
+                                                Text(widget.userAddressChoose!),
                                           )
                               ]),
                             ]),
@@ -313,7 +313,7 @@ class _PageResumeState extends State<PageResume> {
                               onMapCreated: _onMapCreated,
                               initialCameraPosition: CameraPosition(
                                   target:
-                                      LatLng(widget.latitude, widget.longitude),
+                                      LatLng(widget.latitude!, widget.longitude!),
                                   zoom: 15.0),
                               markers: _markers,
                               myLocationButtonEnabled: false,
@@ -341,7 +341,7 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream:
             DatabaseMethods().getOneProduct(widget.shopId, widget.productId),
         builder: (context, snapshot) {

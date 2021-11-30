@@ -1,6 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/compte/historyDetails.dart';
-import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ class UserHistory extends StatefulWidget {
 }
 
 class _UserHistoryState extends State<UserHistory> {
-  String userid;
+  String? userid;
 
   void initState() {
     super.initState();
@@ -38,7 +37,6 @@ class _UserHistoryState extends State<UserHistory> {
         child: AppBar(
           title: RichText(
             text: TextSpan(
-              // style: Theme.of(context).textTheme.bodyText2,
               children: [
                 TextSpan(
                     text: "Historique d'Achat",
@@ -75,7 +73,7 @@ class _UserHistoryState extends State<UserHistory> {
           ),
         ),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<dynamic>(
         future: DatabaseMethods().getPurchase("users", userid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -99,8 +97,8 @@ class _UserHistoryState extends State<UserHistory> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           if (snapshot.hasData) {
@@ -163,8 +161,8 @@ class _UserHistoryState extends State<UserHistory> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
         },
@@ -175,12 +173,12 @@ class _UserHistoryState extends State<UserHistory> {
 
 class UserCommand extends StatefulWidget {
   const UserCommand(this.shopId, this.commandId, this.userid);
-  final String shopId, commandId, userid;
+  final String? shopId, commandId, userid;
   _UserCommandState createState() => _UserCommandState();
 }
 
 class _UserCommandState extends State<UserCommand> {
-  String shopName /*, address*/;
+  late String shopName /*, address*/;
   String formatTimestamp(var timestamp) {
     var format = new DateFormat('d/MM/y');
     return format.format(timestamp.toDate());
@@ -200,63 +198,52 @@ class _UserCommandState extends State<UserCommand> {
 
   Widget build(BuildContext context) {
     getShopInfos(widget.shopId);
-    return shopName != null
-        ? FutureBuilder(
-            future: DatabaseMethods()
-                .getCommandDetails(widget.userid, widget.commandId),
-            builder: (context, snapshot) {
-              // if (snapshot.connectionState == ConnectionState.waiting) {
-              //   return Center(
-              //     child: ColorLoader3(
-              //       radius: 15.0,
-              //       dotRadius: 6.0,
-              //     ),
-              //   );
-              // }
-              if (snapshot.hasData) {
-                int statut = snapshot.data["statut"];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(formatTimestamp(snapshot.data["horodatage"]),
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500)),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    MaterialButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HistoryDetails(
-                                widget.userid,
-                                widget.commandId,
-                                statut,
-                                snapshot.data["horodatage"],
-                                widget.shopId,
-                                snapshot.data["prix"],
-                                snapshot.data["livraison"],
-                                snapshot.data["adresse"]),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 4,
-                                  offset: Offset(4, 4))
-                            ]),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            children: [
-                              Row(
+    return FutureBuilder<dynamic>(
+        future: DatabaseMethods()
+            .getCommandDetails(widget.userid, widget.commandId),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            //int? statut = snapshot.data!.data()["statut"];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(formatTimestamp(snapshot.data["horodatage"]),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                SizedBox(height: 10),
+                MaterialButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HistoryDetails(
+                            widget.userid,
+                            widget.commandId,
+                            snapshot.data['statut'],
+                            snapshot.data["horodatage"],
+                            widget.shopId,
+                            snapshot.data["prix"],
+                            snapshot.data["livraison"],
+                            snapshot.data["adresse"]),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 4,
+                              offset: Offset(4, 4))
+                        ]),
+                    child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          children: [
+                            Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -270,9 +257,7 @@ class _UserCommandState extends State<UserCommand> {
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700),
                                       ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
+                                      SizedBox(height: 30),
                                       // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
                                       snapshot.data["articles"] == 1
                                           ? Text(snapshot.data["articles"]
@@ -283,82 +268,103 @@ class _UserCommandState extends State<UserCommand> {
                                               " articles"),
                                     ],
                                   ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        snapshot.data["prix"]
-                                                .toStringAsFixed(2) +
-                                            "€",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Center(
-                                  child: Text(statut == 0
-                                      ? "Statut : En attente"
-                                      : statut == 1
-                                          ? "Statut : En cours"
-                                          : "Statut : Terminé")),
-                            ],
-                          ),
+                                  Text(
+                                    snapshot.data["prix"].toStringAsFixed(2) +
+                                        "€",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700),
+                                  )
+                                ]),
+                                SizedBox(height: 15),
+                            Center(
+                                child: Text(snapshot.data['statut'] == 0
+                                    ? "Statut : En attente"
+                                    : snapshot.data['statut'] == 1
+                                        ? "Statut : En cours"
+                                        : "Statut : Terminé")),
+                          ],
+                        )
+                        // child: Column(children: [
+                        //   Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     children: [
+                        //       Row(
+                        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //         children: [
+                        //           Column(
+                        //             crossAxisAlignment: CrossAxisAlignment.start,
+                        //             children: [
+                        //               Text(
+                        //                 shopName,
+                        //                 style: TextStyle(
+                        //                     fontSize: 16,
+                        //                     fontWeight: FontWeight.w700),
+                        //               ),
+                        //               SizedBox(height: 60),
+                        //               // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
+                        //               snapshot.data["articles"] == 1
+                        //                   ? Text(snapshot.data["articles"]
+                        //                           .toString() +
+                        //                       " article")
+                        //                   : Text(snapshot.data["articles"]
+                        //                           .toString() +
+                        //                       " articles"),
+                        //             ],
+                        //           ),
+                        //           Column(
+                        //             children: [
+                        //               Text(
+                        //                 snapshot.data["prix"].toStringAsFixed(2) +
+                        //                     "€",
+                        //                 style: TextStyle(
+                        //                     fontSize: 14,
+                        //                     fontWeight: FontWeight.w700),
+                        //               )
+                        //             ],
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       Center(
+                        //           child: Text(snapshot.data['statut'] == 0
+                        //               ? "Statut : En attente"
+                        //               : snapshot.data['statut'] == 1
+                        //                   ? "Statut : En cours"
+                        //                   : "Statut : Terminé")),
+                        //     ],
+                        //   ),
+                        // ]),
+                        ),
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            );
+          } else {
+            return Shimmer.fromColors(
+              child: Container(
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                     ),
-                    SizedBox(height: 30)
+                    SizedBox(
+                      height: 200,
+                    ),
                   ],
-                );
-              } else {
-                return Shimmer.fromColors(
-                  child: Container(
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 200,
-                        ),
-                      ],
-                    ),
-                  ),
-                  baseColor: Colors.grey[300],
-                  highlightColor: Colors.grey[100],
-                );
-              }
-            })
-        : Shimmer.fromColors(
-            child: Container(
-              child: Stack(
-                children: [
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 150,
-                  ),
-                ],
+                ),
               ),
-            ),
-            baseColor: Colors.grey[300],
-            highlightColor: Colors.grey[100],
-          );
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+            );
+          }
+        });
   }
 }

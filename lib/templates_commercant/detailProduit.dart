@@ -28,7 +28,7 @@ void testDataType(context, wrongField) {
 
 class DetailProduit extends StatefulWidget {
   const DetailProduit(this.uid, this.productId);
-  final String uid, productId;
+  final String? uid, productId;
   _DetailProduitState createState() => _DetailProduitState();
 }
 
@@ -100,14 +100,14 @@ class _DetailProduitState extends State<DetailProduit> {
               ),
             ]),
         body: SingleChildScrollView(
-            child: StreamBuilder(
+            child: StreamBuilder<dynamic>(
                 stream: DatabaseMethods()
                     .getOneProduct(widget.uid, widget.productId),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return CircularProgressIndicator();
                   } else {
-                    String dropdownValue = snapshot.data["categorie"];
+                    String? dropdownValue = snapshot.data["categorie"];
                     var carouselList =
                         Iterable<int>.generate(snapshot.data["images"].length)
                             .toList();
@@ -152,7 +152,6 @@ class _DetailProduitState extends State<DetailProduit> {
                                       ImageController.instance
                                           .cropImageFromFile()
                                           .then((croppedFile) {
-                                        if (croppedFile != null) {
                                           setState(() {
                                             messageType = 'image';
                                           });
@@ -161,10 +160,6 @@ class _DetailProduitState extends State<DetailProduit> {
                                               context,
                                               widget.uid,
                                               widget.productId);
-                                        } else {
-                                          showAlertDialog(
-                                              context, 'Pick Image error');
-                                        }
                                       });
                                     },
                                   ),
@@ -361,10 +356,10 @@ class ModifyDetailProduit extends StatefulWidget {
       this.productId,
       this.categorie,
       this.dropdownValue);
-  final String nom, desc, uid, productId, categorie;
-  String dropdownValue;
-  final double prix;
-  final int reference, quantite;
+  final String? nom, desc, uid, productId, categorie;
+  String? dropdownValue;
+  final double? prix;
+  final int? reference, quantite;
   _ModifyDetailProduitState createState() => _ModifyDetailProduitState();
 }
 
@@ -420,7 +415,7 @@ class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
                 controller: priceField,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: widget.prix.toStringAsFixed(2) + "€"),
+                    hintText: widget.prix!.toStringAsFixed(2) + "€"),
               ),
               SizedBox(height: 20),
               Text("Quantité restante", style: TextStyle(fontSize: 16)),
@@ -439,7 +434,7 @@ class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
                   ? TextButton(
                       child: Row(
                         children: [
-                          Text(widget.dropdownValue,
+                          Text(widget.dropdownValue!,
                               style: TextStyle(
                                   fontSize: 16,
                                   color: isDarkMode
@@ -488,7 +483,7 @@ class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
                       icon: const Icon(Icons.keyboard_arrow_down_rounded),
                       iconSize: 24,
                       elevation: 16,
-                      onChanged: (String newValue) {
+                      onChanged: (String? newValue) {
                         setState(() {
                           widget.dropdownValue = newValue;
                         });
@@ -588,9 +583,8 @@ class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
 Future<void> _saveUserImageToFirebaseStorage(
     croppedFile, context, sellerID, productID) async {
   try {
-    String takeImageURL = await FBStorage.instanace
+    await FBStorage.instanace
         .uploadProductPhotosToFb(croppedFile, sellerID, productID);
-    return takeImageURL;
   } catch (e) {
     showAlertDialog(context, 'Error add user image to storage');
   }

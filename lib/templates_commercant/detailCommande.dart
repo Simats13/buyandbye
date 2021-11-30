@@ -9,8 +9,8 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 class DetailCommande extends StatefulWidget {
   const DetailCommande(this.ref, this.statut, this.date, this.total,
       this.livraisonNb, this.sellerId, this.clientId, this.commandId);
-  final String date, sellerId, clientId, commandId;
-  final int ref, statut, livraisonNb;
+  final String? date, sellerId, clientId, commandId;
+  final int? ref, statut, livraisonNb;
   final double total;
   _DetailCommandeState createState() => _DetailCommandeState();
 }
@@ -153,7 +153,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                 "magasins", widget.sellerId, widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                int nbArticles = snapshot.data.docs.length;
+                int nbArticles = (snapshot.data! as QuerySnapshot).docs.length;
                 return SingleChildScrollView(
                     // Affiche les informations de la commande
                     child: Column(
@@ -167,7 +167,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                     // Appelle de la fonction pour déterminer le message de statut de la commande
                     defStatut(widget.statut, widget.livraisonNb),
                     SizedBox(height: 20),
-                    Text(widget.date),
+                    Text(widget.date!),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -183,15 +183,15 @@ class _DetailCommandeState extends State<DetailCommande> {
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       padding: EdgeInsets.zero,
-                      itemCount: snapshot.data.docs.length,
+                      itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                       itemBuilder: (context, index) {
                         // Appelle la classe d'affichage des produits
                         // pour chaque produit dans la commande
                         return Container(
                             child: Detail(
                                 widget.sellerId,
-                                snapshot.data.docs[index]["produit"],
-                                snapshot.data.docs[index]["quantite"]));
+                                (snapshot.data! as QuerySnapshot).docs[index]["produit"],
+                                (snapshot.data! as QuerySnapshot).docs[index]["quantite"]));
                       },
                     ),
                     SizedBox(height: 20),
@@ -218,14 +218,14 @@ class _DetailCommandeState extends State<DetailCommande> {
 // Affiche le détail de chaque produit commandé
 class Detail extends StatefulWidget {
   Detail(this.sellerId, this.productId, this.quantite);
-  final String sellerId, productId;
-  final int quantite;
+  final String? sellerId, productId;
+  final int? quantite;
   _DetailState createState() => _DetailState();
 }
 
 class _DetailState extends State<Detail> {
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream:
             DatabaseMethods().getOneProduct(widget.sellerId, widget.productId),
         builder: (context, snapshot) {
@@ -249,7 +249,7 @@ class _DetailState extends State<Detail> {
                       Container(
                         height: 50,
                         width: 50,
-                        child: Image.network(snapshot.data["images"][0]),
+                        child: Image.network(snapshot.data!()["images"][0]),
                       ),
                       SizedBox(width: 50),
                       Container(
@@ -258,12 +258,12 @@ class _DetailState extends State<Detail> {
                           // Affiche en colonne le nom et la référence du produit commandé
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(snapshot.data["nom"],
+                            Text(snapshot.data!()["nom"],
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w700)),
                             SizedBox(height: 30),
                             Text(
-                                "Réf : " + snapshot.data["reference"].toString()),
+                                "Réf : " + snapshot.data!()["reference"].toString()),
                           ],
                         ),
                       ),
@@ -272,7 +272,7 @@ class _DetailState extends State<Detail> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(snapshot.data["prix"].toStringAsFixed(2) + "€"),
+                          Text(snapshot.data!()["prix"].toStringAsFixed(2) + "€"),
                           SizedBox(height: 30),
                           Text("Quantité : " + widget.quantite.toString())
                         ],
@@ -294,14 +294,14 @@ class _DetailState extends State<Detail> {
 class UserInfo extends StatefulWidget {
   const UserInfo(this.clientId, this.livraisonNb, this.statut, this.commId,
       this.documentId, this.sellerId);
-  final String clientId, commId, documentId, sellerId;
-  final int livraisonNb, statut;
+  final String? clientId, commId, documentId, sellerId;
+  final int? livraisonNb, statut;
 
   _UserInfoState createState() => _UserInfoState();
 }
 
 class _UserInfoState extends State<UserInfo> {
-  String myUserName, myProfilePic;
+  late String myUserName, myProfilePic;
   getSellerName() async {
     final User user = await AuthMethods().getCurrentUser();
     final clientId = user.uid;
@@ -341,9 +341,9 @@ class _UserInfoState extends State<UserInfo> {
                         SizedBox(height: 10),
                         Row(
                           children: [
-                            Text(snapshot.data.docs[0]["fname"] +
+                            Text((snapshot.data! as QuerySnapshot).docs[0]["fname"] +
                                 " " +
-                                snapshot.data.docs[0]["lname"]),
+                                (snapshot.data! as QuerySnapshot).docs[0]["lname"]),
                             SizedBox(width: 25),
                             // Bouton pour ouvrir le chat avec le client
                             IconButton(
@@ -352,14 +352,14 @@ class _UserInfoState extends State<UserInfo> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ChatRoom(
-                                            widget.sellerId,
+                                            widget.sellerId!,
                                             myUserName,
-                                            snapshot.data.docs[0]["FCMToken"],
-                                            widget.clientId,
-                                            widget.sellerId + widget.clientId,
-                                            snapshot.data.docs[0]["fname"],
-                                            snapshot.data.docs[0]["lname"],
-                                            snapshot.data.docs[0]["imgUrl"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["FCMToken"],
+                                            widget.clientId!,
+                                            widget.sellerId! + widget.clientId!,
+                                            (snapshot.data! as QuerySnapshot).docs[0]["fname"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["lname"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["imgUrl"],
                                             myProfilePic)));
                               },
                               icon: Icon(Icons.message),
@@ -367,9 +367,9 @@ class _UserInfoState extends State<UserInfo> {
                           ],
                         ),
                         SizedBox(height: 10),
-                        Text(snapshot.data.docs[0]["phone"]),
+                        Text((snapshot.data! as QuerySnapshot).docs[0]["phone"]),
                         SizedBox(height: 20),
-                        Text(snapshot.data.docs[0]["email"]),
+                        Text((snapshot.data! as QuerySnapshot).docs[0]["email"]),
                         SizedBox(height: 10),
                       ],
                     ),

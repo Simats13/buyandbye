@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class BackgroundInscription extends StatelessWidget {
   final Widget child;
   const BackgroundInscription({
-    Key key, 
-    @required this.child,
+    Key? key, 
+    required this.child,
   }) : super(key: key);
 
   @override

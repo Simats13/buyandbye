@@ -19,9 +19,9 @@ class MessagerieCommercant extends StatefulWidget {
 
 class _MessagerieCommercantState extends State<MessagerieCommercant>
     with LocalNotificationView {
-  String myID;
-  String myName, myUserName, myEmail;
-  String myProfilePic;
+  String? myID;
+  String? myName, myUserName, myEmail;
+  String? myProfilePic;
   bool messageExist = false;
   @override
   void initState() {
@@ -69,14 +69,14 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
               //METTRE UN SHIMMER
             }
             if (!userSnapshot.hasData) return ColorLoader3();
-            return countChatListUsers(myUserName, userSnapshot) > 0
+            return countChatListUsers(myUserName, userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) > 0
                 ? Stack(
                     children: [
                       ListView.builder(
-                        itemCount: userSnapshot.data.docs.length,
+                        itemCount: userSnapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot ds = userSnapshot.data.docs[index];
+                          DocumentSnapshot ds = userSnapshot.data!.docs[index];
                           return ChatRoomListTile(ds["lastMessage"], ds.id,
                               myUserName, ds["users"][0], index);
                         },
@@ -111,7 +111,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername, clientID;
+  final String? lastMessage, chatRoomId, myUsername, clientID;
   final int index;
   ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
       this.clientID, this.index);
@@ -121,7 +121,7 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "",
+  String? profilePicUrl = "",
       fname,
       lname,
       username = "",
@@ -187,13 +187,13 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           return ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: ImageController.instance.cachedImage(profilePicUrl),
+              child: ImageController.instance.cachedImage(profilePicUrl!),
             ),
             title: fname == null
                 ? CircularProgressIndicator()
-                : Text(fname + " " + lname),
+                : Text(fname! + " " + lname!),
             subtitle: Text(
-              widget.lastMessage,
+              widget.lastMessage!,
               style: isActive == true
                   ? TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
                   : TextStyle(),
@@ -211,9 +211,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         children: [
                           Text(
                             (chatListSnapshot.hasData &&
-                                    chatListSnapshot.data.docs.length > 0)
+                                    chatListSnapshot.data!.docs.length > 0)
                                 ? readTimestamp(chatListSnapshot
-                                    .data.docs[widget.index]['timestamp'])
+                                    .data!.docs[widget.index]['timestamp'])
                                 : '',
                             style: TextStyle(fontSize: size.width * 0.03),
                           ),
@@ -250,21 +250,21 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         ],
                       ),
                     )
-                  : '',
+                  : '' as Widget?,
             ),
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => ChatRoom(
-                        userid, //ID DE L'UTILISATEUR
-                        widget.myUsername, // NOM DE L'UTILISATEUR
-                        token,
-                        idTest, // ID DU CORRESPONDANT
-                        widget.chatRoomId, //ID DE LA CONV
-                        fname, // PRENOM DU CORRESPONDANT
-                        lname, // NOM DU CORRESPONDANT
-                        profilePicUrl, // IMAGE DU CORRESPONDANT
-                        myProfilePicUrl // IMAGE DE L'UTILISATEUR
+                        userid!, //ID DE L'UTILISATEUR
+                        widget.myUsername!, // NOM DE L'UTILISATEUR
+                        token!,
+                        idTest!, // ID DU CORRESPONDANT
+                        widget.chatRoomId!, //ID DE LA CONV
+                        fname!, // PRENOM DU CORRESPONDANT
+                        lname!, // NOM DU CORRESPONDANT
+                        profilePicUrl!, // IMAGE DU CORRESPONDANT
+                        myProfilePicUrl! // IMAGE DE L'UTILISATEUR
                         ))),
           );
         },

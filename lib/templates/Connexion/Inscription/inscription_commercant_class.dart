@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 
 import 'package:buyandbye/templates/Connexion/Tools/text_field_container.dart';
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
@@ -10,7 +10,7 @@ import 'package:buyandbye/templates/Connexion/Inscription/background_inscription
 import 'package:buyandbye/templates_commercant/accueilCommercant.dart';
 
 class PageInscriCommercant extends StatefulWidget {
-  PageInscriCommercant({Key key}) : super(key: key);
+  PageInscriCommercant({Key? key}) : super(key: key);
 
   @override
   _PageInscriCommercantState createState() => _PageInscriCommercantState();
@@ -18,7 +18,7 @@ class PageInscriCommercant extends StatefulWidget {
 
 class _PageInscriCommercantState extends State<PageInscriCommercant> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _email = "",
+  String? _email = "",
       _password = "",
       // _confirmPassword = "",
       _nomSeller = "",
@@ -52,7 +52,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                   children: [
                     TextFormField(
                       validator: (input) {
-                        if (input.isEmpty) {
+                        if (input!.isEmpty) {
                           return 'Rentrez une adresse mail valide';
                         }
                         return null;
@@ -68,7 +68,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                     ),
                     TextFormField(
                       validator: (input) {
-                        if (input.isEmpty) {
+                        if (input!.isEmpty) {
                           return "Rentrez un nom d'enseigne valide";
                         }
                         return null;
@@ -84,7 +84,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                     ),
                     TextFormField(
                       validator: (input) {
-                        if (input.isEmpty) {
+                        if (input!.isEmpty) {
                           return 'Rentrez une adresse valide';
                         }
                         return null;
@@ -100,7 +100,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                     ),
                     TextFormField(
                       validator: (input) {
-                        if (input.length < 6 && input.length > 20) {
+                        if (input!.length < 6 && input.length > 20) {
                           return 'Rentrez un mot de passe \ncompris entre 6 et 20 carctères';
                         }
                         return null;
@@ -150,17 +150,17 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
             ),
             TextButton(
               onPressed: () async {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
                   try {
                     AuthMethods().signUpWithMailSeller(
-                        _email, _password, _nomSeller, _adresseSeller);
+                        _email!, _password!, _nomSeller, _adresseSeller);
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => AccueilCommercant()));
                   } catch (e) {
-                    print(e.message);
+                    print(e);
                   }
                 }
               },

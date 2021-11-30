@@ -1,18 +1,16 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:dropdown_date_picker/dropdown_date_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 
 class PageCBEdit extends StatefulWidget {
-  final int expYear, expMonth;
-  final VoidCallback newData;
-  final Function(String) onNameChanged;
-  final Function(String) onDateChanged;
-  final String idCard,
+  final int? expYear, expMonth;
+  final VoidCallback? newData;
+  final Function(String)? onNameChanged;
+  final Function(String)? onDateChanged;
+  final String? idCard,
       customerID,
       nameCard,
       newNameCard,
@@ -22,7 +20,7 @@ class PageCBEdit extends StatefulWidget {
       postalCodeCard,
       stateCard;
   const PageCBEdit(
-      {Key key,
+      {Key? key,
       this.expYear,
       this.expMonth,
       this.idCard,
@@ -44,7 +42,7 @@ class PageCBEdit extends StatefulWidget {
 }
 
 class _PageCBEditState extends State<PageCBEdit> {
-  String nameCardEdit,
+  String? nameCardEdit,
       streetCardEdit,
       streetCard2Edit,
       postalCodeCardEdit,
@@ -53,7 +51,7 @@ class _PageCBEditState extends State<PageCBEdit> {
       dropdownYear,
       dropdownMonth;
 
-  int chooseYear, chooseMonth;
+  int? chooseYear, chooseMonth;
   var year = [];
   var month = [];
   bool isEnabled1 = false;
@@ -73,7 +71,7 @@ class _PageCBEditState extends State<PageCBEdit> {
   TextEditingController countryCard = new TextEditingController();
   final dateTime = DateTime.now();
   final _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> paymentIntentData;
+  late Map<String, dynamic> paymentIntentData;
   List code = [
     "'AF','AX','AL','DZ','AS','AD','AO','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','BD','BB','BY','BE','BZ','BJ','BM','BT','BA','BW','BV','BR','IO','BN','BG','BF','BI','KH','CM','CA','CV','KY','CF','TD','CL','CN','CX','CC','CO','KM','CG','CK','CR','CI','HR','CU','CW','CY','CZ','DK','DJ','DM','DO','EC','EG','SV','GQ','ER','EE','ET','FK','FO','FJ','FI','FR','GF','PF','TF','GA','GM','GE','DE','GH','GI','GR','GL','GD','GP','GU','GT','GG','GN','GW','GY','HT','HM','VA','HN','HK','HU','IS','IN','ID','IQ','IE','IM','IL','IT','JM','JP','JE','JO','KZ','KE','KI','KW','KG','LA','LV','LB','LS','LR','LY','LI','LT','LU','MO','MG','MW','MY','MV','ML','MT','MH','MQ','MR','MU','YT','MX','MC','MN','ME','MS','MA','MZ','MM','NA','NR','NP','NL','NC','NZ','NI','NE','NG','NU','NF','MP','NO','OM','PK','PW','PA','PG','PY','PE','PH','PN','PL','PT','PR','QA','RE','RO','RU','RW','BL','KN','LC','MF','PM','VC','WS','SM','ST','SA','SN','RS','SC','SL','SG','SX','SK','SI','SB','SO','ZA','GS','SS','ES','LK','SD','SR','SJ','SZ','SE','CH','SY','TJ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','GB','US','UM','UY','UZ','VU','VN','WF','EH','YE','ZM','ZW',"
   ];
@@ -224,7 +222,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                               ? TextButton(
                                   child: Row(
                                     children: [
-                                      Text(dropdownMonth,
+                                      Text(dropdownMonth!,
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.black)),
@@ -265,7 +263,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                                     );
                                   },
                                 )
-                              : DropdownButton<String>(
+                              : DropdownButton(
                                   value: dropdownMonth,
                                   icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded),
@@ -273,7 +271,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                                   elevation: 16,
                                   onChanged: (newValue) {
                                     setState(() {
-                                      dropdownMonth = newValue;
+                                      dropdownMonth = newValue as String?;
                                     });
                                   },
                                   items: month.map((map) {
@@ -295,7 +293,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                               ? TextButton(
                                   child: Row(
                                     children: [
-                                      Text(dropdownYear,
+                                      Text(dropdownYear!,
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.black)),
@@ -631,36 +629,20 @@ class _PageCBEditState extends State<PageCBEdit> {
                       textStyle:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   onPressed: () async {
-                    var date = dropdownMonth + '/' + dropdownYear;
 
                     // Si un champ est vide, on envoi la valeur déjà présente
                     var nameCardEdit =
                         nameCard.text == "" ? widget.nameCard : nameCard.text;
 
-                    var streetCardEdit = streetCard.text == ""
-                        ? widget.streetCard
-                        : streetCard.text;
-
-                    var streetCard2Edit = streetCard2.text == ""
-                        ? widget.streetCard2
-                        : streetCard2.text;
-                    var cityCardEdit =
-                        cityCard.text == "" ? widget.cityCard : cityCard.text;
-                    var postalCodeCardEdit =
-                        cityCard.text == "" ? widget.cityCard : cityCard.text;
-                    var stateCardEdit = stateCard.text == ""
-                        ? widget.stateCard
-                        : stateCard.text;
-
-                    widget.onNameChanged(nameCardEdit);
+                    widget.onNameChanged!(nameCardEdit!);
                     // widget.onDateChanged(date);
 
                     // Validate returns true if the form is valid, or false otherwise.
 
-                    final isValid = _formKey.currentState.validate();
+                    final isValid = _formKey.currentState!.validate();
 
                     if (isValid) {
-                      _formKey.currentState.save();
+                      _formKey.currentState!.save();
                       final url =
                           "https://us-central1-oficium-11bf9.cloudfunctions.net/app/update_cards?customerCard=${widget.customerID}&idCard=${widget.idCard}&monthCard=$dropdownMonth&yearCard=$dropdownYear&nameCard=$nameCardEdit";
 
@@ -673,7 +655,7 @@ class _PageCBEditState extends State<PageCBEdit> {
                           'a': 'a',
                         }),
                       );
-                      widget.newData();
+                      widget.newData!();
                       paymentIntentData = jsonDecode(response.body);
                       Navigator.of(context).pop();
                     }

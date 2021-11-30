@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
@@ -12,15 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
+
 import 'templates_commercant/nav_bar.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
@@ -45,7 +43,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -69,14 +67,14 @@ class _MyAppState extends State<MyApp> {
     _getFCMToken();
     super.initState();
 
-    AuthMethods.instanace.checkEmailVerification();
+    AuthMethods.instance.checkEmailVerification();
   }
 
   Future<void> _getFCMToken() async {
     // Go to Firebase console -> Project settings -> Cloud Messaging -> Web Push Certificates -> create key pair -> copy and paste
     const yourVapidKey =
         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA";
-    String _fcmToken =
+    String? _fcmToken =
         await FirebaseMessaging.instance.getToken(vapidKey: yourVapidKey);
     print('_FCMToken is $_fcmToken');
     // here you write the codes to input the data into firestore
@@ -160,9 +158,9 @@ class MainScreen extends StatelessWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasData &&
-                    snapshot.data['emailVerified'] != null) {
+                    snapshot.data!['emailVerified'] != null) {
                   final user = snapshot.data;
-                  if (user['emailVerified'] == false) {
+                  if (user!['emailVerified'] == false) {
                     return PageLogin();
                   }
                   if (user['firstConnection'] == true) {

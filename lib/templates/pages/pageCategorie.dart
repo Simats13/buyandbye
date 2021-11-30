@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
-import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +9,7 @@ import 'package:shimmer/shimmer.dart';
 
 class PageCategorie extends StatefulWidget {
   const PageCategorie(
-      {Key key,
+      {Key? key,
       this.img,
       this.name,
       this.description,
@@ -20,17 +17,17 @@ class PageCategorie extends StatefulWidget {
       this.categorie})
       : super(key: key);
 
-  final String img, name, description, adresse, categorie;
+  final String? img, name, description, adresse, categorie;
 
   @override
   _PageCategorieState createState() => _PageCategorieState();
 }
 
 class _PageCategorieState extends State<PageCategorie> {
-  double latitude, longitude;
+  double latitude = 0.0, longitude = 0.0;
 
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
   @override
   void initState() {
     super.initState();
@@ -74,9 +71,12 @@ class _PageCategorieState extends State<PageCategorie> {
                     )),
                 WidgetSpan(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Image.asset(widget.img,width: 30,height:30,)
-                  ),
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Image.asset(
+                        widget.img!,
+                        width: 30,
+                        height: 30,
+                      )),
                 ),
               ],
             ),
@@ -100,7 +100,7 @@ class _PageCategorieState extends State<PageCategorie> {
   }
 
   Widget getBody() {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -129,8 +129,8 @@ class _PageCategorieState extends State<PageCategorie> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           if (snapshot.data.length > 0) {
@@ -186,7 +186,7 @@ class _PageCategorieState extends State<PageCategorie> {
   }
 
   Widget searchedData(
-      {String photoUrl,
+      {String? photoUrl,
       name,
       description,
       adresse,
@@ -214,7 +214,7 @@ class _PageCategorieState extends State<PageCategorie> {
       leading: Container(
         child: Center(
           child: Image.network(
-            photoUrl,
+            photoUrl!,
           ),
         ),
         height: 100,

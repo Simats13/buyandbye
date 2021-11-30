@@ -4,13 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/Pages/place_service.dart';
 
-class AddressSearch extends SearchDelegate<Suggestion> {
+class AddressSearch extends SearchDelegate<Suggestion?> {
   AddressSearch(this.sessionToken) {
     apiClient = PlaceApiProvider(sessionToken);
   }
 
   final sessionToken;
-  PlaceApiProvider apiClient;
+  late PlaceApiProvider apiClient;
   String get searchFieldLabel => 'Rechercher une adresse';
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -25,6 +25,15 @@ class AddressSearch extends SearchDelegate<Suggestion> {
     ];
   }
 
+  // Obligé de créer buildResults mais je sais pas comment ça fonctionne #Clément
+  @override
+  Widget buildResults(BuildContext context) {
+    return IconButton(
+        tooltip: "I don't know",
+        onPressed: () {},
+        icon: Icon(Icons.ac_unit_outlined));
+  }
+
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
@@ -37,13 +46,8 @@ class AddressSearch extends SearchDelegate<Suggestion> {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
-    return null;
-  }
-
-  @override
   Widget buildSuggestions(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
       future: query == ""
           ? null
           : apiClient.fetchSuggestions(
@@ -56,10 +60,9 @@ class AddressSearch extends SearchDelegate<Suggestion> {
           : snapshot.hasData
               ? ListView.builder(
                   itemBuilder: (context, index) => ListTile(
-                    title:
-                        Text((snapshot.data[index] as Suggestion).description),
+                    title: Text(snapshot.data.description),
                     onTap: () {
-                      close(context, snapshot.data[index] as Suggestion);
+                      close(context, snapshot.data[index] as Suggestion?);
                     },
                   ),
                   itemCount: snapshot.data.length,

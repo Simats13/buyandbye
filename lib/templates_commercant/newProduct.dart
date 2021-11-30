@@ -29,12 +29,12 @@ bool areFieldsFilled() {
 
 class NewProduct extends StatefulWidget {
   const NewProduct(this.myID);
-  final String myID;
+  final String? myID;
   _NewProductState createState() => _NewProductState();
 }
 
 class _NewProductState extends State<NewProduct> {
-  String dropdownValue = 'Électroménager';
+  String? dropdownValue = 'Électroménager';
   final nameField = TextEditingController();
   final referenceField = TextEditingController();
   final descriptionField = TextEditingController();
@@ -181,7 +181,7 @@ class _NewProductState extends State<NewProduct> {
                 ? TextButton(
                     child: Row(
                       children: [
-                        Text(dropdownValue,
+                        Text(dropdownValue!,
                             style: TextStyle(
                                 fontSize: 16,
                                 color:
@@ -228,7 +228,7 @@ class _NewProductState extends State<NewProduct> {
                     icon: const Icon(Icons.keyboard_arrow_down_rounded),
                     iconSize: 24,
                     elevation: 16,
-                    onChanged: (String newValue) {
+                    onChanged: (String? newValue) {
                       setState(() {
                         dropdownValue = newValue;
                       });

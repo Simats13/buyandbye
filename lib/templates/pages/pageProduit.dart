@@ -10,7 +10,7 @@ import 'package:flutter_add_to_cart_button/flutter_add_to_cart_button.dart';
 
 class PageProduit extends StatefulWidget {
   const PageProduit(
-      {Key key,
+      {Key? key,
       this.img,
       this.name,
       this.description,
@@ -26,19 +26,19 @@ class PageProduit extends StatefulWidget {
       this.userid})
       : super(key: key);
 
-  final String img;
-  final List imagesList;
-  final String nomProduit;
-  final String descriptionProduit;
-  final num prixProduit;
-  final String name;
-  final String description;
-  final String adresse;
-  final bool livraison;
-  final bool clickAndCollect;
-  final String idCommercant;
-  final String idProduit, userid;
-  //final List comments;
+  final String? img;
+  final List? imagesList;
+  final String? nomProduit;
+  final String? descriptionProduit;
+  final num? prixProduit;
+  final String? name;
+  final String? description;
+  final String? adresse;
+  final bool? livraison;
+  final bool? clickAndCollect;
+  final String? idCommercant;
+  final String? idProduit;
+  final String? userid;
 
   @override
   _PageProduitState createState() => _PageProduitState();
@@ -48,13 +48,13 @@ class _PageProduitState extends State<PageProduit> {
   AddToCartButtonStateId stateId = AddToCartButtonStateId.idle;
 
   returnDetailPage() async {
-    String nomProduit = widget.nomProduit;
-    num prixProduit = widget.prixProduit;
-    String imgProduit = widget.imagesList[0];
+    String? nomProduit = widget.nomProduit;
+    num? prixProduit = widget.prixProduit;
+    String imgProduit = widget.imagesList![0];
     int amount = 1;
 
     bool checkProductsExists = await DatabaseMethods().checkIfProductsExists(
-        widget.userid, widget.idCommercant, widget.idProduit);
+        widget.userid!, widget.idCommercant, widget.idProduit);
 
     if (checkProductsExists == true) {
       DocumentSnapshot ds = await FirebaseFirestore.instance
@@ -65,8 +65,8 @@ class _PageProduitState extends State<PageProduit> {
           .collection('products')
           .doc(widget.idProduit)
           .get();
-      Map getDocs = ds.data();
-      amount = getDocs['amount'];
+      Map? getDocs = ds.data() as Map?;
+      amount = getDocs!['amount'];
       DatabaseMethods().addItem(
           widget.userid, widget.idCommercant, widget.idProduit, amount + 1);
       Navigator.of(context).pop();
@@ -79,16 +79,19 @@ class _PageProduitState extends State<PageProduit> {
           widget.idCommercant,
           widget.idProduit);
 
+      print(addProductToCart);
+
       if (addProductToCart == false) {
-        var doc_id = await FirebaseFirestore.instance
+        var docId = await FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userid)
             .collection('cart')
             .get();
-        QueryDocumentSnapshot doc = doc_id.docs[0];
+        QueryDocumentSnapshot doc = docId.docs[0];
         DocumentReference docRef = doc.reference;
-        QuerySnapshot querySnapshot =
-            await DatabaseMethods().getMagasinInfo(docRef.id);
+        var querySnapshot =
+            await DatabaseMethods().getMagasinInfo(widget.userid);
+        //String sellerNameCart = "Informatique";
         String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
         Platform.isIOS
             ? showCupertinoDialog(
@@ -110,7 +113,6 @@ class _PageProduitState extends State<PageProduit> {
                         style: TextStyle(color: Colors.red),
                       ),
                       onPressed: () async {
-                        print(docRef.id);
                         await DatabaseMethods().deleteCart(docRef.id);
                         await DatabaseMethods().addCart(
                             nomProduit,
@@ -225,8 +227,8 @@ class _PageProduitState extends State<PageProduit> {
   int carouselItem = 0;
   Widget build(BuildContext context) {
     var carouselList =
-        Iterable<int>.generate(widget.imagesList.length).toList();
-    String nomVendeur = widget.name;
+        Iterable<int>.generate(widget.imagesList!.length).toList();
+    String? nomVendeur = widget.name;
     var money = widget.prixProduit;
 
     return Scaffold(
@@ -258,7 +260,7 @@ class _PageProduitState extends State<PageProduit> {
                 options: CarouselOptions(
                     height: 200,
                     enableInfiniteScroll:
-                        widget.imagesList.length > 1 ? true : false,
+                        widget.imagesList!.length > 1 ? true : false,
                     onPageChanged: (index, reason) {
                       setState(() {
                         carouselItem = index;
@@ -269,13 +271,13 @@ class _PageProduitState extends State<PageProduit> {
                     return Container(
                         width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Image.network(widget.imagesList[i]));
+                        child: Image.network(widget.imagesList![i]));
                   });
                 }).toList()),
             SizedBox(height: 20),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               SizedBox(width: 5),
-              for (int i = 0; i < widget.imagesList.length; i++)
+              for (int i = 0; i < widget.imagesList!.length; i++)
                 Container(
                     margin: EdgeInsets.only(left: 5, right: 5),
                     child: Icon(Icons.circle_rounded,
@@ -293,7 +295,7 @@ class _PageProduitState extends State<PageProduit> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          widget.nomProduit,
+                          widget.nomProduit!,
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w500),
                         ),
@@ -318,7 +320,7 @@ class _PageProduitState extends State<PageProduit> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 15.0),
-                    child: Text(widget.descriptionProduit
+                    child: Text(widget.descriptionProduit!
                         // style: descriptionStyle,
                         ),
                   ),

@@ -7,17 +7,21 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class PageFidelite extends StatefulWidget {
   @override
-  const PageFidelite({Key key, this.firstName, this.lastName, this.eMail})
+  const PageFidelite(
+      {Key? key,
+      this.firstName,
+      this.lastName,
+      this.eMail})
       : super(key: key);
 
-  final String firstName;
-  final String lastName;
-  final String eMail;
+  final String? firstName;
+  final String? lastName;
+  final String? eMail;
   _PageFideliteState createState() => _PageFideliteState();
 }
 
 class _PageFideliteState extends State<PageFidelite> {
-  String userid;
+  String? userid;
 
   @override
   void initState() {
@@ -37,15 +41,8 @@ class _PageFideliteState extends State<PageFidelite> {
       body: Container(
         child: ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
+            Row(
                 children: [
-                  Text(
-                    "Compte de Fidélité",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
                   MaterialButton(
                     child: Container(
                         padding: EdgeInsets.all(10),
@@ -65,10 +62,16 @@ class _PageFideliteState extends State<PageFidelite> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                  )
+                  ),
+                  Text(
+                    "Compte de Fidélité",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),               
                 ],
               ),
-            ),
+              SizedBox(
+                height: 20,
+              ),
             Padding(
               padding: const EdgeInsets.only(left: 20.0, right: 20),
               child: Text(
@@ -202,7 +205,7 @@ class _PageFideliteState extends State<PageFidelite> {
                 Container(
                   margin: EdgeInsets.fromLTRB(20, 125, 0, 0),
                   child: Row(children: [
-                    Text(widget.firstName + " " + widget.lastName,
+                    Text(widget.firstName! + " " + widget.lastName!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,

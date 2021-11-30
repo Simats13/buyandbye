@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:buyandbye/templates/pages/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:buyandbye/templates_commercant/membership_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,8 +20,8 @@ class CompteCommercant extends StatefulWidget {
 }
 
 class _CompteCommercantState extends State<CompteCommercant> {
-  String userid, myProfilePicture, name, email;
-  bool premium;
+  String? userid, myProfilePicture, name, email;
+  bool? premium;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
   }
 
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getSellerInfo(userid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -190,7 +190,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Help(false, email),
+                                    builder: (context) => Help(false, email!),
                                   ),
                                 );
                               },

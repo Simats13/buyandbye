@@ -34,7 +34,7 @@ String readTimestamp(int timestamp) {
       time = 'Maintenant';
     }
   } else if (diff.inDays > 0 && diff.inDays < 7) {
-    time = 'Il y a ' + diff.inDays.toString() + ' jours';
+    time = 'Il y a ' + diff.inDays.toString() + ' jour';
   } else if (diff.inDays > 6) {
     time = 'Il y a ' + (diff.inDays / 7).floor().toString() + ' sec';
   } else if (diff.inDays > 29) {
@@ -56,8 +56,8 @@ String makeChatId(myID, selectedUserID) {
 }
 
 int countChatListUsers(myUserName, AsyncSnapshot<QuerySnapshot> snapshot) {
-  int resultInt = snapshot.data.docs.length;
-  for (var data in snapshot.data.docs) {
+  int resultInt = snapshot.data!.docs.length;
+  for (var data in snapshot.data!.docs) {
     if (data['users'][0] == myUserName) {
       resultInt++;
     }
@@ -92,7 +92,7 @@ List<dynamic> addInstructionInSnapshot(List<QueryDocumentSnapshot> snapshot) {
 
 List<dynamic> addChatDateInSnapshot(List<QueryDocumentSnapshot> snapshot) {
   List<dynamic> _returnList = [];
-  String _currentDate;
+  String? _currentDate;
 
   for (QueryDocumentSnapshot snapshot in snapshot) {
     var format = DateFormat.yMMMMd('fr_FR');

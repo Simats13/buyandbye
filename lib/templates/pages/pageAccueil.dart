@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:io';
-
+import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
+import 'package:buyandbye/templates/widgets/slider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +17,6 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Pages/cart.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
@@ -26,13 +26,9 @@ import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:buyandbye/theme/styles.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/custom_slider.dart';
-
-import 'package:buyandbye/templates/Pages/place_service.dart';
-import 'package:uuid/uuid.dart';
 
 class PageAccueil extends StatefulWidget {
   @override
@@ -40,47 +36,42 @@ class PageAccueil extends StatefulWidget {
 }
 
 class _PageAccueilState extends State<PageAccueil> {
-  @override
-  LocationData _locationData;
+  late LocationData _locationData;
   Location location = Location();
-  bool permissionChecked = false;
+  late bool permissionChecked;
   bool chargementChecked = false;
 
   // INITIALISATION DE SHARE_PREFERENCES (PERMET DE GARDER EN MEMOIRE DES INFORMATIONS, ICI LA LONGITUDE ET LA LATITUDE)
-  static SharedPreferences _preferences;
+  static late SharedPreferences _preferences;
   static const _keyLatitude = "UserLatitudeKey";
   static const _keyLongitude = "UserLongitudeKey";
   static const _keyAddress = "UserAddressKey";
   static const _keyCity = "UserCityKey";
-  static const _infoCharged = "infoCharged";
 
   // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
 
-  String _currentAddress,
-      _currentAddressLocation,
-      _streetNumber,
-      _street,
-      _city,
-      zipCode,
-      idAddress,
-      userid,
-      username;
-  double latitude, longitude, currentLatitude, currentLongitude;
-  Geoflutterfire geo;
-
+  String _currentAddress = "",
+      _currentAddressLocation = "",
+      streetNumber = "",
+      street = "",
+      _city = "",
+      zipCode = "",
+      idAddress = "",
+      userid = "";
+  double latitude = 0, longitude = 0, currentLatitude = 0, currentLongitude = 0;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
-  final _controller = TextEditingController();
+  Stream<List<DocumentSnapshot>>? stream;
+  final controller = TextEditingController();
   final serviceEnabled = Geolocator.isLocationServiceEnabled();
 
   @override
   void initState() {
     super.initState();
-    // userID();
-    userinfo();
     _determinePermission();
     getCoordinates();
+    userinfo();
   }
 
   @override
@@ -142,14 +133,14 @@ class _PageAccueilState extends State<PageAccueil> {
     _locationData = await location.getLocation();
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(
-            _locationData.latitude, _locationData.longitude);
+            _locationData.latitude!, _locationData.longitude!);
     var first = addresses.first;
 
     setState(() {
       //Latitude de l'utilisateur via la localisation
-      currentLatitude = _locationData.latitude;
+      currentLatitude = _locationData.latitude ?? 0;
       //Longitude de l'utilisateur via la localisation
-      currentLongitude = _locationData.longitude;
+      currentLongitude = _locationData.longitude ?? 0;
       //Adresse de l'utilisateur via la localisation
       _currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
@@ -158,25 +149,13 @@ class _PageAccueilState extends State<PageAccueil> {
     });
   }
 
-  userinfo() async {
-    final User user = await AuthMethods().getCurrentUser();
-    userid = user.uid;
-    QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
-    username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
-
-    setState(() {});
-  }
-
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
-    latitude =
-        double.parse("${querySnapshot.docs[0]['latitude']}") ?? currentLatitude;
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}") ??
-        currentLongitude;
+    QuerySnapshot querySnapshot = await (DatabaseMethods()
+        .getChosenAddress(userid) /*as Future<QuerySnapshot<Object>>*/);
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
 
     _preferences = await SharedPreferences.getInstance();
 
@@ -192,433 +171,409 @@ class _PageAccueilState extends State<PageAccueil> {
         await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
-    _currentAddressLocation =
-        "${first.name}, ${first.locality}" ?? _currentAddress;
-    idAddress = "${querySnapshot.docs[0]['idDoc']}" ?? null;
-    _city = "${first.locality}" ?? _city;
+    _currentAddressLocation = "${first.name}, ${first.locality}";
+    idAddress = "${querySnapshot.docs[0]['idDoc']}";
+    _city = "${first.locality}";
     // chargementChecked = true;
     setState(() {});
   }
 
+  double _sliderSize = 20.0;
+  void showCartSlider() async {
+    final dialog = await showDialog(
+        context: context, builder: (context) => PopupSlider(_sliderSize));
+
+    if (dialog != null) {
+      setState(() {
+        _sliderSize = dialog;
+      });
+    }
+  }
+
+  String? username;
+  userinfo() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+    QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
+    username = "${appBarUser.docs[0]['fname']}" + ' ' + '👋';
+  }
+
   Widget getBody() {
     var size = MediaQuery.of(context).size;
-
     positionCheck();
 
-    return latitude != null
-        ? CupertinoPageScaffold(
-            child: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  PreferredSize(
-                    preferredSize: const Size.fromHeight(10),
-                    child: CupertinoSliverNavigationBar(
-                      // leading: Material(
-                      //     child: IconButton(
-                      //   icon: Icon(Icons.home),
-                      //   onPressed: () {},
-                      // )),
+    return CupertinoPageScaffold(
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            PreferredSize(
+              preferredSize: const Size.fromHeight(10),
+              child: CupertinoSliverNavigationBar(
+                // leading: Material(
+                //     child: IconButton(
+                //   icon: Icon(Icons.home),
+                //   onPressed: () {},
+                // )),
 
-                      middle: Container(
-                        height: 45,
-                        width: MediaQuery.of(context).size.width - 70,
-                        decoration: BoxDecoration(
-                          color: textFieldColor,
-                          borderRadius: BorderRadius.circular(30),
+                middle: Container(
+                  height: 45,
+                  width: MediaQuery.of(context).size.width - 70,
+                  decoration: BoxDecoration(
+                    color: textFieldColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.location_on,
+                            color: BuyandByeAppTheme.orangeMiFonce),
+                        SizedBox(
+                          width: 10,
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Icon(Icons.location_on,
-                                  color: BuyandByeAppTheme.orangeMiFonce),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              SizedBox(
-                                height: 40,
-                                // width: size.width - 150,
-                                child: InkWell(
-                                  onTapCancel: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  onTap: () async {
-                                    // permissionChecked =
-                                    //     await _determinePermission();
+                        SizedBox(
+                          height: 40,
+                          // width: size.width - 150,
+                          child: InkWell(
+                            onTapCancel: () {
+                              Navigator.of(context).pop();
+                            },
+                            onTap: () async {
+                              // permissionChecked =
+                              //     await _determinePermission();
 
-                                    affichageAddress();
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.only(top: 5),
-                                    child: Text(
-                                      _currentAddressLocation ?? "",
-                                      style: TextStyle(fontSize: 13.5),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      trailing: Container(
-                        padding: EdgeInsets.only(
-                          left: 6,
-                          right: 6,
-                        ),
-                        child: IconButton(
-                          icon: Container(
-                            child: Center(
-                              child: Icon(Icons.shopping_cart,
-                                  color: BuyandByeAppTheme.orangeMiFonce
-                                  // size: 22,
-                                  ),
-                            ),
-                          ),
-                          onPressed: () {
-                            affichageCart();
-                          },
-                        ),
-                      ),
-
-                      largeTitle: RichText(
-                        text: TextSpan(
-                          // style: Theme.of(context).textTheme.bodyText2,
-                          children: [
-                            TextSpan(
-                                text: 'Bienvenue ',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: BuyandByeAppTheme.orangeMiFonce,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                            TextSpan(
-                              text: username,
-                              style: TextStyle(
-                                fontSize: 23,
-                                color: BuyandByeAppTheme.black_electrik,
-                                fontWeight: FontWeight.bold,
+                              affichageAddress();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(top: 5),
+                              child: Text(
+                                _currentAddressLocation,
+                                style: TextStyle(fontSize: 13.5),
+                                textAlign: TextAlign.left,
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ];
-              },
-              body: StreamBuilder(
-                stream: stream,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-
-                  if (!snapshot.hasData)
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ColorLoader3(
-                            radius: 15.0,
-                            dotRadius: 6.0,
-                          ),
-                          Text("Chargement, veuillez patienter"),
-                        ],
+                ),
+                trailing: Container(
+                  padding: EdgeInsets.only(
+                    left: 6,
+                    right: 6,
+                  ),
+                  child: IconButton(
+                    icon: Container(
+                      child: Center(
+                        child: Icon(Icons.shopping_cart,
+                            color: BuyandByeAppTheme.orangeMiFonce
+                            // size: 22,
+                            ),
                       ),
-                    );
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: ColorLoader3(
-                        radius: 15.0,
-                        dotRadius: 6.0,
-                      ),
-                    );
-                  }
-                  if (snapshot.data.length > 0) {
-                    return ListView(
-                      padding: EdgeInsets.all(0.0),
-                      children: [
-                        SizedBox(height: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: Text(
-                                "Les bons plans du moment",
-                                style: customTitle,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: Text(
-                                "Des bons plans à $_city  🤲",
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ),
+                    ),
+                    onPressed: () {
+                      affichageCart();
+                    },
+                  ),
+                ),
 
-                            Container(
-                              padding: EdgeInsets.all(20),
-                              child: SliderAccueil1(latitude, longitude),
-                            ),
-
-                            Center(
-                                child: Text(
-                              "Sponsorisé",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20.00),
-                            )),
-                            SizedBox(
-                              height: 15,
-                            ),
-
-                            //trait gris de séparation
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: Text(
-                                "Près de chez vous",
-                                style: customTitle,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: Text(
-                                "-3km 📍",
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(20),
-                              child: SliderAccueil2(latitude, longitude),
-                            ),
-
-                            //trait gris de séparation
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: Text(
-                                "Plus à découvrir",
-                                style: customTitle,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: Text(
-                                "-10km 🗺️",
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(20),
-                              child: SliderAccueil3(latitude, longitude),
-                            ),
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
-
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                  children: [
-                                    TextSpan(
-                                      text: 'Mes magasins préférés',
-                                      style: customTitle,
-                                    ),
-                                    WidgetSpan(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5.0),
-                                        child: Icon(
-                                          Icons.favorite,
-                                          color: Colors.red,
-                                          size: 25,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(20),
-                              child:
-                                  SliderFavorite(latitude, longitude, userid),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
-
-                            // SizedBox(
-                            //   height: 20,
-                            // ),
-                            // Center(
-                            //   child: GestureDetector(
-                            //     onTap: () {
-                            //       affichageAllStores();
-                            //     },
-                            //     child: Container(
-                            //       height: 50,
-                            //       width: 210,
-                            //       decoration: BoxDecoration(
-                            //           borderRadius: BorderRadius.circular(20),
-                            //           color: BuyandByeAppTheme.black_electrik),
-                            //       child: Text(
-                            //         "Afficher tous les commerçants",
-                            //         style: TextStyle(color: white),
-                            //       ),
-                            //       alignment: Alignment.center,
-                            //     ),
-                            //   ),
-                            // ),
-
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  } else {
-                    return ListView(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // SizedBox(
-                            //   height: 15,
-                            // ),
-                            // Row(
-                            //   children: [
-                            //     Container(
-                            //       margin: EdgeInsets.only(left: 15),
-                            //       height: 45,
-                            //       width: size.width - 70,
-                            //       decoration: BoxDecoration(
-                            //         color: textFieldColor,
-                            //         borderRadius: BorderRadius.circular(30),
-                            //       ),
-                            //       child: Row(
-                            //         mainAxisAlignment:
-                            //             MainAxisAlignment.spaceBetween,
-                            //         children: [
-                            //           Padding(
-                            //             padding: EdgeInsets.all(12),
-                            //             child: Row(
-                            //               children: [
-                            //                 Icon(
-                            //                   Icons.location_on,
-                            //                 ),
-                            //                 SizedBox(
-                            //                   width: 5,
-                            //                 ),
-                            //                 SizedBox(
-                            //                   height: 30,
-                            //                   width: size.width - 150,
-                            //                   child: InkWell(
-                            //                     onTap: () async {
-                            //                       // permissionChecked =
-                            //                       //     await _determinePermission();
-
-                            //                       affichageAddress();
-                            //                     },
-                            //                     child: Container(
-                            //                       width: size.width - 150,
-                            //                       padding:
-                            //                           EdgeInsets.only(top: 5),
-                            //                       child: Text(
-                            //                         _currentAddressLocation,
-                            //                         textAlign: TextAlign.left,
-                            //                       ),
-                            //                     ),
-                            //                   ),
-                            //                 ),
-                            //               ],
-                            //             ),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                          ],
-                        ),
-                        Container(
-                          child: Center(
-                              child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Image.asset(
-                                'assets/images/splash_2.png',
-                                width: 300,
-                                height: 300,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Text(
-                                  "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    // color: Colors.grey[700]
-                                  ),
-                                  textAlign: TextAlign.justify,
-                                ),
-                              ),
-                            ],
+                largeTitle: RichText(
+                  text: TextSpan(
+                    // style: Theme.of(context).textTheme.bodyText2,
+                    children: [
+                      TextSpan(
+                          text: 'Bienvenue ',
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: BuyandByeAppTheme.orangeMiFonce,
+                            fontWeight: FontWeight.bold,
                           )),
+                      TextSpan(
+                        text: username,
+                        style: TextStyle(
+                          fontSize: 23,
+                          color: BuyandByeAppTheme.black_electrik,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    );
-                  }
-                },
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ColorLoader3(
+          ];
+        },
+        body: StreamBuilder(
+          stream: stream,
+          builder: (BuildContext context,
+              AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+
+            if (!snapshot.hasData)
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ColorLoader3(
+                      radius: 15.0,
+                      dotRadius: 6.0,
+                    ),
+                    Text("Chargement, veuillez patienter"),
+                  ],
+                ),
+              );
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: ColorLoader3(
                   radius: 15.0,
                   dotRadius: 6.0,
                 ),
-                Text("Chargement, veuillez patienter"),
-              ],
-            ),
-          );
+              );
+            }
+            if (snapshot.data!.length > 0) {
+              return ListView(
+                padding: EdgeInsets.all(0.0),
+                children: [
+                  SizedBox(height: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: Text(
+                          "Les bons plans du moment",
+                          style: customTitle,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: Text(
+                          "Des bons plans à $_city  🤲",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: SliderAccueil1(latitude, longitude),
+                      ),
+
+                      Center(
+                          child: Text(
+                        "Sponsorisé",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20.00),
+                      )),
+                      SizedBox(
+                        height: 15,
+                      ),
+
+                      //trait gris de séparation
+                      Container(
+                        width: size.width,
+                        height: 10,
+                        decoration: BoxDecoration(color: textFieldColor),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: Text(
+                          "Près de chez vous",
+                          style: customTitle,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: Text(
+                          "-3km 📍",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: SliderAccueil2(latitude, longitude),
+                      ),
+
+                      //trait gris de séparation
+                      Container(
+                        width: size.width,
+                        height: 10,
+                        decoration: BoxDecoration(color: textFieldColor),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: Text(
+                          "Plus à découvrir",
+                          style: customTitle,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        child: Text(
+                          "-10km 🗺️",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: SliderAccueil3(latitude, longitude),
+                      ),
+
+                      SizedBox(
+                        height: 15,
+                      ),
+                      // Text(
+                      //   "    Vous avez acheté chez eux récemment",
+                      //   style: customTitle,
+                      // ),
+                      // Container(
+                      //   padding: EdgeInsets.all(20),
+                      //   child: SliderAccueil4(latitude, longitude),
+                      //   ),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      // Container(
+                      //   width: size.width,
+                      //   height: 10,
+                      //   decoration: BoxDecoration(color: textFieldColor),
+                      // ),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      // Center(
+                      //   child: GestureDetector(
+                      //     onTap: () {
+                      //       affichageAllStores();
+                      //     },
+                      //     child: Container(
+                      //       height: 50,
+                      //       width: 210,
+                      //       decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(20),
+                      //           color: BuyandByeAppTheme.black_electrik),
+                      //       child: Text(
+                      //         "Afficher tous les commerçants",
+                      //         style: TextStyle(color: white),
+                      //       ),
+                      //       alignment: Alignment.center,
+                      //     ),
+                      //   ),
+                      // ),
+
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            } else {
+              return ListView(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // SizedBox(
+                      //   height: 15,
+                      // ),
+                      // Row(
+                      //   children: [
+                      //     Container(
+                      //       margin: EdgeInsets.only(left: 15),
+                      //       height: 45,
+                      //       width: size.width - 70,
+                      //       decoration: BoxDecoration(
+                      //         color: textFieldColor,
+                      //         borderRadius: BorderRadius.circular(30),
+                      //       ),
+                      //       child: Row(
+                      //         mainAxisAlignment:
+                      //             MainAxisAlignment.spaceBetween,
+                      //         children: [
+                      //           Padding(
+                      //             padding: EdgeInsets.all(12),
+                      //             child: Row(
+                      //               children: [
+                      //                 Icon(
+                      //                   Icons.location_on,
+                      //                 ),
+                      //                 SizedBox(
+                      //                   width: 5,
+                      //                 ),
+                      //                 SizedBox(
+                      //                   height: 30,
+                      //                   width: size.width - 150,
+                      //                   child: InkWell(
+                      //                     onTap: () async {
+                      //                       // permissionChecked =
+                      //                       //     await _determinePermission();
+
+                      //                       affichageAddress();
+                      //                     },
+                      //                     child: Container(
+                      //                       width: size.width - 150,
+                      //                       padding:
+                      //                           EdgeInsets.only(top: 5),
+                      //                       child: Text(
+                      //                         _currentAddressLocation,
+                      //                         textAlign: TextAlign.left,
+                      //                       ),
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                    ],
+                  ),
+                  Container(
+                    child: Center(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/splash_2.png',
+                          width: 300,
+                          height: 300,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                            style: TextStyle(
+                              fontSize: 18,
+                              // color: Colors.grey[700]
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -630,7 +585,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   void affichageCart() {
     showGeneralDialog(
-      barrierLabel: "Label",
+      barrierLabel: "Panier",
       barrierDismissible: true,
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: Duration(milliseconds: 400),
@@ -700,7 +655,8 @@ class _PageAccueilState extends State<PageAccueil> {
                   SizedBox(
                     height: 12,
                   ),
-                  Padding(
+                  //TODO Réparer et remettre les adresses x2
+                  /*Padding(
                     padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                     child: SizedBox(
                       height: 40,
@@ -709,7 +665,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         onTap: () async {
                           // generate a new token here
                           final sessionToken = Uuid().v4();
-                          final Suggestion result = await showSearch(
+                          final Suggestion? result = await showSearch(
                             context: context,
                             delegate: AddressSearch(sessionToken),
                           );
@@ -720,7 +676,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                     .getPlaceDetailFromId(result.placeId);
 
                             setState(() {
-                              _controller.text = result.description;
+                              _controller.text = result.description!;
                               _streetNumber = placeDetails.streetNumber;
                               _street = placeDetails.street;
                               _city = placeDetails.city;
@@ -776,7 +732,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         ),
                       ),
                     ),
-                  ),
+                  ),*/
                   Divider(
                     color: Colors.black,
                     thickness: 2,
@@ -816,10 +772,10 @@ class _PageAccueilState extends State<PageAccueil> {
                                             latitude, longitude);
                                     var first = addresses.first;
                                     setState(() {
-                                      _city = first.locality;
+                                      _city = first.locality!;
 
                                       _currentAddressLocation =
-                                          "${first.name + ", " + first.locality}";
+                                          "${first.name! + ", " + first.locality!}";
                                       geo = Geoflutterfire();
                                       GeoFirePoint center = geo.point(
                                           latitude: latitude,
@@ -897,9 +853,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                             children: [
                                               Text("Position actuelle"),
                                               SizedBox(height: 10),
-                                              _currentAddress != null
-                                                  ? Text(_currentAddress)
-                                                  : CircularProgressIndicator(),
+                                              Text(_currentAddress)
                                             ]),
                                       ],
                                     ),
@@ -1038,7 +992,7 @@ class _PageAccueilState extends State<PageAccueil> {
                           ),
                         ),
                       ),
-                      Row(
+                      /*Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 10),
@@ -1046,7 +1000,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               onPressed: () async {
                                 // generate a new token here
                                 final sessionToken = Uuid().v4();
-                                final Suggestion result = await showSearch(
+                                final Suggestion? result = await showSearch(
                                   context: context,
                                   delegate: AddressSearch(sessionToken),
                                 );
@@ -1057,7 +1011,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                           .getPlaceDetailFromId(result.placeId);
 
                                   setState(() {
-                                    _controller.text = result.description;
+                                    _controller.text = result.description!;
                                     _streetNumber = placeDetails.streetNumber;
                                     _street = placeDetails.street;
                                     _city = placeDetails.city;
@@ -1085,7 +1039,7 @@ class _PageAccueilState extends State<PageAccueil> {
                               },
                               icon: Icon(Icons.home)),
                         ],
-                      ),
+                      ),*/
                     ],
                   ),
                   StreamBuilder(
@@ -1105,47 +1059,58 @@ class _PageAccueilState extends State<PageAccueil> {
                           );
                         }
                         if (snapshot.hasData) {
-                          if (snapshot.data.docs.length > 0) {
+                          if ((snapshot.data! as QuerySnapshot).docs.length >
+                              0) {
                             return ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: snapshot.data.docs.length,
+                                itemCount: (snapshot.data! as QuerySnapshot)
+                                    .docs
+                                    .length,
                                 itemBuilder: (context, index) {
                                   return Row(
                                     children: [
                                       InkWell(
                                         onTap: () async {
                                           List<geocoder.Placemark> addresses =
-                                              await geocoder
-                                                  .placemarkFromCoordinates(
-                                                      snapshot.data.docs[index]
-                                                          ["latitude"],
-                                                      snapshot.data.docs[index]
-                                                          ["longitude"]);
+                                              await geocoder.placemarkFromCoordinates(
+                                                  (snapshot.data!
+                                                          as QuerySnapshot)
+                                                      .docs[index]["latitude"],
+                                                  (snapshot.data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]
+                                                      ["longitude"]);
                                           var first = addresses.first;
 
                                           await DatabaseMethods()
                                               .changeChosenAddress(
                                                   userid,
-                                                  snapshot.data.docs[index]
-                                                      ["idDoc"],
+                                                  (snapshot.data!
+                                                          as QuerySnapshot)
+                                                      .docs[index]["idDoc"],
                                                   idAddress);
                                           setState(() {
-                                            _city = first.locality;
-                                            idAddress = snapshot
-                                                .data.docs[index]["idDoc"];
-                                            latitude = snapshot.data.docs[index]
-                                                ["latitude"];
-                                            longitude = snapshot
-                                                .data.docs[index]["longitude"];
+                                            _city = first.locality!;
+                                            idAddress = (snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["idDoc"];
+                                            latitude = (snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["latitude"];
+                                            longitude = (snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["longitude"];
                                             _currentAddressLocation =
-                                                "${first.name + ", " + first.locality}";
+                                                "${first.name! + ", " + first.locality!}";
 
                                             geo = Geoflutterfire();
                                             GeoFirePoint center = geo.point(
-                                                latitude: snapshot.data
+                                                latitude: (snapshot.data!
+                                                        as QuerySnapshot)
                                                     .docs[index]["latitude"],
-                                                longitude: snapshot.data
+                                                longitude: (snapshot.data!
+                                                        as QuerySnapshot)
                                                     .docs[index]["longitude"]);
                                             stream = radius.switchMap((rad) {
                                               var collectionReference =
@@ -1168,16 +1133,16 @@ class _PageAccueilState extends State<PageAccueil> {
 
                                           await _preferences.setDouble(
                                               _keyLatitude,
-                                              snapshot.data.docs[index]
-                                                  ["latitude"]);
+                                              (snapshot.data! as QuerySnapshot)
+                                                  .docs[index]["latitude"]);
 
                                           await _preferences.setString(
                                               _keyCity, _city);
 
                                           await _preferences.setDouble(
                                               _keyLongitude,
-                                              snapshot.data.docs[index]
-                                                  ["longitude"]);
+                                              (snapshot.data! as QuerySnapshot)
+                                                  .docs[index]["longitude"]);
 
                                           await _preferences.setString(
                                               _keyAddress,
@@ -1190,11 +1155,13 @@ class _PageAccueilState extends State<PageAccueil> {
                                               .saveUserCity(_city);
 
                                           SharedPreferenceHelper()
-                                              .saveUserLatitude(snapshot.data
+                                              .saveUserLatitude((snapshot.data!
+                                                      as QuerySnapshot)
                                                   .docs[index]["latitude"]);
 
                                           SharedPreferenceHelper()
-                                              .saveUserLongitude(snapshot.data
+                                              .saveUserLongitude((snapshot.data!
+                                                      as QuerySnapshot)
                                                   .docs[index]["longitude"]);
                                           Phoenix.rebirth(context);
                                           Navigator.of(context).pop();
@@ -1226,7 +1193,9 @@ class _PageAccueilState extends State<PageAccueil> {
                                                   SizedBox(height: 30),
                                                   Container(
                                                     child: Text(
-                                                      snapshot.data.docs[index]
+                                                      (snapshot.data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
                                                           ["addressName"],
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -1239,9 +1208,10 @@ class _PageAccueilState extends State<PageAccueil> {
                                                                   .size
                                                                   .width -
                                                               120,
-                                                      child: Text(snapshot
-                                                              .data.docs[index]
-                                                          ["address"]),
+                                                      child: Text((snapshot
+                                                                  .data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]["address"]),
                                                     ),
                                                   ),
                                                   SizedBox(height: 30),
@@ -1258,43 +1228,42 @@ class _PageAccueilState extends State<PageAccueil> {
                                                         MaterialPageRoute(
                                                             builder: (context) =>
                                                                 PageAddressEdit(
-                                                                  adresse: snapshot
-                                                                          .data
+                                                                  adresse: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "address"],
-                                                                  adressTitle: snapshot
-                                                                          .data
+                                                                  adressTitle: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "addressName"],
-                                                                  buildingDetails: snapshot
-                                                                          .data
-                                                                          .docs[index]
-                                                                      [
-                                                                      "buildingDetails"],
-                                                                  buildingName: snapshot
-                                                                          .data
+                                                                  buildingDetails:
+                                                                      (snapshot.data!
+                                                                              as QuerySnapshot)
+                                                                          .docs[index]["buildingDetails"],
+                                                                  buildingName: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "buildingName"],
-                                                                  familyName: snapshot
-                                                                          .data
+                                                                  familyName: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "familyName"],
-                                                                  lat: snapshot
-                                                                          .data
+                                                                  lat: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "latitude"],
-                                                                  long: snapshot
-                                                                          .data
+                                                                  long: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       [
                                                                       "longitude"],
-                                                                  iD: snapshot
-                                                                          .data
+                                                                  iD: (snapshot.data!
+                                                                              as QuerySnapshot)
                                                                           .docs[index]
                                                                       ["idDoc"],
                                                                 )));
@@ -1358,8 +1327,8 @@ class SliderAccueil1 extends StatefulWidget {
     this.latitude,
     this.longitude,
   );
-  double latitude;
-  double longitude;
+  double? latitude;
+  double? longitude;
   @override
   _SliderAccueil1State createState() => _SliderAccueil1State();
 }
@@ -1368,10 +1337,11 @@ class SliderAccueil1 extends StatefulWidget {
 class _SliderAccueil1State extends State<SliderAccueil1> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>> stream;
   bool loved;
+
   @override
   void initState() {
     super.initState();
@@ -1381,7 +1351,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
         var collectionReference = FirebaseFirestore.instance
             .collection('magasins')
@@ -1402,7 +1372,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         // ignore: missing_return
         builder: (context, snapshot) {
@@ -1424,8 +1394,8 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
@@ -1450,8 +1420,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
-                      mainCategorie: documents[index]["mainCategorie"] 
+                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
                     ),
                   );
                 },
@@ -1492,8 +1461,8 @@ class SliderAccueil2 extends StatefulWidget {
     this.latitude,
     this.longitude,
   );
-  double latitude;
-  double longitude;
+  double? latitude;
+  double? longitude;
   @override
   _SliderAccueil2State createState() => _SliderAccueil2State();
 }
@@ -1502,9 +1471,9 @@ class SliderAccueil2 extends StatefulWidget {
 class _SliderAccueil2State extends State<SliderAccueil2> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1513,7 +1482,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
         var collectionReference =
             FirebaseFirestore.instance.collection('magasins');
@@ -1533,7 +1502,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1554,8 +1523,8 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
@@ -1580,8 +1549,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
-                      mainCategorie: documents[index]["mainCategorie"] 
+                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
                     ),
                   );
                 },
@@ -1623,8 +1591,8 @@ class SliderAccueil3 extends StatefulWidget {
     this.latitude,
     this.longitude,
   );
-  double latitude;
-  double longitude;
+  double? latitude;
+  double? longitude;
   @override
   _SliderAccueil3State createState() => _SliderAccueil3State();
 }
@@ -1632,9 +1600,9 @@ class SliderAccueil3 extends StatefulWidget {
 class _SliderAccueil3State extends State<SliderAccueil3> {
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -1643,7 +1611,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
     setState(() {
       geo = Geoflutterfire();
       GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
         var collectionReference =
             FirebaseFirestore.instance.collection('magasins');
@@ -1663,7 +1631,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1684,8 +1652,8 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
@@ -1710,8 +1678,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
-                      clickAndCollect: documents[index]["ClickAndCollect"],
-                      mainCategorie: documents[index]["mainCategorie"] 
+                      clickAndCollect: documents[index]["ClickAndCollect"], mainCategorie: [],
                     ),
                   );
                 },
@@ -1893,7 +1860,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
 
   int carouselItem = 0;
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods().getStoreInfo(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -1914,8 +1881,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                   ],
                 ),
               ),
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
@@ -2026,10 +1993,10 @@ class AllStores extends StatefulWidget {
 
 class _AllStoresState extends State<AllStores> {
   var currentLocation;
-  var position;
-  Geoflutterfire geo;
+  late var position;
+  late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
-  Stream<List<DocumentSnapshot>> stream;
+  Stream<List<DocumentSnapshot>>? stream;
 
   @override
   void initState() {
@@ -2053,7 +2020,7 @@ class _AllStoresState extends State<AllStores> {
 
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData)
@@ -2074,8 +2041,8 @@ class _AllStoresState extends State<AllStores> {
                         height: 15,
                       ),
                       Shimmer.fromColors(
-                        baseColor: Colors.grey[300],
-                        highlightColor: Colors.grey[100],
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
                         child: Row(
                           children: [
                             Container(
@@ -2168,11 +2135,11 @@ class _AllStoresState extends State<AllStores> {
                               height: 15,
                             ),
                             //trait gris de séparation
-                            Container(
-                              width: size.width,
-                              height: 10,
-                              decoration: BoxDecoration(color: textFieldColor),
-                            ),
+                            // Container(
+                            //   width: size.width,
+                            //   height: 10,
+                            //   decoration: BoxDecoration(color: textFieldColor),
+                            // ),
                           ],
                         ),
                       ),

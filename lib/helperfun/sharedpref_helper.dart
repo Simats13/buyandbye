@@ -76,27 +76,27 @@ class SharedPreferenceHelper {
   }
 
   //get data
-  Future<String> getUserName() async {
+  Future<String?> getUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userNameKey);
   }
 
-  Future<String> getUserEmail() async {
+  Future<String?> getUserEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userEmailKey);
   }
 
-  Future<String> getUserId() async {
+  Future<String?> getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userIdKey);
   }
 
-  Future<String> getDisplayName() async {
+  Future<String?> getDisplayName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(displayNameKey);
   }
 
-  Future<String> getUserProfileUrl() async {
+  Future<String?> getUserProfileUrl() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userProfilePicKey);
   }
@@ -111,32 +111,32 @@ class SharedPreferenceHelper {
     return prefs.getDouble(userLocationLongitudeKey);
   }
 
-  Future<String> getUserAddress() async {
+  Future<String?> getUserAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userAddressKey);
   }
 
-  Future<String> getUserCity() async {
+  Future<String?> getUserCity() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userCityKey);
   }
 
-  Future<double> getUserSlider() async {
+  Future<double?> getUserSlider() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getDouble(userSliderkey);
   }
 
-  Future<String> getLabelSliderUser() async {
+  Future<String?> getLabelSliderUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userSliderLabelkey);
   }
 
-  Future<bool> getUserCreated() async {
+  Future<bool?> getUserCreated() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(userCreated);
   }
 
-  Future<bool> getInformationCharged() async {
+  Future<bool?> getInformationCharged() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(informationCharged);
   }

@@ -14,16 +14,16 @@ class SlideItem extends StatefulWidget {
   final String sellerID;
 
   SlideItem({
-    Key key,
-    @required this.img,
-    @required this.name,
-    @required this.address,
-    @required this.mainCategorie,
-    @required this.colorStore,
-    @required this.description,
-    @required this.clickAndCollect,
-    @required this.livraison,
-    @required this.sellerID,
+    Key? key,
+    required this.img,
+    required this.name,
+    required this.address,
+    required this.mainCategorie,
+    required this.colorStore,
+    required this.description,
+    required this.clickAndCollect,
+    required this.livraison,
+    required this.sellerID,
   }) : super(key: key);
 
   @override
@@ -86,19 +86,22 @@ class _SlideItemState extends State<SlideItem> {
                         ),
                       ),
                       Positioned(
-                        top: 6.0,
-                        right: 6.0,
-                        child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
+                          top: 6.0,
+                          right: 6.0,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
                                   padding: EdgeInsets.all(2),
                                   child: Row(
                                     children: [
                                       Icon(Icons.sell_outlined),
-                                      Text("-50%",style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                                      Text("-50%",
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold)),
                                     ],
                                   )))),
                       Positioned(

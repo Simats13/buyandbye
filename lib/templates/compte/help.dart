@@ -9,7 +9,7 @@ class Help extends StatefulWidget {
   _HelpState createState() => _HelpState();
   Help(this.isAdmin, this.email);
   final bool isAdmin;
-  final String email;
+  final String? email;
 }
 
 List questions = [];
@@ -315,20 +315,21 @@ class Question extends StatefulWidget {
 
 class _QuestionState extends State<Question> {
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<dynamic>(
         future: DatabaseMethods().getFAQ(widget.isAdmin),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           return ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: snapshot.data.docs.length,
+              itemCount: (snapshot.data! as QuerySnapshot).docs.length,
               itemBuilder: (context, index) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 25),
-                    Text(snapshot.data.docs[index]['question'],textAlign: TextAlign.justify,
+                    Text(snapshot.data.docs[index]['question'],
+                        textAlign: TextAlign.justify,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w500)),
                     SizedBox(height: 15),
@@ -345,8 +346,8 @@ class _QuestionState extends State<Question> {
 }
 
 class MyTextFormField extends StatelessWidget {
-  final Function validator;
-  final Function onSaved;
+  final Function? validator;
+  final Function? onSaved;
 
   MyTextFormField({
     this.validator,
@@ -364,8 +365,8 @@ class MyTextFormField extends StatelessWidget {
           filled: true,
           fillColor: Colors.grey[200],
         ),
-        validator: validator,
-        onSaved: onSaved,
+        validator: validator as String? Function(String?)?,
+        onSaved: onSaved as void Function(String?)?,
       ),
     );
   }
@@ -376,13 +377,13 @@ class Formulaire extends StatefulWidget {
   @override
   _FormulaireState createState() => _FormulaireState();
   Formulaire(this.email);
-  final String email;
+  final String? email;
 }
 
 class _FormulaireState extends State<Formulaire> {
   final _formKey = GlobalKey<FormState>();
-  String email;
-  String suggestion;
+  String? email;
+  String? suggestion;
 
   addData() {
     Map<String, dynamic> userData = {
@@ -412,17 +413,16 @@ class _FormulaireState extends State<Formulaire> {
                 if (value == null || value.isEmpty) {
                   return 'Veuillez écrire un message';
                 }
-                return null;
               },
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 suggestion = value;
               },
             ),
             SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
                   addData();
                   showDialog(
                       context: context,
@@ -453,14 +453,14 @@ class Formulaire2 extends StatefulWidget {
   @override
   _Formulaire2State createState() => _Formulaire2State();
   Formulaire2(this.email);
-  final String email;
+  final String? email;
 }
 
 class _Formulaire2State extends State<Formulaire2> {
   final _formKey = GlobalKey<FormState>();
-  String email;
-  String problemType;
-  String problem;
+  String? email;
+  String? problemType;
+  String? problem;
 
   addData2() {
     Map<String, dynamic> userData = {
@@ -477,7 +477,7 @@ class _Formulaire2State extends State<Formulaire2> {
 
   //Initialisation de la DropDownList
   List<DropdownMenuItem<String>> problems = [];
-  String def;
+  String? def;
   void listProblems() {
     problems.clear();
     problems.add(DropdownMenuItem(
@@ -507,7 +507,7 @@ class _Formulaire2State extends State<Formulaire2> {
                 items: problems,
                 hint:
                     Text("Nature du problème", style: TextStyle(fontSize: 18)),
-                onChanged: (value) {
+                onChanged: (dynamic value) {
                   def = value;
                   problemType = value;
                   setState(() {});
@@ -529,7 +529,7 @@ class _Formulaire2State extends State<Formulaire2> {
                 }
                 return null;
               },
-              onSaved: (String value) {
+              onSaved: (value) {
                 problem = value;
               },
             ),
@@ -540,8 +540,8 @@ class _Formulaire2State extends State<Formulaire2> {
                   setState(() {
                     nullType = false;
                   });
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
                     addData2();
                     showDialog(
                         context: context,

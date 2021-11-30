@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../common_widgets.dart';
 
-Widget mineListTile(BuildContext context, String message, String time, bool isRead, String type) {
+Widget mineListTile(BuildContext context, String? message, String time, bool isRead, String? type) {
   final size = MediaQuery.of(context).size;
   return Padding( padding: const EdgeInsets.only(top:2.0,right: 8),
     child: Row(
@@ -51,7 +51,7 @@ Widget mineListTile(BuildContext context, String message, String time, bool isRe
                 child: Padding(
                   padding: EdgeInsets.all(type == 'text' ? 10.0:0),
                   child: Container(
-                      child: type == 'text' ? Text(message,
+                      child: type == 'text' ? Text(message!,
                         style: TextStyle(color: Colors.white),) :
                       imageMessage(context,message)
                   ),

@@ -7,23 +7,17 @@ import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/templates/Pages/place_service.dart';
 import 'package:flutter/services.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
-import 'package:truncate/truncate.dart';
-import 'package:uuid/uuid.dart';
 import 'package:geocoding/geocoding.dart' as geocoder;
-import 'package:buyandbye/templates/pages/address_search.dart';
 
 class PageFirstConnection extends StatefulWidget {
-  const PageFirstConnection({Key key}) : super(key: key);
+  const PageFirstConnection({Key? key}) : super(key: key);
 
   @override
   _PageFirstConnectionState createState() => _PageFirstConnectionState();
@@ -35,20 +29,19 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    user_id();
+    userId();
   }
 
-  final _formKey = GlobalKey<FormState>();
-  user_id() async {
+  final formKey = GlobalKey<FormState>();
+  userId() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
   }
 
-  String userid;
-  String val;
-  String idAdress;
+  String? userid;
+  String? val;
+  String? idAdress;
   bool isEnabled = false;
 
   @override
@@ -117,11 +110,11 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        if (snapshot.data.docs.length > 0) {
+                        if (snapshot.data!.docs.length > 0) {
                           return ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
-                              itemCount: snapshot.data.docs.length,
+                              itemCount: snapshot.data!.docs.length,
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: EdgeInsets.fromLTRB(00, 0, 0, 0),
@@ -149,7 +142,7 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                           SizedBox(height: 30),
                                                           Container(
                                                             child: Text(
-                                                              snapshot.data
+                                                              snapshot.data!
                                                                           .docs[
                                                                       index][
                                                                   "addressName"],
@@ -166,7 +159,7 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                                       .width -
                                                                   200,
                                                               child: Text(snapshot
-                                                                          .data
+                                                                          .data!
                                                                           .docs[
                                                                       index]
                                                                   ["address"]),
@@ -190,20 +183,20 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                                       builder: (context) =>
                                                                           PageAddressEdit(
                                                                             adresse:
-                                                                                snapshot.data.docs[index]["address"],
+                                                                                snapshot.data!.docs[index]["address"],
                                                                             adressTitle:
-                                                                                snapshot.data.docs[index]["addressName"],
+                                                                                snapshot.data!.docs[index]["addressName"],
                                                                             buildingDetails:
-                                                                                snapshot.data.docs[index]["buildingDetails"],
+                                                                                snapshot.data!.docs[index]["buildingDetails"],
                                                                             buildingName:
-                                                                                snapshot.data.docs[index]["buildingName"],
+                                                                                snapshot.data!.docs[index]["buildingName"],
                                                                             familyName:
-                                                                                snapshot.data.docs[index]["familyName"],
+                                                                                snapshot.data!.docs[index]["familyName"],
                                                                             lat:
-                                                                                snapshot.data.docs[index]["latitude"],
+                                                                                snapshot.data!.docs[index]["latitude"],
                                                                             long:
-                                                                                snapshot.data.docs[index]["longitude"],
-                                                                            iD: snapshot.data.docs[index]["idDoc"],
+                                                                                snapshot.data!.docs[index]["longitude"],
+                                                                            iD: snapshot.data!.docs[index]["idDoc"],
                                                                           )));
                                                             },
                                                           ),
@@ -213,15 +206,15 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                   ),
                                                 ],
                                               ),
-                                              value: snapshot.data.docs[index]
+                                              value: snapshot.data!.docs[index]
                                                   ["addressName"],
                                               groupValue: val,
-                                              onChanged: (v) => {
+                                              onChanged: (dynamic v) => {
                                                 setState(
                                                   () {
                                                     val = v;
 
-                                                    idAdress = snapshot.data
+                                                    idAdress = snapshot.data!
                                                         .docs[index]["idDoc"];
                                                     isEnabled = true;
                                                     print(isEnabled);
@@ -296,11 +289,11 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
   }
 
   Future<void> sendToDatabaseAddress(
-    String userid,
+    String? userid,
     idAddress,
   ) async {
     try {
-      await DatabaseMethods.instanace.addFirstAddress(userid, idAddress);
+      await DatabaseMethods.instance.addFirstAddress(userid, idAddress);
     } catch (e) {
       showAlertDialog(context, 'Error user information to database');
     }
@@ -308,7 +301,7 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
 }
 
 class Informations extends StatefulWidget {
-  const Informations({Key key}) : super(key: key);
+  const Informations({Key? key}) : super(key: key);
 
   @override
   _InformationsState createState() => _InformationsState();
@@ -355,7 +348,7 @@ class _InformationsState extends State<Informations> {
 }
 
 class AddressChoose extends StatefulWidget {
-  const AddressChoose({Key key}) : super(key: key);
+  const AddressChoose({Key? key}) : super(key: key);
 
   @override
   _AddressChooseState createState() => _AddressChooseState();
@@ -368,7 +361,7 @@ class _AddressChooseState extends State<AddressChoose> {
     _determinePermission();
   }
 
-  LocationData _locationData;
+  late LocationData _locationData;
   Location location = Location();
 
 //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
@@ -410,7 +403,7 @@ class _AddressChooseState extends State<AddressChoose> {
 
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(
-            _locationData.latitude, _locationData.longitude);
+            _locationData.latitude!, _locationData.longitude!);
     var first = addresses.first;
 
     setState(() {
@@ -421,23 +414,22 @@ class _AddressChooseState extends State<AddressChoose> {
       //Adresse de l'utilisateur via la localisation
       _currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
-      _city = "${first.locality}";
+      city = "${first.locality}";
       permissionChecked = true;
     });
   }
 
-  String _currentAddress,
-      _currentAddressLocation,
-      _streetNumber,
-      _street,
-      _city,
+  String? _currentAddress,
+      currentAddressLocation,
+      streetNumber,
+      street,
+      city,
       zipCode,
       idAddress,
       userid;
-  final _controller = TextEditingController();
-  double latitude, longitude, currentLatitude, currentLongitude;
+  double? latitude, longitude, currentLatitude, currentLongitude;
   bool permissionChecked = false;
-  Geoflutterfire geo;
+  Geoflutterfire? geo;
 
   @override
   Widget build(BuildContext context) {
@@ -590,9 +582,9 @@ class _AddressChooseState extends State<AddressChoose> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageAddressNext(
-                                        lat: currentLatitude,
-                                        long: currentLongitude,
-                                        adresse: _currentAddress,
+                                        lat: currentLatitude!,
+                                        long: currentLongitude!,
+                                        adresse: _currentAddress!,
                                       )));
                         },
                         child: Container(
@@ -612,7 +604,7 @@ class _AddressChooseState extends State<AddressChoose> {
                                     Text("Position actuelle"),
                                     SizedBox(height: 10),
                                     _currentAddress != null
-                                        ? Text(_currentAddress)
+                                        ? Text(_currentAddress!)
                                         : CircularProgressIndicator(),
                                   ]),
                             ],
@@ -654,7 +646,8 @@ class _AddressChooseState extends State<AddressChoose> {
         SizedBox(
           height: 15,
         ),
-        Padding(
+        //TODO Réparer et remettre les adresses
+        /*Padding(
           padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
           child: SizedBox(
             height: 40,
@@ -663,7 +656,7 @@ class _AddressChooseState extends State<AddressChoose> {
               onTap: () async {
                 // generate a new token here
                 final sessionToken = Uuid().v4();
-                final Suggestion result = await showSearch(
+                final Suggestion? result = await showSearch(
                   context: context,
                   delegate: AddressSearch(sessionToken),
                 );
@@ -673,16 +666,16 @@ class _AddressChooseState extends State<AddressChoose> {
                       .getPlaceDetailFromId(result.placeId);
 
                   setState(() {
-                    _controller.text = result.description;
-                    _streetNumber = placeDetails.streetNumber;
-                    _street = placeDetails.street;
-                    _city = placeDetails.city;
+                    _controller.text = result.description!;
+                    streetNumber = placeDetails.streetNumber;
+                    street = placeDetails.street;
+                    city = placeDetails.city;
                     zipCode = placeDetails.zipCode;
-                    _currentAddressLocation =
-                        "$_streetNumber $_street, $_city ";
+                    currentAddressLocation =
+                        "$streetNumber $street, $city ";
                   });
 
-                  final query = "$_streetNumber $_street , $_city";
+                  final query = "$streetNumber $street , $city";
 
                   List<geocoder.Location> locations =
                       await geocoder.locationFromAddress(query);
@@ -727,7 +720,7 @@ class _AddressChooseState extends State<AddressChoose> {
               ),
             ),
           ),
-        ),
+        ),*/
       ],
     );
   }

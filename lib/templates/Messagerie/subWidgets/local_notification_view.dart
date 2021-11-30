@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalNotificationData {
-  final String userImage;
-  final String userName;
-  final String userMessage;
+  final String? userImage;
+  final String? userName;
+  final String? userMessage;
 
   LocalNotificationData({this.userImage, this.userName, this.userMessage});
 }
@@ -19,15 +19,17 @@ class LocalNotificationView {
 
   bool isShowLocalNotification = false;
   double localNotificationAnimationOpacity = 0.0;
-  ValueChanged<List<dynamic>> changeNotificationState;
+  late ValueChanged<List<dynamic>> changeNotificationState;
   LocalNotificationData localNotificationData = LocalNotificationData(
     userImage: "",
     userName: "User Name",
     userMessage: "User Message",
   );
 
-  void checkLocalNotification(Function changeNotificationState, String chatID) {
-    this.changeNotificationState = changeNotificationState;
+  void checkLocalNotification(
+      Function changeNotificationState, String? chatID) {
+    this.changeNotificationState =
+        changeNotificationState as void Function(List<dynamic>);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print('ChatList Got a message whilst in the foreground!');
       print('ChatList Message data: ${message.data}');
@@ -36,16 +38,14 @@ class LocalNotificationView {
       final inRoomChatId = prefs.getString("inRoomChatId") ?? "";
 
       if (inRoomChatId != message.data["chatroomid"]) {
-        if (message.data != null) {
-          // && chatID != message.data["chatroomid"]) {
-          LocalNotificationData localData = LocalNotificationData(
-            userImage: message.data["userImage"],
-            userName: message.data["userName"],
-            userMessage: message.data["message"],
-          );
-          this.changeNotificationState([localData, 1.0]);
-          startTimeout();
-        }
+        // && chatID != message.data["chatroomid"]) {
+        LocalNotificationData localData = LocalNotificationData(
+          userImage: message.data["userImage"],
+          userName: message.data["userName"],
+          userMessage: message.data["message"],
+        );
+        this.changeNotificationState([localData, 1.0]);
+        startTimeout();
       }
 
       // RemoteNotification notification = message.notification;
@@ -106,7 +106,7 @@ class LocalNotificationView {
                                             BorderRadius.circular(24.0),
                                         child: CachedNetworkImage(
                                           imageUrl:
-                                              localNotificationData.userImage,
+                                              localNotificationData.userImage!,
                                           placeholder: (context, url) =>
                                               Container(
                                             transform:
@@ -137,14 +137,14 @@ class LocalNotificationView {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 4.0),
                                   child: Text(
-                                    localNotificationData.userName,
+                                    localNotificationData.userName!,
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                Text(localNotificationData.userMessage,
+                                Text(localNotificationData.userMessage!,
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 14)),
                               ],
@@ -158,7 +158,7 @@ class LocalNotificationView {
         ));
   }
 
-  Timer startTimeout([int milliseconds]) {
+  Timer startTimeout([int? milliseconds]) {
     var duration = milliseconds == null ? timeout : ms * milliseconds;
     return Timer(duration, handleTimeout);
   }

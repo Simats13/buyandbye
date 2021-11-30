@@ -12,7 +12,7 @@ List categoriesInDb(snapshot) {
   // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
   // pas déjà dans la liste
   for (var i = 0; i <= snapshot.data.docs.length - 1; i++) {
-    String categoryName = snapshot.data.docs[i]["categorie"];
+    String? categoryName = snapshot.data.docs[i]["categorie"];
     if (!categoriesList.contains(categoryName)) {
       categoriesList.add(snapshot.data.docs[i]["categorie"]);
     }
@@ -25,7 +25,7 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
-  String userid;
+  String? userid;
 
   // Récupère les informations de l'utilisateur courant dans la bdd
   getMyInfo() async {
@@ -63,7 +63,7 @@ class _ProductsState extends State<Products> {
                         )
                       ]),
                   body: SingleChildScrollView(
-                    child: StreamBuilder(
+                    child: StreamBuilder<dynamic>(
                         stream: DatabaseMethods().getProducts(snapshotuid.data),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
@@ -139,7 +139,7 @@ class Categorie extends StatefulWidget {
   final AsyncSnapshot snapshot;
   final List listOfCategories;
   final int index;
-  final String uid;
+  final String? uid;
 
   _CategorieState createState() => _CategorieState();
 }

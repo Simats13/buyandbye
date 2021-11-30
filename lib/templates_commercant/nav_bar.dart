@@ -26,30 +26,25 @@ class _NavBarState extends State<NavBar> {
   int badgeMessages = 1;
   double gap = 8;
 
-  Widget _affichePage = AccueilCommercant();
+  Widget? _affichePage = AccueilCommercant();
   final AccueilCommercant _accueilCommercant = AccueilCommercant();
   final CommandesCommercant _commandesCommercant = CommandesCommercant();
   final Products _products = Products();
   final MessagerieCommercant _messagerieCommercant = MessagerieCommercant();
   final CompteCommercant _compteCommercant = CompteCommercant();
 
-  Widget _pageSelection(int page) {
+  Widget? _pageSelection(int page) {
     switch (page) {
       case 0:
         return _accueilCommercant;
-        break;
       case 1:
         return _commandesCommercant;
-        break;
       case 2:
         return _products;
-        break;
       case 3:
         return _messagerieCommercant;
-        break;
       case 4:
         return _compteCommercant;
-        break;
       default:
         return null;
     }
