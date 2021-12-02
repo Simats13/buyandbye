@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/Pages/place_service.dart';
 
-class AddressSearch extends SearchDelegate<Suggestion?> {
+class AddressSearch extends SearchDelegate {
   AddressSearch(this.sessionToken) {
     apiClient = PlaceApiProvider(sessionToken);
   }
@@ -25,25 +25,40 @@ class AddressSearch extends SearchDelegate<Suggestion?> {
     ];
   }
 
-  // Obligé de créer buildResults mais je sais pas comment ça fonctionne #Clément
-  @override
-  Widget buildResults(BuildContext context) {
-    return IconButton(
-        tooltip: "I don't know",
-        onPressed: () {},
-        icon: Icon(Icons.ac_unit_outlined));
-  }
-
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
       tooltip: 'Retour',
       icon: Icon(Icons.arrow_back),
       onPressed: () {
-        close(context, null);
+        // close(context, null)
+        Navigator.pop(context);
       },
     );
   }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(child: Center(child: Text("buildResults")));
+  }
+
+  // List<String> listExample = List.generate(10, (index) => "Text $index");
+  // List<String> recentList = ["Text 4", "Text 3"];
+  // @override
+  // Widget buildSuggestions(BuildContext context) {
+  //   List<String> suggestionList = [];
+  //   query.isEmpty
+  //       ? suggestionList = recentList
+  //       : suggestionList.addAll(listExample.where(
+  //           (element) => element.contains(query),
+  //         ));
+
+  //   return ListView.builder(
+  //       itemCount: suggestionList.length,
+  //       itemBuilder: (context, index) {
+  //         return ListTile(title: Text(suggestionList[index]));
+  //       });
+  // }
 
   @override
   Widget buildSuggestions(BuildContext context) {
@@ -59,13 +74,13 @@ class AddressSearch extends SearchDelegate<Suggestion?> {
             )
           : snapshot.hasData
               ? ListView.builder(
+                  itemCount: snapshot.data.length,
                   itemBuilder: (context, index) => ListTile(
-                    title: Text(snapshot.data.description),
+                    title: Text(snapshot.data[index].description),
                     onTap: () {
-                      close(context, snapshot.data[index] as Suggestion?);
+                      close(context, snapshot.data[index]);
                     },
                   ),
-                  itemCount: snapshot.data.length,
                 )
               : Container(
                   child: Center(

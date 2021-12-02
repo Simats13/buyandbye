@@ -32,7 +32,6 @@ class _PageAddressNextState extends State<PageAddressNext> {
   String? buildingName = "";
   String? adressTitle = "";
   String? familyName = "";
-
   BitmapDescriptor? mapMarker;
 
   void _onMapCreated(GoogleMapController controller) {
@@ -73,6 +72,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.adresse);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),

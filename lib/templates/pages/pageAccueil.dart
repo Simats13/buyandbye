@@ -601,6 +601,7 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   void affichageAddress() {
+    Size size = MediaQuery.of(context).size;
     showGeneralDialog(
         barrierLabel: "Adresse",
         barrierDismissible: true,
@@ -611,7 +612,7 @@ class _PageAccueilState extends State<PageAccueil> {
           return Align(
               alignment: Alignment.topCenter,
               child: Container(
-                constraints: BoxConstraints(minHeight: 400, maxHeight: 600),
+                constraints: BoxConstraints(minHeight: size.height / 2.5, maxHeight: 600),
                 margin: EdgeInsets.only(top: 100, left: 12, right: 12),
                 child: UserAddress(),
               ));

@@ -25,8 +25,7 @@ class UserAddress extends StatefulWidget {
 }
 
 class _UserAddressState extends State<UserAddress> {
-  String? currentAddress = "",
-      currentAddressLocation = "",
+  String? currentAddressLocation = "",
       streetNumber,
       street,
       city,
@@ -110,8 +109,6 @@ class _UserAddressState extends State<UserAddress> {
       currentLatitude = _locationData!.latitude ?? 0;
       //Longitude de l'utilisateur via la localisation
       currentLongitude = _locationData!.longitude ?? 0;
-      //Adresse de l'utilisateur via la localisation
-      currentAddress = "${first.name}, ${first.locality}";
       //Ville de l'utilisateur via la localisation
       city = "${first.locality}";
       chargementChecked = true;
@@ -147,7 +144,7 @@ class _UserAddressState extends State<UserAddress> {
           child: Column(children: [
             Row(children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(20, 10, 0, 5),
+                padding: EdgeInsets.fromLTRB(20, 15, 0, 5),
                 child: Text(
                   "Mes Adresses",
                   style: TextStyle(
@@ -161,18 +158,26 @@ class _UserAddressState extends State<UserAddress> {
               height: 12,
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+              padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
               child: SizedBox(
                 height: 40,
                 width: MediaQuery.of(context).size.width - 50,
+                // child: IconButton(
+                //     icon: Icon(Icons.search),
+                //     onPressed: () async {
+                //       final sessionToken = Uuid().v4();
+                //       final result = await showSearch(
+                //           context: context,
+                //           delegate: AddressSearch(sessionToken));
+                //       print("Adresse sélectionnée : " + result.description);
+                //     })
                 child: InkWell(
                   onTap: () async {
                     // generate a new token here
                     final sessionToken = Uuid().v4();
-                    final Suggestion? result = await showSearch(
+                    final result = await showSearch(
                       context: context,
-                      delegate: AddressSearch(sessionToken)
-                          as SearchDelegate<Suggestion>,
+                      delegate: AddressSearch(sessionToken),
                     );
                     // This will change the text displayed in the TextField
                     if (result != null) {
@@ -189,7 +194,7 @@ class _UserAddressState extends State<UserAddress> {
                             "$streetNumber $street, $city ";
                       });
 
-                      final query = "$streetNumber $street , $city";
+                      final query = "$street , $city";
 
                       List<geocoder.Location> locations =
                           await geocoder.locationFromAddress(query);
@@ -203,7 +208,7 @@ class _UserAddressState extends State<UserAddress> {
                               builder: (context) => PageAddressNext(
                                     lat: first.latitude,
                                     long: first.longitude,
-                                    adresse: query,
+                                    adresse: result.description,
                                   )));
                     }
                   },
@@ -266,9 +271,9 @@ class _UserAddressState extends State<UserAddress> {
                 ? Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20, 10, 0, 5),
+                        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width - 50,
+                          width: MediaQuery.of(context).size.width / 1.57,
                           child: InkWell(
                             onTap: () async {
                               List<geocoder.Placemark> addresses =
@@ -277,7 +282,6 @@ class _UserAddressState extends State<UserAddress> {
                               var first = addresses.first;
                               setState(() {
                                 city = first.locality!;
-
                                 currentAddressLocation =
                                     "${first.name! + ", " + first.locality!}";
                                 geo = Geoflutterfire();
@@ -297,14 +301,14 @@ class _UserAddressState extends State<UserAddress> {
                                           strictMode: true);
                                 });
                               });
-
+                              print(currentAddressLocation);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => PageAddressNext(
                                             lat: currentLatitude,
                                             long: currentLongitude,
-                                            adresse: currentAddress,
+                                            adresse: currentAddressLocation,
                                           )));
                             },
                             child: Container(
@@ -325,7 +329,7 @@ class _UserAddressState extends State<UserAddress> {
                                       children: [
                                         Text("Position actuelle"),
                                         SizedBox(height: 10),
-                                        Text(currentAddress!)
+                                        Text(currentAddressLocation!)
                                       ]),
                                 ],
                               ),
@@ -338,7 +342,7 @@ class _UserAddressState extends State<UserAddress> {
                 : Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20, 10, 0, 5),
+                        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width - 50,
                           child: InkWell(
@@ -441,9 +445,6 @@ class _UserAddressState extends State<UserAddress> {
               indent: 10,
               endIndent: 10,
             ),
-            SizedBox(
-              height: 15,
-            ),
             Row(
               children: [
                 Padding(
@@ -487,7 +488,7 @@ class _UserAddressState extends State<UserAddress> {
                                   "$streetNumber $street, $city ";
                             });
 
-                            final query = "$streetNumber $street , $city";
+                            final query = "$street , $city";
 
                             List<geocoder.Location> locations =
                                 await geocoder.locationFromAddress(query);
@@ -526,154 +527,140 @@ class _UserAddressState extends State<UserAddress> {
                   if (snapshot.hasData) {
                     if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
                       return ListView.builder(
+                          padding: EdgeInsets.zero,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount:
                               (snapshot.data! as QuerySnapshot).docs.length,
                           itemBuilder: (context, index) {
-                            return Row(
-                              children: [
-                                InkWell(
-                                  onTap: () async {
-                                    List<geocoder.Placemark> addresses =
-                                        await geocoder.placemarkFromCoordinates(
-                                            (snapshot.data! as QuerySnapshot)
-                                                .docs[index]["latitude"],
-                                            (snapshot.data! as QuerySnapshot)
-                                                .docs[index]["longitude"]);
-                                    var first = addresses.first;
-
-                                    await DatabaseMethods().changeChosenAddress(
-                                        userid,
+                            return InkWell(
+                              onTap: () async {
+                                List<geocoder.Placemark> addresses =
+                                    await geocoder.placemarkFromCoordinates(
                                         (snapshot.data! as QuerySnapshot)
-                                            .docs[index]["idDoc"],
-                                        idAddress);
-                                    setState(() {
-                                      city = first.locality!;
-                                      idAddress =
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["idDoc"];
-                                      latitude =
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["latitude"];
-                                      longitude =
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["longitude"];
-                                      currentAddressLocation =
-                                          "${first.name! + ", " + first.locality!}";
+                                            .docs[index]["latitude"],
+                                        (snapshot.data! as QuerySnapshot)
+                                            .docs[index]["longitude"]);
+                                var first = addresses.first;
 
-                                      geo = Geoflutterfire();
-                                      GeoFirePoint center = geo!.point(
-                                          latitude:
-                                              (snapshot.data! as QuerySnapshot)
-                                                  .docs[index]["latitude"],
-                                          longitude:
-                                              (snapshot.data! as QuerySnapshot)
-                                                  .docs[index]["longitude"]);
-                                      stream = radius.switchMap((rad) {
-                                        var collectionReference =
-                                            FirebaseFirestore.instance
-                                                .collection('magasins');
-                                        return geo!
-                                            .collection(
-                                                collectionRef:
-                                                    collectionReference)
-                                            .within(
-                                                center: center,
-                                                radius: 100,
-                                                field: 'position',
-                                                strictMode: true);
-                                      });
-                                    });
-                                    Phoenix.rebirth(context);
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                await DatabaseMethods().changeChosenAddress(
+                                    userid,
+                                    (snapshot.data! as QuerySnapshot)
+                                        .docs[index]["idDoc"],
+                                    idAddress);
+                                setState(() {
+                                  city = first.locality!;
+                                  idAddress = (snapshot.data! as QuerySnapshot)
+                                      .docs[index]["idDoc"];
+                                  latitude = (snapshot.data! as QuerySnapshot)
+                                      .docs[index]["latitude"];
+                                  longitude = (snapshot.data! as QuerySnapshot)
+                                      .docs[index]["longitude"];
+                                  currentAddressLocation =
+                                      "${first.name! + ", " + first.locality!}";
+
+                                  geo = Geoflutterfire();
+                                  GeoFirePoint center = geo!.point(
+                                      latitude:
+                                          (snapshot.data! as QuerySnapshot)
+                                              .docs[index]["latitude"],
+                                      longitude:
+                                          (snapshot.data! as QuerySnapshot)
+                                              .docs[index]["longitude"]);
+                                  stream = radius.switchMap((rad) {
+                                    var collectionReference = FirebaseFirestore
+                                        .instance
+                                        .collection('magasins');
+                                    return geo!
+                                        .collection(
+                                            collectionRef: collectionReference)
+                                        .within(
+                                            center: center,
+                                            radius: 100,
+                                            field: 'position',
+                                            strictMode: true);
+                                  });
+                                });
+                                //Phoenix.rebirth(context);
+                                Navigator.of(context).pop();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Icon(Icons.place_rounded),
+                                    SizedBox(width: 15),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Icon(Icons.place_rounded),
-                                        SizedBox(width: 15),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              (snapshot.data!
-                                                      as QuerySnapshot)
-                                                  .docs[index]["addressName"],
-                                            ),
-                                            Center(
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    1.57,
-                                                child: Text((snapshot.data!
-                                                        as QuerySnapshot)
-                                                    .docs[index]["address"]),
-                                              ),
-                                            ),
-                                          ],
+                                        Text(
+                                          (snapshot.data! as QuerySnapshot)
+                                              .docs[index]["addressName"],
                                         ),
-                                        IconButton(
-                                          icon: Icon(Icons.edit),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PageAddressEdit(
-                                                          adresse: (snapshot
-                                                                          .data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              ["address"],
-                                                          adressTitle: (snapshot
-                                                                          .data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              ["addressName"],
-                                                          buildingDetails: (snapshot
-                                                                          .data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              [
-                                                              "buildingDetails"],
-                                                          buildingName: (snapshot
-                                                                          .data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              [
-                                                              "buildingName"],
-                                                          familyName: (snapshot
-                                                                          .data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              ["familyName"],
-                                                          lat: (snapshot.data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              ["latitude"],
-                                                          long: (snapshot.data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              ["longitude"],
-                                                          iD: (snapshot.data!
-                                                                      as QuerySnapshot)
-                                                                  .docs[index]
-                                                              ["idDoc"],
-                                                        )));
-                                          },
+                                        Center(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                1.57,
+                                            child: Text((snapshot.data!
+                                                    as QuerySnapshot)
+                                                .docs[index]["address"]),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PageAddressEdit(
+                                                      adresse: (snapshot.data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]["address"],
+                                                      adressTitle: (snapshot
+                                                                      .data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
+                                                          ["addressName"],
+                                                      buildingDetails: (snapshot
+                                                                      .data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
+                                                          ["buildingDetails"],
+                                                      buildingName: (snapshot
+                                                                      .data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
+                                                          ["buildingName"],
+                                                      familyName: (snapshot
+                                                                      .data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
+                                                          ["familyName"],
+                                                      lat: (snapshot.data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]["latitude"],
+                                                      long: (snapshot.data!
+                                                                  as QuerySnapshot)
+                                                              .docs[index]
+                                                          ["longitude"],
+                                                      iD: (snapshot.data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]["idDoc"],
+                                                    )));
+                                      },
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             );
                           });
                     } else {
@@ -708,7 +695,8 @@ class _UserAddressState extends State<UserAddress> {
                   } else {
                     return Center(child: CircularProgressIndicator());
                   }
-                })
+                }),
+            SizedBox(height: 15)
           ]),
         ));
   }

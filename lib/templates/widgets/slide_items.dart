@@ -1,5 +1,4 @@
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
-import 'package:buyandbye/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class SlideItem extends StatefulWidget {

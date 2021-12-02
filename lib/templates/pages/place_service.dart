@@ -54,6 +54,7 @@ class PlaceApiProvider {
       final result = json.decode(response.body);
       if (result['status'] == 'OK') {
         // compose suggestions in a list
+        //print(result['predictions'][0]);
         return result['predictions']
             .map<Suggestion>((p) => Suggestion(p['place_id'], p['description']))
             .toList();
