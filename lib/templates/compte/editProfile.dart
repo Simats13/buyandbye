@@ -243,10 +243,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Center(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100),
-                          child: Image.network(
-                            myProfilePic ??
-                                "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                          ),
+                          child: myProfilePic != ""
+                              ? Image.network(myProfilePic!)
+                              : Shimmer.fromColors(
+                                  child: Container(
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                ),
                         ),
                       ),
                       // Boutons de changement d'image quand on est en mode modification
@@ -695,7 +713,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ],
                               ),
                             ),
-                            isFilled == true
+                            myID != ""
                                 ? StreamBuilder<dynamic>(
                                     stream: FirebaseFirestore.instance
                                         .collection("users")
@@ -913,23 +931,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           highlightColor: Colors.grey[100]!,
                                         );
                                       }
-                                    })
+                                    },
+                                  )
                                 : Shimmer.fromColors(
-                                    child: Container(
-                                      child: Stack(
-                                        children: [
-                                          Center(
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          title: Center(
                                             child: Container(
                                               width: MediaQuery.of(context)
                                                   .size
                                                   .width,
+                                              height: 30,
                                               decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: Colors.red,
                                               ),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                        ListTile(
+                                          title: Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     baseColor: Colors.grey[300]!,
                                     highlightColor: Colors.grey[100]!,
@@ -944,207 +990,324 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ),
                             ),
                             SizedBox(height: 20),
-                            (paymentIntentData != null &&
-                                    paymentIntentData!['paymentMethods']['data']
-                                            .length !=
-                                        0)
-                                ? ListView.builder(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount:
+                            paymentIntentData != null
+                                ? (paymentIntentData != null &&
                                         paymentIntentData!['paymentMethods']
-                                                ['data']
-                                            .length,
-                                    itemBuilder: (context, index) {
-                                      nameCard =
-                                          paymentIntentData!['paymentMethods']
-                                                  ['data'][index]
-                                              ['billing_details']['name'];
-                                      print(nameCard);
-                                      print("nameCard");
-                                      // print(paymentIntentData['paymentMethods']
-                                      //     ['data'][index]['id']);
-                                      return Column(
-                                        children: [
-                                          ListTile(
-                                            leading: paymentIntentData![
-                                                                'paymentMethods']
-                                                            ['data'][index]
-                                                        ['card']['brand'] ==
-                                                    "mastercard"
-                                                ? Image.network(
-                                                    "https://logos-marques.com/wp-content/uploads/2021/07/Mastercard-logo.png",
-                                                    width: 50,
-                                                    height: 50)
-                                                : Image.network(
-                                                    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png",
-                                                    width: 50,
-                                                    height: 50,
-                                                  ),
-                                            title: Text(
-                                              nameCard == ''
-                                                  ? "Aucun nom"
-                                                  : nameCard as String,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20.0),
-                                            ),
-                                            subtitle: Text(
-                                              "****" +
-                                                  paymentIntentData![
-                                                          'paymentMethods']['data']
-                                                      [index]['card']['last4'] +
-                                                  ' ' +
-                                                  '\nExp: ' +
-                                                  paymentIntentData!['paymentMethods']
-                                                              ['data'][index]
-                                                          ['card']['exp_month']
-                                                      .toString() +
-                                                  '/' +
-                                                  paymentIntentData![
-                                                                  'paymentMethods']
-                                                              ['data'][index]
-                                                          ['card']['exp_year']
-                                                      .toString(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15.0),
-                                            ),
-                                            trailing: IconButton(
-                                              icon: Icon(Icons.more_vert),
-                                              onPressed: () async {
-                                                // Navigator.of(context)
-                                                //               .pop();
+                                                    ['data']
+                                                .length !=
+                                            0)
+                                    ? ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount:
+                                            paymentIntentData!['paymentMethods']
+                                                    ['data']
+                                                .length,
+                                        itemBuilder: (context, index) {
+                                          nameCard = paymentIntentData![
+                                                      'paymentMethods']['data']
+                                                  [index]['billing_details']
+                                              ['name'];
 
-                                                showAdaptiveActionSheet(
-                                                  context: context,
-                                                  title: const Text(
-                                                      'Modification informations bancaires'),
-
-                                                  actions: <BottomSheetAction>[
-                                                    BottomSheetAction(
-                                                      title: const Text(
-                                                        'Modifier les informations de ma carte',
+                                          // print(paymentIntentData['paymentMethods']
+                                          //     ['data'][index]['id']);
+                                          return paymentIntentData != null
+                                              ? Column(
+                                                  children: [
+                                                    ListTile(
+                                                      leading: paymentIntentData![
+                                                                              'paymentMethods']
+                                                                          [
+                                                                          'data']
+                                                                      [
+                                                                      index]['card']
+                                                                  ['brand'] ==
+                                                              "mastercard"
+                                                          ? Image.network(
+                                                              "https://logos-marques.com/wp-content/uploads/2021/07/Mastercard-logo.png",
+                                                              width: 50,
+                                                              height: 50)
+                                                          : Image.network(
+                                                              "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png",
+                                                              width: 50,
+                                                              height: 50,
+                                                            ),
+                                                      title: Text(
+                                                        nameCard == ''
+                                                            ? "Aucun nom"
+                                                            : nameCard
+                                                                as String,
                                                         style: TextStyle(
-                                                          color: Colors.blue,
-                                                        ),
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 20.0),
                                                       ),
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop(false);
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    PageCBEdit(
-                                                              customerID:
-                                                                  customerID,
-                                                              idCard: paymentIntentData![
-                                                                          'paymentMethods']
-                                                                      ['data']
-                                                                  [index]['id'],
-                                                              expYear: paymentIntentData![
-                                                                              'paymentMethods']
-                                                                          [
-                                                                          'data']
-                                                                      [
-                                                                      index]['card']
-                                                                  ['exp_year'],
-                                                              expMonth: paymentIntentData![
-                                                                              'paymentMethods']
-                                                                          [
-                                                                          'data']
-                                                                      [
-                                                                      index]['card']
-                                                                  ['exp_month'],
-                                                              nameCard: paymentIntentData![
-                                                                          'paymentMethods']
-                                                                      [
-                                                                      'data'][index]
-                                                                  [
-                                                                  'billing_details']['name'],
+                                                      subtitle: Text(
+                                                        "****" +
+                                                            paymentIntentData!['paymentMethods']
+                                                                        ['data']
+                                                                    [index]['card']
+                                                                ['last4'] +
+                                                            ' ' +
+                                                            '\nExp: ' +
+                                                            paymentIntentData!['paymentMethods']['data']
+                                                                            [index]
+                                                                        ['card']
+                                                                    [
+                                                                    'exp_month']
+                                                                .toString() +
+                                                            '/' +
+                                                            paymentIntentData!['paymentMethods']
+                                                                            ['data']
+                                                                        [
+                                                                        index]['card']
+                                                                    ['exp_year']
+                                                                .toString(),
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 15.0),
+                                                      ),
+                                                      trailing: IconButton(
+                                                        icon: Icon(
+                                                            Icons.more_vert),
+                                                        onPressed: () async {
+                                                          // Navigator.of(context)
+                                                          //               .pop();
+
+                                                          showAdaptiveActionSheet(
+                                                            context: context,
+                                                            title: const Text(
+                                                                'Modification informations bancaires'),
+
+                                                            actions: <
+                                                                BottomSheetAction>[
+                                                              BottomSheetAction(
+                                                                title:
+                                                                    const Text(
+                                                                  'Modifier les informations de ma carte',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .blue,
+                                                                  ),
+                                                                ),
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop(
+                                                                          false);
+                                                                  Navigator
+                                                                      .push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              PageCBEdit(
+                                                                        customerID:
+                                                                            customerID,
+                                                                        idCard: paymentIntentData!['paymentMethods']['data'][index]
+                                                                            [
+                                                                            'id'],
+                                                                        expYear:
+                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_year'],
+                                                                        expMonth:
+                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_month'],
+                                                                        nameCard:
+                                                                            paymentIntentData!['paymentMethods']['data'][index]['billing_details']['name'],
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                              BottomSheetAction(
+                                                                  title:
+                                                                      const Text(
+                                                                    'Supprimer ma carte',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .red,
+                                                                    ),
+                                                                  ),
+                                                                  onPressed:
+                                                                      () async {
+                                                                    String id = paymentIntentData!['paymentMethods']
+                                                                            [
+                                                                            'data']
+                                                                        [
+                                                                        index]['id'];
+                                                                    final url =
+                                                                        "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?idCard=${paymentIntentData!['paymentMethods']['data'][index]['id']}";
+
+                                                                    await http
+                                                                        .post(
+                                                                      Uri.parse(
+                                                                          url),
+                                                                      headers: {
+                                                                        'Content-Type':
+                                                                            'application/json',
+                                                                      },
+                                                                      body: json
+                                                                          .encode({
+                                                                        'a':
+                                                                            'a',
+                                                                      }),
+                                                                    );
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    showMessage(
+                                                                        "Suppression carte",
+                                                                        "Votre carte a bien été supprimé !");
+
+                                                                    for (var i =
+                                                                            0;
+                                                                        i < paymentIntentData!['paymentMethods']['data'].length;
+                                                                        i++) {
+                                                                      if (paymentIntentData!['paymentMethods']['data']
+                                                                              [
+                                                                              i] ==
+                                                                          id) {}
+                                                                    }
+                                                                    List data =
+                                                                        paymentIntentData!['paymentMethods']
+                                                                            [
+                                                                            'data'];
+                                                                    data.removeAt(
+                                                                        index);
+
+                                                                    setState(
+                                                                        () {});
+                                                                  }),
+                                                            ],
+                                                            cancelAction: CancelAction(
+                                                                title: const Text(
+                                                                    'Annuler')), // onPressed parameter is optional by default will dismiss the ActionSheet
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Shimmer.fromColors(
+                                                  child: Column(
+                                                    children: [
+                                                      ListTile(
+                                                        title: Center(
+                                                          child: Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            height: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
                                                             ),
                                                           ),
-                                                        );
-                                                      },
-                                                    ),
-                                                    BottomSheetAction(
-                                                        title: const Text(
-                                                          'Supprimer ma carte',
-                                                          style: TextStyle(
-                                                            color: Colors.red,
+                                                        ),
+                                                      ),
+                                                      ListTile(
+                                                        title: Center(
+                                                          child: Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            height: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
+                                                            ),
                                                           ),
                                                         ),
-                                                        onPressed: () async {
-                                                          String id =
-                                                              paymentIntentData![
-                                                                          'paymentMethods']
-                                                                      ['data']
-                                                                  [index]['id'];
-                                                          final url =
-                                                              "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?idCard=${paymentIntentData!['paymentMethods']['data'][index]['id']}";
-
-                                                          await http.post(
-                                                            Uri.parse(url),
-                                                            headers: {
-                                                              'Content-Type':
-                                                                  'application/json',
-                                                            },
-                                                            body: json.encode({
-                                                              'a': 'a',
-                                                            }),
-                                                          );
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          showMessage(
-                                                              "Suppression carte",
-                                                              "Votre carte a bien été supprimé !");
-
-                                                          for (var i = 0;
-                                                              i <
-                                                                  paymentIntentData![
-                                                                              'paymentMethods']
-                                                                          [
-                                                                          'data']
-                                                                      .length;
-                                                              i++) {
-                                                            if (paymentIntentData![
-                                                                        'paymentMethods']
-                                                                    [
-                                                                    'data'][i] ==
-                                                                id) {}
-                                                          }
-                                                          List data =
-                                                              paymentIntentData![
-                                                                      'paymentMethods']
-                                                                  ['data'];
-                                                          data.removeAt(index);
-
-                                                          setState(() {});
-                                                        }),
-                                                  ],
-                                                  cancelAction: CancelAction(
-                                                      title: const Text(
-                                                          'Annuler')), // onPressed parameter is optional by default will dismiss the ActionSheet
+                                                      ),
+                                                      ListTile(
+                                                        title: Center(
+                                                          child: Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            height: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  baseColor: Colors.grey[300]!,
+                                                  highlightColor:
+                                                      Colors.grey[100]!,
                                                 );
-                                              },
+                                        },
+                                      )
+                                    : RichText(
+                                        text: TextSpan(
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2,
+                                          children: [
+                                            TextSpan(
+                                                text:
+                                                    "Aucun moyens de paiement enregistrés.\n\nEnregistrez en un lors d'un achat ! "),
+                                          ],
+                                        ),
+                                      )
+                                : Shimmer.fromColors(
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          title: Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                              ),
                                             ),
                                           ),
-                                        ],
-                                      );
-                                    })
-                                : RichText(
-                                    text: TextSpan(
-                                      style:
-                                          Theme.of(context).textTheme.bodyText2,
-                                      children: [
-                                        TextSpan(
-                                            text:
-                                                "Aucun moyens de paiement enregistrés.\n\nEnregistrez en un lors d'un achat ! "),
+                                        ),
+                                        ListTile(
+                                          title: Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     ),
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
                                   ),
                             Divider(thickness: 0.5, color: Colors.black),
                             SizedBox(height: 20),

@@ -48,19 +48,7 @@ class _PageResumeState extends State<PageResume> {
   void initState() {
     super.initState();
     getThisUserInfo();
-    getCommand();
     getShopInfos();
-  }
-
-  getCommand() async {
-    print(widget.sellerID);
-    String id = widget.sellerID! + widget.userId!;
-    produits = await FirebaseFirestore.instance
-        .collection('commandes')
-        .doc(id)
-        .collection('commands')
-        .doc(widget.idCommand)
-        .get();
   }
 
   getThisUserInfo() async {
@@ -101,7 +89,7 @@ class _PageResumeState extends State<PageResume> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), '../../assets/images/shop.png')
+            ImageConfiguration(), 'assets/images/shop.png')
         .then((value) {
       mapMarker = value;
     });
@@ -183,25 +171,33 @@ class _PageResumeState extends State<PageResume> {
                                       return Column(
                                         children: [
                                           Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10),
-                                              child: Row(children: [
+                                            margin: EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            child: Row(
+                                              children: [
                                                 Container(
-                                                    child: Detail(
-                                                        widget.sellerID!,
-                                                        snapshot.data
-                                                                .docs[index]
-                                                            ["produit"],
-                                                        snapshot.data
-                                                                .docs[index]
-                                                            ["quantite"])),
-                                              ])),
+                                                  child: Detail(
+                                                    widget.sellerID!,
+                                                    snapshot.data.docs[index]
+                                                        ["produit"],
+                                                    snapshot.data.docs[index]
+                                                        ["quantite"],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       );
                                     }),
                               );
                             } else {
-                              return Container();
+                              return Center(
+                                child: ColorLoader3(
+                                  radius: 15.0,
+                                  dotRadius: 6.0,
+                                ),
+                              );
                             }
                           }),
                     ]),
@@ -312,8 +308,8 @@ class _PageResumeState extends State<PageResume> {
                             child: GoogleMap(
                               onMapCreated: _onMapCreated,
                               initialCameraPosition: CameraPosition(
-                                  target:
-                                      LatLng(widget.latitude!, widget.longitude!),
+                                  target: LatLng(
+                                      widget.latitude!, widget.longitude!),
                                   zoom: 15.0),
                               markers: _markers,
                               myLocationButtonEnabled: false,

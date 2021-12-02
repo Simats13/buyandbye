@@ -105,7 +105,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), '../../assets/images/shop.png')
+            ImageConfiguration(), 'assets/images/shop.png')
         .then((value) {
       mapMarker = value;
     });

@@ -150,7 +150,7 @@ class _PageAccueilState extends State<PageAccueil> {
     currentAddressLocation = "${first.name}, ${first.locality}";
     idAddress = "${querySnapshot.docs[0]['idDoc']}";
     city = "${first.locality}";
-    // chargementChecked = true;
+    chargementChecked = true;
     setState(() {});
   }
 
@@ -1204,23 +1204,23 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                     return GestureDetector(
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageDetail(
-                                        img: documents[carouselItem]['imgUrl'],
-                                        colorStore: documents[carouselItem]
-                                            ['colorStore'],
-                                        name: documents[carouselItem]['name'],
-                                        description: documents[carouselItem]
-                                            ['description'],
-                                        adresse: documents[carouselItem]
-                                            ['adresse'],
-                                        clickAndCollect: documents[carouselItem]
-                                            ['ClickAndCollect'],
-                                        livraison: documents[carouselItem]
-                                            ['livraison'],
-                                        sellerID: documents[carouselItem]['id'],
-                                      )));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PageDetail(
+                                img: documents[carouselItem]['imgUrl'],
+                                colorStore: documents[carouselItem]
+                                    ['colorStore'],
+                                name: documents[carouselItem]['name'],
+                                description: documents[carouselItem]
+                                    ['description'],
+                                adresse: documents[carouselItem]['adresse'],
+                                clickAndCollect: documents[carouselItem]
+                                    ['ClickAndCollect'],
+                                livraison: documents[carouselItem]['livraison'],
+                                sellerID: documents[carouselItem]['id'],
+                              ),
+                            ),
+                          );
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,

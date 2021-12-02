@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
@@ -16,6 +19,8 @@ import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PageExplore extends StatefulWidget {
   @override
@@ -29,22 +34,19 @@ class _PageExploreState extends State<PageExplore> {
   late Geoflutterfire geo;
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  final Set<Marker> marker = new Set();
   int? prevPage;
   LocationPermission? permission;
   Stream<List<DocumentSnapshot>>? stream;
-  late BitmapDescriptor mapMaker;
-  Set<Marker> _markers = Set<Marker>();
+  late BitmapDescriptor mapMaker, mapMakerUser;
 
   List magasins = [];
   String label = 'kms';
+  late String city;
   bool localisation = false;
   late double latitude, longitude;
 
-  // firestore init
-  final _firestore = FirebaseFirestore.instance;
-
   GoogleMapController? _mapController;
-  PageController? _pageController;
 
   @override
   void setState(fn) {
@@ -56,19 +58,10 @@ class _PageExploreState extends State<PageExplore> {
   @override
   void initState() {
     super.initState();
-    userID();
     setCustomMarker();
-
-    _pageController = PageController(initialPage: 1, viewportFraction: 0.8)
-      ..addListener(_onScroll);
+    userID();
 
     fetchDatabaseList();
-  }
-
-  void _onScroll() {
-    if (_pageController!.page!.toInt() != prevPage) {
-      prevPage = _pageController!.page!.toInt();
-    }
   }
 
   fetchDatabaseList() async {
@@ -97,7 +90,7 @@ class _PageExploreState extends State<PageExplore> {
     _mapController!.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(latitude, longitude),
-        zoom: 15.0,
+        zoom: 10.0,
       ),
     ));
   }
@@ -108,32 +101,52 @@ class _PageExploreState extends State<PageExplore> {
     var userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getChosenAddress(userid);
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+    List<Placemark> addresses =
+        await placemarkFromCoordinates(latitude, longitude);
+    var first = addresses.first;
     setState(() {
       mapToggle = true;
       geo = Geoflutterfire();
-
-      latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-      longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+      city = first.locality!;
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
-        var collectionReference = _firestore.collection('magasins');
+        var collectionReference =
+            FirebaseFirestore.instance.collection('magasins');
         return geo.collection(collectionRef: collectionReference).within(
             center: center, radius: rad, field: 'position', strictMode: true);
       });
     });
 
-    final idMarker = MarkerId(latitude.toString() + longitude.toString());
-    _markers.add(Marker(
-      markerId: idMarker,
-      position: LatLng(latitude, longitude),
-      //icon: mapMarker,
-    ));
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(), 'assets/images/shop.png')
+        .then((value) {
+      mapMaker = value;
+    });
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(), 'assets/images/home.png')
+        .then((value) {
+      mapMakerUser = value;
+    });
+    final id = MarkerId(latitude.toString() + longitude.toString());
+    final markerUser = Marker(
+      //add second marker
+      markerId: MarkerId(latitude.toString() + longitude.toString()),
+      position: LatLng(latitude, longitude), //position of marker
+      icon: mapMakerUser, //Icon for Marker
+    );
+
+    setState(() {
+      markers[id] = markerUser;
+    });
+
+    // print(markerUser);
 
     //String userid = user.uid;
   }
 
   //FONCTION ALERT PERMETTANT DE MONTRER PLUS D'INFOS SUR LES MAGASINS
-
   void _magasinAffichage(double lat, double lng, String? name, idSeller) {
     Size size = MediaQuery.of(context).size;
     showGeneralDialog(
@@ -274,9 +287,15 @@ class _PageExploreState extends State<PageExplore> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), 'assets/images/shop.png')
+            ImageConfiguration(), 'assets/image/shop.png')
         .then((value) {
       mapMaker = value;
+    });
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(), 'assets/icons/home.png')
+        .then((value) {
+      mapMakerUser = value;
+  
     });
   }
 
@@ -294,6 +313,7 @@ class _PageExploreState extends State<PageExplore> {
             idSeller,
           );
         });
+
     setState(() {
       markers[id] = _marker;
     });
@@ -309,8 +329,6 @@ class _PageExploreState extends State<PageExplore> {
       final GeoPoint point = document.get('position')['geopoint'];
       final name = document.get('name');
       final idSeller = document.get('id');
-      print("idSeller");
-      print(idSeller);
       // final clickAndCollect = document.get('ClickAndCollect');
       // final adresse = document.get('adresse');
       // final description = document.get('description');
@@ -325,6 +343,13 @@ class _PageExploreState extends State<PageExplore> {
   Widget build(BuildContext context) {
     return mapToggle
         ? Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                showHome();
+              },
+              child: const Icon(Icons.near_me),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
             backgroundColor: BuyandByeAppTheme.white,
             // appBar: PreferredSize(
             //   preferredSize: Size.fromHeight(50.0),
@@ -387,201 +412,281 @@ class _PageExploreState extends State<PageExplore> {
                   ),
                 ),
                 StreamBuilder<dynamic>(
-                    stream: stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(
-                            child: Center(
-                          child: Platform.isIOS
-                              ? Center(
-                                  child: Column(
-                                    children: [
-                                      CupertinoActivityIndicator(),
-                                      Text('Chargement...'),
-                                    ],
-                                  ),
-                                )
-                              : Center(
-                                  child: Column(
-                                    children: [
-                                      CircularProgressIndicator(),
-                                      Text('Chargement...'),
-                                    ],
-                                  ),
+                  stream: stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                          child: Center(
+                        child: Platform.isIOS
+                            ? Center(
+                                child: Column(
+                                  children: [
+                                    CupertinoActivityIndicator(),
+                                    Text('Chargement...'),
+                                  ],
                                 ),
-                        ));
-                        //METTRE UN SHIMMER
-                      }
-                      if (!snapshot.hasData) return Container();
-                      //Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-                      return Positioned(
-                        bottom: 10.0,
-                        child: Container(
-                          height: 200.0,
-                          width: MediaQuery.of(context).size.width,
-                          child: ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              double value = 1;
-
-                              return Container(
-                                height: 200,
-                                width: MediaQuery.of(context).size.width,
-                                child: PageView.builder(
-                                  controller: _pageController,
-                                  itemCount: snapshot.data!.length,
-                                  itemBuilder: (context, int index) {
-                                    return AnimatedBuilder(
-                                      animation: _pageController!,
-                                      builder: (context, widget) {
-                                        return Center(
-                                          child: SizedBox(
-                                            height: Curves.easeInOut
-                                                    .transform(value) *
-                                                125.0,
-                                            width: Curves.easeInOut
-                                                    .transform(value) *
-                                                350.0,
-                                            child: widget,
-                                          ),
-                                        );
-                                      },
-                                      child: InkWell(
-                                        onTap: () {
-                                          GeoPoint geoPoint = magasins[index]
-                                              ['position']['geopoint'];
-                                         
-                                          _magasinAffichage(
-                                            geoPoint.latitude,
-                                            geoPoint.longitude,
-                                            snapshot.data[index]['name'],
-                                            snapshot.data[index]['id'],
-                                          );
-                                        },
-                                        child: Stack(
-                                          children: [
-                                            Center(
-                                              child: Container(
-                                                margin: EdgeInsets.symmetric(
-                                                  horizontal: 10.0,
-                                                  vertical: 20.0,
-                                                ),
-                                                height: 125.0,
-                                                width: 275.0,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black54,
-                                                      offset: Offset(0.0, 4.0),
-                                                      blurRadius: 4.0,
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
-                                                    color: Colors.white,
-                                                  ),
-                                                  child: Row(
+                              )
+                            : Center(
+                                child: Column(
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                ),
+                              ),
+                      ));
+                      //METTRE UN SHIMMER
+                    }
+                    if (!snapshot.hasData) return Container();
+                    //Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+                    // final double _initFabHeight = 120.0;
+                    // double _fabHeight = 0;
+                    // double _panelHeightOpen = 0;
+                    // double _panelHeightClosed = 95.0;
+                    BorderRadiusGeometry radius = BorderRadius.only(
+                      topLeft: Radius.circular(24.0),
+                      topRight: Radius.circular(24.0),
+                    );
+                    return Stack(
+                      alignment: Alignment.topCenter,
+                      children: <Widget>[
+                        SlidingUpPanel(
+                          parallaxEnabled: true,
+                          parallaxOffset: .5,
+                          panelBuilder: (sc) {
+                            return MediaQuery.removePadding(
+                              context: context,
+                              removeTop: true,
+                              child: ListView(
+                                controller: sc,
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 12.0,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 30,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[300],
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(12.0))),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 18.0,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        "Explorer $city",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 24.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 36.0,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      _button("Tous", Icons.store, Colors.blue),
+                                      _button("Alimentation", Icons.restaurant,
+                                          Colors.red),
+                                      _button(
+                                          "Events", Icons.event, Colors.amber),
+                                      _button("More", Icons.more_horiz,
+                                          Colors.green),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 36.0,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        "Les magasins",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 24.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 36.0,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 24.0, right: 24.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        StreamBuilder<dynamic>(
+                                            stream: stream,
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return Shimmer.fromColors(
+                                                  child: Column(
                                                     children: [
-                                                      Container(
-                                                        height: 90.0,
-                                                        width: 90.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                            bottomLeft:
-                                                                Radius.circular(
-                                                                    10.0),
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    10.0),
-                                                          ),
-                                                          image:
-                                                              DecorationImage(
-                                                            image: NetworkImage(
-                                                                snapshot.data[
-                                                                        index]
-                                                                    ['imgUrl']),
-                                                            fit: BoxFit.cover,
+                                                      ListTile(
+                                                        title: Center(
+                                                          child: Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            height: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(
-                                                        width: 5.0,
-                                                      ),
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceEvenly,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            snapshot.data[index]
-                                                                ['name'],
-                                                            style: TextStyle(
-                                                                color: BuyandByeAppTheme
-                                                                    .black_electrik,
-                                                                fontSize: 12.5,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                          Text(
-                                                            snapshot.data[index]
-                                                                ['adresse'],
-                                                            style: TextStyle(
-                                                                color: BuyandByeAppTheme
-                                                                    .black_electrik,
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                          ),
-                                                          Container(
-                                                            width: 170.0,
-                                                            child: Text(
-                                                              snapshot.data[
-                                                                      index][
-                                                                  'description'],
-                                                              style: TextStyle(
-                                                                  color: BuyandByeAppTheme
-                                                                      .black_electrik,
-                                                                  fontSize:
-                                                                      11.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300),
+                                                      ListTile(
+                                                        title: Center(
+                                                          child: Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            height: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
                                                             ),
                                                           ),
-                                                        ],
-                                                      )
+                                                        ),
+                                                      ),
+                                                      ListTile(
+                                                        title: Center(
+                                                          child: Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            height: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
                                                     ],
                                                   ),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
+                                                  baseColor: Colors.grey[300]!,
+                                                  highlightColor:
+                                                      Colors.grey[100]!,
+                                                );
+                                              }
+                                              return ListView.builder(
+                                                primary: false,
+                                                shrinkWrap: true,
+                                                itemCount: snapshot.data.length,
+                                                itemBuilder: (context, index) {
+                                                  return ListTile(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              PageDetail(
+                                                            img: snapshot
+                                                                    .data[index]
+                                                                ['imgUrl'],
+                                                            colorStore: snapshot
+                                                                    .data[index]
+                                                                ['colorStore'],
+                                                            name: snapshot
+                                                                    .data[index]
+                                                                ['name'],
+                                                            description: snapshot
+                                                                    .data[index]
+                                                                ['description'],
+                                                            adresse: snapshot
+                                                                    .data[index]
+                                                                ['adresse'],
+                                                            clickAndCollect:
+                                                                snapshot.data[
+                                                                        index][
+                                                                    'ClickAndCollect'],
+                                                            livraison: snapshot
+                                                                    .data[index]
+                                                                ['livraison'],
+                                                            sellerID: snapshot
+                                                                    .data[index]
+                                                                ['id'],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    leading: Container(
+                                                      child: Image.network(
+                                                        snapshot.data[index]
+                                                            ['imgUrl'],
+                                                      ),
+                                                      height: 100,
+                                                      width: 100,
+                                                    ),
+                                                    trailing: IconButton(
+                                                      onPressed: () {},
+                                                      icon: Icon(Icons.ac_unit),
+                                                    ),
+                                                    title: Text(
+                                                      snapshot.data[index]
+                                                          ['name'],
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 20.0),
+                                                    ),
+                                                    subtitle: Text(
+                                                      snapshot.data[index]
+                                                          ['description'],
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 15.0),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            })
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 24,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(18.0),
+                            topRight: Radius.circular(18.0),
                           ),
                         ),
-                      );
-                    }),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           )
@@ -613,6 +718,142 @@ class _PageExploreState extends State<PageExplore> {
                   : Text("Locatlisation activé"),
             ],
           );
+  }
+
+  Widget _panel(ScrollController sc) {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: ListView(
+        controller: sc,
+        children: <Widget>[
+          SizedBox(
+            height: 12.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 30,
+                height: 5,
+                decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.all(Radius.circular(12.0))),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 18.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Explorer $city",
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 24.0,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 36.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              // _button("Popular", Icons.favorite, Colors.blue),
+              // _button("Food", Icons.restaurant, Colors.red),
+              // _button("Events", Icons.event, Colors.amber),
+              // _button("More", Icons.more_horiz, Colors.green),
+            ],
+          ),
+          SizedBox(
+            height: 36.0,
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[],
+            ),
+          ),
+          SizedBox(
+            height: 24,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _button(
+    String label,
+    IconData icon,
+    Color color,
+  ) {
+    return Column(
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          child: IconButton(
+            onPressed: () {
+              if (label == "Tous") {
+                setState(() {
+                  GeoFirePoint center =
+                      geo.point(latitude: latitude, longitude: longitude);
+                  stream = radius.switchMap((rad) {
+                    var collectionReference =
+                        FirebaseFirestore.instance.collection('magasins');
+                    return geo
+                        .collection(collectionRef: collectionReference)
+                        .within(
+                            center: center,
+                            radius: rad,
+                            field: 'position',
+                            strictMode: true);
+                  });
+                });
+              }
+              if (label == "Alimentation") {
+                setState(() {
+                  GeoFirePoint center =
+                      geo.point(latitude: latitude, longitude: longitude);
+                  stream = radius.switchMap((rad) {
+                    var collectionReference = FirebaseFirestore.instance
+                        .collection('magasins')
+                        .where("mainCategorie", arrayContains: label);
+                    return geo
+                        .collection(collectionRef: collectionReference)
+                        .within(
+                            center: center,
+                            radius: rad,
+                            field: 'position',
+                            strictMode: true);
+                  });
+                  stream!.listen((List<DocumentSnapshot> documentList) {
+                    _updateMarkers(documentList);
+                  });
+                });
+              }
+            },
+            icon: Icon(icon),
+            color: Colors.white,
+          ),
+          decoration:
+              BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.15),
+              blurRadius: 8.0,
+            )
+          ]),
+        ),
+        SizedBox(
+          height: 12.0,
+        ),
+        Text(label),
+      ],
+    );
   }
 }
 
