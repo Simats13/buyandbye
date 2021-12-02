@@ -53,18 +53,18 @@ class _CartPageState extends State<CartPage> {
       child: FutureBuilder<dynamic>(
           future: DatabaseMethods().allCartMoney(idCommercant),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                constraints: BoxConstraints(maxHeight: 200),
-                child: Center(
-                  child: ColorLoader3(
-                    radius: 15.0,
-                    dotRadius: 6.0,
-                  ),
-                ),
-                margin: EdgeInsets.only(left: 12, right: 12),
-              );
-            }
+            // if (snapshot.connectionState == ConnectionState.waiting) {
+            //   return Container(
+            //     constraints: BoxConstraints(maxHeight: 200),
+            //     child: Center(
+            //       child: ColorLoader3(
+            //         radius: 15.0,
+            //         dotRadius: 6.0,
+            //       ),
+            //     ),
+            //     margin: EdgeInsets.only(left: 12, right: 12),
+            //   );
+            // }
             if (!snapshot.hasData)
               return Container(
                 constraints: BoxConstraints(maxHeight: 200),
@@ -119,7 +119,7 @@ class _CartPageState extends State<CartPage> {
                                 ),
                               ),
                               Text(
-                                cartTotal.toString() + "€",
+                                cartTotal.toStringAsFixed(2) + "€",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -159,7 +159,7 @@ class _CartPageState extends State<CartPage> {
                                 ),
                               ),
                               Text(
-                                cartTotal.toString() + "€",
+                                cartTotal.toStringAsFixed(2) + "€",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -174,14 +174,16 @@ class _CartPageState extends State<CartPage> {
                             onPressed: () {
                               Navigator.of(context).pop();
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageLivraison(
-                                            email: email,
-                                            idCommercant: idCommercant,
-                                            total: cartTotal,
-                                            customerID: customerID,
-                                          )));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PageLivraison(
+                                    email: email,
+                                    idCommercant: idCommercant,
+                                    total: cartTotal,
+                                    customerID: customerID,
+                                  ),
+                                ),
+                              );
                             },
                             color: Colors.deepOrangeAccent,
                             height: 50,
@@ -291,9 +293,11 @@ class _CartPageState extends State<CartPage> {
                                 height: 60,
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
-                                        fit: BoxFit.scaleDown,
-                                        image: NetworkImage(snapshot
-                                            .data.docs[index]["imgProduit"])),
+                                      fit: BoxFit.scaleDown,
+                                      image: NetworkImage(
+                                        snapshot.data.docs[index]["imgProduit"],
+                                      ),
+                                    ),
                                     borderRadius: BorderRadius.circular(20)),
                               ),
                             ),
@@ -351,7 +355,7 @@ class _CartPageState extends State<CartPage> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8),
                                       child: Text(
-                                        "$amount",
+                                        amount.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -381,7 +385,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                     Spacer(),
                                     Text(
-                                      "$allMoneyForProduct€",
+                                      allMoneyForProduct.toStringAsFixed(2) + "€",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     )
