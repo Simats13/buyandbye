@@ -311,7 +311,7 @@ class _PageCompteState extends State<PageCompte> {
                                       Navigator.of(context).pushAndRemoveUntil(
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  PageLogin()),
+                                                  PageBienvenue()),
                                           (Route<dynamic> route) => false);
                                     },
                                   )

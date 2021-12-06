@@ -85,13 +85,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    String? val = "0";
-    bool isClientVisible = false;
-    bool isSellerVisible = false;
+    bool isClientSelected = false;
+    bool isSellerSelected = false;
     return Scaffold(
       body: BackgroundInscription(
           child: Stack(
         children: [
+          SizedBox(width: size.width),
           SafeArea(
               child: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black, size: 28),
@@ -113,11 +113,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 "assets/icons/signup.png",
                 height: size.height * 0.20,
               ),
-              // Boutons radio
-
+              SizedBox(height: 20),
+              // Sélection du type d'utilisateur
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isClientSelected = true;
+                        isSellerSelected = false;
+                        print("client : " + isClientSelected.toString());
+                      });
+                    },
+                    child: Text("Client"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isClientSelected = false;
+                        isSellerSelected = true;
+                        print("commercant : " + isSellerSelected.toString());
+                      });
+                    },
+                    child: Text("Commerçant"),
+                  )
+                ]
+              ),
               // Partie inscription client
               Visibility(
-                  visible: isClientVisible,
+                  visible: isClientSelected,
                   child: Column(children: [
                     SizedBox(height: size.height * 0.02),
                     Row(
@@ -346,6 +371,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                   ])),
+              // Partie inscription commercant
+              Visibility(visible: isSellerSelected, child: Container())
             ],
           ),
         ],

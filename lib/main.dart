@@ -71,13 +71,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _getFCMToken() async {
-    // Go to Firebase console -> Project settings -> Cloud Messaging -> Web Push Certificates -> create key pair -> copy and paste
-    const yourVapidKey =
-        "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA";
-    String? _fcmToken =
-        await FirebaseMessaging.instance.getToken(vapidKey: yourVapidKey);
     // here you write the codes to input the data into firestore
-
     if (Platform.isIOS) {
       NotificationSettings settings =
           await _firebaseMessaging.requestPermission(

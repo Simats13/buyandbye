@@ -33,6 +33,7 @@ class _HelpState extends State<Help> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    List<bool> isSelected = [false, false];
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: BuyandByeAppTheme.white,
@@ -290,7 +291,7 @@ class _HelpState extends State<Help> {
                         //Partie cachée
                         Visibility(
                             visible: isVisible3,
-                            child: Formulaire2(widget.email))
+                            child: Formulaire2(widget.email)),
                       ],
                     ),
                   ),

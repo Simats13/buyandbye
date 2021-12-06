@@ -303,7 +303,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                                       .pushAndRemoveUntil(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PageLogin()),
+                                                                  PageBienvenue()),
                                                           (Route<dynamic>
                                                                   route) =>
                                                               false);
