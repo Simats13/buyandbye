@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
+import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/templates/pages/pageFidelite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -277,7 +278,7 @@ class _PageCompteState extends State<PageCompte> {
                                 });
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
-                                        builder: (context) => PageLogin()),
+                                        builder: (context) => PageBienvenue()),
                                     (Route<dynamic> route) => false);
                               },
                             ),

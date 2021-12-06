@@ -76,7 +76,6 @@ class _MyAppState extends State<MyApp> {
         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA";
     String? _fcmToken =
         await FirebaseMessaging.instance.getToken(vapidKey: yourVapidKey);
-    print('_FCMToken is $_fcmToken');
     // here you write the codes to input the data into firestore
 
     if (Platform.isIOS) {
@@ -182,18 +181,3 @@ class MainScreen extends StatelessWidget {
         });
   }
 }
-
-//   Widget build(BuildContext context) {
-//     notifications(context, myID);
-//     print(admin);
-//     if (myID == null) {
-//       return PageBienvenue();
-//     } else if (admin == "true") {
-//       return NavBar();
-//     } else if (emailVerified == "false") {
-//       return PageLogin();
-//     } else {
-//       return Accueil();
-//     }
-//   }
-// }

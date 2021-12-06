@@ -753,14 +753,6 @@ class DatabaseMethods {
   }
 
   Future changeChosenAddress(userID, addressID, previousID) async {
-    // INUTILISE
-    // var previousAddress = await FirebaseFirestore.instance
-    //     .collection("users")
-    //     .doc(userID)
-    //     .collection("Address")
-    //     .doc(previousID)
-    //     .update({"chosen": false});
-
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userID)

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
+import 'package:buyandbye/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -320,7 +321,7 @@ class _PageLoginState extends State<PageLogin> {
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                  builder: (BuildContext context) => Accueil()),
+                                  builder: (BuildContext context) => MyApp()),
                               (Route<dynamic> route) => false);
                         }).catchError((e) {
                           switch (e.code) {
