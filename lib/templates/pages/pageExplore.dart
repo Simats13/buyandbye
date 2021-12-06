@@ -295,7 +295,6 @@ class _PageExploreState extends State<PageExplore> {
             ImageConfiguration(), 'assets/icons/home.png')
         .then((value) {
       mapMakerUser = value;
-  
     });
   }
 
@@ -408,7 +407,6 @@ class _PageExploreState extends State<PageExplore> {
                         target: LatLng(latitude, longitude), zoom: 10.0),
                     markers: Set<Marker>.of(markers.values),
                     myLocationButtonEnabled: false,
-                    myLocationEnabled: true,
                   ),
                 ),
                 StreamBuilder<dynamic>(
@@ -451,6 +449,7 @@ class _PageExploreState extends State<PageExplore> {
                       alignment: Alignment.topCenter,
                       children: <Widget>[
                         SlidingUpPanel(
+                          // maxHeight: 30,
                           parallaxEnabled: true,
                           parallaxOffset: .5,
                           panelBuilder: (sc) {
@@ -514,7 +513,7 @@ class _PageExploreState extends State<PageExplore> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        "Les magasins",
+                                        "Découvrir les magasins",
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontSize: 24.0,
@@ -641,12 +640,23 @@ class _PageExploreState extends State<PageExplore> {
                                                         snapshot.data[index]
                                                             ['imgUrl'],
                                                       ),
-                                                      height: 100,
-                                                      width: 100,
+                                                      // height: 100,
+                                                      // width: 100,
                                                     ),
-                                                    trailing: IconButton(
-                                                      onPressed: () {},
-                                                      icon: Icon(Icons.ac_unit),
+                                                    trailing: Wrap(
+                                                      // space between two icons
+                                                      children: <Widget>[
+                                                        IconButton(
+                                                          onPressed: () {},
+                                                          icon: Icon(
+                                                              Icons.ac_unit),
+                                                        ),
+                                                        IconButton(
+                                                          onPressed: () {},
+                                                          icon: Icon(
+                                                              Icons.ac_unit),
+                                                        ), //// icon-2
+                                                      ],
                                                     ),
                                                     title: Text(
                                                       snapshot.data[index]
@@ -720,73 +730,6 @@ class _PageExploreState extends State<PageExplore> {
           );
   }
 
-  Widget _panel(ScrollController sc) {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: ListView(
-        controller: sc,
-        children: <Widget>[
-          SizedBox(
-            height: 12.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: 30,
-                height: 5,
-                decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.all(Radius.circular(12.0))),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 18.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Explorer $city",
-                style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 24.0,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 36.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              // _button("Popular", Icons.favorite, Colors.blue),
-              // _button("Food", Icons.restaurant, Colors.red),
-              // _button("Events", Icons.event, Colors.amber),
-              // _button("More", Icons.more_horiz, Colors.green),
-            ],
-          ),
-          SizedBox(
-            height: 36.0,
-          ),
-          Container(
-            padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[],
-            ),
-          ),
-          SizedBox(
-            height: 24,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _button(
     String label,
     IconData icon,
@@ -813,6 +756,28 @@ class _PageExploreState extends State<PageExplore> {
                             field: 'position',
                             strictMode: true);
                   });
+                  markers.clear();
+                  BitmapDescriptor.fromAssetImage(
+                          ImageConfiguration(), 'assets/images/home.png')
+                      .then((value) {
+                    mapMakerUser = value;
+                  });
+                  final id =
+                      MarkerId(latitude.toString() + longitude.toString());
+                  final markerUser = Marker(
+                    //add second marker
+                    markerId:
+                        MarkerId(latitude.toString() + longitude.toString()),
+                    position: LatLng(latitude, longitude), //position of marker
+                    icon: mapMakerUser, //Icon for Marker
+                  );
+
+                  setState(() {
+                    markers[id] = markerUser;
+                  });
+                  stream!.listen((List<DocumentSnapshot> documentList) {
+                    _updateMarkers(documentList);
+                  });
                 });
               }
               if (label == "Alimentation") {
@@ -830,6 +795,25 @@ class _PageExploreState extends State<PageExplore> {
                             radius: rad,
                             field: 'position',
                             strictMode: true);
+                  });
+                  BitmapDescriptor.fromAssetImage(
+                          ImageConfiguration(), 'assets/images/home.png')
+                      .then((value) {
+                    mapMakerUser = value;
+                  });
+                  markers.clear();
+                  final id =
+                      MarkerId(latitude.toString() + longitude.toString());
+                  final markerUser = Marker(
+                    //add second marker
+                    markerId:
+                        MarkerId(latitude.toString() + longitude.toString()),
+                    position: LatLng(latitude, longitude), //position of marker
+                    icon: mapMakerUser, //Icon for Marker
+                  );
+
+                  setState(() {
+                    markers[id] = markerUser;
                   });
                   stream!.listen((List<DocumentSnapshot> documentList) {
                     _updateMarkers(documentList);

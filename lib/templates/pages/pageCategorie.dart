@@ -1,6 +1,9 @@
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
+import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
@@ -35,8 +38,12 @@ class _PageCategorieState extends State<PageCategorie> {
   }
 
   getUserInfo() async {
-    latitude = await SharedPreferenceHelper().getUserLatitude();
-    longitude = await SharedPreferenceHelper().getUserLongitude();
+    final User user = await AuthMethods().getCurrentUser();
+    var userid = user.uid;
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
     setState(() {
       Geoflutterfire geo = Geoflutterfire();
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
