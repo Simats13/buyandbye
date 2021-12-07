@@ -36,6 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   static const _keyCreatedUser = "UserCreated";
   String? errorMessage;
   bool? isCreated;
+  var isSelected = <bool>[false, false];
   @override
   void initState() {
     super.initState();
@@ -85,8 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    bool isClientSelected = false;
-    bool isSellerSelected = false;
+
     return Scaffold(
       body: BackgroundInscription(
           child: Stack(
@@ -115,34 +115,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
               // Sélection du type d'utilisateur
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isClientSelected = true;
-                        isSellerSelected = false;
-                        print("client : " + isClientSelected.toString());
-                      });
-                    },
-                    child: Text("Client"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isClientSelected = false;
-                        isSellerSelected = true;
-                        print("commercant : " + isSellerSelected.toString());
-                      });
-                    },
-                    child: Text("Commerçant"),
-                  )
-                ]
-              ),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                ToggleButtons(
+                  color: Colors.black.withOpacity(0.60),
+                  selectedColor: Color(0xFF6200EE),
+                  selectedBorderColor: Color(0xFF6200EE),
+                  fillColor: Color(0xFF6200EE).withOpacity(0.08),
+                  splashColor: Color(0xFF6200EE).withOpacity(0.12),
+                  hoverColor: Color(0xFF6200EE).withOpacity(0.04),
+                  borderRadius: BorderRadius.circular(4.0),
+                  constraints: BoxConstraints(minHeight: 36.0),
+                  isSelected: isSelected,
+                  onPressed: (index) {
+                    // Respond to button selection
+                    setState(() {
+                      for (int buttonIndex = 0;
+                          buttonIndex < isSelected.length;
+                          buttonIndex++) {
+                        if (buttonIndex == index) {
+                          isSelected[buttonIndex] = true;
+                        } else {
+                          isSelected[buttonIndex] = false;
+                        }
+                      }
+                    });
+                  },
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text('Client'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text('Commerçant'),
+                    ),
+                  ],
+                )
+              ]),
               // Partie inscription client
               Visibility(
-                  visible: isClientSelected,
+                  visible: isSelected[0],
                   child: Column(children: [
                     SizedBox(height: size.height * 0.02),
                     Row(
@@ -372,7 +384,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ])),
               // Partie inscription commercant
-              Visibility(visible: isSellerSelected, child: Container())
+              Visibility(visible: isSelected[1], child: Container())
             ],
           ),
         ],
