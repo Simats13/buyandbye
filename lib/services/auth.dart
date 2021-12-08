@@ -530,37 +530,44 @@ class AuthMethods {
   }
 
   Future<void> signUpWithMailSeller(String _email, String _password,
-      String? _nomSeller, String? _adresseSeller) async {
+      String? _fname, String? _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    Map<String, dynamic> userInfoMap = {
-      "ClickAndCollect": true,
-      "email": _email,
-      "name": _nomSeller,
-      "livraison": false,
-      "description": "description",
-      "adresse": _adresseSeller,
-      "imgUrl": "https://buyandbye.fr/avatar.png",
-      "admin": true,
-      "phone": "",
-      'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
-          vapidKey:
-              "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-    };
-    DatabaseMethods().addInfoToDB("users", userid, userInfoMap);
+    // Map<String, dynamic> userInfoMap = {
+    //   "ClickAndCollect": true,
+    //   "email": _email,
+    //   "fname": _fname,
+    //   "livraison": false,
+    //   "description": "description",
+    //   "adresse": _adresseSeller,
+    //   "imgUrl": "https://buyandbye.fr/avatar.png",
+    //   "admin": true,
+    //   "phone": "",
+      // 'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
+      //     vapidKey:
+      //         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+    // };
+    // DatabaseMethods().addInfoToDB("users", userid, userInfoMap);
 
     Map<String, dynamic> userInfoMap2 = {
+      "ClickAndCollect": false,
+      "livraison": false,
       "id": userid,
       "email": _email,
-      "name": _nomSeller,
-      "adresse": _adresseSeller,
-      "emailVerified": false,
-      "imgUrl":
-          "https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png",
-      "admin": true,
+      "fname": _fname,
+      "lname": _lname,
+      "adresse": "",
+      "description": "",
       "phone": "",
+      "admin": true,
+      "emailVerified": false,
+      "premium": false,
+      "imgUrl": "https://buyandbye.fr/avatar.png",
+      "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+          vapidKey:
+              "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
     };
     DatabaseMethods().addInfoToDB("magasins", userid, userInfoMap2);
     sendEmailVerification();

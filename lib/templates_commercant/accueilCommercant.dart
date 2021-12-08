@@ -25,7 +25,7 @@ class AccueilCommercant extends StatefulWidget {
 
 class _AccueilCommercantState extends State<AccueilCommercant> {
   String? myID;
-  late String myName, myUserName, myEmail;
+  late String myFirstName, myLastName, myUserName, myEmail;
   String? myProfilePic;
   String? myPremium;
 
@@ -41,8 +41,11 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
     final userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getMagasinInfo(userid);
+    print("snapshot :");
+    print(querySnapshot);
     myID = "${querySnapshot.docs[0]["id"]}";
-    myName = "${querySnapshot.docs[0]["name"]}";
+    myFirstName = "${querySnapshot.docs[0]["fname"]}";
+    myLastName = "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPremium = "${querySnapshot.docs[0]["premium"]}";
@@ -54,21 +57,23 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
     Size size = MediaQuery.of(context).size;
     // Si l'image de profil n'est pas chargée
     if (myProfilePic == null) {
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 50),
-            // Affiche un message de chargement
-            ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: CircularProgressIndicator(),
-            ),
-            SizedBox(height: 20),
-            Text("Chargement",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-            SizedBox(height: 30),
-            Divider(thickness: 0.5, color: Colors.black),
-          ],
+      return Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 50),
+              // Affiche un message de chargement
+              ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: CircularProgressIndicator(),
+              ),
+              SizedBox(height: 20),
+              Text("Chargement",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              SizedBox(height: 30),
+              Divider(thickness: 0.5, color: Colors.black),
+            ],
+          ),
         ),
       );
     } else {
@@ -114,7 +119,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                         children: [
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: Text(myName,
+                            child: Text(myFirstName + myLastName,
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w700,

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
+import 'package:buyandbye/templates_commercant/accueilCommercant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,8 +17,6 @@ import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notificationControllers.dart';
 import 'package:provider/provider.dart';
-
-import 'templates_commercant/nav_bar.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
@@ -137,38 +137,64 @@ notifications(context, myID, myName, myProfilePic) {
 }
 
 class MainScreen extends StatelessWidget {
+  checkIfDocumentExists(uid) async {
+    bool docExists = await DatabaseMethods().checkIfDocExists(uid);
+    return docExists;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: AuthMethods().getCurrentUser(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          // Si l'utilisateur existe et que son uid n'est pas nul
           if (snapshot.hasData && snapshot.data.uid != null) {
-            return StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(snapshot.data.uid)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData &&
-                    snapshot.data!['emailVerified'] != null) {
-                  final user = snapshot.data;
-                  if (user!['emailVerified'] == false) {
+            // Si l'id n'existe pas dans la collection users, on vérifie dans celle des magasins
+            final isClient = checkIfDocumentExists(snapshot.data.uid);
+            if (isClient == true) {
+              return StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(snapshot.data.uid)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    final user = snapshot.data;
+                    if (user!['emailVerified'] == false) {
+                      return PageLogin();
+                    } else if (user['firstConnection'] == true) {
+                      return PageFirstConnection();
+                    } else {
+                      return Accueil();
+                    }
+                  } else {
                     return PageLogin();
                   }
-                  if (user['firstConnection'] == true) {
-                    return PageFirstConnection();
-                  }
-                  if (user['admin'] == true) {
-                    return NavBar();
+                },
+              );
+              // Recherche de l'id dans la table magasins
+            } else {
+              return StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("magasins")
+                    .doc(snapshot.data.uid)
+                    .snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    final user = snapshot.data;
+                    if (user!['emailVerified'] == true) {
+                      return PageLogin();
+                    } else {
+                      return AccueilCommercant();
+                    }
                   } else {
-                    return Accueil();
+                    return PageLogin();
                   }
-                } else {
-                  return PageLogin();
                 }
-              },
-            );
+              );
+            }
+            // Si l'utilisateur n'existe pas ou que son uid est nul
           } else {
             return PageBienvenue();
           }
