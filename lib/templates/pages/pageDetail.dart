@@ -91,7 +91,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
-    bool cartEmpty = await DatabaseMethods().checkCartEmpty();
     loved = await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
     //print(cartEmpty);
   }

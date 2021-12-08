@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/templates_commercant/membership_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';

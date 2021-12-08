@@ -78,7 +78,6 @@ class _PageProduitState extends State<PageProduit> {
           amount,
           widget.idCommercant,
           widget.idProduit);
-      print(addProductToCart);
 
       if (addProductToCart == false) {
         var docId = await FirebaseFirestore.instance
@@ -89,7 +88,7 @@ class _PageProduitState extends State<PageProduit> {
         QueryDocumentSnapshot doc = docId.docs[0];
         DocumentReference docRef = doc.reference;
         var querySnapshot =
-            await DatabaseMethods().getMagasinInfo(widget.idCommercant);
+            await DatabaseMethods().getMagasinInfo(docRef.id);
         String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
         Platform.isIOS
             ? showCupertinoDialog(

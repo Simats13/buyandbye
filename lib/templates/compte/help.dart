@@ -33,7 +33,6 @@ class _HelpState extends State<Help> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    List<bool> isSelected = [false, false];
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: BuyandByeAppTheme.white,

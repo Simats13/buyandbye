@@ -14,7 +14,6 @@ import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 import 'package:buyandbye/templates/pages/place_service.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:geocoding/geocoding.dart' as geocoder;

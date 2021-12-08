@@ -161,12 +161,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool isVisible = true;
 
   Widget build(BuildContext context) {
-    // Booléen pour afficher un rond de chargement si la variable est vide
-    // Si la variable est vide, le stream renvoie une erreur
-    bool isFilled = false;
-    if (myID!.isNotEmpty) {
-      bool isFilled = true;
-    }
 
     return Phoenix(
       child: Scaffold(

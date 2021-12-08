@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -441,10 +440,6 @@ class _PageExploreState extends State<PageExplore> {
                     // double _fabHeight = 0;
                     // double _panelHeightOpen = 0;
                     // double _panelHeightClosed = 95.0;
-                    BorderRadiusGeometry radius = BorderRadius.only(
-                      topLeft: Radius.circular(24.0),
-                      topRight: Radius.circular(24.0),
-                    );
                     return Stack(
                       alignment: Alignment.topCenter,
                       children: <Widget>[
