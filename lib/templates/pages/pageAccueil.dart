@@ -115,7 +115,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   //Fonction permettant de retourner la localisation exacte d'un utilisateur
   getLocationUser() async {
-    // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
+    //  bool docExists = await DatabaseMethods().checkIfDocExists(userid);
 
     _locationData = await location.getLocation();
     List<geocoder.Placemark> addresses =
