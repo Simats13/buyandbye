@@ -14,12 +14,13 @@ class EditProfileComPage extends StatefulWidget {
 
 class _EditProfileComPageState extends State<EditProfileComPage> {
   String? myID,
-      myName,
+      myFirstName,
+      myLastName,
       myUserName,
       myEmail,
       myProfilePic,
       myPhone,
-      colorStoreName;
+      colorStore;
 
   @override
   void initState() {
@@ -33,18 +34,19 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getMagasinInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
-    myName = "${querySnapshot.docs[0]["name"]}";
+    myFirstName = "${querySnapshot.docs[0]["fname"]}";
+    myLastName = "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
-    colorStoreName = "${querySnapshot.docs[0]["colorStoreName"]}";
+    colorStore = "${querySnapshot.docs[0]["colorStore"]}";
     setState(() {});
   }
 
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
   Widget build(BuildContext context) {
-    String? dropdownValue = colorStoreName;
+    String? dropdownValue = colorStore;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,
@@ -139,9 +141,9 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
                           SizedBox(height: 20),
-                          myName == null
+                          myFirstName == null
                               ? CircularProgressIndicator()
-                              : Text(myName!),
+                              : Text(myFirstName! + " " + myLastName!),
                           SizedBox(height: 20),
                           Text("E-mail :",
                               style: TextStyle(
@@ -210,7 +212,8 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
               // lorsque le bouton est pressé
               Visibility(
                   visible: !isVisible,
-                  child: ModifyProfile(myName, myEmail, myPhone, myID))
+                  child: ModifyProfile(
+                      myFirstName, myLastName, myEmail, myPhone, myID))
             ],
           ),
           // ),
@@ -221,13 +224,15 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
 }
 
 class ModifyProfile extends StatefulWidget {
-  ModifyProfile(this.myName, this.myEmail, this.myPhone, this.myID);
-  final String? myName, myEmail, myPhone, myID;
+  ModifyProfile(
+      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myID);
+  final String? myFirstName, myLastName, myEmail, myPhone, myID;
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
 // Déclaration des variables pour les champs de modification
-final nameField = TextEditingController();
+final fNameField = TextEditingController();
+final lNameField = TextEditingController();
 final emailField = TextEditingController();
 final phoneField = TextEditingController();
 final passwordField = TextEditingController();
@@ -239,7 +244,8 @@ class _ModifyProfileState extends State<ModifyProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Appelle la fonction d'affiche des champs de texte
-        buildTextField("Nom du magasin", widget.myName, nameField, true),
+        buildTextField("Votre prénom", widget.myFirstName, fNameField, true),
+        buildTextField("Votre nom", widget.myLastName, lNameField, true),
         buildTextField("E-mail", widget.myEmail, emailField, false),
         buildTextField("Téléphone", widget.myPhone, phoneField, false),
         buildTextField("Mot de Passe", "********", passwordField, false),
@@ -274,8 +280,12 @@ class _ModifyProfileState extends State<ModifyProfile> {
                   ),
                   child: MaterialButton(
                     onPressed: () {
-                      var name =
-                          nameField.text == "" ? widget.myName : nameField.text;
+                      var fName = fNameField.text == ""
+                          ? widget.myFirstName
+                          : fNameField.text;
+                      var lName = lNameField.text == ""
+                          ? widget.myLastName
+                          : lNameField.text;
                       var email = emailField.text == ""
                           ? widget.myEmail
                           : emailField.text;
@@ -283,7 +293,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
                           ? widget.myPhone
                           : phoneField.text;
                       DatabaseMethods()
-                          .updateSellerInfo(widget.myID, name, email, phone);
+                          .updateSellerInfo(widget.myID, fName, lName, email, phone);
                       Navigator.pop(context);
                     },
                     child: Text("Confirmer"),

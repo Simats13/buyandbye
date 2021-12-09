@@ -312,6 +312,7 @@ class _PageLoginState extends State<PageLogin> {
                     color: BuyandByeAppTheme.orange,
                   ),
                   child: MaterialButton(
+                    child: Text('CONNEXION'),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
@@ -361,7 +362,6 @@ class _PageLoginState extends State<PageLogin> {
                         });
                       }
                     },
-                    child: Text('CONNEXION'),
                   ),
                 ),
                 SizedBox(

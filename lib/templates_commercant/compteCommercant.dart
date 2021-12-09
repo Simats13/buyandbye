@@ -20,7 +20,7 @@ class CompteCommercant extends StatefulWidget {
 }
 
 class _CompteCommercantState extends State<CompteCommercant> {
-  String? userid, myProfilePicture, name, email;
+  String? userid, myProfilePicture, myFirstName, myLastName, email;
   bool? premium;
 
   @override
@@ -42,7 +42,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             myProfilePicture = snapshot.data["imgUrl"];
-            name = snapshot.data["name"];
+            myFirstName = snapshot.data["fname"];
+            myLastName = snapshot.data["lname"];
             email = snapshot.data["email"];
             premium = snapshot.data["premium"];
           }
@@ -61,12 +62,12 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 ),
               ),
               SizedBox(height: 20),
-              name == null
+              myFirstName == null
                   ? CircularProgressIndicator()
                   : Column(
                       children: [
                         Text(
-                          name ?? "",
+                          myFirstName! + " " + myLastName!,
                           style: kTitleTextStyle,
                         ),
                         SizedBox(height: 5),

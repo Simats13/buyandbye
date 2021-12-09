@@ -78,202 +78,167 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
       );
     } else {
       // Quand l'image est chargée
-      return SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(20),
-                width: 380,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 4,
-                          offset: Offset(4, 4))
-                    ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height / 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          myProfilePic!,
+      return Scaffold(
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(20),
+                  width: size.width / 1.05,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 4,
+                            offset: Offset(4, 4))
+                      ]),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.network(
+                            myProfilePic!,
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 40, 0, 0),
-                      child: Text('Bienvenue',
-                          style: TextStyle(
-                              fontSize: 20, color: BuyandByeAppTheme.orange)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: Text(myFirstName + myLastName,
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w700,
-                                )),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                            child: Image.asset(
-                              'assets/icons/main.png',
-                              width: 36,
-                              height: 36,
-                              fit: BoxFit.cover,
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(20, 40, 0, 0),
+                        child: Text('Bienvenue',
+                            style: TextStyle(
+                                fontSize: 20, color: BuyandByeAppTheme.orange)),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              child: Text(myFirstName + " " + myLastName,
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w700,
+                                  )),
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                              child: Image.asset(
+                                'assets/icons/main.png',
+                                width: 36,
+                                height: 36,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              // ),
-              SizedBox(height: 15),
-              Container(
-                height: size.height * 0.24,
-                width: 380,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: size.height * 0.24,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 4,
-                                offset: Offset(4, 4))
-                          ]),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                            child: Text('Votre solde',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
+                SizedBox(height: 15),
+                Container(
+                    width: size.width / 1.05,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 4,
+                              offset: Offset(4, 4))
+                        ]),
+                    child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.fromLTRB(50, 43, 20, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                child: Text('380.16 €',
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700)),
-                              ),
-                              Text(
-                                "Ce mois-ci",
-                                style: TextStyle(
-                                    // color: white,
-                                    ),
-                              ),
-                            ],
-                          ),
+                          padding: const EdgeInsets.only(top: 20, bottom: 30),
+                          child: Text('Ma boutique',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700)),
                         ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(230, 43, 20, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                                child: Text('1527.61 €',
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700)),
-                              ),
-                              Text(
-                                "Au Total",
-                                style: TextStyle(
-                                    // color: white,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 15),
-              myPremium == "true"
-                  ? Container(
-                      width: 380,
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: size.height * 0.35,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 4,
-                                      offset: Offset(4, 4))
-                                ]),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                                  child: Text('Vos Statistiques',
+                              Column(
+                                children: [
+                                  Text('380.16 €',
                                       style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 25,
                                           fontWeight: FontWeight.w700)),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Container(
-                                  child:
-                                      Image.asset('assets/images/charts.png'),
-                                ),
-                              ],
+                                  Text(
+                                    "Ce mois-ci",
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text('1527.161 €',
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700)),
+                                  Text(
+                                    "Au total",
+                                  ),
+                                ],
+                              )
+                            ]),
+                        SizedBox(height: 20),
+                        
+                        SizedBox(height: 20),
+                      ],
+                    )),
+                SizedBox(height: 15),
+                myPremium == "true"
+                    ? Container(
+                        width: size.width / 1.05,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: size.height * 0.35,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.grey,
+                                        blurRadius: 4,
+                                        offset: Offset(4, 4))
+                                  ]),
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : new Container(),
-              SizedBox(height: 20),
-            ],
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                                    child: Text('Vos Statistiques',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700)),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    child:
+                                        Image.asset('assets/images/charts.png'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : new Container(),
+                SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       );

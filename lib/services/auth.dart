@@ -529,8 +529,8 @@ class AuthMethods {
     return user;
   }
 
-  Future<void> signUpWithMailSeller(String _email, String _password,
-      String? _fname, String? _lname) async {
+  Future<void> signUpWithMailSeller(
+      String _email, String _password, String? _fname, String? _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
     final User user = await AuthMethods().getCurrentUser();
@@ -545,9 +545,9 @@ class AuthMethods {
     //   "imgUrl": "https://buyandbye.fr/avatar.png",
     //   "admin": true,
     //   "phone": "",
-      // 'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
-      //     vapidKey:
-      //         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+    // 'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
+    //     vapidKey:
+    //         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
     // };
     // DatabaseMethods().addInfoToDB("users", userid, userInfoMap);
 
@@ -564,6 +564,10 @@ class AuthMethods {
       "admin": true,
       "emailVerified": false,
       "premium": false,
+      "isProfileComplete": false,
+      "isShopVisible": false,
+      // Couleur par défaut
+      "colorStore": "000000",
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
           vapidKey:
@@ -586,8 +590,15 @@ class AuthMethods {
   }
 
   Future<void> updateUserToken(userID, token) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).update({
-      'FCMToken': token,
-    });
+    bool docExists = await DatabaseMethods().checkIfDocExists(userID);
+    if (docExists) {
+      await FirebaseFirestore.instance.collection('users').doc(userID).update({
+        'FCMToken': token,
+      });
+    } else {
+      await FirebaseFirestore.instance.collection('magasins').doc(userID).update({
+        'FCMToken': token,
+      });
+    }
   }
 }

@@ -168,11 +168,11 @@ class DatabaseMethods {
         {"lname": lname, "fname": fname, "email": email, "phone": phone});
   }
 
-  Future updateSellerInfo(userId, name, email, phone) async {
+  Future updateSellerInfo(userId, fName, lName, email, phone) async {
     return FirebaseFirestore.instance
         .collection("magasins")
         .doc(userId)
-        .update({"name": name, "email": email, "phone": phone});
+        .update({"fname": fName, "lname": lName, "email": email, "phone": phone});
   }
 
   Future<QuerySnapshot> getMagasinInfo(String? sellerId) async {

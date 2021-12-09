@@ -48,18 +48,19 @@ class _ProductsState extends State<Products> {
                       actions: [
                         Container(
                           child: IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    // Amène l'utilisateur sur la page d'ajout d'un produit
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            NewProduct(snapshotuid.data)));
-                              },
-                              icon: Icon(
-                                Icons.add_rounded,
-                                size: 30,
-                              )),
+                            icon: Icon(
+                              Icons.add_rounded,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  // Amène l'utilisateur sur la page d'ajout d'un produit
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          NewProduct(snapshotuid.data)));
+                            },
+                          ),
                         )
                       ]),
                   body: SingleChildScrollView(

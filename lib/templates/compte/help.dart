@@ -12,23 +12,10 @@ class Help extends StatefulWidget {
   final String? email;
 }
 
-List questions = [];
-
 class _HelpState extends State<Help> {
   bool isVisible1 = false;
   bool isVisible2 = false;
   bool isVisible3 = false;
-
-  fetchDatabaseList() async {
-    dynamic result = await DatabaseMethods().getMagasin();
-    if (result == null) {
-      print('Impossible de retrouver les données');
-    } else {
-      setState(() {
-        questions = result;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -420,6 +407,7 @@ class _FormulaireState extends State<Formulaire> {
             ),
             SizedBox(height: 15),
             ElevatedButton(
+              child: Text('Envoyer'),
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
@@ -440,7 +428,6 @@ class _FormulaireState extends State<Formulaire> {
                   Navigator.pop(context);
                 }
               },
-              child: Text('Envoyer'),
             ),
           ],
         ));

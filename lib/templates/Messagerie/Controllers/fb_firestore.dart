@@ -1,3 +1,4 @@
+import 'package:buyandbye/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,9 +75,16 @@ class FBCloudStore {
   }
 
   Future<void> updateUserToken(userID, token) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).update({
-      'FCMToken': token,
-    });
+    bool docExists = await DatabaseMethods().checkIfDocExists(userID);
+    if (docExists) {
+      await FirebaseFirestore.instance.collection('users').doc(userID).update({
+        'FCMToken': token,
+      });
+    } else {
+      await FirebaseFirestore.instance.collection('magasins').doc(userID).update({
+        'FCMToken': token,
+      });
+    }
   }
 
   Future<List<DocumentSnapshot>> takeUserInformationFromFBDB() async {
