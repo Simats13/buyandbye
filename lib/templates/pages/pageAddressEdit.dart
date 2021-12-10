@@ -58,6 +58,42 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   TextEditingController? familyNameController;
   TextEditingController? addressTitleController;
 
+  showMessage(String titre, e) {
+    if (!Platform.isIOS) {
+      showDialog(
+          context: context,
+          builder: (BuildContext builderContext) {
+            return AlertDialog(
+              title: Text(titre),
+              content: Text(e),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () async {
+                    Navigator.of(builderContext).pop();
+                  },
+                )
+              ],
+            );
+          });
+    } else {
+      return showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+                title: Text(titre),
+                content: Text(e),
+                actions: [
+                  // Close the dialog
+                  CupertinoButton(
+                      child: Text('OK'),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              ));
+    }
+  }
+
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
       _mapController = controller;
@@ -148,10 +184,23 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                                           style: TextStyle(color: Colors.red),
                                         ),
                                         onPressed: () async {
-                                          DatabaseMethods()
-                                              .deleteAddress(widget.iD);
-                                          Navigator.of(context).pop(false);
-                                          Navigator.of(context).pop(false);
+                                          final bool delete =
+                                              await DatabaseMethods()
+                                                  .deleteAddress(
+                                            widget.iD,
+                                          );
+                                          setState(() {
+                                            if (delete == false) {
+                                              Navigator.of(context).pop(false);
+                                              showMessage(
+                                                  "Suppression impossible",
+                                                  "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.");
+                                            } else {
+                                              Navigator.of(context).pop(false);
+                                              showMessage("Suppression adresse",
+                                                  "Votre adresse a bien été supprimé !");
+                                            }
+                                          });
                                         },
                                       )
                                     ],
@@ -438,15 +487,8 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     String? id,
   ) async {
     try {
-      await DatabaseMethods.instance.editAdresses(
-          buildingDetails,
-          buildingName,
-          familyName,
-          adressTitle,
-          latitude,
-          longitude,
-          address,
-          widget.iD);
+      await DatabaseMethods.instance.editAdresses(buildingDetails, buildingName,
+          familyName, adressTitle, latitude, longitude, address, widget.iD);
     } catch (e) {
       !Platform.isIOS
           ? showAlertDialog(context,
@@ -460,11 +502,11 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   }
 }
 
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
+@override
+Widget build(BuildContext context) {
+  // TODO: implement build
+  throw UnimplementedError();
+}
 
 class MapStyle {
   static String mapStyle = ''' [
