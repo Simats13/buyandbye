@@ -163,7 +163,7 @@ class _MainScreenState extends State<MainScreen> {
               return StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("users")
-                    .doc(snapshot.data.id)
+                    .doc(snapshot.data.uid)
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<DocumentSnapshot> snapshot) {

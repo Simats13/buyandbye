@@ -38,7 +38,8 @@ class _PageExploreState extends State<PageExplore> {
   LocationPermission? permission;
   Stream<List<DocumentSnapshot>>? stream;
   late BitmapDescriptor mapMaker, mapMakerUser;
-
+  PanelController _pc = new PanelController();
+  
   List magasins = [];
   String label = 'kms';
   late String city;
@@ -447,6 +448,7 @@ class _PageExploreState extends State<PageExplore> {
                           // maxHeight: 30,
                           parallaxEnabled: true,
                           parallaxOffset: .5,
+                          controller:_pc,
                           panelBuilder: (sc) {
                             return MediaQuery.removePadding(
                               context: context,
@@ -642,15 +644,26 @@ class _PageExploreState extends State<PageExplore> {
                                                       // space between two icons
                                                       children: <Widget>[
                                                         IconButton(
-                                                          onPressed: () {},
-                                                          icon: Icon(
-                                                              Icons.ac_unit),
+                                                          onPressed: () {
+                                                            _pc.close();
+                                                            moveCamera(
+                                                              snapshot
+                                                                  .data[index][
+                                                                      'position']
+                                                                      [
+                                                                      'geopoint']
+                                                                  .latitude,
+                                                              snapshot
+                                                                  .data[index][
+                                                                      'position']
+                                                                      [
+                                                                      'geopoint']
+                                                                  .longitude,
+                                                            );
+                                                          },
+                                                          icon:
+                                                              Icon(Icons.place),
                                                         ),
-                                                        IconButton(
-                                                          onPressed: () {},
-                                                          icon: Icon(
-                                                              Icons.ac_unit),
-                                                        ), //// icon-2
                                                       ],
                                                     ),
                                                     title: Text(
@@ -837,8 +850,7 @@ class _PageExploreState extends State<PageExplore> {
 }
 
 class MapStyle {
-  static String mapStyle =
-      ''' [
+  static String mapStyle = ''' [
   {
     "elementType": "geometry",
     "stylers": [
