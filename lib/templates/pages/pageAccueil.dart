@@ -165,7 +165,7 @@ class _PageAccueilState extends State<PageAccueil> {
     var size = MediaQuery.of(context).size;
     positionCheck();
 
-    return CupertinoPageScaffold(
+    return chargementChecked ? CupertinoPageScaffold(
       child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
@@ -512,7 +512,17 @@ class _PageAccueilState extends State<PageAccueil> {
           },
         ),
       ),
-    );
+    ) : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ColorLoader3(
+                      radius: 15.0,
+                      dotRadius: 6.0,
+                    ),
+                    Text("Chargement, veuillez patienter"),
+                  ],
+                ));
   }
 
   @override
