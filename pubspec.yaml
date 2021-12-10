@@ -89,7 +89,6 @@ dependencies:
       url: git://github.com/kw2019ltd/slide_popup_dialog.git
       ref: master
   mailer:
-  flutter_phoenix:
   qr_flutter:
   adaptive_dialog:
   adaptive_action_sheet:

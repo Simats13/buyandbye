@@ -35,7 +35,6 @@ class _PageAccueilState extends State<PageAccueil> {
   late bool permissionChecked;
   bool chargementChecked = false;
 
-  // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
 
   String? currentAddress,
@@ -191,7 +190,6 @@ class _PageAccueilState extends State<PageAccueil> {
                         ),
                         SizedBox(
                           height: 40,
-                          // width: size.width - 150,
                           child: InkWell(
                             onTapCancel: () {
                               Navigator.of(context).pop();
@@ -478,62 +476,7 @@ class _PageAccueilState extends State<PageAccueil> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // SizedBox(
-                      //   height: 15,
-                      // ),
-                      // Row(
-                      //   children: [
-                      //     Container(
-                      //       margin: EdgeInsets.only(left: 15),
-                      //       height: 45,
-                      //       width: size.width - 70,
-                      //       decoration: BoxDecoration(
-                      //         color: textFieldColor,
-                      //         borderRadius: BorderRadius.circular(30),
-                      //       ),
-                      //       child: Row(
-                      //         mainAxisAlignment:
-                      //             MainAxisAlignment.spaceBetween,
-                      //         children: [
-                      //           Padding(
-                      //             padding: EdgeInsets.all(12),
-                      //             child: Row(
-                      //               children: [
-                      //                 Icon(
-                      //                   Icons.location_on,
-                      //                 ),
-                      //                 SizedBox(
-                      //                   width: 5,
-                      //                 ),
-                      //                 SizedBox(
-                      //                   height: 30,
-                      //                   width: size.width - 150,
-                      //                   child: InkWell(
-                      //                     onTap: () async {
-                      //                       // permissionChecked =
-                      //                       //     await _determinePermission();
 
-                      //                       affichageAddress();
-                      //                     },
-                      //                     child: Container(
-                      //                       width: size.width - 150,
-                      //                       padding:
-                      //                           EdgeInsets.only(top: 5),
-                      //                       child: Text(
-                      //                         _currentAddressLocation,
-                      //                         textAlign: TextAlign.left,
-                      //                       ),
-                      //                     ),
-                      //                   ),
-                      //                 ),
-                      //               ],
-                      //             ),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
                       SizedBox(
                         height: 15,
                       ),
@@ -611,7 +554,8 @@ class _PageAccueilState extends State<PageAccueil> {
           return Align(
               alignment: Alignment.topCenter,
               child: Container(
-                constraints: BoxConstraints(minHeight: size.height / 2.5, maxHeight: 600),
+                constraints: BoxConstraints(
+                    minHeight: size.height / 2.5, maxHeight: 600),
                 margin: EdgeInsets.only(top: 100, left: 12, right: 12),
                 child: UserAddress(),
               ));
@@ -676,21 +620,19 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Shimmer.fromColors(
-              child: Container(
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
@@ -1228,7 +1170,6 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                 horizontal: 5, vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
                             decoration: BoxDecoration(
-                                // border: Border.all(color: Colors.black),
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [

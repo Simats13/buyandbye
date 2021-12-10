@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/pages/address_search.dart';
+import 'package:buyandbye/templates/pages/pageAccueil.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,7 +40,6 @@ class _UserAddressState extends State<UserAddress> {
   bool permissionChecked = false;
   bool chargementChecked = false;
 
-  // Future _future = DatabaseMethods().getCart();
   var currentLocation, position;
   Geoflutterfire? geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
@@ -161,15 +162,7 @@ class _UserAddressState extends State<UserAddress> {
               child: SizedBox(
                 height: 40,
                 width: MediaQuery.of(context).size.width - 50,
-                // child: IconButton(
-                //     icon: Icon(Icons.search),
-                //     onPressed: () async {
-                //       final sessionToken = Uuid().v4();
-                //       final result = await showSearch(
-                //           context: context,
-                //           delegate: AddressSearch(sessionToken));
-                //       print("Adresse sélectionnée : " + result.description);
-                //     })
+                // Affichage de la barre de recherche
                 child: InkWell(
                   onTap: () async {
                     // generate a new token here
@@ -580,8 +573,19 @@ class _UserAddressState extends State<UserAddress> {
                                             strictMode: true);
                                   });
                                 });
-                                //Phoenix.rebirth(context);
-                                Navigator.of(context).pop();
+                                int count = 0;
+
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  PageRouteBuilder(
+                                    pageBuilder:
+                                        (context, animation1, animation2) =>
+                                            Accueil(),
+                                    transitionDuration: Duration(seconds: 0),
+                                  ),
+                                  (_) =>
+                                      count++ >=
+                                      3, //3 is count of your pages you want to pop
+                                );
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(

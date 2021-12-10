@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
+import 'package:buyandbye/templates/pages/pageAccueil.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/templates_commercant/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,6 +94,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        routes: <String, WidgetBuilder> {
+          '/Accueil': (BuildContext context) => PageAccueil()
+        },
         title: "Buy&Bye",
         debugShowCheckedModeBanner: false,
         // theme: ThemeData(
@@ -163,7 +167,7 @@ class _MainScreenState extends State<MainScreen> {
               return StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("users")
-                    .doc(snapshot.data.id)
+                    .doc(snapshot.data.uid)
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<DocumentSnapshot> snapshot) {

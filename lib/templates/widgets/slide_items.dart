@@ -140,52 +140,38 @@ class _SlideItemState extends State<SlideItem> {
                             ),
                             textAlign: TextAlign.left,
                           ),
-                          Row(
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.screen_search_desktop_outlined),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Icon(
-                                    widget.clickAndCollect
-                                        ? Icons.check_circle
-                                        : Icons.highlight_off,
-                                    color: widget.clickAndCollect
-                                        ? Colors.green
-                                        : Colors.red,
-                                    size: 17,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.delivery_dining),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Icon(
-                                    widget.livraison
-                                        ? Icons.check_circle
-                                        : Icons.highlight_off,
-                                    color: widget.livraison
-                                        ? Colors.green
-                                        : Colors.red,
-                                    size: 17,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 3.5,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Icon(Icons.screen_search_desktop_outlined),
+                                Icon(
+                                  widget.clickAndCollect
+                                      ? Icons.check_circle
+                                      : Icons.highlight_off,
+                                  color: widget.clickAndCollect
+                                      ? Colors.green
+                                      : Colors.red,
+                                  size: 17,
+                                ),
+                                Icon(Icons.delivery_dining),
+                                Icon(
+                                  widget.livraison
+                                      ? Icons.check_circle
+                                      : Icons.highlight_off,
+                                  color: widget.livraison
+                                      ? Colors.green
+                                      : Colors.red,
+                                  size: 17,
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
                   ),
-                  // SizedBox(height: 7.0),
                   Padding(
                     padding: EdgeInsets.only(left: 15.0),
                     child: Container(
