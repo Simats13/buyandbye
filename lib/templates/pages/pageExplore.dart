@@ -522,8 +522,7 @@ class _PageExploreState extends State<PageExplore> {
                                     height: 36.0,
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 24.0, right: 24.0),
+                              
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -637,8 +636,7 @@ class _PageExploreState extends State<PageExplore> {
                                                         snapshot.data[index]
                                                             ['imgUrl'],
                                                       ),
-                                                      // height: 100,
-                                                      // width: 100,
+                                                      
                                                     ),
                                                     trailing: Wrap(
                                                       // space between two icons

@@ -223,8 +223,21 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                                       style: TextStyle(color: Colors.red),
                                     ),
                                     onPressed: () async {
-                                      DatabaseMethods()
-                                          .deleteAddress(widget.iD);
+                                      final bool delete =
+                                          await DatabaseMethods().deleteAddress(
+                                        widget.iD,
+                                      );
+                                      setState(() {
+                                        if (delete == false) {
+                                          Navigator.of(context).pop(false);
+                                          showMessage("Suppression impossible",
+                                              "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.");
+                                        } else {
+                                          Navigator.of(context).pop(false);
+                                          showMessage("Suppression adresse",
+                                              "Votre adresse a bien été supprimé !");
+                                        }
+                                      });
                                       Navigator.of(context).pop(false);
                                     },
                                   ),
