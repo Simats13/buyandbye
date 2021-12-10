@@ -4,7 +4,6 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/pages/address_search.dart';
-import 'package:buyandbye/templates/pages/pageAccueil.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -182,8 +181,6 @@ class _UserAddressState extends State<UserAddress> {
                         street = placeDetails.street;
                         city = placeDetails.city;
                         zipCode = placeDetails.zipCode;
-                        currentAddressLocation =
-                            "$streetNumber $street, $city ";
                       });
 
                       final query = "$street , $city";
@@ -293,7 +290,6 @@ class _UserAddressState extends State<UserAddress> {
                                           strictMode: true);
                                 });
                               });
-                              print(currentAddressLocation);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

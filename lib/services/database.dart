@@ -46,7 +46,6 @@ class DatabaseMethods {
         .collection("Address")
         .get();
     List<DocumentSnapshot> _myDocCount = _myDoc.docs;
-    print(_myDocCount.length);
     if (_myDocCount.length == 1) {
       return false;
     } else {
@@ -56,6 +55,23 @@ class DatabaseMethods {
           .collection("Address")
           .doc(idDoc)
           .delete();
+
+      // Vérifier si l'adresse supprimée est la première. Si c'est le cas on met la nouvelle 1ere en chosen
+      // Nouvelle requête pour ne pas garder l'adresse qui a été supprimée dans _myDoc
+      QuerySnapshot _myDoc2 = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userid)
+          .collection("Address")
+          .get();
+      List<DocumentSnapshot> _myDocCount2 = _myDoc2.docs;
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userid)
+          .collection("Address")
+          .doc(_myDocCount2[0]["idDoc"])
+          .update({"chosen": true});
+
       return true;
     }
   }
@@ -169,10 +185,8 @@ class DatabaseMethods {
   }
 
   Future updateSellerInfo(userId, fName, lName, email, phone) async {
-    return FirebaseFirestore.instance
-        .collection("magasins")
-        .doc(userId)
-        .update({"fname": fName, "lname": lName, "email": email, "phone": phone});
+    return FirebaseFirestore.instance.collection("magasins").doc(userId).update(
+        {"fname": fName, "lname": lName, "email": email, "phone": phone});
   }
 
   Future<QuerySnapshot> getMagasinInfo(String? sellerId) async {
@@ -661,48 +675,36 @@ class DatabaseMethods {
     final userid = user.uid;
     String iD = Uuid().v4();
 
-    QuerySnapshot _myDoc = await FirebaseFirestore.instance
+    QuerySnapshot chosenAdress = await FirebaseFirestore.instance
         .collection("users")
         .doc(userid)
         .collection("Address")
+        .where("chosen", isEqualTo: true)
         .get();
-    List<DocumentSnapshot> _myDocCount = _myDoc.docs;
 
-    if (_myDocCount.length >= 1) {
-      return await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userid)
-          .collection('Address')
-          .doc(iD)
-          .set({
-        'addressName': adressTitle,
-        'buildingDetails': buildingDetails,
-        'buildingName': buildingName,
-        'familyName': familyName,
-        'latitude': latitude,
-        'chosen': false,
-        'longitude': longitude,
-        'address': address,
-        'idDoc': iD,
-      });
-    } else {
-      return await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userid)
-          .collection('Address')
-          .doc(iD)
-          .set({
-        'addressName': adressTitle,
-        'buildingDetails': buildingDetails,
-        'buildingName': buildingName,
-        'familyName': familyName,
-        'latitude': latitude,
-        'chosen': true,
-        'longitude': longitude,
-        'address': address,
-        'idDoc': iD,
-      });
-    }
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("Address")
+        .doc(chosenAdress.docs[0]["idDoc"])
+        .update({"chosen": false});
+
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userid)
+        .collection('Address')
+        .doc(iD)
+        .set({
+      'addressName': adressTitle,
+      'buildingDetails': buildingDetails,
+      'buildingName': buildingName,
+      'familyName': familyName,
+      'latitude': latitude,
+      'chosen': true,
+      'longitude': longitude,
+      'address': address,
+      'idDoc': iD,
+    });
   }
 
   Future editAdresses(
@@ -752,7 +754,7 @@ class DatabaseMethods {
         .get();
   }
 
-Future changeChosenAddress(userID, addressID, previousID) async {
+  Future changeChosenAddress(userID, addressID, previousID) async {
     await FirebaseFirestore.instance
         .collection("users")
         .doc(userID)
@@ -793,7 +795,6 @@ Future changeChosenAddress(userID, addressID, previousID) async {
       for (QueryDocumentSnapshot snapshot in chatListDocuments) {
         unReadMSGCount = unReadMSGCount + snapshot['badgeCount'] as int;
       }
-      print('unread MSG count is $unReadMSGCount');
       return unReadMSGCount;
     } catch (e) {
       print(e);

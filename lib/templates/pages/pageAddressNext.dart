@@ -1,3 +1,4 @@
+import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -291,7 +292,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                       textStyle:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   onPressed: isEnabled
-                      ? () {
+                      ? () async {
                           // Validate returns true if the form is valid, or false otherwise.
 
                           final isValid = _formKey.currentState!.validate();
@@ -299,7 +300,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
                           if (isValid) {
                             _formKey.currentState!.save();
 
-                            sendToDatabaseAddress(
+                            await sendToDatabaseAddress(
                                 buildingDetails,
                                 buildingName,
                                 familyName,
@@ -307,7 +308,21 @@ class _PageAddressNextState extends State<PageAddressNext> {
                                 widget.long,
                                 widget.lat,
                                 widget.adresse);
-                            Navigator.of(context).pop();
+
+                            // Retourne la page d'accueil sans animation
+                            int count = 0;
+
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  PageRouteBuilder(
+                                    pageBuilder:
+                                        (context, animation1, animation2) =>
+                                            Accueil(),
+                                    transitionDuration: Duration(seconds: 0),
+                                  ),
+                                  (_) =>
+                                      count++ >=
+                                      3, //3 is count of your pages you want to pop
+                                );
                           }
                         }
                       : null,

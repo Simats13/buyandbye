@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   TextEditingController? familyNameController;
   TextEditingController? addressTitleController;
 
-  showMessage(String titre, e) {
+  showMessage(String titre, e, bool returnHome) {
     if (!Platform.isIOS) {
       showDialog(
           context: context,
@@ -70,7 +71,23 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                 TextButton(
                   child: Text("Ok"),
                   onPressed: () async {
-                    Navigator.of(builderContext).pop();
+                    if (returnHome) {
+                      // Retourne la page d'accueil sans animation
+                      int count = 0;
+
+                      Navigator.of(context).pushAndRemoveUntil(
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation1, animation2) =>
+                              Accueil(),
+                          transitionDuration: Duration(seconds: 0),
+                        ),
+                        (_) =>
+                            count++ >=
+                            3, //3 is count of your pages you want to pop
+                      );
+                    } else {
+                      Navigator.of(builderContext).pop();
+                    }
                   },
                 )
               ],
@@ -87,7 +104,23 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                   CupertinoButton(
                       child: Text('OK'),
                       onPressed: () async {
-                        Navigator.of(context).pop();
+                        if (returnHome) {
+                          // Retourne la page d'accueil sans animation
+                          int count = 0;
+
+                          Navigator.of(context).pushAndRemoveUntil(
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  Accueil(),
+                              transitionDuration: Duration(seconds: 0),
+                            ),
+                            (_) =>
+                                count++ >=
+                                3, //3 is count of your pages you want to pop
+                          );
+                        } else {
+                          Navigator.of(context).pop();
+                        }
                       }),
                 ],
               ));
@@ -194,11 +227,14 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                                               Navigator.of(context).pop(false);
                                               showMessage(
                                                   "Suppression impossible",
-                                                  "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.");
+                                                  "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.",
+                                                  false);
                                             } else {
                                               Navigator.of(context).pop(false);
-                                              showMessage("Suppression adresse",
-                                                  "Votre adresse a bien été supprimé !");
+                                              showMessage(
+                                                  "Suppression adresse",
+                                                  "Votre adresse a bien été supprimé !",
+                                                  true);
                                             }
                                           });
                                         },
@@ -230,15 +266,18 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                                       setState(() {
                                         if (delete == false) {
                                           Navigator.of(context).pop(false);
-                                          showMessage("Suppression impossible",
-                                              "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.");
+                                          showMessage(
+                                              "Suppression impossible",
+                                              "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.",
+                                              false);
                                         } else {
                                           Navigator.of(context).pop(false);
-                                          showMessage("Suppression adresse",
-                                              "Votre adresse a bien été supprimé !");
+                                          showMessage(
+                                              "Suppression adresse",
+                                              "Votre adresse a bien été supprimé !",
+                                              true);
                                         }
                                       });
-                                      Navigator.of(context).pop(false);
                                     },
                                   ),
                                 ],
