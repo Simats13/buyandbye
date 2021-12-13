@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../Messagerie/Controllers/fb_messaging.dart';
 import '../Messagerie/Controllers/image_controller.dart';
@@ -96,7 +97,9 @@ class _PageMessagerieState extends State<PageMessagerie>
               //METTRE UN SHIMMER
             }
             if (!userSnapshot.hasData) return ColorLoader3();
-            return countChatListUsers(myUserName, userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) > 0
+            return countChatListUsers(myUserName,
+                        userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) >
+                    0
                 ? Stack(
                     children: [
                       ListView.builder(
@@ -104,8 +107,29 @@ class _PageMessagerieState extends State<PageMessagerie>
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = userSnapshot.data!.docs[index];
-                          return ChatRoomListTile(ds["lastMessage"], ds.id,
-                              myUserName, ds["users"][1], index);
+                          return Slidable(
+                            // Specify a key if the Slidable is dismissible.
+                            key: const ValueKey(0),
+
+                            // The end action pane is the one at the right or the bottom side.
+                            endActionPane: const ActionPane(
+                              motion: ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: doNothing,
+                                  backgroundColor: Color(0xFFFE4A49),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Supprimer',
+                                ),
+                              ],
+                            ),
+
+                            // The child of the Slidable is what the user sees when the
+                            // component is not dragged.
+                            child: ChatRoomListTile(ds["lastMessage"], ds.id,
+                                myUserName, ds["users"][1], index),
+                          );
                         },
                       ),
                     ],
@@ -153,8 +177,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    var querySnapshot =
-        await DatabaseMethods().getMagasinInfo(widget.sellerID);
+    var querySnapshot = await DatabaseMethods().getMagasinInfo(widget.sellerID);
     name = "${querySnapshot.docs[0]["name"]}";
     profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
     token = "${querySnapshot.docs[0]["FCMToken"]}";
@@ -204,7 +227,8 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             //METTRE UN SHIMMER
           }
 
-          if (chatListSnapshot.data!.docs[widget.index].get('badgeCount') != 0) {
+          if (chatListSnapshot.data!.docs[widget.index].get('badgeCount') !=
+              0) {
             isActive = true;
           } else {
             isActive = false;
@@ -293,4 +317,8 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     }
     return Container(width: 0.0, height: 0.0);
   }
+}
+
+void doNothing(BuildContext context) {
+  print("hello");
 }
