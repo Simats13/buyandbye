@@ -43,7 +43,7 @@ dependencies:
   flutter_svg:
   flutter_launcher_icons:
   firebase_messaging: 
-  google_sign_in: 5.1.0
+  google_sign_in:
   line_awesome_flutter: ^2.0.0
   flutter_screenutil: ^5.0.0+2
   theme_provider:
@@ -94,6 +94,8 @@ dependencies:
   adaptive_action_sheet:
   dropdown_date_picker:
   sliding_up_panel:
+  cool_dropdown:
+  flutter_slidable:
 
 flutter_native_splash:
   #color: "#42a5f5"
