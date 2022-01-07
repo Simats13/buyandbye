@@ -4,7 +4,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FBCloudStore {
-  static FBCloudStore get instanace => FBCloudStore();
+  static FBCloudStore get instance => FBCloudStore();
   // About Firebase Database
   Future<List<String?>?> saveUserDataToFirebaseDatabase(
       userEmail, userId, userName, userIntro, downloadUrl) async {
@@ -47,11 +47,11 @@ class FBCloudStore {
   }
 
   Future<void> updateMyChatListValues(
-      String? documentID, String? chatID, bool isInRoom) async {
+       bool isInRoom, String? documentID, chatID, userType) async {
     var updateData =
         isInRoom ? {'inRoom': isInRoom, 'badgeCount': 0} : {'inRoom': isInRoom};
     final DocumentReference result = FirebaseFirestore.instance
-        .collection('users')
+        .collection(userType)
         .doc(documentID)
         .collection('chatlist')
         .doc(chatID);
@@ -63,14 +63,8 @@ class FBCloudStore {
         transaction.update(result, updateData);
       }
     });
-    // await FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(documentID)
-    //     .collection('chatlist')
-    //     .doc(chatID)
-    //     .set(updateData);
     int unReadMSGCount =
-        await FBCloudStore.instanace.getUnreadMSGCount(documentID);
+        await FBCloudStore.instance.getUnreadMSGCount(documentID);
     FlutterAppBadger.updateBadgeCount(unReadMSGCount);
   }
 

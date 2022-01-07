@@ -77,7 +77,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 
   getThisUserInfo() async {
     QuerySnapshot querySnapshot =
-        await DatabaseMethods().getMagasinInfoViaID(widget.idCommercant);
+        await DatabaseMethods().getMagasinInfo(widget.idCommercant);
     nomBoutique = "${querySnapshot.docs[0]["name"]}";
     latitude = double.parse(
         "${querySnapshot.docs[0]['position']['geopoint'].latitude}");

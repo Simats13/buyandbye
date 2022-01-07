@@ -57,8 +57,7 @@ class NotificationController {
     _firebaseMessaging
         .getToken(vapidKey: firebaseCloudvapidKey)
         .then((val) async {
-      print('Token: ' + val!);
-      prefs.setString('FCMToken', val);
+      prefs.setString('FCMToken', val!);
     });
   }
 
@@ -70,13 +69,11 @@ class NotificationController {
     _firebaseMessaging
         .getToken(vapidKey: firebaseCloudvapidKey)
         .then((val) async {
-      print('Token: ' + val!);
-      prefs.setString('FCMToken', val);
+      prefs.setString('FCMToken', val!);
       String userID = userid;
-      print(userID);
       FirebaseAuth.instance.authStateChanges().listen((User? user) {
         if (user != null) {
-          FBCloudStore.instanace.updateUserToken(userID, val);
+          FBCloudStore.instance.updateUserToken(userID, val);
         }
       });
     });

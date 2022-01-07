@@ -122,23 +122,23 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-notifications(context, myID, myName, myProfilePic) {
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ChatRoom(
-                myID,
-                myName,
-                message.data["otherToken"],
-                message.data["otherID"],
-                message.data["chatroomid"],
-                message.data["userName"],
-                "",
-                message.data["profilePic"],
-                myProfilePic)));
-  });
-}
+// notifications(context, myID, myName, myProfilePic) {
+//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+//     Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//             builder: (context) => ChatRoom(
+//                 myID,
+//                 myName,
+//                 message.data["otherToken"],
+//                 message.data["otherID"],
+//                 message.data["chatroomid"],
+//                 message.data["userName"],
+//                 "",
+//                 message.data["profilePic"],
+//                 myProfilePic)));
+//   });
+// }
 
 class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();

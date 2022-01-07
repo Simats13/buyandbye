@@ -454,7 +454,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                           widget.name, // NOM DU CORRESPONDANT
                                           "", // LES COMMERCANTS N'ONT PAS DE LNAME
                                           widget.img, // IMAGE DU CORRESPONDANT
-                                          myProfilePic // IMAGE DE L'UTILISATEUR
+                                          myProfilePic, // IMAGE DE L'UTILISATEUR
+                                          "client"
                                           )));
                             },
                             child: Icon(

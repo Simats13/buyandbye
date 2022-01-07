@@ -56,7 +56,8 @@ class DatabaseMethods {
           .doc(idDoc)
           .delete();
 
-      // Vérifier si l'adresse supprimée est la première. Si c'est le cas on met la nouvelle 1ere en chosen
+      // Vérifie si l'adresse supprimée est la première
+      if (_myDocCount[0]["idDoc"] == idDoc) {
       // Nouvelle requête pour ne pas garder l'adresse qui a été supprimée dans _myDoc
       QuerySnapshot _myDoc2 = await FirebaseFirestore.instance
           .collection("users")
@@ -71,6 +72,8 @@ class DatabaseMethods {
           .collection("Address")
           .doc(_myDocCount2[0]["idDoc"])
           .update({"chosen": true});
+      } else {
+      }
 
       return true;
     }
@@ -193,13 +196,6 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance
         .collection("magasins")
         .where("id", isEqualTo: sellerId)
-        .get();
-  }
-
-  Future<QuerySnapshot> getMagasinInfoViaID(String? id) async {
-    return await FirebaseFirestore.instance
-        .collection("magasins")
-        .where("id", isEqualTo: id)
         .get();
   }
 

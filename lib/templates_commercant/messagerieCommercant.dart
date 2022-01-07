@@ -124,7 +124,6 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   String? profilePicUrl = "",
       fname,
       lname,
-      username = "",
       token = "",
       userid,
       idTest,
@@ -134,10 +133,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot2 = await DatabaseMethods().getMyInfo(userid);
+    QuerySnapshot querySnapshot2 = await DatabaseMethods().getMagasinInfo(userid);
     myProfilePicUrl = "${querySnapshot2.docs[0]["imgUrl"]}";
-    username = widget.clientID;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(username);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(widget.clientID);
     fname = "${querySnapshot.docs[0]["fname"]}";
     lname = "${querySnapshot.docs[0]["lname"]}";
     idTest = "${querySnapshot.docs[0]["id"]}";
@@ -163,7 +161,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       final size = MediaQuery.of(context).size;
       return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('users')
+            .collection('magasins')
             .doc(userid)
             .collection('chatlist')
             .orderBy("timestamp", descending: true)
@@ -176,13 +174,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 dotRadius: 6.0,
               ),
             );
-            //METTRE UN SHIMMER
           }
-          // if (chatListSnapshot.data.docs[0].get('badgeCount') != 0) {
-          //   isActive = true;
-          // } else {
-          //   isActive = false;
-          // }
 
           return ListTile(
             leading: ClipRRect(
@@ -201,8 +193,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             trailing: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
               child: (chatListSnapshot
-                      .hasData /*&&
-                      chatListSnapshot.data.docs.length > 0*/
+                      .hasData
                   )
                   ? Container(
                       width: 80,
@@ -264,7 +255,8 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         fname!, // PRENOM DU CORRESPONDANT
                         lname!, // NOM DU CORRESPONDANT
                         profilePicUrl!, // IMAGE DU CORRESPONDANT
-                        myProfilePicUrl! // IMAGE DE L'UTILISATEUR
+                        myProfilePicUrl!, // IMAGE DE L'UTILISATEUR
+                        "magasins" // TYPE D'UTILISATEUR
                         ))),
           );
         },

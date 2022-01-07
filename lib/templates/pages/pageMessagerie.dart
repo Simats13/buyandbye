@@ -19,25 +19,20 @@ class PageMessagerie extends StatefulWidget {
 
 class _PageMessagerieState extends State<PageMessagerie>
     with LocalNotificationView {
-  String? myID;
-  String? myName, myUserName, myEmail;
-  String? myProfilePic;
+  String? myID, myUserName;
   bool messageExist = false;
   @override
   void initState() {
     super.initState();
     NotificationController.instance.updateTokenToServer();
-    getMyInfoFromSharedPreference();
+    getMyInfo();
   }
 
-  getMyInfoFromSharedPreference() async {
+  getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
     myID = userid;
-    myName = user.displayName;
-    myProfilePic = user.photoURL;
     myUserName = user.displayName;
-    myEmail = user.email;
 
     setState(() {});
   }
@@ -51,7 +46,6 @@ class _PageMessagerieState extends State<PageMessagerie>
         child: AppBar(
           title: RichText(
             text: TextSpan(
-              // style: Theme.of(context).textTheme.bodyText2,
               children: [
                 TextSpan(
                     text: 'Messagerie',
@@ -201,7 +195,6 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 dotRadius: 6.0,
               ),
             );
-            //METTRE UN SHIMMER
           }
 
           if (chatListSnapshot.data!.docs[widget.index].get('badgeCount') != 0) {
@@ -286,6 +279,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                           "", // NOM DU CORRESPONDANT
                           profilePicUrl!, // IMAGE DU CORRESPONDANT
                           myThumbnail!, // IMAGE DE L'UTILISATEUR
+                          "users" // TYPE D'UTILISATEUR
                         ))),
           );
         },

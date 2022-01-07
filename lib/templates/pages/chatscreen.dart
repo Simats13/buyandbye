@@ -28,7 +28,8 @@ class ChatRoom extends StatefulWidget {
       this.selectedUserFname,
       this.selectedUserLname,
       this.selectedUserThumbnail,
-      this.myThumbnail);
+      this.myThumbnail,
+      this.userType);
 
   final String? myID,
       myName,
@@ -38,7 +39,8 @@ class ChatRoom extends StatefulWidget {
       selectedUserFname,
       selectedUserLname,
       selectedUserThumbnail,
-      myThumbnail;
+      myThumbnail,
+      userType;
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -54,23 +56,19 @@ class _ChatRoomState extends State<ChatRoom>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // print('didChangeAppLifecycleState');
     setState(() {
       switch (state) {
         case AppLifecycleState.resumed:
-          FBCloudStore.instanace
-              .updateMyChatListValues(widget.myID, widget.chatID, true);
-          // print('AppLifecycleState.resumed');
+          FBCloudStore.instance
+              .updateMyChatListValues(true, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.inactive:
-          // print('AppLifecycleState.inactive');
-          FBCloudStore.instanace
-              .updateMyChatListValues(widget.myID, widget.chatID, false);
+          FBCloudStore.instance
+              .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.paused:
-          // print('AppLifecycleState.paused');
-          FBCloudStore.instanace
-              .updateMyChatListValues(widget.myID, widget.chatID, false);
+          FBCloudStore.instance
+              .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.detached:
           break;
@@ -85,8 +83,8 @@ class _ChatRoomState extends State<ChatRoom>
     // print(widget.selectedUserToken);
     // print(widget.selectedUserID);
     WidgetsBinding.instance!.addObserver(this);
-    FBCloudStore.instanace
-        .updateMyChatListValues(widget.myID, widget.chatID, true);
+    FBCloudStore.instance
+        .updateMyChatListValues(true, widget.myID, widget.chatID, widget.userType);
 
     if (mounted) {
       isShowLocalNotification = true;
@@ -115,8 +113,8 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void dispose() {
     isShowLocalNotification = false;
-    FBCloudStore.instanace
-        .updateMyChatListValues(widget.myID, widget.chatID, false);
+    FBCloudStore.instance
+        .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
     _savedChatId("");
     WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
@@ -139,7 +137,7 @@ class _ChatRoomState extends State<ChatRoom>
                   children: [
                     TextSpan(
                         text:
-                            widget.selectedUserFname! + widget.selectedUserLname!,
+                            widget.selectedUserFname! + " " + widget.selectedUserLname!,
                         style: TextStyle(
                           fontSize: 20,
                           color: BuyandByeAppTheme.orangeMiFonce,
@@ -223,7 +221,7 @@ class _ChatRoomState extends State<ChatRoom>
       returnWidget = data['idFrom'] == widget.selectedUserID
           ? peerUserListTile(
               context,
-              widget.selectedUserFname! + widget.selectedUserLname!,
+              widget.selectedUserFname! + " " + widget.selectedUserLname!,
               widget.selectedUserThumbnail!,
               data['content'],
               returnTimeStamp(data['timestamp']),
@@ -305,7 +303,7 @@ class _ChatRoomState extends State<ChatRoom>
 
   Future<void> _saveUserImageToFirebaseStorage(croppedFile) async {
     try {
-      String takeImageURL = await FBStorage.instanace
+      String takeImageURL = await FBStorage.instance
           .sendImageToUserInChatRoom(croppedFile, widget.chatID);
       _handleSubmitted(takeImageURL);
     } catch (e) {
@@ -315,9 +313,9 @@ class _ChatRoomState extends State<ChatRoom>
 
   Future<void> _handleSubmitted(String text) async {
     try {
-      await FBCloudStore.instanace.sendMessageToChatRoom(
+      await FBCloudStore.instance.sendMessageToChatRoom(
           widget.chatID, widget.myID, widget.selectedUserID, text, messageType);
-      await FBCloudStore.instanace.updateUserChatListField(
+      await FBCloudStore.instance.updateUserChatListField(
         widget.selectedUserID!,
         messageType == 'text' ? text : 'A envoyé une photo',
         widget.chatID,
@@ -325,7 +323,7 @@ class _ChatRoomState extends State<ChatRoom>
         widget.selectedUserID,
       );
 
-      await FBCloudStore.instanace.updateUserChatListField(
+      await FBCloudStore.instance.updateUserChatListField(
           widget.myID!,
           messageType == 'text' ? text : 'A envoyé une photo',
           widget.chatID,
@@ -334,14 +332,13 @@ class _ChatRoomState extends State<ChatRoom>
       _getUnreadMSGCountThenSendMessage();
     } catch (e) {
       showAlertDialog(context, 'Error user information to database');
-      // _resetTextFieldAndLoading();
     }
   }
 
   Future<void> _getUnreadMSGCountThenSendMessage() async {
     try {
       int unReadMSGCount =
-          await FBCloudStore.instanace.getUnreadMSGCount(widget.selectedUserID);
+          await FBCloudStore.instance.getUnreadMSGCount(widget.selectedUserID);
       await NotificationController.instance.sendNotificationMessageToPeerUser(
           unReadMSGCount,
           messageType,
@@ -355,11 +352,5 @@ class _ChatRoomState extends State<ChatRoom>
     } catch (e) {
       print(e);
     }
-    // _resetTextFieldAndLoading();
   }
-
-  // void _resetTextFieldAndLoading() {
-  //   FocusScope.of(context).requestFocus(FocusNode());
-  // _msgTextController.text = '';
-  // }
 }

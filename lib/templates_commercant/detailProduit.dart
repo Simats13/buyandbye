@@ -168,12 +168,12 @@ class _DetailProduitState extends State<DetailProduit> {
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
                                       if (snapshot.data["images"].length > 1) {
-                                        FBStorage.instanace.deleteProductImage(
+                                        FBStorage.instance.deleteProductImage(
                                             widget.uid,
                                             widget.productId,
                                             snapshot.data["images"]
                                                 [carouselItem]);
-                                        FBStorage.instanace
+                                        FBStorage.instance
                                             .deleteProductImageFromStorage(
                                                 snapshot.data["images"]
                                                     [carouselItem]);
@@ -583,7 +583,7 @@ class _ModifyDetailProduitState extends State<ModifyDetailProduit> {
 Future<void> _saveUserImageToFirebaseStorage(
     croppedFile, context, sellerID, productID) async {
   try {
-    await FBStorage.instanace
+    await FBStorage.instance
         .uploadProductPhotosToFb(croppedFile, sellerID, productID);
   } catch (e) {
     showAlertDialog(context, 'Error add user image to storage');

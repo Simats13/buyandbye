@@ -360,7 +360,8 @@ class _UserInfoState extends State<UserInfo> {
                                             (snapshot.data! as QuerySnapshot).docs[0]["fname"],
                                             (snapshot.data! as QuerySnapshot).docs[0]["lname"],
                                             (snapshot.data! as QuerySnapshot).docs[0]["imgUrl"],
-                                            myProfilePic)));
+                                            myProfilePic,
+                                            "client")));
                               },
                               icon: Icon(Icons.message),
                             ),

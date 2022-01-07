@@ -65,7 +65,7 @@ class _PageResumeState extends State<PageResume> {
 
   getShopInfos() async {
     QuerySnapshot querySnapshot =
-        await DatabaseMethods().getMagasinInfoViaID(widget.sellerID);
+        await DatabaseMethods().getMagasinInfo(widget.sellerID);
     shopName = "${querySnapshot.docs[0]["name"]}";
     profilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     description = "${querySnapshot.docs[0]["description"]}";

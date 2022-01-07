@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'fb_firestore.dart';
 
 class FBStorage {
-  static FBStorage get instanace => FBStorage();
+  static FBStorage get instance => FBStorage();
 
   // Save Image to Storage
   Future<List<String?>?> saveUserImageToFirebaseStorage(
@@ -33,7 +33,7 @@ class FBStorage {
           .ref(filePath)
           .getDownloadURL();
       await prefs.setString('imageUrl', imageURL);
-      List<String?>? result = await FBCloudStore.instanace
+      List<String?>? result = await FBCloudStore.instance
           .saveUserDataToFirebaseDatabase(
               userEmail, userId, userName, userIntro, imageURL);
 

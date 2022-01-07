@@ -188,7 +188,7 @@ class _NewProductNextState extends State<NewProductNext> {
                                                           color: Colors.white,
                                                           size: 20),
                                                       onPressed: () {
-                                                        FBStorage.instanace
+                                                        FBStorage.instance
                                                             .deleteProductImage(
                                                                 widget.myID,
                                                                 widget
@@ -216,7 +216,7 @@ class _NewProductNextState extends State<NewProductNext> {
 Future<void> _saveUserImageToFirebaseStorage(
     croppedFile, context, sellerID, productID) async {
   try {
-    await FBStorage.instanace
+    await FBStorage.instance
         .uploadProductPhotosToFb(croppedFile, sellerID, productID);
   } catch (e) {
     showAlertDialog(context, 'Error add user image to storage');
