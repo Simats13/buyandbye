@@ -125,7 +125,7 @@ class _PageExploreState extends State<PageExplore> {
       mapMaker = value;
     });
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), 'assets/images/home.png')
+            ImageConfiguration(), 'assets/icons/location-pin.png')
         .then((value) {
       mapMakerUser = value;
     });
@@ -292,7 +292,7 @@ class _PageExploreState extends State<PageExplore> {
       mapMaker = value;
     });
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), 'assets/icons/home.png')
+            ImageConfiguration(), 'assets/icons/location-pin.png')
         .then((value) {
       mapMakerUser = value;
     });
@@ -764,7 +764,7 @@ class _PageExploreState extends State<PageExplore> {
                   });
                   markers.clear();
                   BitmapDescriptor.fromAssetImage(
-                          ImageConfiguration(), 'assets/images/home.png')
+                          ImageConfiguration(), 'assets/icons/location-pin.png')
                       .then((value) {
                     mapMakerUser = value;
                   });
@@ -803,7 +803,7 @@ class _PageExploreState extends State<PageExplore> {
                             strictMode: true);
                   });
                   BitmapDescriptor.fromAssetImage(
-                          ImageConfiguration(), 'assets/images/home.png')
+                          ImageConfiguration(), 'assets/icons/location-pin.png')
                       .then((value) {
                     mapMakerUser = value;
                   });

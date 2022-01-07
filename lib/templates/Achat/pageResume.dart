@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../buyandbye_app_theme.dart';
@@ -97,7 +98,6 @@ class _PageResumeState extends State<PageResume> {
 
   @override
   Widget build(BuildContext context) {
-    print(colorStore);
     return Scaffold(
         backgroundColor: BuyandByeAppTheme.white,
         appBar: AppBar(
@@ -156,8 +156,8 @@ class _PageResumeState extends State<PageResume> {
                     ]),
                     SizedBox(height: 10),
                     Row(children: [
-                      FutureBuilder<dynamic>(
-                          future: DatabaseMethods().getPurchaseDetails(
+                      StreamBuilder<dynamic>(
+                          stream: DatabaseMethods().getPurchaseResumeDetails(
                               "users", widget.userId, widget.idCommand),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -192,11 +192,27 @@ class _PageResumeState extends State<PageResume> {
                                     }),
                               );
                             } else {
-                              return Center(
-                                child: ColorLoader3(
-                                  radius: 15.0,
-                                  dotRadius: 6.0,
+                              return Shimmer.fromColors(
+                                child: Container(
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          width:
+                                              MediaQuery.of(context).size.width - 40,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        
+                                      ),
+                                      // SizedBox(height: 10,)
+                                    ],
+                                  ),
                                 ),
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
                               );
                             }
                           }),

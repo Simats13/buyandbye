@@ -401,6 +401,16 @@ class DatabaseMethods {
         .get();
   }
 
+  Stream getPurchaseResumeDetails(userType, userid, commandId) {
+    return FirebaseFirestore.instance
+        .collection(userType)
+        .doc(userid)
+        .collection("commands")
+        .doc(commandId)
+        .collection("products")
+        .snapshots();
+  }
+
   Future<QuerySnapshot> getCart() async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
@@ -958,6 +968,13 @@ class DatabaseMethods {
       totalProduct = totalProduct + i["amount"] as int;
       idProduit = i['id'];
     }
+
+    await FirebaseFirestore.instance.collection('commands').doc(idCommand).set({
+      "shop": idCommercant,
+      "buyer": userid,
+      "article": totalProduct.toInt(),
+      "date": DateTime.now(),
+    });
 
     //MET LES NOUVELLES INFORMATIONS DANS LA BDD DE L'UTILISATEUR
     await FirebaseFirestore.instance
