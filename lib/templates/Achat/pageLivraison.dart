@@ -42,6 +42,7 @@ class _PageLivraisonState extends State<PageLivraison> {
   String? userid;
   String? nomBoutique;
   String? adresseBoutique;
+  String productsList = "";
   double deliveryChoose = 0;
   String? userAddressChoose;
   double? latitude;
@@ -693,7 +694,7 @@ class _PageLivraisonState extends State<PageLivraison> {
   //   }
   // }
 
-  String idCommand = Uuid().v4();
+  String idCommand = Uuid().v1();
   onItemPress(BuildContext context, int index) async {
     switch (index) {
       case 0:
@@ -837,6 +838,7 @@ class _PageLivraisonState extends State<PageLivraison> {
     setState(() {});
 
     try {
+      dialog.close();
       // 3. display the payment sheet.
       await stripe.Stripe.instance.presentPaymentSheet();
 
@@ -855,14 +857,16 @@ class _PageLivraisonState extends State<PageLivraison> {
       } else {
         userchoose = "Livraison à domicile";
       }
-      
+
       String? numCommand = idCommand;
       DateTime now = DateTime.now();
       String? month = DateFormat('MMM').format(DateTime(0, now.month));
-      var productsList;
       for (int i = 0; i < querySnapshot.docs.length; i++) {
-        print(querySnapshot.docs[i]['nomProduit']);
-        productsList = """<tr>
+        
+
+        double totalPerProduct = querySnapshot.docs[i]['prixProduit'] * querySnapshot.docs[i]['amount'];
+
+        productsList += """<tr>
                                         <td class='esdev-adapt-off' align='left'
                                             style='Margin:0;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px'>
                                             <table cellpadding='0' cellspacing='0' class='esdev-mso-table'
@@ -957,7 +961,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                                 <p style='Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, '
                                                                                     helvetica neue', helvetica,
                                                                                     sans-serif;line-height:21px;color:#333333;font-size:14px'>
-                                                                                    $allMoneyForProduct €</p>
+                                                                                    $totalPerProduct €</p>
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -969,9 +973,11 @@ class _PageLivraisonState extends State<PageLivraison> {
                                             </table>
                                         </td>
                                     </tr>""";
-        productsList += productsList;
-        
       }
+      dialog.show(
+          max: 100,
+          msg: 'Veuillez patienter ...',
+          progressType: ProgressType.normal);
 
       String? corpsDuMail = """<!DOCTYPE html
     PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
@@ -1196,7 +1202,7 @@ class _PageLivraisonState extends State<PageLivraison> {
                                                                     <p style='Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, '
                                                                         helvetica neue', helvetica,
                                                                         sans-serif;line-height:21px;color:#333333;font-size:14px'>
-                                                                        Sous-Total :&nbsp;<strong>€40.00</strong><br>Livraison :&nbsp;<strong>€0.00</strong><br>Taxe :&nbsp;<strong>€10.00</strong><br>Total :&nbsp;<strong>$allMoneyForProduct €</strong>
+                                                                        Sous-Total :&nbsp;<strong>€40.00</strong><br>Livraison :&nbsp;<strong>€0.00</strong><br>Taxe :&nbsp;<strong>€10.00</strong><br>Total :&nbsp;<strong>${widget.total.toString()} €</strong>
                                                                     </p>
                                                                 </td>
                                                             </tr>
@@ -1443,6 +1449,7 @@ class _PageLivraisonState extends State<PageLivraison> {
 </body>
 
 </html>""";
+
 
       final message = Message()
         ..from = Address("no-reply@buyandbye.fr", 'Buy&Bye')
