@@ -3,6 +3,7 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates_commercant/detailProduit.dart';
 import 'package:buyandbye/templates_commercant/newProduct.dart';
+import 'package:buyandbye/templates_commercant/newProductRestaurant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,6 @@ class _ProductsState extends State<Products> {
   getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     return user.uid;
-    // print(userid);
   }
 
   Widget build(BuildContext context) {
@@ -53,12 +53,22 @@ class _ProductsState extends State<Products> {
                               size: 30,
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  // Amène l'utilisateur sur la page d'ajout d'un produit
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          NewProduct(snapshotuid.data)));
+                              if (snapshotuid.data ==
+                                  "5HZBy8qA2wbbqjDuQekjvdgI6Tl2") {
+                                    Navigator.push(
+                                    context,
+                                    // Amène l'utilisateur sur la page d'ajout d'un produit de restaurant
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NewProductRestaurant(snapshotuid.data)));
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    // Amène l'utilisateur sur la page d'ajout d'un produit
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NewProduct(snapshotuid.data)));
+                              }
                             },
                           ),
                         )
