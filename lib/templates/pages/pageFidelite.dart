@@ -1,4 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class PageFidelite extends StatefulWidget {
   @override
-  const PageFidelite(
-      {Key? key,
-      this.firstName,
-      this.lastName,
-      this.eMail})
+  const PageFidelite({Key? key, this.firstName, this.lastName, this.eMail})
       : super(key: key);
 
   final String? firstName;
@@ -38,40 +35,54 @@ class _PageFideliteState extends State<PageFidelite> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: BuyandByeAppTheme.white,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: AppBar(
+          title: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: 'Compte Fidélité',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.card_giftcard_outlined,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      size: 25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: BuyandByeAppTheme.white,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: BuyandByeAppTheme.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
       body: Container(
         child: ListView(
           children: [
-            Row(
-                children: [
-                  MaterialButton(
-                    child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: Colors.white.withOpacity(0.2),
-                              offset: Offset(-8, -1),
-                              spreadRadius: 2,
-                              blurRadius: 5),
-                          BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              offset: Offset(2, 2),
-                              spreadRadius: 4,
-                              blurRadius: 5)
-                        ], shape: BoxShape.circle, color: Colors.white),
-                        child: Icon(Icons.close)),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Text(
-                    "Compte de Fidélité",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),               
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
+            SizedBox(
+              height: 20,
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 20.0, right: 20),
               child: Text(

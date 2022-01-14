@@ -148,9 +148,6 @@ class Categorie extends StatefulWidget {
 class _CategorieState extends State<Categorie> {
   bool isVisible = false;
   Widget build(BuildContext context) {
-    // Variable pour savoir si le système est en dark mode ou non
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool darkModeOn = brightness == Brightness.dark;
     return Column(children: [
       // Divider(thickness: 0.5, color: Colors.black),
       SizedBox(height: 20),
@@ -173,13 +170,12 @@ class _CategorieState extends State<Categorie> {
                 // Affiche le nom de la catégorie
                 Text(widget.listOfCategories[widget.index],
                     style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: darkModeOn ? Colors.white : Colors.black)),
+                        fontWeight: FontWeight.w700, color: Colors.black)),
                 Icon(
                   // Si la suite est visible, la flèche pointe vers le bas
                   // Sinon elle pointe à droite
                   isVisible ? Icons.arrow_drop_down : Icons.arrow_right,
-                  color: darkModeOn ? Colors.white : Colors.black,
+                  color: Colors.black,
                 ),
               ],
             ),

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
-import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:buyandbye/templates/pages/pageAccueil.dart';
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/templates_commercant/nav_bar.dart';

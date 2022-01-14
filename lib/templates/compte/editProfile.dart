@@ -168,7 +168,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: AppBar(
             title: RichText(
               text: TextSpan(
-                // style: Theme.of(context).textTheme.bodyText2,
                 children: [
                   TextSpan(
                       text: 'Mes Informations',

@@ -152,14 +152,14 @@ class _DetailProduitState extends State<DetailProduit> {
                                       ImageController.instance
                                           .cropImageFromFile()
                                           .then((croppedFile) {
-                                          setState(() {
-                                            messageType = 'image';
-                                          });
-                                          _saveUserImageToFirebaseStorage(
-                                              croppedFile,
-                                              context,
-                                              widget.uid,
-                                              widget.productId);
+                                        setState(() {
+                                          messageType = 'image';
+                                        });
+                                        _saveUserImageToFirebaseStorage(
+                                            croppedFile,
+                                            context,
+                                            widget.uid,
+                                            widget.productId);
                                       });
                                     },
                                   ),
@@ -251,8 +251,7 @@ class _DetailProduitState extends State<DetailProduit> {
                                         snapshot.data["description"]),
                                     SizedBox(height: 20),
                                     Text("Prix : " +
-                                        snapshot.data["prix"]
-                                            .toStringAsFixed(2) +
+                                    snapshot.data["prix"].toString() +
                                         "€"),
                                     SizedBox(height: 20),
                                     Text("Restant : " +
@@ -329,7 +328,7 @@ class _DetailProduitState extends State<DetailProduit> {
                           visible: isVisible,
                           child: ModifyDetailProduit(
                               snapshot.data["nom"],
-                              snapshot.data["prix"],
+                              snapshot.data["prix"].toDouble(),
                               snapshot.data["description"],
                               snapshot.data["reference"],
                               snapshot.data["quantite"],

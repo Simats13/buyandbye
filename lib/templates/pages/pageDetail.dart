@@ -21,17 +21,17 @@ import '../Messagerie/Controllers/fb_messaging.dart';
 import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class PageDetail extends StatefulWidget {
-  const PageDetail(
-      {Key? key,
-      this.img,
-      this.name,
-      this.description,
-      this.adresse,
-      this.clickAndCollect,
-      this.livraison,
-      this.sellerID,
-      this.colorStore,})
-      : super(key: key);
+  const PageDetail({
+    Key? key,
+    this.img,
+    this.name,
+    this.description,
+    this.adresse,
+    this.clickAndCollect,
+    this.livraison,
+    this.sellerID,
+    this.colorStore,
+  }) : super(key: key);
   final String? img;
   final String? name;
   final String? description;
@@ -455,8 +455,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                           "", // LES COMMERCANTS N'ONT PAS DE LNAME
                                           widget.img, // IMAGE DU CORRESPONDANT
                                           myProfilePic, // IMAGE DE L'UTILISATEUR
-                                          "client"
-                                          )));
+                                          "client")));
                             },
                             child: Icon(
                               Icons.message,
@@ -782,6 +781,48 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            "Produits disponibles",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 20),
+
+                          dropdownValue == null
+                              ? CircularProgressIndicator()
+                              : produits(dropdownValue),
+                          SizedBox(height: 30),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 5),
+                                for (int i = 1; i < 6; i++)
+                                  Container(
+                                      height: 30,
+                                      width: 30,
+                                      margin:
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          fixedSize: Size(10, 10),
+                                        ),
+                                        child: Text((i).toString(),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                                color: i == clickedNumber
+                                                    ? Colors.black
+                                                    : Colors.grey)),
+                                        onPressed: () {
+                                          clickedNumber = i;
+                                          setState(() {});
+                                        },
+                                      ))
+                              ]),
+                          SizedBox(height: 30),
                           ////////// Design uniquement //////////
 
                           Text(
@@ -1001,48 +1042,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             ],
                           ),
                           SizedBox(height: 20),
-
-                          Text(
-                            "Produits disponibles",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-
-                          dropdownValue == null
-                              ? CircularProgressIndicator()
-                              : produits(dropdownValue),
-                          SizedBox(height: 30),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 5),
-                                for (int i = 1; i < 6; i++)
-                                  Container(
-                                      height: 30,
-                                      width: 30,
-                                      margin:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          fixedSize: Size(10, 10),
-                                        ),
-                                        child: Text((i).toString(),
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: i == clickedNumber
-                                                    ? Colors.black
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          clickedNumber = i;
-                                          setState(() {});
-                                        },
-                                      ))
-                              ]),
                         ],
                       ),
                     ],
