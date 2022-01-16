@@ -1,6 +1,7 @@
 import 'package:buyandbye/templates/pages/cart.dart';
 
 import 'package:buyandbye/templates/pages/chatscreen.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -132,7 +133,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomSheet: getFooter(),
-      body: getBody(),
+      body: getBody(widget.sellerID),
     );
   }
 
@@ -215,7 +216,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   // La variable avant le Widget sinon elle n'est pas modifiée dynamiquement
   // String dropdownValue = 'Alimentation';
   int clickedNumber = 1;
-  Widget getBody() {
+  Widget getBody(shopName) {
     var pimpMyStore = widget.colorStore;
     var size = MediaQuery.of(context).size;
     return CupertinoPageScaffold(
@@ -673,76 +674,97 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       SizedBox(
                         height: 15,
                       ),
-                      Text(
-                        "Catégories",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            for (String name in listOfCategories)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 15,
-                                ),
-                                child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: Color(
-                                      int.parse("0x$pimpMyStore"),
-                                    ).withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30),
+                      shopName == "5HZBy8qA2wbbqjDuQekjvdgI6Tl2"
+                          ? SizedBox.shrink()
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                  Text(
+                                    "Catégories",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                  child: Center(
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30)),
-                                        primary: Color(
-                                          int.parse("0x$pimpMyStore"),
-                                        ).withOpacity(0.2),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          dropdownValue = name;
-                                        });
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 15, right: 15),
-                                        child: Text(
-                                          name,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: dropdownValue == name
-                                                ? Color(
-                                                    int.parse("0x$pimpMyStore"),
-                                                  ).withOpacity(1)
-                                                : Color(
-                                                    int.parse("0x$pimpMyStore"),
-                                                  ).withOpacity(0.8),
-                                            fontWeight: dropdownValue == name
-                                                ? FontWeight.bold
-                                                : FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        for (String name in listOfCategories)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 15,
+                                            ),
+                                            child: Container(
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: Color(
+                                                  int.parse("0x$pimpMyStore"),
+                                                ).withOpacity(0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
+                                              child: Center(
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30)),
+                                                    primary: Color(
+                                                      int.parse(
+                                                          "0x$pimpMyStore"),
+                                                    ).withOpacity(0.2),
+                                                  ),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      dropdownValue = name;
+                                                    });
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 15,
+                                                            right: 15),
+                                                    child: Text(
+                                                      name,
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: dropdownValue ==
+                                                                name
+                                                            ? Color(
+                                                                int.parse(
+                                                                    "0x$pimpMyStore"),
+                                                              ).withOpacity(1)
+                                                            : Color(
+                                                                int.parse(
+                                                                    "0x$pimpMyStore"),
+                                                              ).withOpacity(
+                                                                0.8),
+                                                        fontWeight:
+                                                            dropdownValue == name
+                                                                ? FontWeight
+                                                                    .bold
+                                                                : FontWeight
+                                                                    .w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                      ],
                                     ),
                                   ),
-                                ),
-                              )
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                ]),
                       // Container(
                       //   width: size.width,
                       //   decoration: BoxDecoration(
@@ -781,6 +803,63 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          shopName == "5HZBy8qA2wbbqjDuQekjvdgI6Tl2"
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Menus",
+                                      style: TextStyle(
+                                        fontSize: 21,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 30),
+                                    FullScreenWidget(
+                                      child: Hero(
+                                        tag: "smallImage",
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: Image.network(
+                                            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD2.jpg",
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    FullScreenWidget(
+                                      child: Hero(
+                                        tag: "customTag",
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: Image.network(
+                                            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD3.jpg",
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    FullScreenWidget(
+                                      child: Hero(
+                                        tag: "customTag",
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: Image.network(
+                                            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD4.jpg",
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 30),
+                                  ],
+                                )
+                              : SizedBox.shrink(),
                           Text(
                             "Produits disponibles",
                             style: TextStyle(
@@ -1075,8 +1154,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   crossAxisSpacing: 20),
               itemCount: (snapshot.data! as QuerySnapshot).docs.length,
               itemBuilder: (context, index) {
-                var money =
-                    (snapshot.data! as QuerySnapshot).docs[index]['prix'];
+                var money = (snapshot.data! as QuerySnapshot)
+                    .docs[index]['prix']
+                    .toStringAsFixed(2);
                 return GestureDetector(
                     onTap: () {
                       Navigator.push(

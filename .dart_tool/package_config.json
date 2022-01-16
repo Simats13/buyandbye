@@ -440,6 +440,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "full_screen_image",
+      "rootUri": "file:///C:/Users/htcex/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/full_screen_image-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
       "name": "geocoding",
       "rootUri": "file:///C:/Users/htcex/AppData/Local/Pub/Cache/hosted/pub.dartlang.org/geocoding-2.0.1",
       "packageUri": "lib/",
@@ -1094,7 +1100,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2022-01-16T21:02:05.857372Z",
+  "generated": "2022-01-16T22:08:40.333806Z",
   "generator": "pub",
   "generatorVersion": "2.15.1"
 }

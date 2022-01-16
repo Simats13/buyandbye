@@ -96,6 +96,7 @@ dependencies:
   sliding_up_panel:
   cool_dropdown:
   flutter_slidable:
+  full_screen_image:
 
 flutter_native_splash:
   #color: "#42a5f5"
