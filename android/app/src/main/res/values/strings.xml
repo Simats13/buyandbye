@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Bye&amp;Bye</string>
+  <string name="facebook_app_id">393252715475917</string>
+  <string name="fb_login_protocol_scheme">fb393252715475917</string>
+</resources>
