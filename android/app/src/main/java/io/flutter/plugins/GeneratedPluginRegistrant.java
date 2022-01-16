@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import io.flutter.Log;
 
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 
 /**
  * Generated file. Do not edit.
@@ -16,17 +15,6 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 public final class GeneratedPluginRegistrant {
   private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
-    ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
-    try {
-      flutterEngine.getPlugins().add(new com.example.appsettings.AppSettingsPlugin());
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin app_settings, com.example.appsettings.AppSettingsPlugin", e);
-    }
-    try {
-      dev.gilder.tom.apple_sign_in.AppleSignInPlugin.registerWith(shimPluginRegistry.registrarFor("dev.gilder.tom.apple_sign_in.AppleSignInPlugin"));
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin apple_sign_in, dev.gilder.tom.apple_sign_in.AppleSignInPlugin", e);
-    }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestorePlugin());
     } catch(Exception e) {
@@ -58,7 +46,7 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin firebase_storage, io.flutter.plugins.firebase.storage.FlutterFirebaseStoragePlugin", e);
     }
     try {
-      fr.g123k.flutterappbadger.FlutterAppBadgerPlugin.registerWith(shimPluginRegistry.registrarFor("fr.g123k.flutterappbadger.FlutterAppBadgerPlugin"));
+      flutterEngine.getPlugins().add(new fr.g123k.flutterappbadger.FlutterAppBadgerPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin flutter_app_badger, fr.g123k.flutterappbadger.FlutterAppBadgerPlugin", e);
     }
@@ -78,19 +66,9 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin flutter_plugin_android_lifecycle, io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin", e);
     }
     try {
-      flutterEngine.getPlugins().add(new com.example.flutter_restart.FlutterRestartPlugin());
+      flutterEngine.getPlugins().add(new com.baseflow.geocoding.GeocodingPlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin flutter_restart, com.example.flutter_restart.FlutterRestartPlugin", e);
-    }
-    try {
-      com.fuyumi.flutterstatusbarcolor.flutterstatusbarcolor.FlutterStatusbarcolorPlugin.registerWith(shimPluginRegistry.registrarFor("com.fuyumi.flutterstatusbarcolor.flutterstatusbarcolor.FlutterStatusbarcolorPlugin"));
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin flutter_statusbarcolor, com.fuyumi.flutterstatusbarcolor.flutterstatusbarcolor.FlutterStatusbarcolorPlugin", e);
-    }
-    try {
-      com.aloisdeniel.geocoder.GeocoderPlugin.registerWith(shimPluginRegistry.registrarFor("com.aloisdeniel.geocoder.GeocoderPlugin"));
-    } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin geocoder, com.aloisdeniel.geocoder.GeocoderPlugin", e);
+      Log.e(TAG, "Error registering plugin geocoding, com.baseflow.geocoding.GeocodingPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new com.baseflow.geolocator.GeolocatorPlugin());
@@ -113,7 +91,7 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin image_cropper, vn.hunghd.flutter.plugins.imagecropper.ImageCropperPlugin", e);
     }
     try {
-      io.flutter.plugins.imagepicker.ImagePickerPlugin.registerWith(shimPluginRegistry.registrarFor("io.flutter.plugins.imagepicker.ImagePickerPlugin"));
+      flutterEngine.getPlugins().add(new io.flutter.plugins.imagepicker.ImagePickerPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin image_picker, io.flutter.plugins.imagepicker.ImagePickerPlugin", e);
     }
@@ -125,12 +103,12 @@ public final class GeneratedPluginRegistrant {
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.pathprovider.PathProviderPlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin path_provider, io.flutter.plugins.pathprovider.PathProviderPlugin", e);
+      Log.e(TAG, "Error registering plugin path_provider_android, io.flutter.plugins.pathprovider.PathProviderPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin shared_preferences, io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin", e);
+      Log.e(TAG, "Error registering plugin shared_preferences_android, io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new com.aboutyou.dart_packages.sign_in_with_apple.SignInWithApplePlugin());
@@ -143,9 +121,9 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin sqflite, com.tekartik.sqflite.SqflitePlugin", e);
     }
     try {
-      de.jonasbark.stripepayment.StripePaymentPlugin.registerWith(shimPluginRegistry.registrarFor("de.jonasbark.stripepayment.StripePaymentPlugin"));
+      flutterEngine.getPlugins().add(new com.flutter.stripe.StripeAndroidPlugin());
     } catch(Exception e) {
-      Log.e(TAG, "Error registering plugin stripe_payment, de.jonasbark.stripepayment.StripePaymentPlugin", e);
+      Log.e(TAG, "Error registering plugin stripe_android, com.flutter.stripe.StripeAndroidPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.urllauncher.UrlLauncherPlugin());

@@ -1,12 +1,8 @@
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/image_controller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rxdart/rxdart.dart';
 
 void testDataType(context, wrongField) {
   showDialog(
@@ -44,7 +40,6 @@ class _NewProductRestaurantState extends State<NewProductRestaurant> {
       isDescriptionFilled = false,
       isPriceFilled = false,
       checkbox = true;
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
