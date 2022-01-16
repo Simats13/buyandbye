@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "731468105971",
+    "firebase_url": "https://oficium-11bf9-default-rtdb.firebaseio.com",
+    "project_id": "oficium-11bf9",
+    "storage_bucket": "oficium-11bf9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731468105971:android:f1154f46c9035bb4034f86",
+        "android_client_info": {
+          "package_name": "com.buyandbye.off"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "731468105971-dhfgpj59c3jlpd83o08rb7mematnhnf9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.buyandbye.off",
+            "certificate_hash": "5b4d495bd661dd4659d885c31c2922f10b99652d"
+          }
+        },
+        {
+          "client_id": "731468105971-damnslig57t4lq7qpp0q9jbb1g1i39nh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDulLvB415_SqiQgFoKVvFlPmMRWwui1xA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "731468105971-damnslig57t4lq7qpp0q9jbb1g1i39nh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "731468105971-4l2vi1a7gsp0sfav44g3ago61r2rp05q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oficihome.test"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
