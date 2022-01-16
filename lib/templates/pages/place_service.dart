@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:http/http.dart';
 
 class Place {
-  String streetNumber;
-  String street;
-  String city;
-  String zipCode;
+  String? streetNumber;
+  String? street;
+  String? city;
+  String? zipCode;
 
   Place({
     this.streetNumber,
@@ -23,8 +23,8 @@ class Place {
 }
 
 class Suggestion {
-  final String placeId;
-  final String description;
+  final String? placeId;
+  final String? description;
 
   Suggestion(this.placeId, this.description);
 
@@ -45,7 +45,7 @@ class PlaceApiProvider {
   static final String iosKey = 'AIzaSyCa-BOYmq2umW8Z5mMj-c76JO5gNdYVo2s';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
-  Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
+  Future<List<Suggestion>?> fetchSuggestions(String input, String lang) async {
     final request =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=address&language=$lang&components=country:fr&key=$apiKey&sessiontoken=$sessionToken';
     final response = await client.get(Uri.parse(request));
@@ -54,6 +54,7 @@ class PlaceApiProvider {
       final result = json.decode(response.body);
       if (result['status'] == 'OK') {
         // compose suggestions in a list
+        //print(result['predictions'][0]);
         return result['predictions']
             .map<Suggestion>((p) => Suggestion(p['place_id'], p['description']))
             .toList();
@@ -67,7 +68,7 @@ class PlaceApiProvider {
     }
   }
 
-  Future<Place> getPlaceDetailFromId(String placeId) async {
+  Future<Place> getPlaceDetailFromId(String? placeId) async {
     final request =
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=address_component&key=$apiKey&sessiontoken=$sessionToken';
     final response = await client.get(Uri.parse(request));

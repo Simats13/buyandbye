@@ -28,9 +28,10 @@ class ChatRoom extends StatefulWidget {
       this.selectedUserFname,
       this.selectedUserLname,
       this.selectedUserThumbnail,
-      this.myThumbnail);
+      this.myThumbnail,
+      this.userType);
 
-  final String myID,
+  final String? myID,
       myName,
       selectedUserToken,
       selectedUserID,
@@ -38,7 +39,8 @@ class ChatRoom extends StatefulWidget {
       selectedUserFname,
       selectedUserLname,
       selectedUserThumbnail,
-      myThumbnail;
+      myThumbnail,
+      userType;
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -46,30 +48,27 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom>
     with WidgetsBindingObserver, LocalNotificationView {
-  final TextEditingController _msgTextController = new TextEditingController();
+  final TextEditingController _msgTextController = TextEditingController();
   final ScrollController _chatListController = ScrollController();
   String messageType = 'text';
   int chatListLength = 20;
+  bool celafonctionne = false;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('didChangeAppLifecycleState');
     setState(() {
       switch (state) {
         case AppLifecycleState.resumed:
-          FBCloudStore.instanace
-              .updateMyChatListValues(widget.myID, widget.chatID, true);
-          print('AppLifecycleState.resumed');
+          FBCloudStore.instance
+              .updateMyChatListValues(true, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.inactive:
-          print('AppLifecycleState.inactive');
-          FBCloudStore.instanace
-              .updateMyChatListValues(widget.myID, widget.chatID, false);
+          FBCloudStore.instance
+              .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.paused:
-          print('AppLifecycleState.paused');
-          FBCloudStore.instanace
-              .updateMyChatListValues(widget.myID, widget.chatID, false);
+          FBCloudStore.instance
+              .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.detached:
           break;
@@ -80,16 +79,16 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void initState() {
     super.initState();
-    print("J'avais raison");
-    print(widget.selectedUserToken);
-    print(widget.selectedUserID);
-    WidgetsBinding.instance.addObserver(this);
-    FBCloudStore.instanace
-        .updateMyChatListValues(widget.myID, widget.chatID, true);
+    // print("J'avais raison");
+    // print(widget.selectedUserToken);
+    // print(widget.selectedUserID);
+    WidgetsBinding.instance!.addObserver(this);
+    FBCloudStore.instance
+        .updateMyChatListValues(true, widget.myID, widget.chatID, widget.userType);
 
     if (mounted) {
       isShowLocalNotification = true;
-      _savedChatId(widget.chatID);
+      _savedChatId(widget.chatID!);
       checkLocalNotification(localNotificationAnimation, widget.chatID);
     }
     initializeDateFormatting('fr_FR');
@@ -114,142 +113,187 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void dispose() {
     isShowLocalNotification = false;
-    FBCloudStore.instanace
-        .updateMyChatListValues(widget.myID, widget.chatID, false);
+    FBCloudStore.instance
+        .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
     _savedChatId("");
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     //final size = MediaQuery.of(context).size;
-    return Container(
-      color: Color.fromRGBO(250, 250, 250, 1),
-      child: SafeArea(
-        top: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.selectedUserFname + widget.selectedUserLname),
-            backwardsCompatibility: false, // 1
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            centerTitle: true,
-          ),
-          body: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('chatrooms')
-                  .doc(widget.chatID)
-                  .collection(widget.chatID)
-                  .orderBy('timestamp', descending: false)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return LinearProgressIndicator();
-                return Stack(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: ListView(
-                              reverse: true,
-                              shrinkWrap: true,
-                              //padding: const EdgeInsets.fromLTRB(4.0, 10, 4, 1),
-                              controller: _chatListController,
-                              children:
-                                  addInstructionInSnapshot(snapshot.data.docs)
-                                      .map(_returnChatWidget)
-                                      .toList()),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        color: Color.fromRGBO(250, 250, 250, 1),
+        child: SafeArea(
+          top: false,
+          child: Scaffold(
+            appBar: AppBar(
+              title: RichText(
+                text: TextSpan(
+                  // style: Theme.of(context).textTheme.bodyText2,
+                  children: [
+                    TextSpan(
+                        text:
+                            widget.selectedUserFname! + " " + widget.selectedUserLname!,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: BuyandByeAppTheme.orangeMiFonce,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    WidgetSpan(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Icon(
+                          Icons.message,
+                          color: BuyandByeAppTheme.orangeMiFonce,
+                          size: 25,
                         ),
-                        _buildTextComposer(),
-                      ],
+                      ),
                     ),
                   ],
-                );
-              }),
+                ),
+              ),
+              backgroundColor: BuyandByeAppTheme.white,
+              automaticallyImplyLeading: false,
+              elevation: 0.0,
+              bottomOpacity: 0.0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: BuyandByeAppTheme.orange,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            body: StreamBuilder<dynamic>(
+                stream: FirebaseFirestore.instance
+                    .collection('chatrooms')
+                    .doc(widget.chatID)
+                    .collection(widget.chatID!)
+                    .orderBy('timestamp', descending: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return LinearProgressIndicator();
+                  return Stack(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: ListView(
+                                keyboardDismissBehavior:
+                                    ScrollViewKeyboardDismissBehavior.onDrag,
+                                reverse: true,
+                                shrinkWrap: true,
+                                controller: _chatListController,
+                                children: addInstructionInSnapshot(
+                                        snapshot.data.docs)
+                                    .map(_returnChatWidget)
+                                    .toList()),
+                          ),
+                          _buildTextComposer(),
+                        ],
+                      ),
+                    ],
+                  );
+                }),
+          ),
         ),
       ),
     );
   }
 
   Widget _returnChatWidget(dynamic data) {
-    Widget _returnWidget;
+    Widget returnWidget = Container();
 
     if (data is QueryDocumentSnapshot) {
       if (data['idTo'] == widget.myID && data['isread'] == false) {
-        if (data.reference != null) {
-          FirebaseFirestore.instance
-              .runTransaction((Transaction myTransaction) async {
-            await myTransaction.update(data.reference, {'isread': true});
-          });
-        }
+        FirebaseFirestore.instance
+            .runTransaction((Transaction myTransaction) async {
+          myTransaction.update(data.reference, {'isread': true});
+        });
       }
 
-      _returnWidget = data['idFrom'] == widget.selectedUserID
+      returnWidget = data['idFrom'] == widget.selectedUserID
           ? peerUserListTile(
               context,
-              widget.selectedUserFname + widget.selectedUserLname,
-              widget.selectedUserThumbnail,
+              widget.selectedUserFname! + " " + widget.selectedUserLname!,
+              widget.selectedUserThumbnail!,
               data['content'],
               returnTimeStamp(data['timestamp']),
               data['type'])
           : mineListTile(context, data['content'],
               returnTimeStamp(data['timestamp']), data['isread'], data['type']);
     } else if (data is String) {
-      _returnWidget = stringListTile(data);
+      returnWidget = stringListTile(data);
     }
-    return _returnWidget;
+    return returnWidget;
   }
 
   Widget _buildTextComposer() {
-    return new IconTheme(
-      data: new IconThemeData(color: Theme.of(context).accentColor),
-      child: new Container(
+    return IconTheme(
+      data: IconThemeData(color: Theme.of(context).accentColor),
+      child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: new Row(
+        child: Row(
           children: <Widget>[
-            new Container(
-              margin: new EdgeInsets.symmetric(horizontal: 2.0),
-              child: new IconButton(
-                  icon: new Icon(
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 2.0),
+              child: IconButton(
+                  icon: Icon(
                     Icons.photo,
-                    color: Colors.cyan[900],
+                    color: BuyandByeAppTheme.orangeMiFonce,
                   ),
                   onPressed: () {
                     ImageController.instance
                         .cropImageFromFile()
                         .then((croppedFile) {
-                      if (croppedFile != null) {
-                        setState(() {
-                          messageType = 'image';
-                        });
-                        _saveUserImageToFirebaseStorage(croppedFile);
-                      } else {
-                        showAlertDialog(context, 'Pick Image error');
-                      }
+                      setState(() {
+                        messageType = 'image';
+                      });
+                      _saveUserImageToFirebaseStorage(croppedFile);
                     });
                   }),
             ),
-            new Flexible(
-              child: new TextField(
+            Flexible(
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    if (value.length > 0) {
+                      celafonctionne = true;
+                    } else {
+                      celafonctionne = false;
+                    }
+                  });
+                },
                 textCapitalization: TextCapitalization.sentences,
                 controller: _msgTextController,
                 onSubmitted: _handleSubmitted,
                 minLines: 1,
                 maxLines: 5,
-                decoration: new InputDecoration.collapsed(
-                    hintText: "Envoyer un message"),
+                decoration:
+                    InputDecoration.collapsed(hintText: "Envoyer un message"),
               ),
             ),
-            new Container(
-              //margin: new EdgeInsets.symmetric(horizontal: 2.0),
-              child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: () {
-                    setState(() {
-                      messageType = 'text';
-                    });
-                    _handleSubmitted(_msgTextController.text);
-                  }),
+            Container(
+              //margin:  EdgeInsets.symmetric(horizontal: 2.0),
+              child: IconButton(
+                icon: Icon(Icons.send,color:celafonctionne ? BuyandByeAppTheme.orangeMiFonce : null,),
+                onPressed: celafonctionne
+                    ? () {
+                        setState(() {
+                          messageType = 'text';
+                        });
+                        _handleSubmitted(_msgTextController.text);
+                        _msgTextController.text = '';
+                        celafonctionne = false;
+                      }
+                    : null,
+              ),
             ),
           ],
         ),
@@ -259,7 +303,7 @@ class _ChatRoomState extends State<ChatRoom>
 
   Future<void> _saveUserImageToFirebaseStorage(croppedFile) async {
     try {
-      String takeImageURL = await FBStorage.instanace
+      String takeImageURL = await FBStorage.instance
           .sendImageToUserInChatRoom(croppedFile, widget.chatID);
       _handleSubmitted(takeImageURL);
     } catch (e) {
@@ -269,18 +313,18 @@ class _ChatRoomState extends State<ChatRoom>
 
   Future<void> _handleSubmitted(String text) async {
     try {
-      await FBCloudStore.instanace.sendMessageToChatRoom(
+      await FBCloudStore.instance.sendMessageToChatRoom(
           widget.chatID, widget.myID, widget.selectedUserID, text, messageType);
-      await FBCloudStore.instanace.updateUserChatListField(
-        widget.selectedUserID,
+      await FBCloudStore.instance.updateUserChatListField(
+        widget.selectedUserID!,
         messageType == 'text' ? text : 'A envoyé une photo',
         widget.chatID,
         widget.myID,
         widget.selectedUserID,
       );
 
-      await FBCloudStore.instanace.updateUserChatListField(
-          widget.myID,
+      await FBCloudStore.instance.updateUserChatListField(
+          widget.myID!,
           messageType == 'text' ? text : 'A envoyé une photo',
           widget.chatID,
           widget.myID,
@@ -288,14 +332,13 @@ class _ChatRoomState extends State<ChatRoom>
       _getUnreadMSGCountThenSendMessage();
     } catch (e) {
       showAlertDialog(context, 'Error user information to database');
-      _resetTextFieldAndLoading();
     }
   }
 
   Future<void> _getUnreadMSGCountThenSendMessage() async {
     try {
       int unReadMSGCount =
-          await FBCloudStore.instanace.getUnreadMSGCount(widget.selectedUserID);
+          await FBCloudStore.instance.getUnreadMSGCount(widget.selectedUserID);
       await NotificationController.instance.sendNotificationMessageToPeerUser(
           unReadMSGCount,
           messageType,
@@ -307,13 +350,7 @@ class _ChatRoomState extends State<ChatRoom>
           widget.selectedUserToken,
           widget.selectedUserID);
     } catch (e) {
-      print(e.message);
+      print(e);
     }
-    _resetTextFieldAndLoading();
-  }
-
-  void _resetTextFieldAndLoading() {
-    FocusScope.of(context).requestFocus(FocusNode());
-    _msgTextController.text = '';
   }
 }

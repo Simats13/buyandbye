@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 class InfoWindowsModel extends ChangeNotifier {
   bool _showInfoWindow = false;
   bool _tempHidden = false;
-  Magasin _user;
-  double _leftMargin;
-  double _topMargin;
+  Magasin? _user;
+  double? _leftMargin;
+  double? _topMargin;
 
   void rebuildInfoWindow() {
     notifyListeners();
@@ -50,9 +50,9 @@ class InfoWindowsModel extends ChangeNotifier {
 
   bool get showInfoWindow =>
       (_showInfoWindow == true && _tempHidden == false) ? true : false;
-  double get leftMargin => _leftMargin;
+  double? get leftMargin => _leftMargin;
 
-  double get topMargin => _topMargin;
+  double? get topMargin => _topMargin;
 
-  Magasin get user => _user;
+  Magasin? get user => _user;
 }

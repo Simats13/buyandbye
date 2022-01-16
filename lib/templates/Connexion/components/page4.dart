@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class WelcomeView extends StatelessWidget {
-  final AnimationController animationController;
-  const WelcomeView({Key key, this.animationController}) : super(key: key);
+  final AnimationController? animationController;
+  const WelcomeView({Key? key, this.animationController}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final _firstHalfAnimation =
         Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0)).animate(
       CurvedAnimation(
-        parent: animationController,
+        parent: animationController!,
         curve: Interval(
           0.6,
           0.8,
@@ -20,7 +20,7 @@ class WelcomeView extends StatelessWidget {
     final _secondHalfAnimation =
         Tween<Offset>(begin: Offset(0, 0), end: Offset(-1, 0)).animate(
       CurvedAnimation(
-        parent: animationController,
+        parent: animationController!,
         curve: Interval(
           0.8,
           1.0,
@@ -32,7 +32,7 @@ class WelcomeView extends StatelessWidget {
     final _welcomeFirstHalfAnimation =
         Tween<Offset>(begin: Offset(2, 0), end: Offset(0, 0))
             .animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.6,
         0.8,
@@ -43,7 +43,7 @@ class WelcomeView extends StatelessWidget {
     final _welcomeImageAnimation =
         Tween<Offset>(begin: Offset(4, 0), end: Offset(0, 0))
             .animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.6,
         0.8,
@@ -82,7 +82,7 @@ class WelcomeView extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 64, right: 64, top: 48),
                 child: Text(
-                  "Rejoingnez Buy&Bye et découvrez les commerces proches de chez vous !",
+                  "Rejoignez Buy&Bye et découvrez les commerces proches de chez vous !",
                   textAlign: TextAlign.center,
                 ),
               ),

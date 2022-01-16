@@ -48,7 +48,7 @@ class NotificationController {
         //     arguments: MessageArguments(message, true));
       });
     } catch (e) {
-      print(e.message);
+      print(e);
     }
   }
 
@@ -57,8 +57,7 @@ class NotificationController {
     _firebaseMessaging
         .getToken(vapidKey: firebaseCloudvapidKey)
         .then((val) async {
-      print('Token: ' + val);
-      prefs.setString('FCMToken', val);
+      prefs.setString('FCMToken', val!);
     });
   }
 
@@ -70,17 +69,13 @@ class NotificationController {
     _firebaseMessaging
         .getToken(vapidKey: firebaseCloudvapidKey)
         .then((val) async {
-      print('Token: ' + val);
-      prefs.setString('FCMToken', val);
+      prefs.setString('FCMToken', val!);
       String userID = userid;
-      print(userID);
-      if (userID != null) {
-        FirebaseAuth.instance.authStateChanges().listen((User user) {
-          if (user != null) {
-            FBCloudStore.instanace.updateUserToken(userID, val);
-          }
-        });
-      }
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        if (user != null) {
+          FBCloudStore.instance.updateUserToken(userID, val);
+        }
+      });
     });
   }
 
@@ -114,12 +109,20 @@ class NotificationController {
   }
 
   Future _onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) async {}
+      int id, String? title, String? body, String? payload) async {}
 
-  Future _selectNotification(String payload) async {}
+  Future _selectNotification(String? payload) async {}
 
-  Future<void> sendNotificationMessageToPeerUser(unReadMSGCount, messageType,
-      textFromTextField, myName, chatID, peerUserToken, imgUrl, otherToken, otherID) async {
+  Future<void> sendNotificationMessageToPeerUser(
+      unReadMSGCount,
+      messageType,
+      textFromTextField,
+      myName,
+      chatID,
+      peerUserToken,
+      imgUrl,
+      otherToken,
+      otherID) async {
     const yourServerKey =
         "AAAAqk7liPM:APA91bHZUrcSZWjOgia117HltJ1BWSJ9_M1NEojTB8QXIGQXH8sWTrjQdJH_oUQrsH2DxAssSwSe_3rphP74uD4BkPdHgwWDn7yWypSItzovjkkxIubamzkQ1gEFBC6eT45P5GFSCl9S";
     // FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;

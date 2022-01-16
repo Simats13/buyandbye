@@ -19,9 +19,9 @@ class MessagerieCommercant extends StatefulWidget {
 
 class _MessagerieCommercantState extends State<MessagerieCommercant>
     with LocalNotificationView {
-  String myID;
-  String myName, myUserName, myEmail;
-  String myProfilePic;
+  String? myID;
+  String? myName, myUserName, myEmail;
+  String? myProfilePic;
   bool messageExist = false;
   @override
   void initState() {
@@ -49,7 +49,6 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
         title: Text('Messagerie'),
         backgroundColor: BuyandByeAppTheme.black_electrik,
         automaticallyImplyLeading: false,
-        backwardsCompatibility: false, // 1
         systemOverlayStyle: SystemUiOverlayStyle.light,
         centerTitle: true,
       ),
@@ -70,14 +69,14 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
               //METTRE UN SHIMMER
             }
             if (!userSnapshot.hasData) return ColorLoader3();
-            return countChatListUsers(myUserName, userSnapshot) > 0
+            return countChatListUsers(myUserName, userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) > 0
                 ? Stack(
                     children: [
                       ListView.builder(
-                        itemCount: userSnapshot.data.docs.length,
+                        itemCount: userSnapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot ds = userSnapshot.data.docs[index];
+                          DocumentSnapshot ds = userSnapshot.data!.docs[index];
                           return ChatRoomListTile(ds["lastMessage"], ds.id,
                               myUserName, ds["users"][0], index);
                         },
@@ -112,7 +111,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername, clientID;
+  final String? lastMessage, chatRoomId, myUsername, clientID;
   final int index;
   ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
       this.clientID, this.index);
@@ -122,10 +121,9 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "",
+  String? profilePicUrl = "",
       fname,
       lname,
-      username = "",
       token = "",
       userid,
       idTest,
@@ -135,10 +133,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot2 = await DatabaseMethods().getMyInfo(userid);
+    QuerySnapshot querySnapshot2 = await DatabaseMethods().getMagasinInfo(userid);
     myProfilePicUrl = "${querySnapshot2.docs[0]["imgUrl"]}";
-    username = widget.clientID;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(username);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(widget.clientID);
     fname = "${querySnapshot.docs[0]["fname"]}";
     lname = "${querySnapshot.docs[0]["lname"]}";
     idTest = "${querySnapshot.docs[0]["id"]}";
@@ -164,7 +161,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       final size = MediaQuery.of(context).size;
       return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('users')
+            .collection('magasins')
             .doc(userid)
             .collection('chatlist')
             .orderBy("timestamp", descending: true)
@@ -177,24 +174,18 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 dotRadius: 6.0,
               ),
             );
-            //METTRE UN SHIMMER
           }
-          // if (chatListSnapshot.data.docs[0].get('badgeCount') != 0) {
-          //   isActive = true;
-          // } else {
-          //   isActive = false;
-          // }
 
           return ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: ImageController.instance.cachedImage(profilePicUrl),
+              child: ImageController.instance.cachedImage(profilePicUrl!),
             ),
             title: fname == null
                 ? CircularProgressIndicator()
-                : Text(fname + " " + lname),
+                : Text(fname! + " " + lname!),
             subtitle: Text(
-              widget.lastMessage,
+              widget.lastMessage!,
               style: isActive == true
                   ? TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
                   : TextStyle(),
@@ -202,8 +193,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             trailing: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
               child: (chatListSnapshot
-                      .hasData /*&&
-                      chatListSnapshot.data.docs.length > 0*/
+                      .hasData
                   )
                   ? Container(
                       width: 80,
@@ -212,9 +202,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         children: [
                           Text(
                             (chatListSnapshot.hasData &&
-                                    chatListSnapshot.data.docs.length > 0)
+                                    chatListSnapshot.data!.docs.length > 0)
                                 ? readTimestamp(chatListSnapshot
-                                    .data.docs[widget.index]['timestamp'])
+                                    .data!.docs[widget.index]['timestamp'])
                                 : '',
                             style: TextStyle(fontSize: size.width * 0.03),
                           ),
@@ -251,21 +241,22 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         ],
                       ),
                     )
-                  : '',
+                  : '' as Widget?,
             ),
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => ChatRoom(
-                        userid, //ID DE L'UTILISATEUR
-                        widget.myUsername, // NOM DE L'UTILISATEUR
-                        token,
-                        idTest, // ID DU CORRESPONDANT
-                        widget.chatRoomId, //ID DE LA CONV
-                        fname, // PRENOM DU CORRESPONDANT
-                        lname, // NOM DU CORRESPONDANT
-                        profilePicUrl, // IMAGE DU CORRESPONDANT
-                        myProfilePicUrl // IMAGE DE L'UTILISATEUR
+                        userid!, //ID DE L'UTILISATEUR
+                        widget.myUsername!, // NOM DE L'UTILISATEUR
+                        token!,
+                        idTest!, // ID DU CORRESPONDANT
+                        widget.chatRoomId!, //ID DE LA CONV
+                        fname!, // PRENOM DU CORRESPONDANT
+                        lname!, // NOM DU CORRESPONDANT
+                        profilePicUrl!, // IMAGE DU CORRESPONDANT
+                        myProfilePicUrl!, // IMAGE DE L'UTILISATEUR
+                        "magasins" // TYPE D'UTILISATEUR
                         ))),
           );
         },

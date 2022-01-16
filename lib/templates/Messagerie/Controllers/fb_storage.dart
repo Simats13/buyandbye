@@ -7,10 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'fb_firestore.dart';
 
 class FBStorage {
-  static FBStorage get instanace => FBStorage();
+  static FBStorage get instance => FBStorage();
 
   // Save Image to Storage
-  Future<List<String>> saveUserImageToFirebaseStorage(
+  Future<List<String?>?> saveUserImageToFirebaseStorage(
       userEmail, userId, userName, userIntro, userImageFile) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -33,19 +33,19 @@ class FBStorage {
           .ref(filePath)
           .getDownloadURL();
       await prefs.setString('imageUrl', imageURL);
-      List<String> result = await FBCloudStore.instanace
+      List<String?>? result = await FBCloudStore.instance
           .saveUserDataToFirebaseDatabase(
               userEmail, userId, userName, userIntro, imageURL);
 
       return result;
     } catch (e) {
-      print(e.message);
+      print(e);
       return null;
     }
   }
 
   // ignore: missing_return
-  Future<String> sendImageToUserInChatRoom(croppedFile, chatID) async {
+  Future sendImageToUserInChatRoom(croppedFile, chatID) async {
     try {
       String imageTimeStamp = DateTime.now().millisecondsSinceEpoch.toString();
       String filePath = 'chatrooms/$chatID/$imageTimeStamp';
@@ -63,17 +63,17 @@ class FBStorage {
           .ref(filePath)
           .getDownloadURL();
     } catch (e) {
-      print(e.message);
+      print(e);
     }
   }
 
   // ignore: missing_return
-  Future<String> uploadProductPhotosToFb(
+  Future uploadProductPhotosToFb(
       croppedFile, sellerID, productID) async {
     try {
       String imageTimeStamp = DateTime.now().millisecondsSinceEpoch.toString();
       String filePath = 'products/$sellerID/$imageTimeStamp';
-      String url;
+      String? url;
 
       try {
         FirebaseStorage storage = FirebaseStorage.instance;
@@ -86,7 +86,7 @@ class FBStorage {
       // Ajoute l'url de l'image upload aux données du produit
       addProductImage(sellerID, productID, url);
     } catch (e) {
-      print(e.message);
+      print(e);
     }
   }
 

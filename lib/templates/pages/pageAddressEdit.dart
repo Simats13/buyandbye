@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,12 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
-import 'package:geocoder/geocoder.dart' as geocode;
+import 'package:geocoding/geocoding.dart' as geocoder;
 import '../buyandbye_app_theme.dart';
 
 class PageAddressEdit extends StatefulWidget {
   const PageAddressEdit(
-      {Key key,
+      {Key? key,
       this.lat,
       this.long,
       this.adresse,
@@ -23,40 +24,108 @@ class PageAddressEdit extends StatefulWidget {
       this.familyName,
       this.iD})
       : super(key: key);
-  final double lat;
-  final double long;
-  final String adresse;
-  final String buildingDetails;
-  final String buildingName;
-  final String adressTitle;
-  final String familyName;
-  final String iD;
+  final double? lat;
+  final double? long;
+  final String? adresse;
+  final String? buildingDetails;
+  final String? buildingName;
+  final String? adressTitle;
+  final String? familyName;
+  final String? iD;
   @override
   _PageAddressEditState createState() => _PageAddressEditState();
 }
 
 class _PageAddressEditState extends State<PageAddressEdit> {
-  GoogleMapController _mapController;
-  Stream<List<DocumentSnapshot>> stream;
+  late GoogleMapController _mapController;
+  Stream<List<DocumentSnapshot>>? stream;
   final _formKey = GlobalKey<FormState>();
   var currentLocation;
   var position;
-  Geoflutterfire geo;
+  Geoflutterfire? geo;
   bool mapToggle = false;
 
   Set<Marker> _markers = Set<Marker>();
-  BitmapDescriptor mapMarker;
-  String userAddress;
-  String buildingDetailsEdit;
-  String buildingNameEdit;
-  String adressTitleEdit;
-  String familyNameEdit;
+  BitmapDescriptor? mapMarker;
+  String? userAddress;
+  String? buildingDetailsEdit;
+  String? buildingNameEdit;
+  String? adressTitleEdit;
+  String? familyNameEdit;
 
   // Controlleur des champs de texte. Remplace ceux crée précédemment
-  TextEditingController buildingDetailsController;
-  TextEditingController buildingNameController;
-  TextEditingController familyNameController;
-  TextEditingController addressTitleController;
+  TextEditingController? buildingDetailsController;
+  TextEditingController? buildingNameController;
+  TextEditingController? familyNameController;
+  TextEditingController? addressTitleController;
+
+  showMessage(String titre, e, bool returnHome) {
+    if (!Platform.isIOS) {
+      showDialog(
+          context: context,
+          builder: (BuildContext builderContext) {
+            return AlertDialog(
+              title: Text(titre),
+              content: Text(e),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () async {
+                    if (returnHome) {
+                      // Retourne la page d'accueil sans animation
+                      int count = 0;
+
+                      Navigator.of(context).pushAndRemoveUntil(
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation1, animation2) =>
+                              Accueil(),
+                          transitionDuration: Duration(seconds: 0),
+                        ),
+                        (_) =>
+                            count++ >=
+                            3, //3 is count of your pages you want to pop
+                      );
+                    } else {
+                      Navigator.of(builderContext).pop();
+                    }
+                  },
+                )
+              ],
+            );
+          });
+    } else {
+      return showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+                title: Text(titre),
+                content: Text(e),
+                actions: [
+                  // Close the dialog
+                  CupertinoButton(
+                      child: Text('OK'),
+                      onPressed: () async {
+                        if (returnHome) {
+                          // Retourne la page d'accueil sans animation
+                          int count = 0;
+
+                          Navigator.of(context).pushAndRemoveUntil(
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  Accueil(),
+                              transitionDuration: Duration(seconds: 0),
+                            ),
+                            (_) =>
+                                count++ >=
+                                3, //3 is count of your pages you want to pop
+                          );
+                        } else {
+                          Navigator.of(context).pop();
+                        }
+                      }),
+                ],
+              ));
+    }
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -91,7 +160,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     final idMarker = MarkerId(widget.lat.toString() + widget.long.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(widget.lat, widget.long),
+      position: LatLng(widget.lat!, widget.long!),
       //icon: mapMarker,
     ));
 
@@ -99,14 +168,11 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   }
 
   findAddress() async {
-    final coordinates = new geocode.Coordinates(widget.lat, widget.long);
-    var addresses =
-        await geocode.Geocoder.local.findAddressesFromCoordinates(coordinates);
+    List<geocoder.Placemark> addresses =
+        await geocoder.placemarkFromCoordinates(widget.lat!, widget.long!);
     var first = addresses.first;
-
     setState(() {
-      userAddress =
-          "${first.featureName}, ${first.locality}, ${first.countryName}";
+      userAddress = "${first.name}, ${first.locality}, ${first.country}";
     });
   }
 
@@ -121,7 +187,6 @@ class _PageAddressEditState extends State<PageAddressEdit> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text('Modifier une adresse'),
-          backwardsCompatibility: false, // 1
           systemOverlayStyle: SystemUiOverlayStyle.light,
           backgroundColor: BuyandByeAppTheme.black_electrik,
           automaticallyImplyLeading: false,
@@ -152,10 +217,26 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                                           style: TextStyle(color: Colors.red),
                                         ),
                                         onPressed: () async {
-                                          DatabaseMethods()
-                                              .deleteAddress(widget.iD);
-                                          Navigator.of(context).pop(false);
-                                          Navigator.of(context).pop(false);
+                                          final bool delete =
+                                              await DatabaseMethods()
+                                                  .deleteAddress(
+                                            widget.iD,
+                                          );
+                                          setState(() {
+                                            if (delete == false) {
+                                              Navigator.of(context).pop(false);
+                                              showMessage(
+                                                  "Suppression impossible",
+                                                  "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.",
+                                                  false);
+                                            } else {
+                                              Navigator.of(context).pop(false);
+                                              showMessage(
+                                                  "Suppression adresse",
+                                                  "Votre adresse a bien été supprimé !",
+                                                  true);
+                                            }
+                                          });
                                         },
                                       )
                                     ],
@@ -163,7 +244,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           : showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text("Suppression du compte"),
+                                title: Text("Suppression de l'adresse"),
                                 content: Text(
                                     "Souhaitez-vous réellement supprimer l'adresse ?"),
                                 actions: <Widget>[
@@ -178,9 +259,25 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                                       style: TextStyle(color: Colors.red),
                                     ),
                                     onPressed: () async {
-                                      DatabaseMethods()
-                                          .deleteAddress(widget.iD);
-                                      Navigator.of(context).pop(false);
+                                      final bool delete =
+                                          await DatabaseMethods().deleteAddress(
+                                        widget.iD,
+                                      );
+                                      setState(() {
+                                        if (delete == false) {
+                                          Navigator.of(context).pop(false);
+                                          showMessage(
+                                              "Suppression impossible",
+                                              "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.",
+                                              false);
+                                        } else {
+                                          Navigator.of(context).pop(false);
+                                          showMessage(
+                                              "Suppression adresse",
+                                              "Votre adresse a bien été supprimé !",
+                                              true);
+                                        }
+                                      });
                                     },
                                   ),
                                 ],
@@ -212,7 +309,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
-                        target: LatLng(widget.lat, widget.long), zoom: 15.0),
+                        target: LatLng(widget.lat!, widget.long!), zoom: 15.0),
                     myLocationButtonEnabled: false,
                     markers: _markers,
                   ),
@@ -250,7 +347,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                         border: InputBorder.none,
                         filled: true,
                         suffixIcon: IconButton(
-                          onPressed: buildingDetailsController.clear,
+                          onPressed: buildingDetailsController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         labelText: "Numéro d'appartement, porte, étage",
@@ -278,7 +375,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         suffixIcon: IconButton(
-                          onPressed: buildingNameController.clear,
+                          onPressed: buildingNameController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         filled: true,
@@ -308,7 +405,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                         border: InputBorder.none,
                         filled: true,
                         suffixIcon: IconButton(
-                          onPressed: familyNameController.clear,
+                          onPressed: familyNameController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         labelText: "Code porte et nom de famille",
@@ -359,7 +456,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         suffixIcon: IconButton(
-                          onPressed: addressTitleController.clear,
+                          onPressed: addressTitleController!.clear,
                           icon: Icon(Icons.clear),
                         ),
                         labelText: "Ajouter un intitulé (p. ex : Maison)",
@@ -383,25 +480,25 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                     // Si un champ est vide, on envoi la valeur déjà présente
 
                     var buildingDetailsEdit =
-                        buildingDetailsController.text == ""
+                        buildingDetailsController!.text == ""
                             ? ""
-                            : buildingDetailsController.text;
-                    var buildingNameEdit = buildingNameController.text == ""
+                            : buildingDetailsController!.text;
+                    var buildingNameEdit = buildingNameController!.text == ""
                         ? ""
-                        : buildingNameController.text;
-                    var familyNameEdit = familyNameController.text == ""
+                        : buildingNameController!.text;
+                    var familyNameEdit = familyNameController!.text == ""
                         ? ""
-                        : familyNameController.text;
-                    var adressTitleEdit = addressTitleController.text == ""
+                        : familyNameController!.text;
+                    var adressTitleEdit = addressTitleController!.text == ""
                         ? ""
-                        : addressTitleController.text;
+                        : addressTitleController!.text;
 
                     // Validate returns true if the form is valid, or false otherwise.
 
-                    final isValid = _formKey.currentState.validate();
+                    final isValid = _formKey.currentState!.validate();
 
                     if (isValid) {
-                      _formKey.currentState.save();
+                      _formKey.currentState!.save();
 
                       // final message =
                       //     "$buildingDetailsEdit, $buildingNameEdit, $familyNameEdit, $adressTitleEdit";
@@ -436,21 +533,14 @@ class _PageAddressEditState extends State<PageAddressEdit> {
     String buildingName,
     String familyName,
     String adressTitle,
-    double latitude,
-    double longitude,
-    String address,
-    String id,
+    double? latitude,
+    double? longitude,
+    String? address,
+    String? id,
   ) async {
     try {
-      await DatabaseMethods.instanace.editAdresses(
-          buildingDetails,
-          buildingName,
-          familyName,
-          adressTitle,
-          latitude,
-          longitude,
-          address,
-          widget.iD);
+      await DatabaseMethods.instance.editAdresses(buildingDetails, buildingName,
+          familyName, adressTitle, latitude, longitude, address, widget.iD);
     } catch (e) {
       !Platform.isIOS
           ? showAlertDialog(context,
@@ -462,6 +552,12 @@ class _PageAddressEditState extends State<PageAddressEdit> {
             );
     }
   }
+}
+
+@override
+Widget build(BuildContext context) {
+  // TODO: implement build
+  throw UnimplementedError();
 }
 
 class MapStyle {

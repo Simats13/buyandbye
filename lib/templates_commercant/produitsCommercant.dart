@@ -3,7 +3,7 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates_commercant/detailProduit.dart';
 import 'package:buyandbye/templates_commercant/newProduct.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:buyandbye/templates_commercant/newProductRestaurant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ List categoriesInDb(snapshot) {
   // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
   // pas déjà dans la liste
   for (var i = 0; i <= snapshot.data.docs.length - 1; i++) {
-    String categoryName = snapshot.data.docs[i]["categorie"];
+    String? categoryName = snapshot.data.docs[i]["categorie"];
     if (!categoriesList.contains(categoryName)) {
       categoriesList.add(snapshot.data.docs[i]["categorie"]);
     }
@@ -26,13 +26,12 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
-  String userid;
+  String? userid;
 
   // Récupère les informations de l'utilisateur courant dans la bdd
   getMyInfo() async {
     final User user = await AuthMethods().getCurrentUser();
-   return user.uid;
-    // print(userid);
+    return user.uid;
   }
 
   Widget build(BuildContext context) {
@@ -49,22 +48,33 @@ class _ProductsState extends State<Products> {
                       actions: [
                         Container(
                           child: IconButton(
-                              onPressed: () {
+                            icon: Icon(
+                              Icons.add_rounded,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              if (snapshotuid.data ==
+                                  "5HZBy8qA2wbbqjDuQekjvdgI6Tl2") {
+                                    Navigator.push(
+                                    context,
+                                    // Amène l'utilisateur sur la page d'ajout d'un produit de restaurant
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            NewProductRestaurant(snapshotuid.data)));
+                              } else {
                                 Navigator.push(
                                     context,
                                     // Amène l'utilisateur sur la page d'ajout d'un produit
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             NewProduct(snapshotuid.data)));
-                              },
-                              icon: Icon(
-                                Icons.add_rounded,
-                                size: 30,
-                              )),
+                              }
+                            },
+                          ),
                         )
                       ]),
                   body: SingleChildScrollView(
-                    child: StreamBuilder(
+                    child: StreamBuilder<dynamic>(
                         stream: DatabaseMethods().getProducts(snapshotuid.data),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
@@ -140,7 +150,7 @@ class Categorie extends StatefulWidget {
   final AsyncSnapshot snapshot;
   final List listOfCategories;
   final int index;
-  final String uid;
+  final String? uid;
 
   _CategorieState createState() => _CategorieState();
 }
@@ -148,9 +158,6 @@ class Categorie extends StatefulWidget {
 class _CategorieState extends State<Categorie> {
   bool isVisible = false;
   Widget build(BuildContext context) {
-    // Variable pour savoir si le système est en dark mode ou non
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool darkModeOn = brightness == Brightness.dark;
     return Column(children: [
       // Divider(thickness: 0.5, color: Colors.black),
       SizedBox(height: 20),
@@ -173,13 +180,12 @@ class _CategorieState extends State<Categorie> {
                 // Affiche le nom de la catégorie
                 Text(widget.listOfCategories[widget.index],
                     style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: darkModeOn ? Colors.white : Colors.black)),
+                        fontWeight: FontWeight.w700, color: Colors.black)),
                 Icon(
                   // Si la suite est visible, la flèche pointe vers le bas
                   // Sinon elle pointe à droite
                   isVisible ? Icons.arrow_drop_down : Icons.arrow_right,
-                  color: darkModeOn ? Colors.white : Colors.black,
+                  color: Colors.black,
                 ),
               ],
             ),

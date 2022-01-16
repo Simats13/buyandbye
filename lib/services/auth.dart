@@ -1,20 +1,25 @@
-import 'package:apple_sign_in/apple_sign_in.dart' as apple;
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as messasing;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:buyandbye/main.dart';
 import 'package:buyandbye/services/database.dart';
+import 'package:crypto/crypto.dart';
 
 class AuthMethods {
   bool isconnected = false;
+  Map<String, dynamic>? paymentIntentData;
 
-  static AuthMethods get instanace => AuthMethods();
-  static Function toogleNavBar;
+  static AuthMethods get instance => AuthMethods();
+  static late Function toogleNavBar;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -23,37 +28,72 @@ class AuthMethods {
     return auth.currentUser;
   }
 
-  Future<String> signInwithGoogle(BuildContext context) async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+  Future loginGoogle({Function? success, ValueChanged<String>? fail}) async {
     try {
-      final GoogleSignInAccount googleSignInAccount =
-          await _googleSignIn.signIn();
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      GoogleSignInAuthentication? googleAuth = await googleUser!.authentication;
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      final result = await auth.signInWithCredential(credential);
 
+      if (!result.user!.emailVerified) {
+        print('Login Cancelled');
+      } else if (result.additionalUserInfo!.isNewUser) {
+        // CRAETE USER
+        print('SUCCESSFULYY CREATED USER');
+      } else {
+        print('ALL READY EXISTS THE USER');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  // Connexion via Google
+  Future signInwithGoogle(
+      {Function? success, ValueChanged<String>? fail}) async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
       final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
+          await googleSignInAccount!.authentication;
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
 
+      // Getting users credential
       UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      User userDetails = userCredential.user;
+          await auth.signInWithCredential(authCredential);
+      User? userDetails = userCredential.user;
 
       bool docExists =
-          await DatabaseMethods().checkIfDocExists(userDetails.uid);
+          await DatabaseMethods().checkIfDocExists(userDetails!.uid);
 
-      if (userCredential == null) {
-      } else {
+      if (!userCredential.user!.emailVerified) {
+        print('Login Cancelled');
+        return false;
+      } else if (userCredential.additionalUserInfo!.isNewUser) {
         if (docExists == false) {
+          final url = "https://api.stripe.com/v1/customers";
+
+          var secret =
+              'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+          Map<String, String> headers = {
+            'Authorization': 'Bearer $secret',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          };
+          var response = await http.post(Uri.parse(url), headers: headers);
+          paymentIntentData = json.decode(response.body);
           Map<String, dynamic> userInfoMap = {
             "id": userDetails.uid,
             "email": userDetails.email,
-            "fname": userDetails.displayName.split(" ")[0],
-            "lname": userDetails.displayName.split(" ")[1],
+            "fname": userDetails.displayName!.split(" ")[0],
+            "lname": userDetails.displayName!.split(" ")[1],
             "imgUrl": userDetails.photoURL,
+            "customerId": paymentIntentData!["id"],
+            "firstConnection": true,
             "providers": {
               'Google': true, //GOOGLE
               'Facebook': false, //FACEBOOK
@@ -69,34 +109,50 @@ class AuthMethods {
           };
           DatabaseMethods().addInfoToDB("users", userDetails.uid, userInfoMap);
 
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => MyApp()));
-        } else {
-          //Verifie si l'adresse mail a été vérifiée
-          bool checkEmail =
-              await AuthMethods.instanace.checkEmailVerification();
-
-          if (checkEmail) {
-            FirebaseFirestore.instance
-                .collection("users")
-                .doc(userDetails.uid)
-                .update({
-              "providers.Google": true, //Facebook
-            });
-
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => MyApp()));
-          }
+          updateStripeInfo(paymentIntentData!["id"], userDetails.email,
+              userDetails.displayName);
+          print('Login ');
+          return true;
         }
-      }
+      } else {
+        //Verifie si l'adresse mail a été vérifiée
+        bool checkEmail = await AuthMethods.instance.checkEmailVerification();
+        print("checkEmail : " + checkEmail.toString());
 
-      return userCredential.user.displayName;
-    } on FirebaseAuthException catch (e) {
-      throw e;
+        if (checkEmail) {
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(userDetails.uid)
+              .update(
+            {
+              "providers.Google": true, //Facebook
+            },
+          );
+        }
+        return true;
+      }
+    } catch (e) {
+      print(e.toString());
     }
   }
 
-//Connexion via Facebook
+  Future updateStripeInfo(String? customerID, email, name) async {
+    final url = "https://api.stripe.com/v1/customers/$customerID";
+
+    var secret =
+        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $secret',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    Map body = {"email": email, "name": name};
+    var response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    paymentIntentData = json.decode(response.body);
+  }
+
+  // Connexion via Facebook
   Future signInWithFacebook(
     BuildContext context,
   ) async {
@@ -106,61 +162,72 @@ class AuthMethods {
       switch (result.status) {
         case LoginStatus.success:
           final AuthCredential facebookCredential =
-              FacebookAuthProvider.credential(result.accessToken.token);
+              FacebookAuthProvider.credential(result.accessToken!.token);
           final userCredential =
               await auth.signInWithCredential(facebookCredential);
 
-          User userDetails = userCredential.user;
+          User userDetails = userCredential.user!;
 
-          bool docExists =
-              await DatabaseMethods().checkIfDocExists(userDetails.uid);
+          bool docExists = await (DatabaseMethods()
+              .checkIfDocExists(userDetails.uid) as FutureOr<bool>);
+          final url = "https://api.stripe.com/v1/customers";
 
-          if (result == null) {
+          var secret =
+              'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+          Map<String, String> headers = {
+            'Authorization': 'Bearer $secret',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          };
+          var response = await http.post(Uri.parse(url), headers: headers);
+          paymentIntentData = json.decode(response.body);
+
+          if (docExists == false) {
+            Map<String, dynamic> userInfoMap = {
+              "id": userDetails.uid,
+              "email": userDetails.email,
+              "fname": userDetails.displayName!.split(" ")[0],
+              "lname": userDetails.displayName!.split(" ")[1],
+              "imgUrl": userDetails.photoURL,
+              "customerId": paymentIntentData!["id"],
+              "firstConnection": true,
+              "providers": {
+                'Google': false, //GOOGLE
+                'Facebook': true, //FACEBOOK
+                'Apple': false, //APPLE
+                'Mail': false, // MAIL
+              },
+              "admin": false,
+              "emailVerified": false,
+              "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+                  vapidKey:
+                      "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+              "phone": ""
+            };
+            DatabaseMethods()
+                .addInfoToDB("users", userDetails.uid, userInfoMap);
+            updateStripeInfo(paymentIntentData!["id"], userDetails.email,
+                userDetails.displayName);
+            //Envoie un mail de confirmation d'adresse mail
+            sendEmailVerification();
           } else {
-            if (docExists == false) {
-              Map<String, dynamic> userInfoMap = {
-                "id": userDetails.uid,
-                "email": userDetails.email,
-                "fname": userDetails.displayName.split(" ")[0],
-                "lname": userDetails.displayName.split(" ")[1],
-                "imgUrl": userDetails.photoURL,
-                "providers": {
-                  'Google': false, //GOOGLE
-                  'Facebook': true, //FACEBOOK
-                  'Apple': false, //APPLE
-                  'Mail': false, // MAIL
-                },
-                "admin": false,
-                "emailVerified": false,
-                "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-                    vapidKey:
-                        "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-                "phone": ""
-              };
-              DatabaseMethods()
-                  .addInfoToDB("users", userDetails.uid, userInfoMap);
+            //Verifie si l'adresse mail a été vérifiée
+            bool checkEmail = await (AuthMethods.instance
+                .checkEmailVerification() as FutureOr<bool>);
 
-              //Envoie un mail de confirmation d'adresse mail
-              sendEmailVerification();
-            } else {
-              //Verifie si l'adresse mail a été vérifiée
-              bool checkEmail =
-                  await AuthMethods.instanace.checkEmailVerification();
-
-              if (checkEmail) {
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(userDetails.uid)
-                    .update({
-                  "providers.Facebook": true, //Facebook
-                });
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => MyApp()));
-              }
+            if (checkEmail) {
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userDetails.uid)
+                  .update({
+                "providers.Facebook": true, //Facebook
+              });
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => MyApp()));
             }
           }
 
-          return userCredential.user.displayName;
+          return userCredential.user!.displayName;
 
         case LoginStatus.cancelled:
 
@@ -174,120 +241,128 @@ class AuthMethods {
     }
   }
 
-  Future<User> signInWithApple({
-    List<apple.Scope> scopes = const [],
-    BuildContext context,
-  }) async {
-    // 1. perform the sign-in request
-    final resulte = await apple.AppleSignIn.performRequests(
-        [apple.AppleIdRequest(requestedScopes: scopes)]);
-    // 2. check the result
-    switch (resulte.status) {
-      case apple.AuthorizationStatus.authorized:
-        final appleIdCredential = resulte.credential;
-        final oAuthProvider = OAuthProvider('apple.com');
-        final credential = oAuthProvider.credential(
-          idToken: String.fromCharCodes(appleIdCredential.identityToken),
-          accessToken:
-              String.fromCharCodes(appleIdCredential.authorizationCode),
-        );
-        final authResult = await auth.signInWithCredential(credential);
-        final userDetails = authResult.user;
+  // Génère un nonce sécurié cryptographiquement et inclus dans la requête d'authentification
+  String generateNonce([int length = 32]) {
+    final charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
 
-        bool docExists =
-            await DatabaseMethods().checkIfDocExists(userDetails.uid);
+  /// Returns the sha256 hash of [input] in hex notation.
+  String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
 
-        if (resulte == null) {
-        } else {
-          if (docExists == false) {
-            Map<String, dynamic> userInfoMap = {
-              "id": userDetails.uid,
-              "email": userDetails.email,
-              "fname": userDetails.displayName,
-              "lname": userDetails.displayName,
-              "imgUrl": userDetails.photoURL,
-              "providers": {
-                'Google': false, //GOOGLE
-                'Facebook': false, //FACEBOOK
-                'Apple': true, //APPLE
-                'Mail': false, // MAIL
-              },
-              "admin": false,
-              "emailVerified": false,
-              "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
-                  vapidKey:
-                      "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-              "phone": ""
-            };
-            DatabaseMethods()
-                .addInfoToDB("users", userDetails.uid, userInfoMap);
+  // Connexion via Apple
+  // ignore: missing_return
+  Future signInWithApple(context) async {
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+    try {
+      // Request credential for the currently signed in Apple account.
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+      print(appleCredential.authorizationCode);
 
-            //Envoie un mail de confirmation d'adresse mail
-            sendEmailVerification();
-          } else {
-            //Verifie si l'adresse mail a été vérifiée
-            bool checkEmail =
-                await AuthMethods.instanace.checkEmailVerification();
+      // Create an OAuthCredential from the credential returned by Apple.
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
 
-            if (checkEmail) {
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(userDetails.uid)
-                  .update({
-                "providers.Apple": true, //Facebook
-              });
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
-            }
-          }
+      // Sign in the user with Firebase
+      final authResult = await auth.signInWithCredential(oauthCredential);
+
+      final displayName =
+          '${appleCredential.givenName} ${appleCredential.familyName}';
+      final userEmail = '${appleCredential.email}';
+
+      final firebaseUser = authResult.user!;
+      print(displayName);
+      await firebaseUser.updateDisplayName(displayName);
+      await firebaseUser.updateEmail(userEmail);
+
+      bool docExists = await (DatabaseMethods()
+          .checkIfDocExists(firebaseUser.uid) as FutureOr<bool>);
+
+      if (docExists == false) {
+        Map<String, dynamic> userInfoMap = {
+          "id": firebaseUser.uid,
+          "email": firebaseUser.email,
+          "fname": firebaseUser.displayName,
+          "lname": firebaseUser.displayName,
+          "imgUrl": firebaseUser.photoURL,
+          "customerId": paymentIntentData!["id"],
+          "firstConnection": true,
+          "providers": {
+            'Google': false, //GOOGLE
+            'Facebook': false, //FACEBOOK
+            'Apple': true, //APPLE
+            'Mail': false, // MAIL
+          },
+          "admin": false,
+          "emailVerified": false,
+          "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+              vapidKey:
+                  "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+          "phone": ""
+        };
+        DatabaseMethods().addInfoToDB("users", firebaseUser.uid, userInfoMap);
+        updateStripeInfo(paymentIntentData!["id"], firebaseUser.email,
+            firebaseUser.displayName);
+        //Envoie un mail de confirmation d'adresse mail
+        sendEmailVerification();
+      } else {
+        //Verifie si l'adresse mail a été vérifiée
+        bool checkEmail = await (AuthMethods.instance.checkEmailVerification()
+            as FutureOr<bool>);
+
+        if (checkEmail) {
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(firebaseUser.uid)
+              .update({
+            "providers.Apple": true, //Facebook
+          });
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => MyApp()));
         }
+      }
 
-        if (scopes.contains(apple.Scope.fullName)) {
-          final displayName =
-              '${appleIdCredential.fullName.givenName} ${appleIdCredential.fullName.familyName}';
-          await userDetails.updateDisplayName(displayName);
-        }
-
-        return userDetails;
-
-      case apple.AuthorizationStatus.error:
-        throw PlatformException(
-          code: 'ERROR_AUTHORIZATION_DENIED',
-          message: resulte.error.toString(),
-        );
-
-      case apple.AuthorizationStatus.cancelled:
-        throw PlatformException(
-          code: 'ERROR_ABORTED_BY_USER',
-          message: 'Sign in aborted by user',
-        );
-      default:
-        throw UnimplementedError();
+      return firebaseUser;
+    } catch (e) {
+      print(e);
     }
   }
 
-//Envoie un email à l'adresse email enregistrée
+  // Envoie un email à l'adresse email enregistrée
   Future<void> sendEmailVerification() async {
     final User user = await AuthMethods().getCurrentUser();
     user.sendEmailVerification();
   }
 
-//Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
-//Sinon il renvoie false
+  // Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
+  // Sinon il renvoie false
   Future checkEmailVerification() async {
-    User user = await AuthMethods().getCurrentUser();
-
-    if (user.emailVerified) {
+    User? user = await AuthMethods().getCurrentUser();
+    if (user != null) {
       FirebaseFirestore.instance.collection("users").doc(user.uid).update({
         "emailVerified": true,
       });
-      return true;
-    } else {
-      return false;
     }
+    return true;
   }
 
-//Lie un compte identifé avec facebook avec un compte google
+  // Lie un compte identifé avec Facebook avec un compte Google
   Future linkExistingToGoogle() async {
     // //get currently logged in user
     final User existingUser = await AuthMethods().getCurrentUser();
@@ -295,7 +370,8 @@ class AuthMethods {
     //get the credentials of the new linking account
     final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAccount googleUser =
+        await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
 
@@ -314,7 +390,7 @@ class AuthMethods {
       "providers.Google": true, //Facebook
     });
 
-    return linkauthresult.user.displayName;
+    return linkauthresult.user!.displayName;
   }
 
   Future linkExistingToFacebook() async {
@@ -323,7 +399,7 @@ class AuthMethods {
     final LoginResult result = await FacebookAuth.instance.login();
 
     final AuthCredential facebookCredential =
-        FacebookAuthProvider.credential(result.accessToken.token);
+        FacebookAuthProvider.credential(result.accessToken!.token);
 
     //now link these credentials with the existing user
     UserCredential linkauthresult =
@@ -336,13 +412,14 @@ class AuthMethods {
       "providers.Facebook": true, //Facebook
     });
 
-    return linkauthresult.user.displayName;
+    return linkauthresult.user!.displayName;
   }
 
-  Future linkExistingToApple({
+  // TODO refaire la fonction Lier Apple
+  /*Future linkExistingToApple({
     List<apple.Scope> scopes = const [],
   }) async {
-    // //get currently logged in user
+    //get currently logged in user
     final User existingUser = await AuthMethods().getCurrentUser();
 
     final resulte = await apple.AppleSignIn.performRequests(
@@ -367,7 +444,7 @@ class AuthMethods {
     });
 
     return linkauthresult.user.displayName;
-  }
+  } */
 
   Future unlinkGoogle() async {
     final User existingUser = await AuthMethods().getCurrentUser();
@@ -409,16 +486,30 @@ class AuthMethods {
   }
 
   Future<void> signUpWithMail(
-      String _email, String _password, String _fname, String _lname) async {
+      String _email, String _password, String? _fname, String? _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
+
+    final url = "https://api.stripe.com/v1/customers";
+
+    var secret =
+        'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $secret',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+    var response = await http.post(Uri.parse(url), headers: headers);
+    paymentIntentData = json.decode(response.body);
     Map<String, dynamic> userInfoMap = {
       "id": user.uid,
       "email": _email,
       "fname": _fname,
       "lname": _lname,
+      "customerId": paymentIntentData!["id"],
+      "firstConnection": true,
       "imgUrl": "https://buyandbye.fr/avatar.png",
       "admin": false,
       "phone": "",
@@ -432,46 +523,55 @@ class AuthMethods {
   Future<User> signInWithMail(String _email, String _password) async {
     final User user = (await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password))
-        .user;
-    assert(user != null);
-    assert(await user.getIdToken() != null);
+        .user!;
     print(user.displayName);
     print('Connexion réussie : $user');
     return user;
   }
 
-  Future<void> signUpWithMailSeller(String _email, String _password,
-      String _nomSeller, String _adresseSeller) async {
+  Future<void> signUpWithMailSeller(
+      String _email, String _password, String? _fname, String? _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    Map<String, dynamic> userInfoMap = {
-      "ClickAndCollect": true,
-      "email": _email,
-      "name": _nomSeller,
-      "livraison": false,
-      "description": "description",
-      "adresse": _adresseSeller,
-      "imgUrl": "https://buyandbye.fr/avatar.png",
-      "admin": true,
-      "phone": "",
-      'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
-          vapidKey:
-              "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
-    };
-    DatabaseMethods().addInfoToDB("users", userid, userInfoMap);
+    // Map<String, dynamic> userInfoMap = {
+    //   "ClickAndCollect": true,
+    //   "email": _email,
+    //   "fname": _fname,
+    //   "livraison": false,
+    //   "description": "description",
+    //   "adresse": _adresseSeller,
+    //   "imgUrl": "https://buyandbye.fr/avatar.png",
+    //   "admin": true,
+    //   "phone": "",
+    // 'FCMToken': await messasing.FirebaseMessaging.instance.getToken(
+    //     vapidKey:
+    //         "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
+    // };
+    // DatabaseMethods().addInfoToDB("users", userid, userInfoMap);
 
     Map<String, dynamic> userInfoMap2 = {
+      "ClickAndCollect": false,
+      "livraison": false,
       "id": userid,
       "email": _email,
-      "name": _nomSeller,
-      "adresse": _adresseSeller,
-      "emailVerified": false,
-      "imgUrl":
-          "https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png",
-      "admin": true,
+      "fname": _fname,
+      "lname": _lname,
+      "adresse": "",
+      "description": "",
       "phone": "",
+      "admin": true,
+      "emailVerified": false,
+      "premium": false,
+      "isProfileComplete": false,
+      "isShopVisible": false,
+      // Couleur par défaut
+      "colorStore": "000000",
+      "imgUrl": "https://buyandbye.fr/avatar.png",
+      "FCMToken": await messasing.FirebaseMessaging.instance.getToken(
+          vapidKey:
+              "BJv98CAwXNrZiF2xvM4GR8vpR9NvaglLX6R1IhgSvfuqU4gzLAIpCqNfBySvoEwTk6hsM2Yz6cWGl5hNVAB4cUA"),
     };
     DatabaseMethods().addInfoToDB("magasins", userid, userInfoMap2);
     sendEmailVerification();
@@ -480,9 +580,7 @@ class AuthMethods {
   Future<User> signInWithMailSeller(String _email, String _password) async {
     final User user = (await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password))
-        .user;
-    assert(user != null);
-    assert(await user.getIdToken() != null);
+        .user!;
     print('Connexion réussi : $user');
     return user;
   }
@@ -492,8 +590,15 @@ class AuthMethods {
   }
 
   Future<void> updateUserToken(userID, token) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).update({
-      'FCMToken': token,
-    });
+    bool docExists = await DatabaseMethods().checkIfDocExists(userID);
+    if (docExists) {
+      await FirebaseFirestore.instance.collection('users').doc(userID).update({
+        'FCMToken': token,
+      });
+    } else {
+      await FirebaseFirestore.instance.collection('magasins').doc(userID).update({
+        'FCMToken': token,
+      });
+    }
   }
 }

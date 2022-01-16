@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:buyandbye/templates/pages/pageLogin.dart';
+import 'package:buyandbye/templates/pages/pageBienvenue.dart';
 import 'package:buyandbye/templates_commercant/membership_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,8 +20,8 @@ class CompteCommercant extends StatefulWidget {
 }
 
 class _CompteCommercantState extends State<CompteCommercant> {
-  String userid, myProfilePicture, name, email;
-  bool premium;
+  String? userid, myProfilePicture, myFirstName, myLastName, email;
+  bool? premium;
 
   @override
   void initState() {
@@ -37,12 +37,13 @@ class _CompteCommercantState extends State<CompteCommercant> {
   }
 
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getSellerInfo(userid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             myProfilePicture = snapshot.data["imgUrl"];
-            name = snapshot.data["name"];
+            myFirstName = snapshot.data["fname"];
+            myLastName = snapshot.data["lname"];
             email = snapshot.data["email"];
             premium = snapshot.data["premium"];
           }
@@ -61,12 +62,12 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 ),
               ),
               SizedBox(height: 20),
-              name == null
+              myFirstName == null
                   ? CircularProgressIndicator()
                   : Column(
                       children: [
                         Text(
-                          name ?? "",
+                          myFirstName! + " " + myLastName!,
                           style: kTitleTextStyle,
                         ),
                         SizedBox(height: 5),
@@ -89,12 +90,15 @@ class _CompteCommercantState extends State<CompteCommercant> {
                   child: MaterialButton(
                     child: premium == false
                         ? Text(
-                      'GRATUIT',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                    ) : Text(
-                      'PREMIUM',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
+                            'GRATUIT',
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            'PREMIUM',
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -139,7 +143,8 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditProfileComPage(),
+                                    builder: (context) =>
+                                        EditProfileComPage(premium),
                                   ),
                                 );
                               },
@@ -186,7 +191,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Help(false, email),
+                                    builder: (context) => Help(false, email!),
                                   ),
                                 );
                               },
@@ -258,7 +263,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                                 .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PageLogin()),
+                                                            PageBienvenue()),
                                                     (Route<dynamic> route) =>
                                                         false);
                                           },
@@ -298,7 +303,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                                       .pushAndRemoveUntil(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PageLogin()),
+                                                                  PageBienvenue()),
                                                           (Route<dynamic>
                                                                   route) =>
                                                               false);

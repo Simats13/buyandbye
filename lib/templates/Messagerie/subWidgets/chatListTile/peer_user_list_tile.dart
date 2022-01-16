@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../common_widgets.dart';
 
 Widget peerUserListTile(BuildContext context, String name, String thumbnail,
-    String message, String time, String type) {
+    String? message, String time, String? type) {
   final size = MediaQuery.of(context).size;
   return Padding(
     padding: const EdgeInsets.only(top: 4.0),
@@ -62,7 +62,7 @@ Widget peerUserListTile(BuildContext context, String name, String thumbnail,
                             child: Container(
                                 child: type == 'text'
                                     ? Text(
-                                        message,
+                                        message!,
                                         style: TextStyle(color: Colors.black),
                                       )
                                     : imageMessage(context, message)),

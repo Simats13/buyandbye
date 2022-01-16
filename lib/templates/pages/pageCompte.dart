@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:buyandbye/templates/Pages/pageLogin.dart';
+import 'package:buyandbye/templates/pages/pageBienvenue.dart';
+import 'package:buyandbye/templates/pages/pageFidelite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class PageCompte extends StatefulWidget {
 }
 
 class _PageCompteState extends State<PageCompte> {
-  String userid, myProfilePicture, fname, lname, email;
+  String? userid, myProfilePicture, fname, lname, email;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _PageCompteState extends State<PageCompte> {
   }
 
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getMyInfo2(userid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -69,305 +70,272 @@ class _PageCompteState extends State<PageCompte> {
                   : Column(
                       children: [
                         Text(
-                          fname + " " + lname,
+                          fname! + " " + lname!,
                           style: kTitleTextStyle,
                         ),
                         SizedBox(height: 5),
                         Text(
-                          email,
+                          email!,
                           style: kCaption2TextStyle,
                         ),
                       ],
                     ),
-              SizedBox(height: 20),
-              Container(
-                height: 40,
-                width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border:
-                      Border.all(color: BuyandByeAppTheme.orange, width: 2.0),
-                ),
-                child: Center(
-                  child: Text(
-                    'Compte client',
-                    style: kButtonTextStyle,
+              GridView.count(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(20),
+                crossAxisCount: 2,
+                children: <Widget>[
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfilePage(),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: EdgeInsets.all(1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(LineAwesomeIcons.address_card,
+                                size: 35,
+                                color: BuyandByeAppTheme.orangeMiFonce),
+                            SizedBox(height: 5),
+                            Text(
+                              'Mon Compte',
+                              style: kTitleTextStyle.copyWith(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: BuyandByeAppTheme.orangeMiFonce,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  MaterialButton(
+                      child: Card(
+                        margin: EdgeInsets.all(1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Container(
+                          height: 140,
+                          width: 140,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(Icons.redeem,
+                                  size: 35,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
+                              SizedBox(height: 5),
+                              Text(
+                                'Compte Fidélité',
+                                style: kTitleTextStyle.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: BuyandByeAppTheme.orangeMiFonce),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PageFidelite(
+                              firstName: fname,
+                              lastName: lname,
+                              eMail: email,
+                            ),
+                          ),
+                        );
+                      }),
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserHistory(),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: EdgeInsets.all(1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(LineAwesomeIcons.shopping_bag,
+                                size: 35,
+                                color: BuyandByeAppTheme.orangeMiFonce),
+                            SizedBox(height: 5),
+                            Text(
+                              'Mes commandes',
+                              style: kTitleTextStyle.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Help(true, email),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: EdgeInsets.all(1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(LineAwesomeIcons.question_circle,
+                                size: 35,
+                                color: BuyandByeAppTheme.orangeMiFonce),
+                            SizedBox(height: 5),
+                            Text(
+                              'Aide / Support',
+                              style: kTitleTextStyle.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
-                width: MediaQuery.of(context).size.height,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    Flexible(
-                      child: ListView(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        children: <Widget>[
-                          Container(
-                            height: 55,
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 40,
-                            ).copyWith(
-                              bottom: 20,
+                height: 60,
+                width: 275,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: Colors.red),
+                child: MaterialButton(
+                  onPressed: () async {
+                    if (!Platform.isIOS) {
+                      return showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Deconnexion"),
+                          content: Text(
+                              "Souhaitez-vous réellement vous déconnecter ?"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text("Annuler"),
+                              onPressed: () => Navigator.of(context).pop(false),
                             ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                  color: BuyandByeAppTheme.orange, width: 2.0),
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProfilePage(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    LineAwesomeIcons.address_card,
-                                    size: 25,
-                                  ),
-                                  SizedBox(width: 15),
-                                  Text(
-                                    'Mon Compte',
-                                    style: kTitleTextStyle.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Icon(
-                                    LineAwesomeIcons.angle_right,
-                                    size: 25,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            height: 55,
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 40,
-                            ).copyWith(
-                              bottom: 20,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                  color: BuyandByeAppTheme.orange, width: 2.0),
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => UserHistory(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    LineAwesomeIcons.shopping_bag,
-                                    size: 25,
-                                  ),
-                                  SizedBox(width: 15),
-                                  Text(
-                                    'Mes commandes',
-                                    style: kTitleTextStyle.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Icon(
-                                    LineAwesomeIcons.angle_right,
-                                    size: 25,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            height: 55,
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 40,
-                            ).copyWith(
-                              bottom: 20,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                  color: BuyandByeAppTheme.orange, width: 2.0),
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Help(true, email),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    LineAwesomeIcons.question_circle,
-                                    size: 25,
-                                  ),
-                                  SizedBox(width: 15),
-                                  Text(
-                                    'Aide / Support',
-                                    style: kTitleTextStyle.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Icon(
-                                    LineAwesomeIcons.angle_right,
-                                    size: 25,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          // Bouton de déconnexion
-                          Container(
-                            height: 55,
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 40,
-                            ).copyWith(
-                              bottom: 20,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                  color: BuyandByeAppTheme.orange, width: 2.0),
-                            ),
-                            child: MaterialButton(
+                            TextButton(
+                              child: Text("Déconnexion"),
                               onPressed: () async {
-                                if (!Platform.isIOS) {
-                                  return showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text("Deconnexion"),
-                                      content: Text(
-                                          "Souhaitez-vous réellement vous déconnecter ?"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text("Annuler"),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                        ),
-                                        TextButton(
-                                          child: Text("Déconnexion"),
-                                          onPressed: () async {
-                                            SharedPreferences preferences =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            await preferences.clear();
-                                            AuthMethods().signOut().then((s) {
-                                              AuthMethods.toogleNavBar();
-                                            });
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            PageLogin()),
-                                                    (Route<dynamic> route) =>
-                                                        false);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else {
-                                  return showCupertinoDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          CupertinoAlertDialog(
-                                            title: Text("Déconnexion"),
-                                            content: Text(
-                                                "Souhaitez-vous réellement vous déconnecter ?"),
-                                            actions: [
-                                              // Close the dialog
-                                              CupertinoButton(
-                                                  child: Text('Annuler'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  }),
-                                              CupertinoButton(
-                                                child: Text('Déconnexion'),
-                                                onPressed: () async {
-                                                  SharedPreferences
-                                                      preferences =
-                                                      await SharedPreferences
-                                                          .getInstance();
-                                                  await preferences.clear();
-                                                  AuthMethods()
-                                                      .signOut()
-                                                      .then((s) {
-                                                    AuthMethods.toogleNavBar();
-                                                  });
-                                                  Navigator.of(context)
-                                                      .pushAndRemoveUntil(
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  PageLogin()),
-                                                          (Route<dynamic>
-                                                                  route) =>
-                                                              false);
-                                                },
-                                              )
-                                            ],
-                                          ));
-                                }
+                                SharedPreferences preferences =
+                                    await SharedPreferences.getInstance();
+                                await preferences.clear();
+                                AuthMethods().signOut().then((s) {
+                                  AuthMethods.toogleNavBar();
+                                });
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (context) => PageBienvenue()),
+                                    (Route<dynamic> route) => false);
                               },
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    LineAwesomeIcons.alternate_sign_out,
-                                    size: 25,
-                                  ),
-                                  SizedBox(width: 15),
-                                  Text(
-                                    'Se déconnecter',
-                                    style: kTitleTextStyle.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Icon(
-                                    LineAwesomeIcons.angle_right,
-                                    size: 25,
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      );
+                    } else {
+                      return showCupertinoDialog(
+                          context: context,
+                          builder: (context) => CupertinoAlertDialog(
+                                title: Text("Déconnexion"),
+                                content: Text(
+                                    "Souhaitez-vous réellement vous déconnecter ?"),
+                                actions: [
+                                  // Close the dialog
+                                  CupertinoButton(
+                                      child: Text('Annuler'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      }),
+                                  CupertinoButton(
+                                    child: Text('Déconnexion'),
+                                    onPressed: () async {
+                                      SharedPreferences preferences =
+                                          await SharedPreferences.getInstance();
+                                      await preferences.clear();
+                                      AuthMethods().signOut().then((s) {
+                                        AuthMethods.toogleNavBar();
+                                      });
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PageBienvenue()),
+                                          (Route<dynamic> route) => false);
+                                    },
+                                  )
+                                ],
+                              ));
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(LineAwesomeIcons.alternate_sign_out,
+                          size: 30, color: Colors.white),
+                      SizedBox(width: 15),
+                      Text(
+                        'Se déconnecter',
+                        style: kTitleTextStyle.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Colors.white),
                       ),
-                    )
-                  ],
+                      SizedBox(width: 15),
+                      Icon(LineAwesomeIcons.angle_right,
+                          size: 30, color: Colors.white),
+                    ],
+                  ),
                 ),
               ),
             ],

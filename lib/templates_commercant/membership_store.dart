@@ -1,23 +1,16 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/templates/Compte/constants.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Compte/help.dart';
-import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MembershipStore extends StatefulWidget {
   _MembershipStore createState() => _MembershipStore();
 }
 
 class _MembershipStore extends State<MembershipStore> {
-  String userid;
-  bool premium;
+  String? userid;
+  bool? premium;
 
   @override
   void initState() {
@@ -34,7 +27,7 @@ class _MembershipStore extends State<MembershipStore> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        body: StreamBuilder(
+        body: StreamBuilder<dynamic>(
             stream: DatabaseMethods().getSellerInfo(userid),
             builder: (context, snapshot) {
               if (snapshot.hasData) {

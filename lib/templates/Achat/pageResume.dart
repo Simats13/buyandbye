@@ -1,17 +1,36 @@
+import 'package:buyandbye/templates/Pages/pageDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../buyandbye_app_theme.dart';
 
 class PageResume extends StatefulWidget {
-  final String idCommand;
-  final String userId;
-  final String sellerID;
-  const PageResume({Key key, this.idCommand, this.userId, this.sellerID})
+  final String? idCommand,
+      userId,
+      sellerID,
+      nomBoutique,
+      addressSeller,
+      userAddressChoose;
+
+  final double? deliveryChoose;
+  final double? latitude, longitude;
+
+  const PageResume(
+      {Key? key,
+      this.idCommand,
+      this.userId,
+      this.sellerID,
+      this.latitude,
+      this.longitude,
+      this.nomBoutique,
+      this.addressSeller,
+      this.userAddressChoose,
+      this.deliveryChoose})
       : super(key: key);
 
   @override
@@ -20,53 +39,45 @@ class PageResume extends StatefulWidget {
 
 class _PageResumeState extends State<PageResume> {
   var produits;
-  String idProduit;
-  String nomBoutique;
-  String nomProduit;
-  String userAddressChoose;
-  String adresseBoutique;
-  double livraison;
-  double latitude;
-  double longitude;
-  GoogleMapController _mapController;
+
+  late GoogleMapController _mapController;
   Set<Marker> _markers = Set<Marker>();
-  BitmapDescriptor mapMarker;
+  BitmapDescriptor? mapMarker;
+  String? shopName, profilePic, description, adresse, colorStore;
+  bool? clickAndCollect, livraison;
   @override
   void initState() {
     super.initState();
     getThisUserInfo();
-    getCommand();
-  }
-
-  getCommand() async {
-    print(widget.sellerID);
-    String id = widget.sellerID + widget.userId;
-    produits = await FirebaseFirestore.instance
-        .collection('commandes')
-        .doc(id)
-        .collection('commands')
-        .doc(widget.idCommand)
-        .get();
+    getShopInfos();
   }
 
   getThisUserInfo() async {
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getMagasinInfoViaID(widget.sellerID);
-    nomBoutique = "${querySnapshot.docs[0]["name"]}";
-    latitude = double.parse(
-        "${querySnapshot.docs[0]['position']['geopoint'].latitude}");
-    longitude = double.parse(
-        "${querySnapshot.docs[0]['position']['geopoint'].longitude}");
-    adresseBoutique = "${querySnapshot.docs[0]["adresse"]}";
-
-    final idMarker = MarkerId(latitude.toString() + longitude.toString());
+    final idMarker =
+        MarkerId(widget.latitude.toString() + widget.longitude.toString());
     _markers.add(Marker(
       markerId: idMarker,
-      position: LatLng(latitude, longitude),
+      position: LatLng(widget.latitude!, widget.longitude!),
       //icon: mapMarker,
     ));
 
     setState(() {});
+  }
+
+  getShopInfos() async {
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getMagasinInfo(widget.sellerID);
+    shopName = "${querySnapshot.docs[0]["name"]}";
+    profilePic = "${querySnapshot.docs[0]["imgUrl"]}";
+    description = "${querySnapshot.docs[0]["description"]}";
+    adresse = "${querySnapshot.docs[0]["adresse"]}";
+    clickAndCollect = "${querySnapshot.docs[0]["ClickAndCollect"]}" == 'true';
+    colorStore = "${querySnapshot.docs[0]["colorStore"]}";
+    livraison = "${querySnapshot.docs[0]["livraison"]}" == 'true';
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -79,7 +90,7 @@ class _PageResumeState extends State<PageResume> {
 
   void setCustomMarker() {
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(), '../assets/images/shop.png')
+            ImageConfiguration(), 'assets/images/shop.png')
         .then((value) {
       mapMarker = value;
     });
@@ -88,18 +99,44 @@ class _PageResumeState extends State<PageResume> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () =>
-                  Navigator.of(context).popUntil((route) => route.isFirst),
+        backgroundColor: BuyandByeAppTheme.white,
+        appBar: AppBar(
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                    text: "Récapitulatif",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: BuyandByeAppTheme.orangeMiFonce,
+                      fontWeight: FontWeight.bold,
+                    )),
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Icon(
+                      Icons.shopping_cart,
+                      color: BuyandByeAppTheme.orangeFonce,
+                      size: 25,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            title: Text('Récapitulatif de commande'),
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            backgroundColor: BuyandByeAppTheme.black_electrik,
-            automaticallyImplyLeading: false,
+          ),
+          backgroundColor: BuyandByeAppTheme.white,
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: BuyandByeAppTheme.orange,
+            ),
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
           ),
         ),
         body: SingleChildScrollView(
@@ -119,8 +156,8 @@ class _PageResumeState extends State<PageResume> {
                     ]),
                     SizedBox(height: 10),
                     Row(children: [
-                      FutureBuilder(
-                          future: DatabaseMethods().getPurchaseDetails(
+                      StreamBuilder<dynamic>(
+                          stream: DatabaseMethods().getPurchaseResumeDetails(
                               "users", widget.userId, widget.idCommand),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -134,25 +171,49 @@ class _PageResumeState extends State<PageResume> {
                                       return Column(
                                         children: [
                                           Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10),
-                                              child: Row(children: [
+                                            margin: EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            child: Row(
+                                              children: [
                                                 Container(
-                                                    child: Detail(
-                                                        widget.sellerID,
-                                                        snapshot.data
-                                                                .docs[index]
-                                                            ["produit"],
-                                                        snapshot.data
-                                                                .docs[index]
-                                                            ["quantite"])),
-                                              ])),
+                                                  child: Detail(
+                                                    widget.sellerID!,
+                                                    snapshot.data.docs[index]
+                                                        ["produit"],
+                                                    snapshot.data.docs[index]
+                                                        ["quantite"],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       );
                                     }),
                               );
                             } else {
-                              return Container();
+                              return Shimmer.fromColors(
+                                child: Container(
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          width:
+                                              MediaQuery.of(context).size.width - 40,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        
+                                      ),
+                                      // SizedBox(height: 10,)
+                                    ],
+                                  ),
+                                ),
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                              );
                             }
                           }),
                     ]),
@@ -162,17 +223,62 @@ class _PageResumeState extends State<PageResume> {
                           child: SingleChildScrollView(
                             child: Column(children: [
                               Row(children: [
-                                Text("Click & Collect",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 21,
-                                    )),
+                                widget.deliveryChoose == 0
+                                    ? Text("Click & Collect",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 21,
+                                        ))
+                                    : Text("Livraison à domicile",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 21,
+                                        )),
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
-                                nomBoutique == null
+                                Text("Vendeur :",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500)),
+                                widget.nomBoutique == null
                                     ? CircularProgressIndicator()
-                                    : Text("Vendeur : " + nomBoutique,
+                                    : TextButton(
+                                        child: Text(widget.nomBoutique!,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.blue)),
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PageDetail(
+                                                        img: profilePic,
+                                                        name: shopName,
+                                                        description:
+                                                            description,
+                                                        adresse: adresse,
+                                                        clickAndCollect:
+                                                            clickAndCollect,
+                                                        livraison: livraison,
+                                                        colorStore: colorStore,
+                                                        sellerID:
+                                                            widget.sellerID,
+                                                      )));
+                                        }),
+                              ]),
+                              SizedBox(height: 10),
+                              Row(children: [
+                                widget.deliveryChoose == 0
+                                    ? Text(
+                                        "Adresse du magasin à retirer le produit :",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                        ))
+                                    : Text("Livraison à domicile :",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -180,21 +286,26 @@ class _PageResumeState extends State<PageResume> {
                               ]),
                               SizedBox(height: 10),
                               Row(children: [
-                                Text("Adresse du magasin : ",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    )),
-                              ]),
-                              SizedBox(height: 10),
-                              Row(children: [
-                                adresseBoutique == null
+                                widget.addressSeller == null
                                     ? CircularProgressIndicator()
-                                    : Text(adresseBoutique,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        )),
+                                    : widget.deliveryChoose == 0
+                                        ? TextButton.icon(
+                                            onPressed: () {
+                                              MapUtils.openMap(widget.latitude!,
+                                                  widget.longitude!);
+                                            },
+                                            icon: Icon(Icons.storefront),
+                                            label: Text(widget.addressSeller!),
+                                          )
+                                        : TextButton.icon(
+                                            onPressed: () {
+                                              MapUtils.openMap(widget.latitude!,
+                                                  widget.longitude!);
+                                            },
+                                            icon: Icon(Icons.home),
+                                            label:
+                                                Text(widget.userAddressChoose!),
+                                          )
                               ]),
                             ]),
                           ),
@@ -213,7 +324,8 @@ class _PageResumeState extends State<PageResume> {
                             child: GoogleMap(
                               onMapCreated: _onMapCreated,
                               initialCameraPosition: CameraPosition(
-                                  target: LatLng(latitude, longitude),
+                                  target: LatLng(
+                                      widget.latitude!, widget.longitude!),
                                   zoom: 15.0),
                               markers: _markers,
                               myLocationButtonEnabled: false,
@@ -241,13 +353,10 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
         stream:
             DatabaseMethods().getOneProduct(widget.shopId, widget.productId),
         builder: (context, snapshot) {
-          var amount = widget.quantite;
-          var money = snapshot.data["prix"];
-          var allMoneyForProduct = money * amount;
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: ColorLoader3(
@@ -257,6 +366,9 @@ class _DetailState extends State<Detail> {
             );
           }
           if (snapshot.hasData) {
+            var amount = widget.quantite;
+            var money = snapshot.data["prix"];
+            var allMoneyForProduct = money * amount;
             return Expanded(
               child: Column(
                 children: [
@@ -330,6 +442,20 @@ class _DetailState extends State<Detail> {
             return CircularProgressIndicator();
           }
         });
+  }
+}
+
+class MapUtils {
+  MapUtils._();
+
+  static Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      throw 'Could not open the map.';
+    }
   }
 }
 

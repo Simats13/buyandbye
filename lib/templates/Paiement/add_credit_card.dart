@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
 import '../buyandbye_app_theme.dart';
 
 class CreditCardAdd extends StatefulWidget {
-  CreditCardAdd({Key key}) : super(key: key);
+  CreditCardAdd({Key? key}) : super(key: key);
 
   @override
   _CreditCardAddState createState() => _CreditCardAddState();
@@ -22,18 +22,45 @@ class _CreditCardAddState extends State<CreditCardAdd> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: BuyandByeAppTheme.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
         child: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+          title: RichText(
+            text: TextSpan(
+              // style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                  text: 'Nouvelle Carte Bancaire',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: BuyandByeAppTheme.orangeMiFonce,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                WidgetSpan(
+                  child: Icon(
+                    Icons.credit_card,
+                    color: BuyandByeAppTheme.orangeFonce,
+                    size: 25,
+                  ),
+                ),
+              ],
+            ),
           ),
-          title: Text('Ajouter une carte bancaire'),
-          backwardsCompatibility: false, // 1
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          backgroundColor: BuyandByeAppTheme.black_electrik,
+          backgroundColor: BuyandByeAppTheme.white,
           automaticallyImplyLeading: false,
+          elevation: 0.0,
+          bottomOpacity: 0.0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: BuyandByeAppTheme.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
       ),
       body: Container(
@@ -41,6 +68,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
           child: Column(
             children: <Widget>[
               CreditCardWidget(
+                onCreditCardWidgetChange: (CreditCardBrand creditCardBrand) {},
                 cardNumber: cardNumber,
                 expiryDate: expiryDate,
                 cardHolderName: cardHolderName,
@@ -55,8 +83,8 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                     children: <Widget>[
                       CreditCardForm(
                         formKey: formKey,
-                        obscureCvv: true,
-                        obscureNumber: true,
+                        obscureCvv: false,
+                        obscureNumber: false,
                         cardNumber: cardNumber,
                         cvvCode: cvvCode,
                         cardHolderName: cardHolderName,
@@ -64,7 +92,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                         themeColor: Colors.black,
                         cardNumberDecoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'NUMERO',
+                          labelText: 'NUMERO DE LA CARTE',
                           hintText: 'XXXX XXXX XXXX XXXX',
                         ),
                         expiryDateDecoration: InputDecoration(
@@ -96,7 +124,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                             'Enregistrer',
                             style: TextStyle(
                               color: Colors.white,
-                              fontFamily: 'Cupertino',
+                              fontFamily: 'Montserrat',
                               fontSize: 14,
                               package: 'flutter_credit_card',
                             ),
@@ -104,7 +132,7 @@ class _CreditCardAddState extends State<CreditCardAdd> {
                         ),
                         onPressed: () {
                           try {
-                            if (formKey.currentState.validate()) {
+                            if (formKey.currentState!.validate()) {
                               print('valid!');
                               print(cardNumber);
                             } else {

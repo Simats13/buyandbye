@@ -9,7 +9,7 @@ import 'components/top_back_skip_view.dart';
 import 'components/page4.dart';
 
 class IntroductionAnimationScreen extends StatefulWidget {
-  const IntroductionAnimationScreen({Key key}) : super(key: key);
+  const IntroductionAnimationScreen({Key? key}) : super(key: key);
 
   @override
   _IntroductionAnimationScreenState createState() =>
@@ -18,7 +18,7 @@ class IntroductionAnimationScreen extends StatefulWidget {
 
 class _IntroductionAnimationScreenState
     extends State<IntroductionAnimationScreen> with TickerProviderStateMixin {
-  AnimationController _animationController;
+  AnimationController? _animationController;
 
   @override
   void initState() {
@@ -78,34 +78,34 @@ class _IntroductionAnimationScreenState
   }
 
   void _onBackClick() {
-    if (_animationController.value >= 0 && _animationController.value <= 0.2) {
+    if (_animationController!.value >= 0 && _animationController!.value <= 0.2) {
       _animationController?.animateTo(0.0);
-    } else if (_animationController.value > 0.2 &&
-        _animationController.value <= 0.4) {
+    } else if (_animationController!.value > 0.2 &&
+        _animationController!.value <= 0.4) {
       _animationController?.animateTo(0.2);
-    } else if (_animationController.value > 0.4 &&
-        _animationController.value <= 0.6) {
+    } else if (_animationController!.value > 0.4 &&
+        _animationController!.value <= 0.6) {
       _animationController?.animateTo(0.4);
-    } else if (_animationController.value > 0.6 &&
-        _animationController.value <= 0.8) {
+    } else if (_animationController!.value > 0.6 &&
+        _animationController!.value <= 0.8) {
       _animationController?.animateTo(0.6);
-    } else if (_animationController.value > 0.8 &&
-        _animationController.value <= 1.0) {
+    } else if (_animationController!.value > 0.8 &&
+        _animationController!.value <= 1.0) {
       _animationController?.animateTo(0.8);
     }
   }
 
   void _onNextClick() {
-    if (_animationController.value >= 0 && _animationController.value <= 0.2) {
+    if (_animationController!.value >= 0 && _animationController!.value <= 0.2) {
       _animationController?.animateTo(0.4);
-    } else if (_animationController.value > 0.2 &&
-        _animationController.value <= 0.4) {
+    } else if (_animationController!.value > 0.2 &&
+        _animationController!.value <= 0.4) {
       _animationController?.animateTo(0.6);
-    } else if (_animationController.value > 0.4 &&
-        _animationController.value <= 0.6) {
+    } else if (_animationController!.value > 0.4 &&
+        _animationController!.value <= 0.6) {
       _animationController?.animateTo(0.8);
-    } else if (_animationController.value > 0.6 &&
-        _animationController.value <= 0.8) {
+    } else if (_animationController!.value > 0.6 &&
+        _animationController!.value <= 0.8) {
       _signUpClick();
     }
   }

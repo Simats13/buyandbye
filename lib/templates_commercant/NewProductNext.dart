@@ -8,7 +8,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 class NewProductNext extends StatefulWidget {
   const NewProductNext(this.myID, this.productId);
-  final String myID, productId;
+  final String? myID, productId;
   _NewProductNextState createState() => _NewProductNextState();
 }
 
@@ -23,7 +23,7 @@ class _NewProductNextState extends State<NewProductNext> {
         elevation: 1,
         leading: Container(),
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<dynamic>(
           stream:
               DatabaseMethods().getOneProduct(widget.myID, widget.productId),
           builder: (context, snapshot) {
@@ -47,15 +47,11 @@ class _NewProductNextState extends State<NewProductNext> {
                               ImageController.instance
                                   .cropImageFromFile()
                                   .then((croppedFile) {
-                                if (croppedFile != null) {
-                                  setState(() {
-                                    messageType = 'image';
-                                  });
-                                  _saveUserImageToFirebaseStorage(croppedFile,
-                                      context, widget.myID, widget.productId);
-                                } else {
-                                  showAlertDialog(context, 'Pick Image error');
-                                }
+                                setState(() {
+                                  messageType = 'image';
+                                });
+                                _saveUserImageToFirebaseStorage(croppedFile,
+                                    context, widget.myID, widget.productId);
                               });
                             }),
                         SizedBox(height: 30),
@@ -103,7 +99,7 @@ class _NewProductNextState extends State<NewProductNext> {
                                                                 context);
                                                             Navigator.pop(
                                                                 context);
-                                                            return FirebaseFirestore
+                                                            FirebaseFirestore
                                                                 .instance
                                                                 .collection(
                                                                     "magasins")
@@ -192,7 +188,7 @@ class _NewProductNextState extends State<NewProductNext> {
                                                           color: Colors.white,
                                                           size: 20),
                                                       onPressed: () {
-                                                        FBStorage.instanace
+                                                        FBStorage.instance
                                                             .deleteProductImage(
                                                                 widget.myID,
                                                                 widget
@@ -220,9 +216,8 @@ class _NewProductNextState extends State<NewProductNext> {
 Future<void> _saveUserImageToFirebaseStorage(
     croppedFile, context, sellerID, productID) async {
   try {
-    String takeImageURL = await FBStorage.instanace
+    await FBStorage.instance
         .uploadProductPhotosToFb(croppedFile, sellerID, productID);
-    return takeImageURL;
   } catch (e) {
     showAlertDialog(context, 'Error add user image to storage');
   }

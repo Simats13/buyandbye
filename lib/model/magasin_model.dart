@@ -4,11 +4,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 class Coffee {
-  String shopName;
-  String address;
-  String description;
-  String thumbNail;
-  LatLng locationCoords;
+  String? shopName;
+  String? address;
+  String? description;
+  String? thumbNail;
+  LatLng? locationCoords;
 
   Coffee(
       {this.shopName,

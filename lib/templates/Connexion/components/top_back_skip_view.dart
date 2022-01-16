@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class TopBackSkipView extends StatelessWidget {
-  final AnimationController animationController;
-  final VoidCallback onBackClick;
-  final VoidCallback onSkipClick;
+  final AnimationController? animationController;
+  final VoidCallback? onBackClick;
+  final VoidCallback? onSkipClick;
 
   const TopBackSkipView({
-    Key key,
+    Key? key,
     this.onBackClick,
     this.onSkipClick,
     this.animationController,
@@ -17,7 +17,7 @@ class TopBackSkipView extends StatelessWidget {
     final _animation =
         Tween<Offset>(begin: Offset(0, -1), end: Offset(0.0, 0.0))
             .animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.0,
         0.2,
@@ -37,7 +37,7 @@ class TopBackSkipView extends StatelessWidget {
     // ));
     final _skipAnimation = Tween<Offset>(begin: Offset(0, 0), end: Offset(2, 0))
         .animate(CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Interval(
         0.6,
         0.8,
