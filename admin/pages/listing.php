@@ -1,17 +1,67 @@
 <?php 
 $collectionReference = $firestore->collection('test');
 $documents = $collectionReference->documents();
-
-
-
-
-
-
-
 ?>
+
+<link rel="stylesheet" href="css/chosen.css">
+        
+
+
+<link rel="stylesheet" href="fonts/icomoon/style.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<!-- <link rel="stylesheet" href="css/style.css"> -->
+
+<style>
+  .chosen-container-multi {
+  border: none; }
+  .chosen-container-multi .chosen-choices {
+    background-image: none;
+    padding: 7px;
+    border: none !important;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important; }
+    .chosen-container-multi .chosen-choices li.search-choice {
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      padding-left: 10px;
+      padding-right: 26px;
+      border: none;
+      background-image: none; }
+
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+  top: 9px;
+  right: 8px; }
+
+.chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+  height: 32px;
+  font-size: 14px; }
+
+.chosen-container .chosen-drop {
+  border: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  margin-top: 3px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important; }
+
+/*Colors*/
+.color-1 .chosen-container-multi .chosen-choices li.search-choice {
+  background-color: #e5e4cc; }
+
+.color-2 .chosen-container-multi .chosen-choices li.search-choice {
+  background-color: #c7f0db; }
+
+.color-3 .chosen-container-multi .chosen-choices li.search-choice {
+  background-color: #d3f4ff; }
+
+</style>
 <div class="container-fluid">
 
-<!-- DataTales Example -->
+<!-- DataTables Example -->
 <div class="card shadow mb-4">
   <div class="card-header py-3">
     <h6 class="m-0 font-weight-bold text-primary">Listing de toutes les entreprises
@@ -29,6 +79,16 @@ $documents = $collectionReference->documents();
         unset($_SESSION['status']);
     }
     ?>
+
+<?php
+    if(isset($_SESSION['errors']))
+    {
+        echo "<h5 class='alert alert-danger'>".$_SESSION['errors']."</h5>";
+        unset($_SESSION['errors']);
+    }
+    ?>
+
+    
 
     <div class="table-responsive">
 
@@ -84,10 +144,6 @@ $documents = $collectionReference->documents();
                       <button type="submit" value="<?=$document->id()?>" name="delete_listing"  class="btn btn-danger">Supprimer</button>
 
                     </form>
-
-                  
-
-
                   </div>
                 </div>
               </div>
@@ -107,18 +163,53 @@ $documents = $collectionReference->documents();
                   <div class="modal-body">
                     <form method="post" enctype="multipart/form-data">
                       <div class="form-group">
-                        <label for="exampleFormControlInput1">Nom de l'Entreprise</label>
-                        <input type="companyName" name="companyName" class="form-control" id="exampleFormControlInput1" placeholder="Dupont SAS" value="<?=$document['name']?>">
+                        <label for="exampleFormControlInput1">Nom de l'entreprise</label>
+                        <input type="text" name="companyName" class="form-control" id="exampleFormControlInput1" placeholder="Dupont SAS" value="<?=$document['name']?>">
                       </div>
                       <div class="form-group">
                             <label for="autocomplete"> Adresse de l'entreprise </label>
                             <input type="text" name="autocomplete" id="autocomplete" class="form-control" placeholder="Avenue des Champs-Elysée, Paris" value="<?=$document['adresse']?>" >
                         </div>
-                    
+                      <div class="form-group">
+                        <label for="exampleFormControlInput1">Adresse E-Mail</label>
+                        <input type="text" name="email" class="form-control" id="exampleFormControlInput1" placeholder="email@email.com" value="<?=$document['email']?>">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleFormControlInput1">Numéro de téléphone</label>
+                        <input type="text" name="phone" class="form-control" id="exampleFormControlInput1" placeholder="06 00 00 00 00" value="<?=$document['phone']?>">
+                      </div>
                       <div class="form-group">
                         <label for="exampleFormControlTextarea1">Description</label>
                         <textarea class="form-control" name="description" id="exampleFormControlTextarea1" rows="3"><?=$document['description']?></textarea>
                       </div>
+                      
+                      <div class="form-group">
+                        <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
+                        <select value="" class="custom-select mr-sm-2" id="companyType">
+                          <option>Magasin</option>
+                          <option>Service</option>
+                          <option>Restaurant</option>
+                          <option>Santé</option>
+                          <option>Culture & Loisirs</option>
+                        </select>
+                      </div>   
+                      <div class="form-group">
+                            <div class="color-2">
+                              <select data-placeholder="Catégories de magasin" multiple class="chosen-select" tabindex="8">
+                                <option>Electroménager</option>
+                                <option>Jeux-Vidéos</option>
+                                <option>High-Tech</option>
+                                <option>Alimentation</option>
+                                <option>Vêtements</option>
+                                <option>Films & Séries</option>
+                                <option>Chaussures</option>
+                                <option>Bricolage</option>
+                                <option>Montres & Bijoux</option>
+                                <option>Téléphonie</option>
+                                <option>Restaurant</option>
+                              </select>
+                            </div>
+                        </div>
                       <div class="form-group ">
                         <label for="exampleColorInput" class="form-label" >Couleur de l'entreprise</label>
                         <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput" style="width:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur">
@@ -128,6 +219,7 @@ $documents = $collectionReference->documents();
                         <div class="form-check">
                           <input class="form-check-input" name="clickandcollect" type="checkbox" value="" id="defaultCheck1" <?php if($document['ClickAndCollect'] == true) { echo "checked";}?>>
                           <label class="form-check-label" name="clickandcollect" for="defaultCheck1">
+                            
                           Click & Collect
                           </label>
                         </div>
@@ -143,9 +235,10 @@ $documents = $collectionReference->documents();
                         </div>
                       </div>
                       <div class="form-group">
-                        <label for="exampleColorInput" class="form-label">Changer la bannière</label>
-                        <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid"  alt="<?=$document['imgUrl']?>">
-                        <input type="file" name="banniere" id="banniere">
+                        <label for="exampleColorInput"  class="form-label">Changer la bannière</label>
+                        <img src="<?=$document['imgUrl']?>"  class="img-thumbnail img-fluid"  alt="<?=$document['imgUrl']?>">
+                        <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>">
+                        <input type="file" name="banniere" id="banniere" >
                       </div>
                       
                   
@@ -208,6 +301,11 @@ function initialize() {
 
         $('#my-modal').modal('show');
 
+    });
+
+    $('.companyType').change(function () {
+        var selectedItem = $('.companyType').val();
+        alert(selectedItem);
     });
 
 </script>
