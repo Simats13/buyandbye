@@ -3,7 +3,7 @@ session_start();
 include('config/dbconfig.php');
 if(isset($_SESSION['verified_user_id']))
 {
-    $_SESSION['status'] = "Vous êtes déjà connécté";
+    $_SESSION['status'] = "Vous êtes déjà connecté";
     header('Location: /admin/index.php');
     exit();
 }
@@ -32,13 +32,13 @@ if(isset($_POST['login']))
                 $uid = $verifiedIdToken->claims()->get('sub');
                 $_SESSION['verified_user_id'] = $uid;
                 $_SESSION['idToken'] = $idTokenString;
-                $_SESSION['status'] = "Connexion Réussi !";
+                $_SESSION['status'] = "Connexion réussie !";
                 header('Location: /admin/index.php');
                 exit();
             } catch (FailedToVerifyToken $e) 
 			{
 				
-                $_SESSION['status'] = "Erreur veuillez réessayer ultérieurement";
+                $_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
                 header('Location: /');
                 exit();
             }catch (IssuedInTheFuture $e)
@@ -52,7 +52,7 @@ if(isset($_POST['login']))
         catch(Exception $e)
         {
 			echo $e->getMessage();
-            $_SESSION['status'] = "Mauvais couple d'identifiant, veuillez réessayer !";
+            $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";
 			
             // header('Location:/');
             // exit();
@@ -61,7 +61,7 @@ if(isset($_POST['login']))
     } 
     catch(\Kreait\Firebase\Exception\Auth\UserNotFound $e)
     {
-        $_SESSION['status'] = "Mauvais couple d'identifiant, veuillez réessayer !";
+        $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";
         header('Location:/');
         exit();
     }

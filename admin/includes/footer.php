@@ -4,7 +4,7 @@
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; La Petite Camargue made powered by Buy&Bye &copy;</span>
+            <span>Copyright &copy; La Petite Camargue powered by Buy&Bye &copy;</span>
           </div>
         </div>
       </footer>
