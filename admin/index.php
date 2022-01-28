@@ -14,7 +14,13 @@ if(isset($_GET['page']) && !empty($_GET['page'])){
     $page = "dashboard";
 }
 
-#Fonction permettant de supprimer une entreprise dans la BDD Firebase
+
+/** PARTIE RESERVEE A LA PAGE LISTING
+ *  Fonction permettant de supprimer une entreprise dans la BDD Firebase
+ *  Fonction permettant d'éditer une entreprise dans la BDD Firebase
+ */
+
+ /**Suppression d'une entreprise */
 if(isset($_POST['delete_listing']))
 {
     $collectionReference = $firestore->collection('test');
@@ -35,47 +41,49 @@ if(isset($_POST['delete_listing']))
   
 }
 
-
+/**Edition d'une entreprise */
 if(isset($_POST['edit_listing'])){
-    // print_r($_POST);
-    $email = htmlspecialchars(trim($_POST['companyName']));
+    $id = $_POST['edit_listing'];
+    $name = htmlspecialchars(trim($_POST['companyName']));
+    $email = htmlspecialchars(trim($_POST['email']));
     $adress = htmlspecialchars(trim($_POST['autocomplete']));
     $description = htmlspecialchars(trim($_POST['description']));
-    $color = htmlspecialchars(trim($_POST['color']));
-    $clickandcollect = htmlspecialchars(trim($_POST['clickandcollect']));
-    print_r($clickandcollect);
-    $target_file = $_FILES["banniere"]["name"];
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+    $color = htmlspecialchars(trim(ltrim($_POST['color'],"#")));
+    $clickandcollect = isset($_POST['clickandcollect']) ? true : false;
+    $livraison = isset($_POST['livraison']) ? true : false; 
+    $image_url = htmlspecialchars(trim($_POST['old_banniere']));
+    $phone = htmlspecialchars(trim($_POST['phone']));
 
-// Check if image file is a actual image or fake image
-if(isset($_POST["banniere"])) {
+
+// Verifie si l'image actuelle n'est pas fausse
+if($_FILES["banniere"]['size'] != 0) {
+    $target_file = $_FILES["banniere"]["name"];
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
     $check = getimagesize($_FILES["banniere"]["tmp_name"]);
+    $uploadOk = 1;
     if($check !== false) {
-        echo "File is an image - " . $check["mime"] . ".";
         $uploadOk = 1;
     } else {
-        echo "File is not an image.";
+        $_POST['errors'] = "Ce n'est pas une image,seulement les JPG, JPEG, PNG sont autorisés";
         $uploadOk = 0;
     }
-    }
+    
 
-    // Check file size
+    // Vérifie la tailled de l'image, ne doit pas excéder 5 mo
     if ($_FILES["banniere"]["size"] > 500000) {
-    echo "Sorry, your file is too large.";
+    $_SESSION['errors'] = "Désolé votre image est trop large";
     $uploadOk = 0;
     }
 
-    // Allow certain file formats
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-    && $imageFileType != "gif" ) {
-    echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+    // Accepter certains types d'images (JPG PNG JPEG)
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" ) {
+    $_SESSION['errors'] = "Désolé seulement les JPG, JPEG, PNG sont autorisés";
     $uploadOk = 0;
     }
 
-    // Check if $uploadOk is set to 0 by an error
+    // Vérifie si la variable UPLOADOK est à 1 pour pouvoir uploader dans la base de donnée, si erreur le fichier n'est pas transmis dans la base de données
     if ($uploadOk == 0) {
-    echo "Sorry, your file was not uploaded.";
+    $_SESSION['status'] = "Désolé votre image n'a pas été uploadé, veuilez réessayer";
     // if everything is ok, try to upload file
     } else {
         $anotherBucket = $storage->getBucket('la-petite-camargue.appspot.com');
@@ -85,16 +93,27 @@ if(isset($_POST["banniere"])) {
                 'name' => "$id/banniere.".$imageFileType
             ]
         );
-        $id = $_POST['edit_listing'];
+        
         $image_url = "https://firebasestorage.googleapis.com/v0/b/la-petite-camargue.appspot.com/o/$id%2Fbanniere.$imageFileType?alt=media";      
     }
+}
 
-    // $data = [
-        //     'name' => 'Los Angeles',
-        //     'state' => 'CA',
-        //     'country' => 'USA'
-        // ];
-        // $db->collection('samples/php/cities')->document('LA')->set($data);
+if(!isset($_SESSION['status'])){
+    $firestore->collection("test")->document($id)->update([
+        ['path' => 'ClickAndCollect', 'value' => $clickandcollect],
+        ['path' => 'adresse', 'value' => $adress],
+        ['path' => 'email', 'value' => $email],
+        ['path' => 'imgUrl', 'value' => $image_url],
+        ['path' => 'livraison', 'value' => $livraison],
+        ['path' => 'name', 'value' => $name],
+        ['path' => 'phone', 'value' => $phone],
+        ['path' => 'description', 'value' => $description],
+        ['path' => 'colorStore', 'value' => $color],
+
+    ]);
+}
+
+   
 }
 
     
