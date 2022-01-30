@@ -176,7 +176,7 @@ $documents = $collectionReference->documents();
                       </div>
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Numéro de téléphone</label>
-                        <input type="text" name="phone" class="form-control" id="exampleFormControlInput1" placeholder="06 00 00 00 00" value="<?=$document['phone']?>">
+                        <input type="text" name="phone" class="form-control" id="exampleFormControlInput1" placeholder="01 02 03 04 05" value="<?=$document['phone']?>">
                       </div>
                       <div class="form-group">
                         <label for="exampleFormControlTextarea1">Description</label>
