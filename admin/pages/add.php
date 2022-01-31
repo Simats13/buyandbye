@@ -1,7 +1,7 @@
 <?php include('includes/scripts.php'); ?>
 
 <style>
-.padding {
+  .padding {
     padding: 0 10%;
   }
 
@@ -16,7 +16,7 @@
     color: #fff;
     cursor: pointer;
     display: inline-block;
-    font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 14px;
     font-weight: 600;
     line-height: 20px;
@@ -137,7 +137,8 @@
 
     <button class="button-3" role="button" data-toggle="modal" data-target="#addShop">Ajouter manuellement</button>
     <!-- Popup ajout d'un manuel d'un magasin -->
-    <div class="modal fade" id="addShop" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addShop" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -148,12 +149,16 @@
           </div>
           <div class="modal-body">
             <div class="popup-header">
-              Une fois la boutique créée, un e-mail sera envoyé au professionnel avec les informations entrées ci-dessous.<br>
+              Une fois la boutique créée, un e-mail sera envoyé au professionnel avec les informations entrées
+              ci-dessous.<br>
               Il devra alors confirmer les informations et choisir un mot de passe pour son espace personnel.
             </div>
             <div class="conteneur">
-              <div class="flex"><h3>Informations personnelles</h3></div>
-              <div class="flex onMouseover"><h3>ⓘ</h3>
+              <div class="flex">
+                <h3>Informations personnelles</h3>
+              </div>
+              <div class="flex onMouseover">
+                <h3>ⓘ</h3>
                 <span class="textOver">Informations personnelles de la personne propriétaire de l'entreprise</span>
               </div>
             </div>
@@ -174,7 +179,8 @@
               <h3>Informations de l'entreprise</h3>
               <div class="form-group">
                 <label for="enterprisename">Nom</label>
-                <input type="text" name="enterpriseName" class="form-control" id="enterprisename" placeholder="ex: Dupont SAS">
+                <input type="text" name="enterpriseName" class="form-control" id="enterprisename"
+                  placeholder="ex: Dupont SAS">
               </div>
               <div class="form-group">
                 <label for="autocomplete">Adresse</label>
@@ -182,7 +188,8 @@
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
-                <input type="text" name="enterprisePhone" class="form-control" id="enterprisephone" placeholder="ex: 01 02 03 04 05">
+                <input type="text" name="enterprisePhone" class="form-control" id="enterprisephone"
+                  placeholder="ex: 01 02 03 04 05">
               </div>
 
               <div class="form-group">
@@ -192,7 +199,6 @@
                     <span class="textOver">Afficher le numéro de téléphone aux clients ?</span>
                   </div>
                 </div>
-                <br>
                 <input type="checkbox" name="isPhoneVisible" id="isphonevisible">
               </div>
 
@@ -200,26 +206,28 @@
                 <div class="conteneur">
                   <div class="flex"><label for="isrestaurant">L'entreprise est-elle un restaurant ?</label></div>
                   <div class="flex onMouseover">ⓘ
-                    <span class="textOver">L'entreprise créée est-elle un restaurant ou un bar ?<br>Si oui, ajoute la possibilité d'importer des menus</span>
+                    <span class="textOver">L'entreprise créée est-elle un restaurant ou un bar ?<br>Si oui, ajoute la
+                      possibilité d'importer des menus</span>
                   </div>
                 </div>
-                <br>
                 <input type="checkbox" name="isRestaurant" id="isrestaurant">
               </div>
               <div class="form-group">
                 <label for="siretnumber">Numéro de SIRET</label>
-                <input type="text" name="siretNumber" class="form-control" id="siretnumber" placeholder="ex: 123 456 789 00012">
+                <input type="text" name="siretNumber" class="form-control" id="siretnumber"
+                  placeholder="ex: 123 456 789 00012">
               </div>
               <div class="form-group">
                 <label for="tvanumber">Numéro de TVA</label>
-                <input type="text" name="tvaNumber" class="form-control" id="tvanumber" placeholder="ex: FR 00 123456789">
+                <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
+                  placeholder="ex: FR 00 123456789">
               </div>
               <br>
-              
+
               <!-- Boutons de validation et d'annulation -->
               <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
-                <button type="submit" value="" name="edit_listing" class="btn btn-primary">Enregistrer les modifications</button>
+                <button type="submit" name="add_enterprise" class="btn btn-primary">Ajouter une entreprise</button>
               </div>
             </form>
           </div>
