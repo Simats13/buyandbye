@@ -103,6 +103,11 @@
   .onMouseover:hover .textOver {
     visibility: visible;
   }
+  
+  .pac-container {
+      z-index: 10000 !important;
+  }
+
 </style>
 
 <div class="padding">
@@ -178,9 +183,8 @@
                   placeholder="ex: Dupont SAS">
               </div>
               <div class="form-group">
-                <label for="enterpriseadress">Adresse</label>
-                <input type="text" name="enterpriseAddress" class="form-control" id="enterpriseaddress"
-                  placeholder="ex: Avenue des Champs-Elysée, Paris">
+                <label for="autocomplete">Adresse</label>
+                <input type="text" name="autocomplete" class="form-control" id="autocomplete" placeholder="ex: Avenue des Champs-Elysée, Paris">
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
@@ -236,3 +240,39 @@
     <button class="button-3" role="button">Importer un fichier CSV</button>
   </div>
 </div>
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete" type="text/javascript"></script>
+<script>$(document).ready(function() {
+    $("#lat_area").addClass("d-none");
+    $("#long_area").addClass("d-none");
+});
+google.maps.event.addDomListener(window, 'load', initialize);
+function initialize() {
+    var input = document.getElementById('autocomplete');
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.addListener('place_changed', function() {
+        var place = autocomplete.getPlace();
+        // $('#latitude').val(place.geometry['location'].lat());
+        // $('#longitude').val(place.geometry['location'].lng());
+        // // --------- show lat and long ---------------
+        // $("#lat_area").removeClass("d-none");
+        // $("#long_area").removeClass("d-none");
+    });
+}
+
+</script>
+
+<script>
+    $(function () {
+        var input = document.getElementById("autocomplete");
+        var autocomplete = new google.maps.places.Autocomplete(input);
+
+        $('#my-modal').modal('show');
+
+    });
+
+    $('.companyType').change(function () {
+        var selectedItem = $('.companyType').val();
+        alert(selectedItem);
+    });
+
+</script>
