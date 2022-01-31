@@ -1,6 +1,8 @@
 <?php 
 $collectionReference = $firestore->collection('test');
 $documents = $collectionReference->documents();
+
+
 ?>
 
 <link rel="stylesheet" href="css/chosen.css">
@@ -169,7 +171,9 @@ $documents = $collectionReference->documents();
                       <div class="form-group">
                             <label for="autocomplete"> Adresse de l'entreprise </label>
                             <input type="text" name="autocomplete" id="autocomplete" class="form-control" placeholder="Avenue des Champs-Elysée, Paris" value="<?=$document['adresse']?>" >
-                        </div>
+                            <input type="hidden" name="latitude" id="latitude" class="form-control" value="<?=$document['email']?>">  
+                            <input type="hidden" name="longitude" id="longitude" class="form-control" value="<?=$document['email']?>">
+                      </div>  
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Adresse E-Mail</label>
                         <input type="text" name="email" class="form-control" id="exampleFormControlInput1" placeholder="email@email.com" value="<?=$document['email']?>">
@@ -274,21 +278,16 @@ $documents = $collectionReference->documents();
 
  <?php include('includes/scripts.php'); ?>
 <script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete" type="text/javascript"></script>
-<script>$(document).ready(function() {
-    $("#lat_area").addClass("d-none");
-    $("#long_area").addClass("d-none");
-});
+<script>
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
     var input = document.getElementById('autocomplete');
     var autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.addListener('place_changed', function() {
         var place = autocomplete.getPlace();
-        // $('#latitude').val(place.geometry['location'].lat());
-        // $('#longitude').val(place.geometry['location'].lng());
-        // // --------- show lat and long ---------------
-        // $("#lat_area").removeClass("d-none");
-        // $("#long_area").removeClass("d-none");
+        $('#latitude').val(place.geometry['location'].lat());
+        $('#longitude').val(place.geometry['location'].lng());
+
     });
 }
 

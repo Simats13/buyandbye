@@ -1,4 +1,5 @@
 <?php
+use Sk\Geohash\Geohash;
 include('../auth.php');
 // include('includes/main-functions.php'); 
 
@@ -43,6 +44,8 @@ if(isset($_POST['delete_listing']))
 
 /**Edition d'une entreprise */
 if(isset($_POST['edit_listing'])){
+$g = new Geohash();
+echo $g->encode($_POST['latitude'], $_POST['longitude'],9);
     $id = $_POST['edit_listing'];
     $name = htmlspecialchars(trim($_POST['companyName']));
     $email = htmlspecialchars(trim($_POST['email']));

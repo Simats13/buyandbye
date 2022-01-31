@@ -1,4 +1,10 @@
 
+<?php 
+
+if(isset($_POST['submit'])){
+echo $_POST['latitude'];}
+
+?>
 <!doctype html>
 <html lang="en">
 
@@ -18,24 +24,23 @@
                     <div class="card-header bg-primary">
                         <h5 class="card-title text-white">PHP Google Autocomplete Address Example - Laratutorials.com</h5>
                     </div>
-
+<form action="" method="post">
                     <div class="card-body">
                         <div class="form-group">
                             <label for="autocomplete"> Location/City/Address </label>
                             <input type="text" name="autocomplete" id="autocomplete" class="form-control" placeholder="Select Location">
                         </div>
 
-                        <div class="form-group" id="lat_area">
-                            <label for="latitude"> Latitude </label>
-                            <input type="text" name="latitude" id="latitude" class="form-control">
-                        </div>
+                      
+                            <input type="hidden" name="latitude" id="latitude" class="form-control">
+                 
 
-                        <div class="form-group" id="long_area">
-                            <label for="latitude"> Longitude </label>
-                            <input type="text" name="longitude" id="longitude" class="form-control">
-                        </div>
+                   
+                            <input type="hidden" name="longitude" id="longitude" class="form-control">
+                   
                     </div>
-
+                    <button type="submit" name="submit"  class="btn btn-primary">Enregistrer les modifications</button>
+</form>
                 </div>
             </div>
         </div>
@@ -44,10 +49,7 @@
 
     <script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&callback=initAutocomplete" type="text/javascript"></script>
     
-    <script>$(document).ready(function() {
-    $("#lat_area").addClass("d-none");
-    $("#long_area").addClass("d-none");
-});
+    <script>
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
     var input = document.getElementById('autocomplete');
@@ -57,8 +59,7 @@ function initialize() {
         $('#latitude').val(place.geometry['location'].lat());
         $('#longitude').val(place.geometry['location'].lng());
         // --------- show lat and long ---------------
-        $("#lat_area").removeClass("d-none");
-        $("#long_area").removeClass("d-none");
+
     });
 }</script>
 </body>
