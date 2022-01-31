@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-web',
+        'version' => 'dev-web',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => '13c337aa0bbbd20524cb9a98f0a0ad846f3c3cec',
         'name' => '__root__',
         'dev' => true,
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-web',
+            'version' => 'dev-web',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => '13c337aa0bbbd20524cb9a98f0a0ad846f3c3cec',
             'dev_requirement' => false,
         ),
         'beste/clock' => array(
@@ -350,6 +350,15 @@
             'install_path' => __DIR__ . '/../rize/uri-template',
             'aliases' => array(),
             'reference' => '2a874863c48d643b9e2e254ab288ec203060a0b8',
+            'dev_requirement' => false,
+        ),
+        'saikiran/geohash' => array(
+            'pretty_version' => 'v1.0.1',
+            'version' => '1.0.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../saikiran/geohash',
+            'aliases' => array(),
+            'reference' => 'd94b00fe45612a10fd125bdaf1506df6d9d205a9',
             'dev_requirement' => false,
         ),
         'symfony/deprecation-contracts' => array(
