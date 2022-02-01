@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Kreait\Firebase\JWT\Action\VerifyIdToken;
+namespace Kreait\Firebase\JWT\Action\VerifySessionCookie;
 
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Kreait\Firebase\JWT\Action\VerifyIdToken;
+use Kreait\Firebase\JWT\Action\VerifySessionCookie;
 use Kreait\Firebase\JWT\Contract\Keys;
 use Kreait\Firebase\JWT\Contract\Token;
-use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
 use Kreait\Firebase\JWT\Token as TokenInstance;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\JWT\Configuration;
@@ -48,15 +48,15 @@ final class WithLcobucciJWT implements Handler
         $this->config = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(''));
     }
 
-    public function handle(VerifyIdToken $action): Token
+    public function handle(VerifySessionCookie $action): Token
     {
-        $tokenString = $action->token();
+        $cookieString = $action->sessionCookie();
 
         try {
-            $token = $this->config->parser()->parse($tokenString);
+            $token = $this->config->parser()->parse($cookieString);
             \assert($token instanceof UnencryptedToken);
         } catch (Throwable $e) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, ['The token is invalid', $e->getMessage()]);
+            throw SessionCookieVerificationFailed::withSessionCookieAndReasons($cookieString, ['The token is invalid', $e->getMessage()]);
         }
 
         $key = $this->getKey($token);
@@ -68,7 +68,7 @@ final class WithLcobucciJWT implements Handler
             $this->config->validator()->assert(
                 $token,
                 new LooseValidAt($clock, $leeway),
-                new IssuedBy(...["https://securetoken.google.com/{$this->projectId}"]),
+                new IssuedBy(...["https://session.firebase.google.com/{$this->projectId}"]),
                 new PermittedFor($this->projectId),
                 new SignedWith(
                     $this->config->signer(),
@@ -89,7 +89,7 @@ final class WithLcobucciJWT implements Handler
         }
 
         if (!empty($errors)) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($tokenString, $errors);
+            throw SessionCookieVerificationFailed::withSessionCookieAndReasons($cookieString, $errors);
         }
 
         $claims = $token->claims()->all();
@@ -109,13 +109,13 @@ final class WithLcobucciJWT implements Handler
         }
         unset($header);
 
-        return TokenInstance::withValues($tokenString, $headers, $claims);
+        return TokenInstance::withValues($cookieString, $headers, $claims);
     }
 
     private function getKey(UnencryptedToken $token): string
     {
         if (empty($keys = $this->keys->all())) {
-            throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No keys are available to verify the token's signature."]);
+            throw SessionCookieVerificationFailed::withSessionCookieAndReasons($token->toString(), ["No keys are available to verify the token's signature."]);
         }
 
         $keyId = $token->headers()->get('kid');
@@ -124,7 +124,7 @@ final class WithLcobucciJWT implements Handler
             return $key;
         }
 
-        throw IdTokenVerificationFailed::withTokenAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this token."]);
+        throw SessionCookieVerificationFailed::withSessionCookieAndReasons($token->toString(), ["No public key matching the key ID '{$keyId}' was found to verify the signature of this session cookie."]);
     }
 
     private function assertUserAuthedAt(UnencryptedToken $token, DateTimeInterface $now): void

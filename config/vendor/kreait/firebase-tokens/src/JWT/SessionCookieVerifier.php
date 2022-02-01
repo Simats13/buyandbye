@@ -9,14 +9,14 @@ use GuzzleHttp\Client;
 use InvalidArgumentException;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithGuzzle;
 use Kreait\Firebase\JWT\Action\FetchGooglePublicKeys\WithPsr6Cache;
-use Kreait\Firebase\JWT\Action\VerifyIdToken;
-use Kreait\Firebase\JWT\Action\VerifyIdToken\Handler;
-use Kreait\Firebase\JWT\Action\VerifyIdToken\WithLcobucciJWT;
+use Kreait\Firebase\JWT\Action\VerifySessionCookie;
+use Kreait\Firebase\JWT\Action\VerifySessionCookie\Handler;
+use Kreait\Firebase\JWT\Action\VerifySessionCookie\WithLcobucciJWT;
 use Kreait\Firebase\JWT\Contract\Token;
-use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\Error\SessionCookieVerificationFailed;
 use Psr\Cache\CacheItemPoolInterface;
 
-final class IdTokenVerifier
+final class SessionCookieVerifier
 {
     private Handler $handler;
 
@@ -53,13 +53,13 @@ final class IdTokenVerifier
 
     public function withExpectedTenantId(string $tenantId): self
     {
-        $verifier = clone $this;
-        $verifier->expectedTenantId = $tenantId;
+        $generator = clone $this;
+        $generator->expectedTenantId = $tenantId;
 
-        return $verifier;
+        return $generator;
     }
 
-    public function execute(VerifyIdToken $action): Token
+    public function execute(VerifySessionCookie $action): Token
     {
         if ($this->expectedTenantId) {
             $action = $action->withExpectedTenantId($this->expectedTenantId);
@@ -69,19 +69,19 @@ final class IdTokenVerifier
     }
 
     /**
-     * @throws IdTokenVerificationFailed
+     * @throws SessionCookieVerificationFailed
      */
-    public function verifyIdToken(string $token): Token
+    public function verifySessionCookie(string $sessionCookie): Token
     {
-        return $this->execute(VerifyIdToken::withToken($token));
+        return $this->execute(VerifySessionCookie::withSessionCookie($sessionCookie));
     }
 
     /**
      * @throws InvalidArgumentException on invalid leeway
-     * @throws IdTokenVerificationFailed
+     * @throws SessionCookieVerificationFailed
      */
-    public function verifyIdTokenWithLeeway(string $token, int $leewayInSeconds): Token
+    public function verifySessionCookieWithLeeway(string $sessionCookie, int $leewayInSeconds): Token
     {
-        return $this->execute(VerifyIdToken::withToken($token)->withLeewayInSeconds($leewayInSeconds));
+        return $this->execute(VerifySessionCookie::withSessionCookie($sessionCookie)->withLeewayInSeconds($leewayInSeconds));
     }
 }

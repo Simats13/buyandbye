@@ -6,6 +6,7 @@ session_start();
 unset($_SESSION['verified_user_id']);
 unset($_SESSION['idToken']);
 unset($_SESSION['status']);
+unset($_SESSION['cookie']);
 
 if(isset($_SESSION['expiry_status']))
 {

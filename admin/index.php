@@ -1,8 +1,8 @@
 <?php
 use Sk\Geohash\Geohash;
-include('../auth.php');
-// include('includes/main-functions.php'); 
 
+include('../auth.php');
+// print_r($_SESSION);
 include('../config/dbconfig.php'); 
 $pages = scandir('pages/');
 if(isset($_GET['page']) && !empty($_GET['page'])){

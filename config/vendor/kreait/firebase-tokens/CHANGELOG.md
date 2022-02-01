@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## Unreleased
+
+## 2.2.0 - 2022-01-28
+
+Added tenant support to Session Cookie Verification. It doesn't seem to be supported at the moment
+(executing it with a tenant-enabled Firebase project yields an `UNSUPPORTED_TENANT_OPERATION`)
+error, but once it _is_ supported, this library will need no or just minimal updates.
+
+The [Firebase Admin SDK for PHP](https://github.com/kreait/firebase-php) has integration tests 
+checking for this error so that we know early on when it starts working.
+
+## 2.1.1 - 2022-01-28
+
+Fixed method name `Kreait\Firebase\JWT\SessionCookieVerifier::sessionCookieWithLeeway` to
+`Kreait\Firebase\JWT\SessionCookieVerifier::verifySessionCookieWithLeeway` 🤦‍. This is technically
+a breaking change, but since 2.1.0 was released just a few minutes ago, it was most certainly not
+used yet.
+
+## 2.1.0 - 2022-01-28
+
+Added `Kreait\Firebase\JWT\SessionCookieVerifier` that works similarly as the existing ID Token verifier.
+You can find its documentation in the README.
+
 ## 2.0.1 - 2022-01-03
 
 Fixed failing ID token verification when the `nbf` claim is not present.

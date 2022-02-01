@@ -314,17 +314,17 @@
         },
         {
             "name": "google/cloud-core",
-            "version": "v1.43.2",
-            "version_normalized": "1.43.2.0",
+            "version": "v1.44.0",
+            "version_normalized": "1.44.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-core.git",
-                "reference": "93fc44af3ebf60a35fbc70e13e6113b1122ba495"
+                "reference": "72706f7d1824777f42294a3c9ccdaddaad670017"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/93fc44af3ebf60a35fbc70e13e6113b1122ba495",
-                "reference": "93fc44af3ebf60a35fbc70e13e6113b1122ba495",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/72706f7d1824777f42294a3c9ccdaddaad670017",
+                "reference": "72706f7d1824777f42294a3c9ccdaddaad670017",
                 "shasum": ""
             },
             "require": {
@@ -339,7 +339,7 @@
             },
             "require-dev": {
                 "erusev/parsedown": "^1.6",
-                "google/common-protos": "^1.0",
+                "google/common-protos": "^1.0||^2.0",
                 "google/gax": "^1.9",
                 "opis/closure": "^3",
                 "phpdocumentor/reflection": "^3.0",
@@ -350,7 +350,7 @@
                 "opis/closure": "May be used to serialize closures to process jobs in the batch daemon. Please require version ^3.",
                 "symfony/lock": "Required for the Spanner cached based session pool. Please require the following commit: 3.3.x-dev#1ba6ac9"
             },
-            "time": "2022-01-12T16:19:20+00:00",
+            "time": "2022-01-31T21:39:13+00:00",
             "bin": [
                 "bin/google-cloud-batch"
             ],
@@ -375,23 +375,23 @@
             ],
             "description": "Google Cloud PHP shared dependency, providing functionality useful to all components.",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.43.2"
+                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.44.0"
             },
             "install-path": "../google/cloud-core"
         },
         {
             "name": "google/cloud-firestore",
-            "version": "v1.20.3",
-            "version_normalized": "1.20.3.0",
+            "version": "v1.20.4",
+            "version_normalized": "1.20.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-firestore.git",
-                "reference": "9b5feb78b94f215136f42cdaf28260baaa87b74b"
+                "reference": "2db8b6a5b59f22e5fe4cc82f86906fc0dfeee10e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-firestore/zipball/9b5feb78b94f215136f42cdaf28260baaa87b74b",
-                "reference": "9b5feb78b94f215136f42cdaf28260baaa87b74b",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-firestore/zipball/2db8b6a5b59f22e5fe4cc82f86906fc0dfeee10e",
+                "reference": "2db8b6a5b59f22e5fe4cc82f86906fc0dfeee10e",
                 "shasum": ""
             },
             "require": {
@@ -409,7 +409,7 @@
             "suggest": {
                 "ext-protobuf": "Provides a significant increase in throughput over the pure PHP protobuf implementation. See https://cloud.google.com/php/grpc for installation instructions."
             },
-            "time": "2022-01-12T16:19:20+00:00",
+            "time": "2022-01-31T21:39:13+00:00",
             "type": "library",
             "extra": {
                 "component": {
@@ -432,23 +432,23 @@
             ],
             "description": "Cloud Firestore client for PHP",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-firestore/tree/v1.20.3"
+                "source": "https://github.com/googleapis/google-cloud-php-firestore/tree/v1.20.4"
             },
             "install-path": "../google/cloud-firestore"
         },
         {
             "name": "google/cloud-storage",
-            "version": "v1.26.0",
-            "version_normalized": "1.26.0.0",
+            "version": "v1.26.1",
+            "version_normalized": "1.26.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-storage.git",
-                "reference": "c84c8c08bfe6e02e9a611d27d3eca79eaefcaa92"
+                "reference": "1382afef595c2ced1c5e39ead91d903e8ebc8e22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/c84c8c08bfe6e02e9a611d27d3eca79eaefcaa92",
-                "reference": "c84c8c08bfe6e02e9a611d27d3eca79eaefcaa92",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/1382afef595c2ced1c5e39ead91d903e8ebc8e22",
+                "reference": "1382afef595c2ced1c5e39ead91d903e8ebc8e22",
                 "shasum": ""
             },
             "require": {
@@ -467,7 +467,7 @@
                 "google/cloud-pubsub": "May be used to register a topic to receive bucket notifications.",
                 "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs. Please require version ^2."
             },
-            "time": "2022-01-12T16:19:20+00:00",
+            "time": "2022-01-31T21:39:13+00:00",
             "type": "library",
             "extra": {
                 "component": {
@@ -489,7 +489,7 @@
             ],
             "description": "Cloud Storage Client for PHP",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.26.0"
+                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.26.1"
             },
             "install-path": "../google/cloud-storage"
         },
@@ -590,17 +590,17 @@
         },
         {
             "name": "google/gax",
-            "version": "v1.11.2",
-            "version_normalized": "1.11.2.0",
+            "version": "v1.11.4",
+            "version_normalized": "1.11.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/gax-php.git",
-                "reference": "79af83504a30cbada97531208b823d041f73abb9"
+                "reference": "bf32dd04b5a31e6616f18bf62f49873ff16a340d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/79af83504a30cbada97531208b823d041f73abb9",
-                "reference": "79af83504a30cbada97531208b823d041f73abb9",
+                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/bf32dd04b5a31e6616f18bf62f49873ff16a340d",
+                "reference": "bf32dd04b5a31e6616f18bf62f49873ff16a340d",
                 "shasum": ""
             },
             "require": {
@@ -620,7 +620,7 @@
                 "phpunit/phpunit": "^4.8.36",
                 "squizlabs/php_codesniffer": "3.*"
             },
-            "time": "2022-01-20T16:21:48+00:00",
+            "time": "2022-01-26T19:06:45+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -640,7 +640,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/gax-php/issues",
-                "source": "https://github.com/googleapis/gax-php/tree/v1.11.2"
+                "source": "https://github.com/googleapis/gax-php/tree/v1.11.4"
             },
             "install-path": "../google/gax"
         },
@@ -694,17 +694,17 @@
         },
         {
             "name": "google/protobuf",
-            "version": "v3.19.3",
-            "version_normalized": "3.19.3.0",
+            "version": "v3.19.4",
+            "version_normalized": "3.19.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/protocolbuffers/protobuf-php.git",
-                "reference": "c6d35bfdf41f8cb9dcf71ebc3631f8b9d80aa040"
+                "reference": "6f0a54186f133aff98f49d0f36a32d4a4f7d4cbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/c6d35bfdf41f8cb9dcf71ebc3631f8b9d80aa040",
-                "reference": "c6d35bfdf41f8cb9dcf71ebc3631f8b9d80aa040",
+                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/6f0a54186f133aff98f49d0f36a32d4a4f7d4cbd",
+                "reference": "6f0a54186f133aff98f49d0f36a32d4a4f7d4cbd",
                 "shasum": ""
             },
             "require": {
@@ -716,7 +716,7 @@
             "suggest": {
                 "ext-bcmath": "Need to support JSON deserialization"
             },
-            "time": "2022-01-11T17:40:06+00:00",
+            "time": "2022-01-28T17:23:32+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -736,7 +736,7 @@
             ],
             "support": {
                 "issues": "https://github.com/protocolbuffers/protobuf-php/issues",
-                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v3.19.3"
+                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v3.19.4"
             },
             "install-path": "../google/protobuf"
         },
@@ -1121,17 +1121,17 @@
         },
         {
             "name": "kreait/firebase-php",
-            "version": "6.0.1",
-            "version_normalized": "6.0.1.0",
+            "version": "6.1.0",
+            "version_normalized": "6.1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kreait/firebase-php.git",
-                "reference": "fe3bc709679446673f495d9c33384f1248bb3de0"
+                "reference": "c498938ba28af06ebe5d8676c122e51970937c5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kreait/firebase-php/zipball/fe3bc709679446673f495d9c33384f1248bb3de0",
-                "reference": "fe3bc709679446673f495d9c33384f1248bb3de0",
+                "url": "https://api.github.com/repos/kreait/firebase-php/zipball/c498938ba28af06ebe5d8676c122e51970937c5c",
+                "reference": "c498938ba28af06ebe5d8676c122e51970937c5c",
                 "shasum": ""
             },
             "require": {
@@ -1144,7 +1144,7 @@
                 "google/cloud-core": "^1.42.2",
                 "google/cloud-storage": "^1.24.1",
                 "guzzlehttp/guzzle": "^7.4",
-                "kreait/firebase-tokens": "^2.0.1",
+                "kreait/firebase-tokens": "^2.2.0",
                 "lcobucci/jwt": "^4.1",
                 "mtdowling/jmespath.php": "^2.6.1",
                 "php": "^7.4|^8.0",
@@ -1168,7 +1168,7 @@
             "suggest": {
                 "google/cloud-firestore": "^1.0 to use the Firestore component"
             },
-            "time": "2022-01-16T12:00:45+00:00",
+            "time": "2022-01-28T08:57:25+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1218,17 +1218,17 @@
         },
         {
             "name": "kreait/firebase-tokens",
-            "version": "2.0.1",
-            "version_normalized": "2.0.1.0",
+            "version": "2.2.0",
+            "version_normalized": "2.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kreait/firebase-tokens-php.git",
-                "reference": "558758f7202c9be16a1213b8b00b90a9c56f0a1e"
+                "reference": "b3a2666a716d518277fd85fa2e4462c6b4d1f1d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kreait/firebase-tokens-php/zipball/558758f7202c9be16a1213b8b00b90a9c56f0a1e",
-                "reference": "558758f7202c9be16a1213b8b00b90a9c56f0a1e",
+                "url": "https://api.github.com/repos/kreait/firebase-tokens-php/zipball/b3a2666a716d518277fd85fa2e4462c6b4d1f1d3",
+                "reference": "b3a2666a716d518277fd85fa2e4462c6b4d1f1d3",
                 "shasum": ""
             },
             "require": {
@@ -1255,7 +1255,7 @@
             "suggest": {
                 "psr/cache-implementation": "to cache fetched remote public keys"
             },
-            "time": "2022-01-03T14:36:33+00:00",
+            "time": "2022-01-28T08:15:20+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1284,7 +1284,7 @@
             ],
             "support": {
                 "issues": "https://github.com/kreait/firebase-tokens-php/issues",
-                "source": "https://github.com/kreait/firebase-tokens-php/tree/2.0.1"
+                "source": "https://github.com/kreait/firebase-tokens-php/tree/2.2.0"
             },
             "funding": [
                 {

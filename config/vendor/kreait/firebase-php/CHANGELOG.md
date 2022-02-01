@@ -2,7 +2,33 @@
 
 ## [Unreleased]
 
-## [6.0.0] - 2022-01-16
+## [6.1.0] - 2022-01-28
+
+### Added
+
+* Added convenience method to bulk-remove multiple children of an RTDB Reference
+  ([#686](https://github.com/kreait/firebase-php/pull/686))
+* Added support for Session Cookie Verification.
+  * Tenants don't seem to be supported at the moment (creating or verifying a Session Cookie with a tenant-enabled 
+    Firebase project yields an `UNSUPPORTED_TENANT_OPERATION` error), but once it _is_ supported, the SDK will need
+    no or just minimal updates.
+    Integration tests are in place to checking for this error so that we know early on when it starts working.
+* Added methods:
+  * `Kreait\Firebase\Auth::verifySessionCookie()` 
+  * `Kreait\Firebase\Database\Reference::removeChildren()`
+
+### Changed
+* Tenant-aware auth methods are now tested the same way as tenant-unaware methods. In order to achieve this,
+  some internal implementations had to be changed, warranting this minor version bump. Please note that
+  the tests uncovered that creating session tokens is currently not possible when working with tenants.
+  ([GitHub issue](https://github.com/firebase/firebase-admin-python/issues/577) /
+  [Google Issue Tracker issue](https://issuetracker.google.com/issues/204377229)))
+* Deprecated classes
+  * `Kreait\Firebase\Auth\CreateActionLink\ApiRequest`
+  * `Kreait\Firebase\Auth\CreateSessionCookie\ApiRequest`
+  * `Kreait\Firebase\Auth\SendActionLink\ApiRequest`
+
+## [6.0.1] - 2022-01-16
 
 ### Fixed
 * When signing in with IdP credentials a user's Firebase UID is retrieved from the returned `localId` field, if present
@@ -94,6 +120,7 @@ methods.
     * `Kreait\Firebase\Value\Uid`
     * `Kreait\Firebase\Value\Url`
 
-[Unreleased]: https://github.com/kreait/firebase-php/compare/6.0.1...6.x
+[Unreleased]: https://github.com/kreait/firebase-php/compare/6.1.0...6.x
+[6.1.0]: https://github.com/kreait/firebase-php/compare/6.0.1...6.1.0
 [6.0.1]: https://github.com/kreait/firebase-php/compare/6.0.0...6.0.1
 [6.0.0]: https://github.com/kreait/firebase-php/compare/5.x...6.0.0

@@ -1,11 +1,18 @@
 <?php 
 session_start();
 include('config/dbconfig.php');
-if(isset($_SESSION['verified_user_id']))
-{
-    $_SESSION['status'] = "Vous êtes déjà connecté";
-    header('Location: /admin/index.php');
-    exit();
+
+if(isset($_SESSION['cookie'])){
+	$_SESSION['status'] = "Vous êtes déjà connecté";
+	header('Location: /admin/index.php');
+	exit();
+}else{
+	if(isset($_SESSION['verified_user_id']))
+	{
+		$_SESSION['status'] = "Vous êtes déjà connecté";
+		header('Location: /admin/index.php');
+		exit();
+	}
 }
 
 
@@ -15,7 +22,7 @@ if(isset($_POST['login']))
     $password = htmlspecialchars(trim($_POST['password']));
 	$fiveMinutes = 300;
 	$oneWeek = new \DateInterval('P7D');
-	$cookie = $_POST['remember-me'];
+	$cookie = isset($_POST['remember-me']) ? true : false; 
     
 
     try
@@ -26,37 +33,50 @@ if(isset($_POST['login']))
             $signInResult = $auth->signInWithEmailAndPassword($email, $password);
             $idTokenString = $signInResult->idToken();
 
-
-
-            try {
-                $verifiedIdToken = $auth->verifyIdToken($idTokenString, false);
-                $uid = $verifiedIdToken->claims()->get('sub');
-                $_SESSION['verified_user_id'] = $uid;
-                $_SESSION['idToken'] = $idTokenString;
-                $_SESSION['status'] = "Connexion réussie !";
-                header('Location: /admin/index.php');
-                exit();
-            } catch (FailedToVerifyToken $e) 
-			{
-				
-                $_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
-                header('Location: /');
-                exit();
-            }catch (IssuedInTheFuture $e)
-			{
-				$verifiedIdToken = (new Parser())->parse($this->idToken);
+			if($cookie == true){
+				try {
+					$sessionCookieString = $auth->createSessionCookie($idTokenString, $oneWeek);
+					$_SESSION['cookie'] = $sessionCookieString;
+					$_SESSION['status'] = "Connexion réussie Cookie !";
+					header('Location: /admin/index.php');
+					exit();
+				} catch (FailedToCreateSessionCookie $e) {
+					$_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
+					header('Location: /');
+					exit();
+				}
+			}else{
+				try {
+					$verifiedIdToken = $auth->verifyIdToken($idTokenString, false);
+					$uid = $verifiedIdToken->claims()->get('sub');
+					$_SESSION['verified_user_id'] = $uid;
+					$_SESSION['idToken'] = $idTokenString;
+					$_SESSION['status'] = "Connexion réussie !";
+					header('Location: /admin/index.php');
+					exit();
+				} catch (FailedToVerifyToken $e) 
+				{
+					
+					$_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
+					header('Location: /');
+					exit();
+				}catch (IssuedInTheFuture $e)
+				{
+					$verifiedIdToken = (new Parser())->parse($this->idToken);
+				}
+				return $verifiedIdToken->getClaims();
 			}
-			return $verifiedIdToken->getClaims();
+
+
+            
 
         }
 		
         catch(Exception $e)
         {
-			echo $e->getMessage();
-            $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";
-			
-            // header('Location:/');
-            // exit();
+            $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";	
+            header('Location:/');
+            exit();
         } 
    
     } 
