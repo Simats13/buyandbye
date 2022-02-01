@@ -13,7 +13,9 @@ if(isset($_POST['login']))
 {
     $email = htmlspecialchars(trim($_POST['email']));
     $password = htmlspecialchars(trim($_POST['password']));
-	
+	$fiveMinutes = 300;
+	$oneWeek = new \DateInterval('P7D');
+	$cookie = $_POST['remember-me'];
     
 
     try
@@ -24,7 +26,6 @@ if(isset($_POST['login']))
             $signInResult = $auth->signInWithEmailAndPassword($email, $password);
             $idTokenString = $signInResult->idToken();
 
-			echo $idTokenString;
 
 
             try {

@@ -3,6 +3,8 @@ session_start();
 
 include("../config/dbconfig.php");
 use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
+use Kreait\Firebase\Exception\Auth\FailedToVerifySessionCookie;
+
 
 
 if(isset($_SESSION['verified_user_id']))

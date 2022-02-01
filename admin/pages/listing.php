@@ -203,16 +203,84 @@ $documents = $collectionReference->documents();
                       <div class="form-group">
                         <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
                         <select value="" class="custom-select mr-sm-2" id="companyType">
-                          <option>Magasin</option>
-                          <option>Service</option>
+                          <option value="Magasin" <?php if($document['type'] == "Magasin" ) echo 'selected="selected"';?>>Magasin</option>
+                          <option value="Service" <?php if($document['type'] == "Service" ) echo 'selected="selected"';?>>Service</option>
                           <option>Restaurant</option>
-                          <option>Santé</option>
+                          <option value="Santé" <?php if($document['type'] == "Santé" ) echo 'selected="selected"';?>>Santé</option>
                           <option>Culture & Loisirs</option>
                         </select>
                       </div>
-                      <div class="form-group">
+                      <div class="form-group category1">
                         <div class="color-2">
-                          <select data-placeholder="Catégories de magasin" multiple class="chosen-select" tabindex="8">
+                          <select data-placeholder="Catégories de magasin" id="selectMag" multiple class="chosen-select" tabindex="8">
+                            <option>Electroménager</option>
+                            <option>Jeux-Vidéos</option>
+                            <option>High-Tech</option>
+                            <option>Alimentation</option>
+                            <option>Vêtements</option>
+                            <option>Films & Séries</option>
+                            <option>Chaussures</option>
+                            <option>Bricolage</option>
+                            <option>Montres & Bijoux</option>
+                            <option>Téléphonie</option>
+                            <option>Restaurant</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group" id="category2">
+                        <div class="color-2">
+                          <select data-placeholder="Service" id="selectService" multiple class="chosen-select" tabindex="8">
+                            <option>Electroménager</option>
+                            <option>Jeux-Vidéos</option>
+                            <option>High-Tech</option>
+                            <option>Alimentation</option>
+                            <option>Vêtements</option>
+                            <option>Films & Séries</option>
+                            <option>Chaussures</option>
+                            <option>Bricolage</option>
+                            <option>Montres & Bijoux</option>
+                            <option>Téléphonie</option>
+                            <option>Restaurant</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group" id="category3">
+                        <div class="color-2">
+                          <select data-placeholder="Restaurant" id="selectService" multiple class="chosen-select" tabindex="8">
+                            <option>Electroménager</option>
+                            <option>Jeux-Vidéos</option>
+                            <option>High-Tech</option>
+                            <option>Alimentation</option>
+                            <option>Vêtements</option>
+                            <option>Films & Séries</option>
+                            <option>Chaussures</option>
+                            <option>Bricolage</option>
+                            <option>Montres & Bijoux</option>
+                            <option>Téléphonie</option>
+                            <option>Restaurant</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group" id="category4">
+                        <div class="color-2">
+                          <select data-placeholder="Santé" id="selectService" multiple class="chosen-select" tabindex="8">
+                            <option>Electroménager</option>
+                            <option>Jeux-Vidéos</option>
+                            <option>High-Tech</option>
+                            <option>Alimentation</option>
+                            <option>Vêtements</option>
+                            <option>Films & Séries</option>
+                            <option>Chaussures</option>
+                            <option>Bricolage</option>
+                            <option>Montres & Bijoux</option>
+                            <option>Téléphonie</option>
+                            <option>Restaurant</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group" id="category5">
+                        <div class="color-2">
+                          <select data-placeholder="Culture et loisirs" id="selectService" multiple class="chosen-select" tabindex="8">
                             <option>Electroménager</option>
                             <option>Jeux-Vidéos</option>
                             <option>High-Tech</option>
@@ -281,10 +349,30 @@ $documents = $collectionReference->documents();
 </div>
 
 
-
- <?php include('includes/scripts.php'); ?>
 <script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete" type="text/javascript"></script>
 <script>
+
+    
+$(document).ready(function () {
+
+        $(".category1").addClass("d-none");
+        $("#category2").addClass("d-none");
+        $("#category3").addClass("d-none");
+        $("#category4").addClass("d-none");
+        $("#category5").addClass("d-none");
+
+        if ($("#companyType").val() == "Magasin") {
+            $(".category1").removeClass("d-none");
+        }else if ($("#companyType").val() == "Service"){
+            $("#category2").removeClass("d-none");
+        }else if ($("#companyType").val() == "Restaurant"){
+            $("#category3").removeClass("d-none");
+        }else if ($("#companyType").val() == "Santé"){
+            $("#category4").removeClass("d-none");
+        }else if ($("#companyType").val() == "Culture & Loisirs"){
+            $("#category5").removeClass("d-none");
+        }
+});
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
     var input = document.getElementById('autocomplete');
@@ -299,6 +387,49 @@ function initialize() {
 </script>
 
 <script>
+    $("#companyType").on('change', function() {
+
+if ($(this).val() == 'Magasin'){
+   $(".category1").removeClass("d-none");
+
+   $("#category2").addClass("d-none");
+   $("#category3").addClass("d-none");
+   $("#category4").addClass("d-none");
+   $("#category5").addClass("d-none");
+} else if ($(this).val() == 'Service'){
+   $("#category2").removeClass("d-none");
+
+   $(".category1").addClass("d-none");
+   $("#category3").addClass("d-none");
+   $("#category4").addClass("d-none");
+   $("#category5").addClass("d-none");
+
+}else if ($(this).val() == 'Restaurant'){
+   $("#category3").removeClass("d-none");
+
+   $("#category2").addClass("d-none");
+   $(".category1").addClass("d-none");
+   $("#category4").addClass("d-none");
+   $("#category5").addClass("d-none");
+
+}else if ($(this).val() == 'Santé'){
+    $("#category4").removeClass("d-none");
+
+   $("#category2").addClass("d-none");
+   $("#category3").addClass("d-none");
+   $(".category1").addClass("d-none");
+   $("#category5").addClass("d-none");
+
+}else if ($(this).val() == 'Culture & Loisirs'){
+    $("#category5").removeClass("d-none");
+
+   $("#category2").addClass("d-none");
+   $("#category3").addClass("d-none");
+   $("#category4").addClass("d-none");
+   $(".category1").addClass("d-none");
+
+}
+});
   $(function () {
     var input = document.getElementById("autocomplete");
     var autocomplete = new google.maps.places.Autocomplete(input);
@@ -306,10 +437,8 @@ function initialize() {
     $('#my-modal').modal('show');
   });
 
-  $('.companyType').change(function () {
-    var selectedItem = $('.companyType').val();
-    alert(selectedItem);
-  });
+
+
 </script>
 <style>
   .pac-container {
