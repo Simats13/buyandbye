@@ -103,11 +103,10 @@
   .onMouseover:hover .textOver {
     visibility: visible;
   }
-  
-  .pac-container {
-      z-index: 10000 !important;
-  }
 
+  .pac-container {
+    z-index: 10000 !important;
+  }
 </style>
 
 <div class="padding">
@@ -184,7 +183,8 @@
               </div>
               <div class="form-group">
                 <label for="autocomplete">Adresse</label>
-                <input type="text" name="autocomplete" class="form-control" id="autocomplete" placeholder="ex: Avenue des Champs-Elysée, Paris">
+                <input type="text" name="autocomplete" class="form-control" id="autocomplete"
+                  placeholder="ex: Avenue des Champs-Elysée, Paris">
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
@@ -210,7 +210,16 @@
                       possibilité d'importer des menus</span>
                   </div>
                 </div>
-                <input type="checkbox" name="isRestaurant" id="isrestaurant">
+                <input type="checkbox" name="isRestaurant" id="isrestaurant" class>
+              </div>
+              <div class="form-group">
+                <label for="livraison">L'entreprise propose-t-elle la livraison de produit ?</label><br>
+                <input type="checkbox" name="livraison" id="livraison">
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1">Description</label>
+                <textarea class="form-control" name="description" id="exampleFormControlTextarea1"
+                  rows="3"></textarea>
               </div>
               <div class="form-group">
                 <label for="siretnumber">Numéro de SIRET</label>
@@ -222,7 +231,14 @@
                 <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
                   placeholder="ex: FR 00 123456789">
               </div>
-              <br>
+              <div class="form-group ">
+                <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
+                <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput"
+                  style="width:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur">
+              </div>
+              <label for="banniere">Ajouter une image de couverture</label><br>
+              <input type="file" name="banniere" id="banniere"><br><br>
+              <!-- Lier les fonctions de vérification de l'image (/pages/index.php) -->
 
               <!-- Boutons de validation et d'annulation -->
               <div class="modal-footer">
@@ -240,39 +256,43 @@
     <button class="button-3" role="button">Importer un fichier CSV</button>
   </div>
 </div>
-<script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete" type="text/javascript"></script>
-<script>$(document).ready(function() {
+
+<script
+  src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete"
+  type="text/javascript"></script>
+
+<script>
+  $(document).ready(function () {
     $("#lat_area").addClass("d-none");
     $("#long_area").addClass("d-none");
-});
-google.maps.event.addDomListener(window, 'load', initialize);
-function initialize() {
+  });
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+  function initialize() {
     var input = document.getElementById('autocomplete');
     var autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.addListener('place_changed', function() {
-        var place = autocomplete.getPlace();
-        // $('#latitude').val(place.geometry['location'].lat());
-        // $('#longitude').val(place.geometry['location'].lng());
-        // // --------- show lat and long ---------------
-        // $("#lat_area").removeClass("d-none");
-        // $("#long_area").removeClass("d-none");
+    autocomplete.addListener('place_changed', function () {
+      var place = autocomplete.getPlace();
+      // $('#latitude').val(place.geometry['location'].lat());
+      // $('#longitude').val(place.geometry['location'].lng());
+      // // --------- show lat and long ---------------
+      // $("#lat_area").removeClass("d-none");
+      // $("#long_area").removeClass("d-none");
     });
-}
-
+  }
 </script>
 
 <script>
-    $(function () {
-        var input = document.getElementById("autocomplete");
-        var autocomplete = new google.maps.places.Autocomplete(input);
+  $(function () {
+    var input = document.getElementById("autocomplete");
+    var autocomplete = new google.maps.places.Autocomplete(input);
 
-        $('#my-modal').modal('show');
+    $('#my-modal').modal('show');
 
-    });
+  });
 
-    $('.companyType').change(function () {
-        var selectedItem = $('.companyType').val();
-        alert(selectedItem);
-    });
-
+  $('.companyType').change(function () {
+    var selectedItem = $('.companyType').val();
+    alert(selectedItem);
+  });
 </script>

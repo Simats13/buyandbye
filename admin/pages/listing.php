@@ -296,24 +296,12 @@ $documents = $collectionReference->documents();
                         </div>
                       </div>
                       <div class="form-group ">
-                        <label for="exampleColorInput" class="form-label">Couleur de l'entreprise</label>
+                        <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
                         <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput"
                           style="width:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur">
                       </div>
-                      <div class="form-group">
-                        <!-- <label for="exampleFormControlInput1">Click & Collect</label> -->
-                        <div class="form-check">
-                          <input class="form-check-input" name="clickandcollect" type="checkbox" value=""
-                            id="defaultCheck1" <?php if($document['ClickAndCollect'] == true) { echo "checked";}?>>
-                          <label class="form-check-label" name="clickandcollect" for="defaultCheck1">
-
-                            Click & Collect
-                          </label>
-                        </div>
-                      </div>
 
                       <div class="form-group">
-                        <!-- <label for="exampleFormControlInput1">Livraison à domicile</label> -->
                         <div class="form-check">
                           <input class="form-check-input" name="livraison" type="checkbox" value="" id="defaultCheck1"
                             <?php if($document['livraison'] == true) { echo "checked";}?>>
@@ -323,10 +311,10 @@ $documents = $collectionReference->documents();
                         </div>
                       </div>
                       <div class="form-group">
-                        <label for="exampleColorInput" class="form-label">Changer la bannière</label>
+                        <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
                         <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid"
                           alt="<?=$document['imgUrl']?>">
-                        <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>">
+                        <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>"><br>
                         <input type="file" name="banniere" id="banniere">
                       </div>
                   </div>
