@@ -7,67 +7,114 @@ $documents = $collectionReference->documents();
 
 <link rel="stylesheet" href="css/chosen.css">
 <link rel="stylesheet" href="fonts/icomoon/style.css">
-<link rel="stylesheet" href="css/bootstrap.min.css">
 <!-- <link rel="stylesheet" href="css/style.css"> -->
-
 <style>
-  .chosen-container-multi {
-    border: none;
+   .padding {
+    padding: 0 10%;
   }
 
-  .chosen-container-multi .chosen-choices {
-    background-image: none;
-    padding: 7px;
-    border: none !important;
-    border-radius: 4px;
-    -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
-  }
-
-  .chosen-container-multi .chosen-choices li.search-choice {
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    padding-left: 10px;
-    padding-right: 26px;
-    border: none;
-    background-image: none;
-  }
-
-  .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
-    top: 9px;
-    right: 8px;
-  }
-
-  .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
-    height: 32px;
+  /* Bouton importer manuellement */
+  .button-3 {
+    appearance: none;
+    background-color: #2ea44f;
+    border: 1px solid rgba(27, 31, 35, .15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 1vw 0;
+    margin: 5% 35%;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 1.25vw;
   }
 
-  .chosen-container .chosen-drop {
-    border: none !important;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    margin-top: 3px;
-    border-radius: 4px;
-    -webkit-box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
-    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
+  .button-3:focus:not(:focus-visible):not(.focus-visible) {
+    box-shadow: none;
+    outline: none;
   }
 
-  /*Colors*/
-  .color-1 .chosen-container-multi .chosen-choices li.search-choice {
-    background-color: #e5e4cc;
+  .button-3:hover {
+    background-color: #2c974b;
   }
 
-  .color-2 .chosen-container-multi .chosen-choices li.search-choice {
-    background-color: #c7f0db;
+  .button-3:focus {
+    box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+    outline: none;
   }
 
-  .color-3 .chosen-container-multi .chosen-choices li.search-choice {
-    background-color: #d3f4ff;
+  .button-3:disabled {
+    background-color: #94d3a2;
+    border-color: rgba(27, 31, 35, .1);
+    color: rgba(255, 255, 255, .8);
+    cursor: default;
   }
+
+  .button-3:active {
+    background-color: #298e46;
+    box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+  }
+
+  /* or separator */
+  hr.solid {
+    margin: 0 30%;
+    border-top: 2px solid #bbb;
+  }
+
+  .popup-header {
+    padding: 1% 1%;
+    background-color: #CCCCCC;
+    font-size: 0.9em;
+    color: white;
+    margin: 0 0 5% 0;
+  }
+
+  .conteneur {
+    display: flex;
+  }
+
+  .flex {
+    padding: 0 2% 0 0;
+  }
+
+  .onMouseover .textOver {
+    visibility: hidden;
+    width: 30%;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    margin: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    margin: 0 5%;
+    z-index: 1;
+  }
+
+  .onMouseover {
+    color: black;
+  }
+
+  .onMouseover:hover .textOver {
+    visibility: visible;
+  }
+
 </style>
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete" type="text/javascript"></script>
+<div id="spinner_load" ></div>
 <div class="container-fluid">
 
   <!-- DataTables Example -->
@@ -96,6 +143,7 @@ $documents = $collectionReference->documents();
         unset($_SESSION['errors']);
     }
     ?>
+    
 
       <div class="table-responsive">
 
@@ -114,6 +162,7 @@ $documents = $collectionReference->documents();
             <?php $count = 0;?>
 
             <?php foreach ($documents as $document) { ?>
+            
 
             <tr>
               <td><?= $document['name']?></td>
@@ -172,139 +221,278 @@ $documents = $collectionReference->documents();
                     </button>
                   </div>
                   <div class="modal-body">
+                  <div class="popup-header">
+                    Une fois la boutique créée, un e-mail sera envoyé au professionnel avec les informations entrées
+                    ci-dessous.<br>
+                    Il devra alors confirmer les informations et choisir un mot de passe pour son espace personnel.
+                  </div>
+
                     <form method="post" enctype="multipart/form-data">
+                      <div class="conteneur">
+                        
+                        <div class="flex">
+                          <h3>Informations personnelles</h3>
+                        </div>
+                        <div class="flex onMouseover">
+                          <h3>ⓘ</h3>
+                          <span class="textOver">Informations personnelles de la personne propriétaire de l'entreprise, elles n'apparaîtront pas sur l'application mobile</span>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="lastname">Nom</label>
+                        <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont" value="<?=$document['Lname']?>" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="firstname">Prénom</label>
+                        <input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric" value="<?=$document['Fname']?>" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="siretnumber">Numéro de SIRET</label>
+                        <input type="text" name="siretNumber" class="form-control" id="siretnumber"
+                          placeholder="ex: 123 456 789 00012" value="<?=$document['siretNumber']?>" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="tvanumber">Numéro de TVA</label>
+                        <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
+                          placeholder="ex: FR 00 123456789" value="<?=$document['tvaNumber']?>" required>
+                      </div>
+                      <div class="conteneur">
+                        <div class="flex">
+                          <h3>Informations de l'entreprise</h3>
+                        </div>
+                        <div class="flex onMouseover">
+                          <h3>ⓘ</h3>
+                          <span class="textOver">Toutes ces informations présentes ci-dessous sont affichées sur l'application mobile</span>
+                        </div>
+                      </div>
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Nom de l'entreprise</label>
                         <input type="text" name="companyName" class="form-control" id="exampleFormControlInput1"
-                          placeholder="Dupont SAS" value="<?=$document['name']?>">
+                          placeholder="Dupont SAS" value="<?=$document['name']?>" required>
                       </div>
+                      
+
+                      <!-- Script permettant l'ajout de l'autocomplétion d'adresse -->
+
+                      <script>
+                      google.maps.event.addDomListener(window, 'load', initialize);
+                      function initialize() {
+                          var input = document.getElementById('autocomplete_<?=$document->id()?>');
+                          var autocomplete = new google.maps.places.Autocomplete(input);
+                          autocomplete.addListener('place_changed', function() {
+                              var place = autocomplete.getPlace();
+                              $('#latitude_<?=$document->id()?>').val(place.geometry['location'].lat());
+                              $('#longitude_<?=$document->id()?>').val(place.geometry['location'].lng());
+
+                          });
+                        };
+                        $(function () {
+                          var input = document.getElementById("autocomplete_<?=$document->id()?>");
+                          var autocomplete = new google.maps.places.Autocomplete(input);
+
+                          $('#my-modal').modal('show');
+                        });
+
+                      </script>
+
+                      <style>
+                        .pac-container {
+                          z-index: 10000 !important;
+                        }
+                      </style>
                       <div class="form-group">
                             <label for="autocomplete"> Adresse de l'entreprise </label>
-                            <input type="text" name="autocomplete" id="autocomplete" class="form-control" placeholder="Avenue des Champs-Elysée, Paris" value="<?=$document['adresse']?>" >
-                            <input type="hidden" name="latitude" id="latitude" class="form-control" value="<?=$document['email']?>">  
-                            <input type="hidden" name="longitude" id="longitude" class="form-control" value="<?=$document['email']?>">
+                            <input type="text" name="autocomplete" id="autocomplete_<?=$document->id()?>" class="form-control" placeholder="Avenue des Champs-Elysée, Paris" value="<?=$document['adresse']?>" required>
+                            <input type="hidden" name="latitude" id="latitude_<?=$document->id()?>" class="form-control" value="<?=$document['position']['latitude']?>">  
+                            <input type="hidden" name="longitude" id="longitude_<?=$document->id()?>" class="form-control" value="<?=$document['position']['longitude']?>">
                       </div>  
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Adresse E-Mail</label>
                         <input type="text" name="email" class="form-control" id="exampleFormControlInput1"
-                          placeholder="email@email.com" value="<?=$document['email']?>">
+                          placeholder="email@email.com" value="<?=$document['email']?>" required>
                       </div>
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Numéro de téléphone</label>
                         <input type="text" name="phone" class="form-control" id="exampleFormControlInput1"
-                          placeholder="01 02 03 04 05" value="<?=$document['phone']?>">
+                          placeholder="01 02 03 04 05" value="<?=$document['phone']?>" required>
                       </div>
                       <div class="form-group">
                         <label for="exampleFormControlTextarea1">Description</label>
                         <textarea class="form-control" name="description" id="exampleFormControlTextarea1"
-                          rows="3"><?=$document['description']?></textarea>
+                          rows="3" required><?=$document['description']?></textarea>
                       </div>
 
                       <div class="form-group">
-                        <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
-                        <select value="" class="custom-select mr-sm-2" id="companyType">
+                        <label class="mr-sm-2" for="companyType_<?=$count?>">Type d'entreprise</label>
+                        <select value="" class="custom-select mr-sm-2 companyType_<?=$count?>" id="companyType_<?=$count?>" name="companyType" >
                           <option value="Magasin" <?php if($document['type'] == "Magasin" ) echo 'selected="selected"';?>>Magasin</option>
                           <option value="Service" <?php if($document['type'] == "Service" ) echo 'selected="selected"';?>>Service</option>
-                          <option>Restaurant</option>
+                          <option value="Restaurant" <?php if($document['type'] == "Restaurant" ) echo 'selected="selected"';?>>Restaurant</option>
                           <option value="Santé" <?php if($document['type'] == "Santé" ) echo 'selected="selected"';?>>Santé</option>
-                          <option>Culture & Loisirs</option>
+                          <option value="Culture & Loisirs" <?php if($document['type'] == "Culture & Loisirs" ) echo 'selected="selected"';?>>Culture & Loisirs</option>
                         </select>
                       </div>
-                      <div class="form-group category1">
-                        <div class="color-2">
-                          <select data-placeholder="Catégories de magasin" id="selectMag" multiple class="chosen-select" tabindex="8">
-                            <option>Electroménager</option>
-                            <option>Jeux-Vidéos</option>
-                            <option>High-Tech</option>
-                            <option>Alimentation</option>
-                            <option>Vêtements</option>
-                            <option>Films & Séries</option>
-                            <option>Chaussures</option>
-                            <option>Bricolage</option>
-                            <option>Montres & Bijoux</option>
-                            <option>Téléphonie</option>
-                            <option>Restaurant</option>
-                          </select>
+
+                      <!-- Script permettant la gestion des catégories -->
+                      <script>
+                        $(function(){
+                            $(".chosen-select").chosen({
+                              max_selected_options: 3,
+                              width: '100%'
+                            }); 
+                        });
+                        $(document).ready(function () {
+                          $(".category1_<?=$count?>").addClass("d-none");
+                          $(".category2_<?=$count?>").addClass("d-none");
+                          $(".category3_<?=$count?>").addClass("d-none");
+                          $(".category4_<?=$count?>").addClass("d-none");
+                          $(".category5_<?=$count?>").addClass("d-none");
+                          
+                          if ($(".companyType_<?=$count?>").val() == "Magasin") {
+                              $(".category1_<?=$count?>").removeClass("d-none");
+                          }else if ($(".companyType_<?=$count?>").val() == "Service"){
+                              $(".category2_<?=$count?>").removeClass("d-none");
+                          }else if ($(".companyType_<?=$count?>").val() == "Restaurant"){
+                              $(".category3_<?=$count?>").removeClass("d-none");
+                          }else if ($(".companyType_<?=$count?>").val() == "Santé"){
+                              $(".category4_<?=$count?>").removeClass("d-none");
+                          }else if ($(".companyType_<?=$count?>").val() == "Culture & Loisirs"){
+                              $(".category5_<?=$count?>").removeClass("d-none");
+                          }
+
+                        });
+                       
+                        $(".companyType_<?=$count?>").on('change', function() {
+
+                        if ($(this).val() == 'Magasin'){
+                          $(".category1_<?=$count?>").removeClass("d-none");
+
+  
+                          $(".category2_<?=$count?>").addClass("d-none");
+                          $(".category3_<?=$count?>").addClass("d-none");
+                          $(".category4_<?=$count?>").addClass("d-none");
+                          $(".category5_<?=$count?>").addClass("d-none");
+                        } else if ($(this).val() == 'Service'){
+                          $(".category2_<?=$count?>").removeClass("d-none");
+                          $("#select2_<?=$count?> option:selected").remove();
+                          $('#select2_<?=$count?> :selected').remove(); 
+                          $(".category1_<?=$count?>").addClass("d-none");
+                          $(".category3_<?=$count?>").addClass("d-none");
+                          $(".category4_<?=$count?>").addClass("d-none");
+                          $(".category5_<?=$count?>").addClass("d-none");
+
+                        }else if ($(this).val() == 'Restaurant'){
+                          $(".category3_<?=$count?>").removeClass("d-none");
+
+                          $(".category2_<?=$count?>").addClass("d-none");
+                          $(".category1_<?=$count?>").addClass("d-none");
+                          $(".category4_<?=$count?>").addClass("d-none");
+                          $(".category5_<?=$count?>").addClass("d-none");
+
+                        }else if ($(this).val() == 'Santé'){
+                          $(".category4_<?=$count?>").removeClass("d-none");
+
+                          $(".category2_<?=$count?>").addClass("d-none");
+                          $(".category3_<?=$count?>").addClass("d-none");
+                          $(".category1_<?=$count?>").addClass("d-none");
+                          $(".category5_<?=$count?>").addClass("d-none");
+
+                        }else if ($(this).val() == 'Culture & Loisirs'){
+                          $(".category5_<?=$count?>").removeClass("d-none");
+
+                          $(".category2_<?=$count?>").addClass("d-none");
+                          $(".category3_<?=$count?>").addClass("d-none");
+                          $(".category4_<?=$count?>").addClass("d-none");
+                          $(".category1_<?=$count?>").addClass("d-none");
+
+                        }
+                      });
+                      </script>
+
+                
+<div class="category1_<?=$count?>">
+                        <div class="form-group">
+                          <div class="color-2">
+                            <select data-placeholder="Tags Magasin" name="select[]" id="select1_<?=$count?>" multiple class="chosen-select" tabindex="8" >
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Electroménager") echo 'selected="selected"';} ?>>Electroménager</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Jeux-Vidéos") echo 'selected="selected"';} ?>>Jeux-Vidéos</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "High-Tech") echo 'selected="selected"';} ?>>High-Tech</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Alimentation") echo 'selected="selected"';} ?>>Alimentation</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Films & Séries") echo 'selected="selected"';} ?>>Vêtements</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Chaussures") echo 'selected="selected"';} ?>>Films & Séries</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Bricolage") echo 'selected="selected"';} ?>>Chaussures</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Montres & Bijoux") echo 'selected="selected"';} ?>>Bricolage</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Menuiserie") echo 'selected="selected"';} ?>>Montres & Bijoux</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Téléphonie") echo 'selected="selected"';} ?>>Téléphonie</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Restaurant") echo 'selected="selected"';} ?>>Restaurant</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
-                      <div class="form-group" id="category2">
-                        <div class="color-2">
-                          <select data-placeholder="Service" id="selectService" multiple class="chosen-select" tabindex="8">
-                            <option>Electroménager</option>
-                            <option>Jeux-Vidéos</option>
-                            <option>High-Tech</option>
-                            <option>Alimentation</option>
-                            <option>Vêtements</option>
-                            <option>Films & Séries</option>
-                            <option>Chaussures</option>
-                            <option>Bricolage</option>
-                            <option>Montres & Bijoux</option>
-                            <option>Téléphonie</option>
-                            <option>Restaurant</option>
-                          </select>
+
+                      <div class="category2_<?=$count?>">
+                        <div class="form-group">
+                          <div class="color-2">
+                            <select data-placeholder="Tags Service" name="select[]" id="select2_<?=$count?>" multiple class="chosen-select" tabindex="8" >
+                            <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Menuiserie") echo 'selected="selected"';} ?>>Menuiserie</option>
+                            <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Plomberie") echo 'selected="selected"';} ?>>Plomberie</option>
+                            <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Piscine") echo 'selected="selected"';} ?>>Piscine</option>
+                            <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Meubles") echo 'selected="selected"';} ?>>Meubles</option>
+                            <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Vêtements") echo 'selected="selected"';} ?>>Vêtements</option>
+                            <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Gestion de patrimoine") echo 'selected="selected"';} ?>>Gestion de patrimoine</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
-                      <div class="form-group" id="category3">
-                        <div class="color-2">
-                          <select data-placeholder="Restaurant" id="selectService" multiple class="chosen-select" tabindex="8">
-                            <option>Electroménager</option>
-                            <option>Jeux-Vidéos</option>
-                            <option>High-Tech</option>
-                            <option>Alimentation</option>
-                            <option>Vêtements</option>
-                            <option>Films & Séries</option>
-                            <option>Chaussures</option>
-                            <option>Bricolage</option>
-                            <option>Montres & Bijoux</option>
-                            <option>Téléphonie</option>
-                            <option>Restaurant</option>
-                          </select>
+
+                      <div class="category3_<?=$count?>">
+                        <div class="form-group">
+                          <div class="color-2">
+                            <select data-placeholder="Tags Restaurant" name="select[]" id="select3_<?=$count?>" multiple class="chosen-select" tabindex="8" >
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Français") echo 'selected="selected"';} ?>>Français</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Local") echo 'selected="selected"';} ?>>Local</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Italien") echo 'selected="selected"';} ?>>Italien</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Fast-Food") echo 'selected="selected"';} ?>>Fast-Food</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Asiatique") echo 'selected="selected"';} ?>>Asiatique</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Pizzeria") echo 'selected="selected"';} ?>>Pizzeria</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
-                      <div class="form-group" id="category4">
-                        <div class="color-2">
-                          <select data-placeholder="Santé" id="selectService" multiple class="chosen-select" tabindex="8">
-                            <option>Electroménager</option>
-                            <option>Jeux-Vidéos</option>
-                            <option>High-Tech</option>
-                            <option>Alimentation</option>
-                            <option>Vêtements</option>
-                            <option>Films & Séries</option>
-                            <option>Chaussures</option>
-                            <option>Bricolage</option>
-                            <option>Montres & Bijoux</option>
-                            <option>Téléphonie</option>
-                            <option>Restaurant</option>
-                          </select>
+
+                      <div class="category4_<?=$count?>">
+                        <div class="form-group">
+                          <div class="color-2">
+                            <select data-placeholder="Tags Santé" name="select[]" id="select4_<?=$count?>" multiple class="chosen-select" tabindex="8" >
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Pharmacie") echo 'selected="selected"';} ?>>Pharmacie</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Aide à la personne") echo 'selected="selected"';} ?>>Aide à la personne</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
-                      <div class="form-group" id="category5">
-                        <div class="color-2">
-                          <select data-placeholder="Culture et loisirs" id="selectService" multiple class="chosen-select" tabindex="8">
-                            <option>Electroménager</option>
-                            <option>Jeux-Vidéos</option>
-                            <option>High-Tech</option>
-                            <option>Alimentation</option>
-                            <option>Vêtements</option>
-                            <option>Films & Séries</option>
-                            <option>Chaussures</option>
-                            <option>Bricolage</option>
-                            <option>Montres & Bijoux</option>
-                            <option>Téléphonie</option>
-                            <option>Restaurant</option>
-                          </select>
+
+                      <div class="category5_<?=$count?>">
+                        <div class="form-group">
+                          <div class="color-2">
+                            <select data-placeholder="Tags Culture et loisirs" name="select[]" id="select5_<?=$count?>" multiple class="chosen-select" tabindex="8">
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Parc d'attraction") echo 'selected="selected"';} ?>>Parc d'attraction</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Musée") echo 'selected="selected"';} ?>>Musée</option>
+                              <option <?php foreach ($document['mainCategorie'] as $selection) { if($selection == "Tourisme") echo 'selected="selected"';} ?>>Tourisme</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
+
                       <div class="form-group ">
                         <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
                         <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput"
-                          style="width:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur">
+                          style="width:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur" >
                       </div>
 
                       <div class="form-group">
                         <div class="form-check">
                           <input class="form-check-input" name="livraison" type="checkbox" value="" id="defaultCheck1"
-                            <?php if($document['livraison'] == true) { echo "checked";}?>>
+                            <?php if($document['livraison'] == true) { echo "checked";}?> >
                           <label class="form-check-label" name="livraison" for="defaultCheck1">
                             Livraison à domicile
                           </label>
@@ -337,28 +525,28 @@ $documents = $collectionReference->documents();
 </div>
 
 
-<script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete" type="text/javascript"></script>
-<script>
+<!-- <script>
 
     
 $(document).ready(function () {
 
+    
         $(".category1").addClass("d-none");
-        $("#category2").addClass("d-none");
-        $("#category3").addClass("d-none");
-        $("#category4").addClass("d-none");
-        $("#category5").addClass("d-none");
-
-        if ($("#companyType").val() == "Magasin") {
+        $(".category2").addClass("d-none");
+        $(".category3").addClass("d-none");
+        $(".category4").addClass("d-none");
+        $(".category5").addClass("d-none");
+        
+        if ($(".companyType").val() == "Magasin") {
             $(".category1").removeClass("d-none");
-        }else if ($("#companyType").val() == "Service"){
-            $("#category2").removeClass("d-none");
-        }else if ($("#companyType").val() == "Restaurant"){
-            $("#category3").removeClass("d-none");
-        }else if ($("#companyType").val() == "Santé"){
-            $("#category4").removeClass("d-none");
-        }else if ($("#companyType").val() == "Culture & Loisirs"){
-            $("#category5").removeClass("d-none");
+        }else if ($(".companyType").val() == "Service"){
+            $(".category2").removeClass("d-none");
+        }else if ($(".companyType").val() == "Restaurant"){
+            $(".category3").removeClass("d-none");
+        }else if ($(".companyType").val() == "Santé"){
+            $(".category4").removeClass("d-none");
+        }else if ($(".companyType").val() == "Culture & Loisirs"){
+            $(".category5").removeClass("d-none");
         }
 });
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -427,9 +615,4 @@ if ($(this).val() == 'Magasin'){
 
 
 
-</script>
-<style>
-  .pac-container {
-    z-index: 10000 !important;
-  }
-</style>
+</script> -->

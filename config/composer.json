@@ -3,6 +3,7 @@
         "kreait/firebase-php": "^6.0",
         "grpc/grpc": "~1.30.0",
         "google/cloud-firestore": "^1.20",
-        "saikiran/geohash": "^1.0"
+        "saikiran/geohash": "^1.0",
+        "phpmailer/phpmailer": "^6.5"
     }
 }

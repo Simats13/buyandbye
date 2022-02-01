@@ -107,7 +107,66 @@
   .pac-container {
     z-index: 10000 !important;
   }
+
+  .chosen-container-multi {
+    border: none;
+  }
+
+  .chosen-container-multi .chosen-choices {
+    background-image: none;
+    padding: 7px;
+    border: none !important;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .chosen-container-multi .chosen-choices li.search-choice {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 10px;
+    padding-right: 26px;
+    border: none;
+    background-image: none;
+  }
+
+  .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+    top: 9px;
+    right: 8px;
+  }
+
+  .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .chosen-container .chosen-drop {
+    border: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    margin-top: 3px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /*Colors*/
+  .color-1 .chosen-container-multi .chosen-choices li.search-choice {
+    background-color: #e5e4cc;
+  }
+
+  .color-2 .chosen-container-multi .chosen-choices li.search-choice {
+    background-color: #c7f0db;
+  }
+
+  .color-3 .chosen-container-multi .chosen-choices li.search-choice {
+    background-color: #d3f4ff;
+  }
 </style>
+<link rel="stylesheet" href="css/chosen.css">
+<link rel="stylesheet" href="fonts/icomoon/style.css">
 
 <div class="padding">
   <div class="card shadow mb-4">
@@ -123,6 +182,14 @@
           echo "<h5 class='alert alert-danger'>".$_SESSION['status']."</h5>";
           unset($_SESSION['status']);
       }
+      ?>
+
+      <?php
+        if(isset($_SESSION['success']))
+        {
+            echo "<h5 class='alert alert-success'>".$_SESSION['success']."</h5>";
+            unset($_SESSION['success']);
+        }
       ?>
 
       <?php
@@ -183,8 +250,9 @@
               </div>
               <div class="form-group">
                 <label for="autocomplete">Adresse</label>
-                <input type="text" name="autocomplete" class="form-control" id="autocomplete"
-                  placeholder="ex: Avenue des Champs-Elysée, Paris">
+                <input type="text" name="autocomplete" class="form-control" id="autocomplete" >
+                <input type="hidden" name="latitude" id="latitude" class="form-control" >  
+                <input type="hidden" name="longitude" id="longitude" class="form-control" >
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
@@ -222,6 +290,163 @@
                   rows="3"></textarea>
               </div>
               <div class="form-group">
+                <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
+                <select value="" class="custom-select mr-sm-2 companyType" name="companyType" id="companyType">
+                  <option value="" selected disabled hidden>Veuillez choisir un type d'entreprise</option>
+                  <option value="Magasin">Magasin</option>
+                  <option value="Service">Service</option>
+                  <option value="Restaurant">Restaurant</option>
+                  <option value="Santé">Santé</option>
+                  <option value="Culture & Loisirs">Culture & Loisirs</option>
+                </select>
+              </div>
+
+              <!-- Script permettant la gestion des catégories -->
+              <script>
+                $(function(){
+                    $(".chosen-select").chosen({
+                      max_selected_options: 3,
+                      width: '100%'
+                    }); 
+                });
+                $(document).ready(function () {
+                  $(".category1").addClass("d-none");
+                  $(".category2").addClass("d-none");
+                  $(".category3").addClass("d-none");
+                  $(".category4").addClass("d-none");
+                  $(".category5").addClass("d-none");
+                  
+                  if ($(".companyType").val() == "Magasin") {
+                      $(".category1").removeClass("d-none");
+                  }else if ($(".companyType").val() == "Service"){
+                      $(".category2").removeClass("d-none");
+                  }else if ($(".companyType").val() == "Restaurant"){
+                      $(".category3").removeClass("d-none");
+                  }else if ($(".companyType").val() == "Santé"){
+                      $(".category4").removeClass("d-none");
+                  }else if ($(".companyType").val() == "Culture & Loisirs"){
+                      $(".category5").removeClass("d-none");
+                  }
+
+                });
+                
+                $(".companyType").on('change', function() {
+
+                if ($(this).val() == 'Magasin'){
+                  $(".category1").removeClass("d-none");
+
+                  $(".category2").addClass("d-none");
+                  $(".category3").addClass("d-none");
+                  $(".category4").addClass("d-none");
+                  $(".category5").addClass("d-none");
+                } else if ($(this).val() == 'Service'){
+                  $(".category2").removeClass("d-none");
+
+                  $(".category1").addClass("d-none");
+                  $(".category3").addClass("d-none");
+                  $(".category4").addClass("d-none");
+                  $(".category5").addClass("d-none");
+
+                }else if ($(this).val() == 'Restaurant'){
+                  $(".category3").removeClass("d-none");
+
+                  $(".category2").addClass("d-none");
+                  $(".category1").addClass("d-none");
+                  $(".category4").addClass("d-none");
+                  $(".category5").addClass("d-none");
+
+                }else if ($(this).val() == 'Santé'){
+                  $(".category4").removeClass("d-none");
+
+                  $(".category2").addClass("d-none");
+                  $(".category3").addClass("d-none");
+                  $(".category1").addClass("d-none");
+                  $(".category5").addClass("d-none");
+
+                }else if ($(this).val() == 'Culture & Loisirs'){
+                  $(".category5").removeClass("d-none");
+
+                  $(".category2").addClass("d-none");
+                  $(".category3").addClass("d-none");
+                  $(".category4").addClass("d-none");
+                  $(".category1").addClass("d-none");
+
+                }
+              });
+              </script>               
+              <div class="category1">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Magasin" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Electroménager</option>
+                      <option>Jeux-Vidéos</option>
+                      <option>High-Tech</option>
+                      <option>Alimentation</option>
+                      <option>Vêtements</option>
+                      <option>Films & Séries</option>
+                      <option>Chaussures</option>
+                      <option>Bricolage</option>
+                      <option>Montres & Bijoux</option>
+                      <option>Téléphonie</option>
+                      <option>Restaurant</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="category2">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Service" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Menuiserie</option>
+                      <option>Plomberie</option>
+                      <option>Piscine</option>
+                      <option>Meubles</option>
+                      <option>Vêtements</option>
+                      <option>Gestion de patrimoine</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category3">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Restaurant" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Français</option>
+                      <option>Local</option>
+                      <option>Italien</option>
+                      <option>Fast-Food</option>
+                      <option>Asiatique</option>
+                      <option>Pizzeria</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category4">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Santé" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Pharmacie</option>
+                      <option>Aide à la personne</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category5">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Culture et loisirs" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Parc d'attraction</option>
+                      <option>Musée</option>
+                      <option>Tourisme</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
                 <label for="siretnumber">Numéro de SIRET</label>
                 <input type="text" name="siretNumber" class="form-control" id="siretnumber"
                   placeholder="ex: 123 456 789 00012">
@@ -234,7 +459,7 @@
               <div class="form-group ">
                 <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
                 <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput"
-                  style="width:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur">
+                  style="width:50px" title="Choissisez une couleur">
               </div>
               <label for="banniere">Ajouter une image de couverture</label><br>
               <input type="file" name="banniere" id="banniere"><br><br>
@@ -273,8 +498,8 @@
     var autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.addListener('place_changed', function () {
       var place = autocomplete.getPlace();
-      // $('#latitude').val(place.geometry['location'].lat());
-      // $('#longitude').val(place.geometry['location'].lng());
+      $('#latitude').val(place.geometry['location'].lat());
+      $('#longitude').val(place.geometry['location'].lng());
       // // --------- show lat and long ---------------
       // $("#lat_area").removeClass("d-none");
       // $("#long_area").removeClass("d-none");
@@ -291,8 +516,4 @@
 
   });
 
-  $('.companyType').change(function () {
-    var selectedItem = $('.companyType').val();
-    alert(selectedItem);
-  });
 </script>
