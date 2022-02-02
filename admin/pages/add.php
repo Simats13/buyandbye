@@ -1,4 +1,6 @@
-<?php include('includes/scripts.php'); ?>
+<?php
+  include('includes/scripts.php');
+?>
 
 <style>
   .padding {

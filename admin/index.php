@@ -1,6 +1,13 @@
 <?php
 use Sk\Geohash\Geohash;
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../config/vendor/phpmailer/phpmailer/src/Exception.php';
+require '../config/vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require '../config/vendor/phpmailer/phpmailer/src/SMTP.php';
+
 include('../auth.php');
 // print_r($_SESSION);
 include('../config/dbconfig.php'); 
@@ -126,7 +133,7 @@ echo $g->encode($_POST['latitude'], $_POST['longitude'],9);
  */
 
 if(isset($_POST['add_enterprise'])){
-    $lastname = htmlspecialchars(trim($_POST['ownerLastName']));
+    /*$lastname = htmlspecialchars(trim($_POST['ownerLastName']));
     $firstname = htmlspecialchars(trim($_POST['ownerFirstName']));
     $mail = htmlspecialchars(trim($_POST['email']));
     $enterprisename = htmlspecialchars(trim($_POST['enterpriseName']));
@@ -165,9 +172,40 @@ if(isset($_POST['add_enterprise'])){
         $firestore->collection('test')->document($docId)->update([
             ['path' => 'imgUrl', 'value' => $image_url]
         ]);
-        
+    }*/
 
+    $mail = new PHPMailer(true);
+    $mail->IsSMTP();
+    $mail->Host = 'ssl://mail.buyandbye.fr';          //Adresse IP ou DNS du serveur SMTP
+    $mail->Port = 465;                                //Port TCP du serveur SMTP
+    $mail->SMTPAuth = 1;                              //Utiliser l'identification
+    //$mail->SMTPDebug = 2;                           // enables SMTP debug information (for testing)
+
+    if($mail->SMTPAuth){
+      $mail->SMTPSecure = 'ssl';                      //Protocole de sécurisation des échanges avec le SMTP
+      $mail->Username   = 'no-reply@buyandbye.fr';    //Adresse email à utiliser
+      $mail->Password   = '0Wz7Bg&n(}-lOjn3NJ';       //Mot de passe de l'adresse email à utiliser
     }
+
+    $mail->CharSet  = 'UTF-8';
+    $mail->From     = 'no-reply@buyandbye.fr';        //L'email à afficher pour l'envoi
+    $mail->FromName = 'Mail automatique Buy&Bye';     //L'alias à afficher pour l'envoi
+
+    $mail->Subject  = 'Création de boutique Bye&Bye'; //Le sujet du mail
+    $mail->WordWrap = 50; 			                  //Nombre de caracteres pour le retour a la ligne automatique
+    $mail->MsgHTML('
+        <div>Mon message en <code>HTML</code></div>
+    ');
+    $mail->IsHTML(true);
+
+    $mail->AddAddress(trim($_POST['email']));
+    $mail->send();
+
+    /*if(!$mail->send()) {
+        echo 'Mailer Error: ' . $mail->ErrorInfo;
+    } else {
+        echo 'Message has been sent';
+    }*/
 }
 ?>
 
@@ -175,12 +213,7 @@ if(isset($_POST['add_enterprise'])){
 <?php include('includes/header.php'); ?>
 <?php include('includes/navbar.php'); ?>
 
-<?php
-    include('pages/'.$page.'.php');
-    ?>
-
-
-
+<?php include('pages/'.$page.'.php');?>
 <?php include('includes/footer.php'); ?>
 
 </body>
