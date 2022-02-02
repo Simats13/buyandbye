@@ -231,33 +231,33 @@
             <form method="post" enctype="multipart/form-data">
               <div class="form-group">
                 <label for="lastname">Nom</label>
-                <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont">
+                <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont" required>
               </div>
               <div class="form-group">
                 <label for="firstname">Prénom</label>
-                <input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric">
+                <input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric" required>
               </div>
               <div class="form-group">
                 <label for="mail">Adresse E-Mail</label>
-                <input type="text" name="email" id="mail" class="form-control" placeholder="ex: email@email.com">
+                <input type="text" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" required>
               </div>
               <br>
               <h3>Informations de l'entreprise</h3>
               <div class="form-group">
                 <label for="enterprisename">Nom</label>
                 <input type="text" name="enterpriseName" class="form-control" id="enterprisename"
-                  placeholder="ex: Dupont SAS">
+                  placeholder="ex: Dupont SAS" required>
               </div>
               <div class="form-group">
                 <label for="autocomplete">Adresse</label>
-                <input type="text" name="autocomplete" class="form-control" id="autocomplete" >
+                <input type="text" name="autocomplete" class="form-control" id="autocomplete" required>
                 <input type="hidden" name="latitude" id="latitude" class="form-control" >  
                 <input type="hidden" name="longitude" id="longitude" class="form-control" >
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
                 <input type="text" name="enterprisePhone" class="form-control" id="enterprisephone"
-                  placeholder="ex: 01 02 03 04 05">
+                  placeholder="ex: 01 02 03 04 05" required>
               </div>
 
               <div class="form-group">
@@ -270,7 +270,7 @@
                 <input type="checkbox" name="isPhoneVisible" id="isphonevisible">
               </div>
 
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <div class="conteneur">
                   <div class="flex"><label for="isrestaurant">L'entreprise est-elle un restaurant ?</label></div>
                   <div class="flex onMouseover">ⓘ
@@ -279,19 +279,19 @@
                   </div>
                 </div>
                 <input type="checkbox" name="isRestaurant" id="isrestaurant" class>
-              </div>
+              </div> -->
               <div class="form-group">
                 <label for="livraison">L'entreprise propose-t-elle la livraison de produit ?</label><br>
-                <input type="checkbox" name="livraison" id="livraison">
+                <input type="checkbox" name="livraison" id="livraison" >
               </div>
               <div class="form-group">
                 <label for="exampleFormControlTextarea1">Description</label>
                 <textarea class="form-control" name="description" id="exampleFormControlTextarea1"
-                  rows="3"></textarea>
+                  rows="3" required></textarea>
               </div>
               <div class="form-group">
                 <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
-                <select value="" class="custom-select mr-sm-2 companyType" name="companyType" id="companyType">
+                <select value="" class="custom-select mr-sm-2 companyType" name="companyType" id="companyType" required>
                   <option value="" selected disabled hidden>Veuillez choisir un type d'entreprise</option>
                   <option value="Magasin">Magasin</option>
                   <option value="Service">Service</option>
@@ -449,12 +449,12 @@
               <div class="form-group">
                 <label for="siretnumber">Numéro de SIRET</label>
                 <input type="text" name="siretNumber" class="form-control" id="siretnumber"
-                  placeholder="ex: 123 456 789 00012">
+                  placeholder="ex: 123 456 789 00012" required>
               </div>
               <div class="form-group">
                 <label for="tvanumber">Numéro de TVA</label>
                 <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
-                  placeholder="ex: FR 00 123456789">
+                  placeholder="ex: FR 00 123456789" required>
               </div>
               <div class="form-group ">
                 <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>

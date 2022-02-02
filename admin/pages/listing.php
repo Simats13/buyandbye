@@ -1,5 +1,5 @@
 <?php 
-$collectionReference = $firestore->collection('test');
+$collectionReference = $firestore->collection('magasins');
 $documents = $collectionReference->documents();
 
 

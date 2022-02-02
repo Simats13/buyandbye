@@ -134,7 +134,7 @@ if(isset($_POST['edit_listing'])){
         // $updatedUser = $auth->updateUser($id, $properties);
  
 
-        $firestore->collection("test")->document($id)->update([
+        $firestore->collection("magasins")->document($id)->update([
             ['path' => 'ClickAndCollect', 'value' => $clickandcollect],
             ['path' => 'adresse', 'value' => $adress],
             ['path' => 'email', 'value' => $email],
@@ -174,7 +174,12 @@ if(isset($_POST['add_enterprise'])){
     $longitude = htmlspecialchars(trim($_POST['longitude']));
     $latitude = htmlspecialchars(trim($_POST['latitude']));
     $type = htmlspecialchars(trim($_POST['companyType']));
-    $tags = $_POST['select'] ?: array("Aucun Tag");
+    if(isset($_POST['select'])){
+        $tags = $_POST['select'];
+    }else{
+        $tags = array("Aucun Tag");
+    }
+
     $geohash = $g->encode($latitude,$longitude,9);
 
 
@@ -199,7 +204,7 @@ if(isset($_POST['add_enterprise'])){
             'mainCategorie' => $tags,
             'type' => $type,
         ];
-        $doc = $firestore->collection('test')->add($data);
+        $doc = $firestore->collection('magasins')->add($data);
         $docId = $doc->id();
 
         if($_FILES["banniere"]['size'] != 0){
@@ -209,7 +214,7 @@ if(isset($_POST['add_enterprise'])){
         }
        
         
-        $firestore->collection('test')->document($docId)->update([
+        $firestore->collection('magasins')->document($docId)->update([
             ['path' => 'imgUrl', 'value' => $image_url],
             ['path' => 'id', 'value' => $docId]
         ]);
