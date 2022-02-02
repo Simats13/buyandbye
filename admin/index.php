@@ -211,7 +211,8 @@ if(isset($_POST['add_enterprise'])){
        
         
         $firestore->collection('test')->document($docId)->update([
-            ['path' => 'imgUrl', 'value' => $image_url]
+            ['path' => 'imgUrl', 'value' => $image_url],
+            ['path' => 'id', 'value' => $docId]
         ]);
         
         //Création de l'utilisateur sur Firebase
