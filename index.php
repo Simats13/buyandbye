@@ -34,10 +34,13 @@ if(isset($_POST['login']))
             $idTokenString = $signInResult->idToken();
 
 			if($cookie == true){
+				$sessionCookieString = $auth->createSessionCookie($idTokenString, $oneWeek);
 				try {
-					$sessionCookieString = $auth->createSessionCookie($idTokenString, $oneWeek);
+					$verifiedSessionCookie = $auth->verifySessionCookie($sessionCookieString);
+					$uid = $verifiedSessionCookie->claims()->get('sub');
 					$_SESSION['cookie'] = $sessionCookieString;
-					$_SESSION['status'] = "Connexion réussie Cookie !";
+					$_SESSION['verified_user_id'] = $uid;
+					$_SESSION['status'] = "Connexion réussie !";
 					header('Location: /admin/index.php');
 					exit();
 				} catch (FailedToCreateSessionCookie $e) {
@@ -74,6 +77,7 @@ if(isset($_POST['login']))
 		
         catch(Exception $e)
         {
+			
             $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";	
             header('Location:/');
             exit();
@@ -82,6 +86,7 @@ if(isset($_POST['login']))
     } 
     catch(\Kreait\Firebase\Exception\Auth\UserNotFound $e)
     {
+		echo $e;
         $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";
         header('Location:/');
         exit();

@@ -9,7 +9,6 @@ require '../config/vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require '../config/vendor/phpmailer/phpmailer/src/SMTP.php';
 
 include('../auth.php');
-// print_r($_SESSION);
 include('../config/dbconfig.php'); 
 $pages = scandir('pages/');
 if(isset($_GET['page']) && !empty($_GET['page'])){
@@ -20,6 +19,18 @@ if(isset($_GET['page']) && !empty($_GET['page'])){
     }
 }else{
     $page = "dashboard";
+}
+
+
+function randomPassword() {
+    $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 12; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
 }
 
 // Vérifie si l'image est correcte, renvoie true si c'est le cas
@@ -34,13 +45,13 @@ function checkImageParameters($storage, $id) {
         if($check !== false) {
             $uploadOk = 1;
         } else {
-            $_POST['errors'] = "Ce n'est pas une image, seuls les fichiers aux formats JPG, JPEG et PNG sont autorisés";
+            $_SESSION['errors'] = "Ce n'est pas une image, seuls les fichiers aux formats JPG, JPEG et PNG sont autorisés";
             $uploadOk = 0;
         }
         
 
         // Vérifie la taille de l'image, ne doit pas excéder 5 mo
-        if ($_FILES["banniere"]["size"] > 500000) {
+        if ($_FILES["banniere"]["size"] > 5000000) {
         $_SESSION['errors'] = "Désolé votre image est trop large";
         $uploadOk = 0;
         }
@@ -84,6 +95,7 @@ if(isset($_POST['delete_listing']))
     $deleteResult = $collectionReference->document($doc)->delete();
     if($deleteResult)
     {
+        $auth->deleteUser($doc);
         $_SESSION['status'] = "Entreprise supprimée";
         header('Location: ?page=listing');
         exit();
@@ -97,8 +109,7 @@ if(isset($_POST['delete_listing']))
 
 /**Edition d'une entreprise */
 if(isset($_POST['edit_listing'])){
-$g = new Geohash();
-echo $g->encode($_POST['latitude'], $_POST['longitude'],9);
+    $g = new Geohash();
     $id = $_POST['edit_listing'];
     $name = htmlspecialchars(trim($_POST['companyName']));
     $email = htmlspecialchars(trim($_POST['email']));
@@ -109,12 +120,28 @@ echo $g->encode($_POST['latitude'], $_POST['longitude'],9);
     $livraison = isset($_POST['livraison']) ? true : false; 
     $image_url = htmlspecialchars(trim($_POST['old_banniere']));
     $phone = htmlspecialchars(trim($_POST['phone']));
+    $longitude = htmlspecialchars(trim($_POST['longitude']));
+    $latitude = htmlspecialchars(trim($_POST['latitude']));
+    $type = htmlspecialchars(trim($_POST['companyType']));
+    $tags = $_POST['select'] ?: array("Aucun Tag");
+    $geohash = $g->encode($latitude,$longitude,9);
 
-    $image_url = checkImageParameters($storage, $id);
+    if($_FILES["banniere"]['size'] != 0) {
+        $image_url = checkImageParameters($storage, $id);
+    }
 
     // Modifie les valeurs dans la BDD
     if(!isset($_SESSION['status'])){
-        $firestore->collection("test")->document($id)->update([
+ 
+        // $properties = [
+        //     'displayName' => $name,
+        //     'email' => $email,
+        // ];
+
+        // $updatedUser = $auth->updateUser($id, $properties);
+ 
+
+        $firestore->collection("magasins")->document($id)->update([
             ['path' => 'ClickAndCollect', 'value' => $clickandcollect],
             ['path' => 'adresse', 'value' => $adress],
             ['path' => 'email', 'value' => $email],
@@ -124,6 +151,10 @@ echo $g->encode($_POST['latitude'], $_POST['longitude'],9);
             ['path' => 'phone', 'value' => $phone],
             ['path' => 'description', 'value' => $description],
             ['path' => 'colorStore', 'value' => $color],
+            ['path' => 'type', 'value' => $type],
+            ['path' => 'mainCategorie', 'value' => $tags],
+            ['path' => 'position.geopoint', 'value' => new \Google\Cloud\Core\GeoPoint($latitude,$longitude)],
+            ['path' => 'position.geohash', 'value' => $geohash],
         ]);
     }
 }
@@ -133,7 +164,8 @@ echo $g->encode($_POST['latitude'], $_POST['longitude'],9);
  */
 
 if(isset($_POST['add_enterprise'])){
-    /*$lastname = htmlspecialchars(trim($_POST['ownerLastName']));
+    $g = new Geohash();
+    $lastname = htmlspecialchars(trim($_POST['ownerLastName']));
     $firstname = htmlspecialchars(trim($_POST['ownerFirstName']));
     $mail = htmlspecialchars(trim($_POST['email']));
     $enterprisename = htmlspecialchars(trim($_POST['enterpriseName']));
@@ -146,9 +178,20 @@ if(isset($_POST['add_enterprise'])){
     $tvanumber = htmlspecialchars(trim($_POST['tvaNumber']));
     $color = htmlspecialchars(trim(ltrim($_POST['color'],"#")));
     $description = htmlspecialchars(trim($_POST['description']));
+    $longitude = htmlspecialchars(trim($_POST['longitude']));
+    $latitude = htmlspecialchars(trim($_POST['latitude']));
+    $type = htmlspecialchars(trim($_POST['companyType']));
+    if(isset($_POST['select'])){
+        $tags = $_POST['select'];
+    }else{
+        $tags = array("Aucun Tag");
+    }
 
-    // Crée les valeurs dans la BDD
+    $geohash = $g->encode($latitude,$longitude,9);
+
+
     if(!isset($_SESSION['status'])){
+        // Crée les valeurs dans la BDD
         $data = [
             'Lname' => $lastname,
             'Fname' => $firstname,
@@ -159,21 +202,43 @@ if(isset($_POST['add_enterprise'])){
             'phone' => $enterprisephone,
             'livraison' => $livraison,
             'isPhoneVisible' => $isphonevisible,
-            'isRestaurant' => $isrestaurant,
+            'isRestaurant' => $isrestaurant, //NE SERT PLUS CAR TYPE == RESTAURANT
             'siretNumber' => $siretnumber,
             'tvaNumber' => $tvanumber,
             'colorStore' => $color,
             'description' => $description,
+            'position' => ['geohash' => $geohash, 'geopoint' => new \Google\Cloud\Core\GeoPoint($latitude,$longitude)],
+            'mainCategorie' => $tags,
+            'type' => $type,
         ];
-        $doc = $firestore->collection('test')->add($data);
+        $doc = $firestore->collection('magasins')->add($data);
         $docId = $doc->id();
 
-        $image_url = checkImageParameters($storage, $docId);
-        $firestore->collection('test')->document($docId)->update([
-            ['path' => 'imgUrl', 'value' => $image_url]
+        if($_FILES["banniere"]['size'] != 0){
+            $image_url = checkImageParameters($storage, $docId) ?: "https://www.themeta.news/wp-content/themes/meta/img/noimage.jpg";
+        }else{
+            $image_url = "https://www.themeta.news/wp-content/themes/meta/img/noimage.jpg";
+        }
+       
+        $firestore->collection('magasins')->document($docId)->update([
+            ['path' => 'imgUrl', 'value' => $image_url],
+            ['path' => 'id', 'value' => $docId]
         ]);
-    }*/
+    }
 
+    //Création de l'utilisateur sur Firebase
+    $userProperties = [
+        'uid' => $docId,
+        'email' => $mail,
+        'emailVerified' => false,
+        'password' => 'azerty',
+        'displayName' => $firstname.' '.$lastname,
+        'disabled' => false,
+    ];
+    $createdUser = $auth->createUser($userProperties);
+    $_SESSION['success'] = "L'entreprise a correctement été créée !";
+
+    // Envoi automatique de mail
     $mail = new PHPMailer(true);
     $mail->IsSMTP();
     $mail->Host = 'ssl://mail.buyandbye.fr';          //Adresse IP ou DNS du serveur SMTP
@@ -205,16 +270,18 @@ if(isset($_POST['add_enterprise'])){
         echo 'Mailer Error: ' . $mail->ErrorInfo;
     } else {
         echo 'Message has been sent';
-    }*/
+    }*/    
 }
 ?>
 
 <!-- INCLUS LES PAGES PHP  -->
+<?php include('includes/scripts.php'); ?>
 <?php include('includes/header.php'); ?>
 <?php include('includes/navbar.php'); ?>
 
 <?php include('pages/'.$page.'.php');?>
 <?php include('includes/footer.php'); ?>
+
 
 </body>
 

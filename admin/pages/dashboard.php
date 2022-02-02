@@ -137,13 +137,7 @@
           <canvas id="myPieChart"></canvas>
         </div>
         <div class="mt-4 text-center small">
-          <?php foreach($compteur as $test){
-?>
-          <span class="mr-2">
-            <i class="fas fa-circle text-primary"></i> <?= $test->url;?>
-          </span>
 
-          <?php }?>
           <!-- <span class="mr-2">
                     <i class="fas fa-circle text-success"></i> Nom_2
                 </span>
