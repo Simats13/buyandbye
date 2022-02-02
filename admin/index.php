@@ -147,8 +147,7 @@ if(isset($_POST['edit_listing'])){
             ['path' => 'colorStore', 'value' => $color],
             ['path' => 'type', 'value' => $type],
             ['path' => 'mainCategorie', 'value' => $tags],
-            ['path' => 'position.latitude', 'value' => $longitude],
-            ['path' => 'position.longitude', 'value' => $latitude],
+            ['path' => 'position.geopoint', 'value' => new \Google\Cloud\Core\GeoPoint($latitude,$longitude)],
             ['path' => 'position.geohash', 'value' => $geohash],
         ]);
     }
@@ -197,7 +196,7 @@ if(isset($_POST['add_enterprise'])){
             'tvaNumber' => $tvanumber,
             'colorStore' => $color,
             'description' => $description,
-            'position' => ['geohash' => $geohash, 'longitude' => $longitude, 'latitude' => $latitude],
+            'position' => ['geohash' => $geohash, 'geopoint' => new \Google\Cloud\Core\GeoPoint($latitude,$longitude)],
             'mainCategorie' => $tags,
             'type' => $type,
         ];
@@ -227,7 +226,7 @@ if(isset($_POST['add_enterprise'])){
         
         $createdUser = $auth->createUser($userProperties);
 
-        $_SESSION['status'] = "L'entreprise a correctement été créée !";
+        $_SESSION['success'] = "L'entreprise a correctement été créée !";
         
     }
 
