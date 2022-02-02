@@ -119,7 +119,6 @@ if(isset($_POST['edit_listing'])){
     $tags = $_POST['select'] ?: array("Aucun Tag");
     $geohash = $g->encode($latitude,$longitude,9);
 
-     print_r($tags);
     if($_FILES["banniere"]['size'] != 0) {
         $image_url = checkImageParameters($storage, $id);
     }

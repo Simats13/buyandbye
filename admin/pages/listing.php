@@ -303,8 +303,8 @@ $documents = $collectionReference->documents();
                       <div class="form-group">
                             <label for="autocomplete"> Adresse de l'entreprise </label>
                             <input type="text" name="autocomplete" id="autocomplete_<?=$document->id()?>" class="form-control" placeholder="Avenue des Champs-Elysée, Paris" value="<?=$document['adresse']?>" required>
-                            <input type="text" name="latitude" id="latitude_<?=$document->id()?>" class="form-control" value="<?=$document['position']['geopoint']->latitude()?>">  
-                            <input type="text" name="longitude" id="longitude_<?=$document->id()?>" class="form-control" value="<?=$document['position']['geopoint']->longitude()?>">
+                            <input type="hidden" name="latitude" id="latitude_<?=$document->id()?>" class="form-control" value="<?=$document['position']['geopoint']->latitude()?>">  
+                            <input type="hidden" name="longitude" id="longitude_<?=$document->id()?>" class="form-control" value="<?=$document['position']['geopoint']->longitude()?>">
                       </div>  
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Adresse E-Mail</label>
