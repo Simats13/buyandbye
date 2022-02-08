@@ -313,8 +313,11 @@ $documents = $collectionReference->documents();
                       </div>
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Numéro de téléphone</label>
-                        <input type="text" name="phone" class="form-control" id="exampleFormControlInput1"
-                          placeholder="01 02 03 04 05" value="<?=$document['phone']?>" required>
+                        <!-- <input type="text" name="phone" class="form-control" id="exampleFormControlInput1"
+                          placeholder="01 02 03 04 05" value="" required> -->
+                          <input type="tel" id="phone" class="form-control" name="phone"  value="<?=$document['phone']?>"
+                          pattern="[0-9]{2}.[0-9]{2}.[0-9]{2}.[0-9]{2}.[0-9]{2}"
+                          required>
                       </div>
                       <div class="form-group">
                         <label for="exampleFormControlTextarea1">Description</label>

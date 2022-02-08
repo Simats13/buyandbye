@@ -181,6 +181,8 @@ if(isset($_POST['add_enterprise'])){
     $longitude = htmlspecialchars(trim($_POST['longitude']));
     $latitude = htmlspecialchars(trim($_POST['latitude']));
     $type = htmlspecialchars(trim($_POST['companyType']));
+    $password = randomPassword();
+    $count = 0;
     if(isset($_POST['select'])){
         $tags = $_POST['select'];
     }else{
@@ -201,6 +203,7 @@ if(isset($_POST['add_enterprise'])){
             'adresse' => $autocomplete,
             'phone' => $enterprisephone,
             'livraison' => $livraison,
+            'count' => $count,
             'isPhoneVisible' => $isphonevisible,
             'isRestaurant' => $isrestaurant, //NE SERT PLUS CAR TYPE == RESTAURANT
             'siretNumber' => $siretnumber,
@@ -231,40 +234,147 @@ if(isset($_POST['add_enterprise'])){
         'uid' => $docId,
         'email' => $mail,
         'emailVerified' => false,
-        'password' => 'azerty',
+        'password' => $password,
         'displayName' => $firstname.' '.$lastname,
         'disabled' => false,
     ];
     $createdUser = $auth->createUser($userProperties);
     $_SESSION['success'] = "L'entreprise a correctement été créée !";
-
+    $tag = implode(",", $tags); //Conversion du tableau tags en chaîne de caractère
     // Envoi automatique de mail
-    $mail = new PHPMailer(true);
-    $mail->IsSMTP();
-    $mail->Host = 'ssl://mail.buyandbye.fr';          //Adresse IP ou DNS du serveur SMTP
-    $mail->Port = 465;                                //Port TCP du serveur SMTP
-    $mail->SMTPAuth = 1;                              //Utiliser l'identification
+    $mails = new PHPMailer(true);
+    $mails->IsSMTP();
+    $mails->Host = 'ssl://mail.buyandbye.fr';          //Adresse IP ou DNS du serveur SMTP
+    $mails->Port = 465;                                //Port TCP du serveur SMTP
+    $mails->SMTPAuth = 1;                              //Utiliser l'identification
     //$mail->SMTPDebug = 2;                           // enables SMTP debug information (for testing)
 
-    if($mail->SMTPAuth){
-      $mail->SMTPSecure = 'ssl';                      //Protocole de sécurisation des échanges avec le SMTP
-      $mail->Username   = 'no-reply@buyandbye.fr';    //Adresse email à utiliser
-      $mail->Password   = '0Wz7Bg&n(}-lOjn3NJ';       //Mot de passe de l'adresse email à utiliser
+    if($mails->SMTPAuth){
+      $mails->SMTPSecure = 'ssl';                      //Protocole de sécurisation des échanges avec le SMTP
+      $mails->Username   = 'no-reply@buyandbye.fr';    //Adresse email à utiliser
+      $mails->Password   = '0Wz7Bg&n(}-lOjn3NJ';       //Mot de passe de l'adresse email à utiliser
     }
 
-    $mail->CharSet  = 'UTF-8';
-    $mail->From     = 'no-reply@buyandbye.fr';        //L'email à afficher pour l'envoi
-    $mail->FromName = 'Mail automatique Buy&Bye';     //L'alias à afficher pour l'envoi
+    $mails->CharSet  = 'UTF-8';
+    $mails->From     = 'no-reply@buyandbye.fr';        //L'email à afficher pour l'envoi
+    $mails->FromName = 'Mail automatique Buy&Bye';     //L'alias à afficher pour l'envoi
 
-    $mail->Subject  = 'Création de boutique Bye&Bye'; //Le sujet du mail
-    $mail->WordWrap = 50; 			                  //Nombre de caracteres pour le retour a la ligne automatique
-    $mail->MsgHTML('
-        <div>Mon message en <code>HTML</code></div>
-    ');
-    $mail->IsHTML(true);
+    $mails->Subject  = 'Création de boutique Bye&Bye'; //Le sujet du mail
+    $mails->WordWrap = 50; 			                  //Nombre de caracteres pour le retour a la ligne automatique
+    $mails->MsgHTML("
+        
+<!doctype html>
+<html lang='fr-FR'>
 
-    $mail->AddAddress(trim($_POST['email']));
-    $mail->send();
+<head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <title>Ajout de votre boutique #INSERER_NOM - Petite Camargue</title>
+    <meta name='description' content='Modification du Mot de Passe - Petite Camargue'>
+    <style type='text/css'>
+        a:hover {text-decoration: underline !important;}
+    </style>
+</head>
+
+<body marginheight='0' topmargin='0' marginwidth='0' style='margin: 0px; background-color: #f2f3f8;' leftmargin='0'>
+    <!--100% body table-->
+    <table cellspacing='0' border='0' cellpadding='0' width='100%' bgcolor='#f2f3f8'
+        style='@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: Open Sans, sans-serif;'>
+        <tr>
+            <td>
+                <table style='background-color: #f2f3f8; max-width:670px;  margin:0 auto;' width='100%' border='0'
+                    align='center' cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td style='height:80px;'>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style='text-align:center;'>
+                          <a href='http://localhost' title='logo' target='_blank'>
+                            <img width='200' height='200' src='https://firebasestorage.googleapis.com/v0/b/la-petite-camargue.appspot.com/o/assets%2Flogo%2Fcamargue.png?alt=media&token=8a6c0b55-fa07-4121-a2df-07ff2bc74fb6' title='logo' alt='logo'>
+                          </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style='height:20px;'>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width='95%' border='0' align='center' cellpadding='0' cellspacing='0'
+                                style='max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);'>
+                                <tr>
+                                    <td style='height:40px;'>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style='padding:0 35px;'>
+                                        <h1 style='color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:Rubik,sans-serif;'>Récapitulatif de vos informations</h1>
+                                        <span
+                                            style='display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;'></span>
+                                            <p style='color:#455056; font-size:15px;line-height:24px; margin:0;text-align: justify;'>
+                                                Voici un récapitulatif de toutes les informations qui ont été renseignées lors de l'inscription sur le site. Vous pouvez les modifier à tout moment depuis votre espace personnel. <strong> Certaines informations n'appaîtront pas sur l'application mobile ! </strong>
+                                            </p>
+                                            <h2 style='display: flex;'>Identifiants de Connexion : </h2>
+                                            <ul style='display: table;text-align: left;'>
+                                                <li>Email : $mail </li>
+                                                <li>Mot de Passe : $password </li>
+                                            </ul>
+                                            <h2 style='display: flex;'>Informations Personnels : </h2>
+
+                                        <ul style='display: table;text-align: left;'>
+                                            <li>Nom : $lastname </li>
+                                            <li>Prénom : $firstname</li>
+                                            <li>Adresse Email : $mail </li>
+                                            <li>Téléphone : $enterprisephone</li>
+
+                                        </ul>
+                                        <h2 style='display: flex; text-align: left;'>Informations de votre Entreprise : </h2>
+                                        <ul style='display: table; text-align: left;'>
+                                            <li>Nom de l'Entreprise : $enterprisename </li>
+                                            <li>Adresse de l'Entreprise : $autocomplete </li>
+                                            <li>Type d'Entreprise : $type</li>
+                                            <li>Numéro de Siret : $siretnumber </li>
+                                            <li>Numéro de TVA : $tvanumber </li>
+                                            <li>Description : $description</li>
+                                            <li>Livraison à domicile : ".($livraison == true ? "Oui" : "Non")."</li>
+                                            <li>Téléphone visible sur l'application : ".($isphonevisible == true ? "Oui" : "Non")." </li>
+                                            <li>Tags associés : $tag </li>
+                                            <li>Couleur de l'Entreprise : <input type='color' class='form-control form-control-color' name='color' id='exampleColorInput'
+                                                style='width:30px; height: 30px;' value='$color' disabled='disabled' ></li>
+                                            <li>Bannière de l'Entreprise :   <ul><li style='list-style-type: none;'><img height='200' src='$image_url' alt=''></li></ul> </li>
+                                        </ul>
+                                           
+                                        <a href='http://localhost'
+                                            style='background:#6675df;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;'>Modifier
+                                            ma boutique</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='height:40px;'>&nbsp;</td>
+                                </tr>
+                            </table>
+                        </td>
+                    <tr>
+                        <td style='height:20px;'>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style='text-align:center;'>
+                            <p style='font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;'>&copy; <strong>La Petite Camargue</strong></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style='height:80px;'>&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <!--/100% body table-->
+</body>
+
+</html>
+    ");
+    $mails->IsHTML(true);
+
+    $mails->AddAddress($_POST['email']);
+    $mails->send();
 
     /*if(!$mail->send()) {
         echo 'Mailer Error: ' . $mail->ErrorInfo;

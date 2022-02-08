@@ -119,7 +119,7 @@ $user = $auth->getUser($_SESSION['verified_user_id']);
             <i class="fa fa-bars"></i>
           </button>
 
-          <h1>Panneau d'Administration</h1>
+          
 
           <!-- Topbar Search -->
           <!-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
@@ -309,6 +309,7 @@ $user = $auth->getUser($_SESSION['verified_user_id']);
 
   
   <!-- Logout Modal-->
+  <form action="logout.php" method="POST"> 
   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -322,14 +323,15 @@ $user = $auth->getUser($_SESSION['verified_user_id']);
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
 
-          <form action="logout.php" method="POST"> 
+         
           
             <button type="submit" name="logout_btn" class="btn btn-primary">Déconnexion</button>
 
-          </form>
+
 
 
         </div>
       </div>
     </div>
   </div>
+  </form>

@@ -1,6 +1,4 @@
-<?php
-  include('includes/scripts.php');
-?>
+
 
 <style>
   .padding {
@@ -203,7 +201,14 @@
       ?>
     </div>
 
-    <button class="button-3" role="button" data-toggle="modal" data-target="#addShop">Ajouter manuellement</button>
+    <div class="d-flex justify-content-center">
+						<button class="btn btn-success" style="background-color:#2ea44f;" role="button" data-toggle="modal" data-target="#addShop">Ajouter manuellement
+						</button>
+				</div>
+
+        <hr class="mt-2 mb-3"/>
+
+    <!-- <button class="button-3" role="button" data-toggle="modal" data-target="#addShop">Ajouter manuellement</button> -->
     <!-- Popup ajout d'un manuel d'un magasin -->
     <div class="modal fade" id="addShop" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
       aria-hidden="true">
@@ -258,8 +263,11 @@
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
-                <input type="text" name="enterprisePhone" class="form-control" id="enterprisephone"
-                  placeholder="ex: 01 02 03 04 05" required>
+                <!-- <input type="text" name="enterprisePhone" class="form-control" id="enterprisephone"
+                  placeholder="ex: 01 02 03 04 05" required> -->
+                  <input type="tel" id="enterprisePhone" class="form-control" name="enterprisePhone"   placeholder="ex: 01 02 03 04 05"
+                  pattern="^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$"
+                          required>
               </div>
 
               <div class="form-group">
@@ -464,8 +472,9 @@
                   style="width:50px" title="Choissisez une couleur">
               </div>
               <label for="banniere">Ajouter une image de couverture</label><br>
-              <input type="file" name="banniere" id="banniere"><br><br>
-              <!-- Lier les fonctions de vérification de l'image (/pages/index.php) -->
+              <input type="file" name="banniere" id="banniere" onchange="readURL(this);"><br><br>
+              <img id="imagePreview" src="#" hidden />
+              
 
               <!-- Boutons de validation et d'annulation -->
               <div class="modal-footer">
@@ -478,9 +487,13 @@
       </div>
     </div>
 
-    <hr class="solid">
 
-    <button class="button-3" role="button">Importer un fichier CSV</button>
+    
+    <div class="d-flex justify-content-center">
+						<button class="btn btn-success " style="background-color:#2ea44f;" role="button" data-toggle="modal" data-target="#addShop">Importer un fichier CSV
+						</button>
+				</div>
+        <br>
   </div>
 </div>
 
@@ -510,6 +523,20 @@
 </script>
 
 <script>
+  function readURL(input) {
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+              $('#imagePreview')
+                  .attr('src', e.target.result)
+                  .removeAttr('hidden')
+                  .height(200);
+          };
+
+          reader.readAsDataURL(input.files[0]);
+      }
+  };
   $(function () {
     var input = document.getElementById("autocomplete");
     var autocomplete = new google.maps.places.Autocomplete(input);
