@@ -12,6 +12,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:status_alert/status_alert.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -76,6 +77,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   String? adresseGoogleUrl;
   Stream<List<DocumentSnapshot>>? stream;
   List listOfCategories = [];
+
+  bool listCategorie = false;
   bool loved = true;
   bool isRestaurant = false;
   bool checkFavoriteShop = false;
@@ -119,6 +122,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     loved = await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
+    setState(() {});
   }
 
   getSellerInfo() async {
@@ -180,6 +184,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       setState(() {
         dropdownValue = listOfCategories[0];
       });
+      return listCategorie = true;
+    } else {
+      return listCategorie = false;
     }
   }
 
@@ -686,12 +693,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                  Text(
-                                    "Catégories",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                  listCategorie
+                                      ? Text(
+                                          "Catégories",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : Container(),
                                   SizedBox(
                                     height: 10,
                                   ),
@@ -850,7 +859,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   ],
                                 )
                               : SizedBox.shrink(),
-                              Text(
+                          Text(
                             "Recommandations du commerçant",
                             style: TextStyle(
                               fontSize: 21,
@@ -904,7 +913,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             ],
                           ),
                           SizedBox(height: 25),
-                           Text(
+                          Text(
                             "Meilleures ventes",
                             style: TextStyle(
                               fontSize: 21,
@@ -1050,7 +1059,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ],
                           ),
-                           SizedBox(height: 30),
+                          SizedBox(height: 30),
                           Text(
                             "Produits disponibles",
                             style: TextStyle(
@@ -1060,40 +1069,39 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
                           SizedBox(height: 20),
 
-                           produits(dropdownValue),
+                          produits(dropdownValue),
                           SizedBox(height: 30),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 5),
-                                for (int i = 1; i < 6; i++)
-                                  Container(
-                                      height: 30,
-                                      width: 30,
-                                      margin:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          fixedSize: Size(10, 10),
-                                        ),
-                                        child: Text((i).toString(),
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: i == clickedNumber
-                                                    ? Colors.black
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          clickedNumber = i;
-                                          setState(() {});
-                                        },
-                                      ))
-                              ]),
-                          SizedBox(height: 30),
+                          // Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       SizedBox(width: 5),
+                          //       for (int i = 1; i < 6; i++)
+                          //         Container(
+                          //             height: 30,
+                          //             width: 30,
+                          //             margin:
+                          //                 EdgeInsets.only(left: 10, right: 10),
+                          //             child: TextButton(
+                          //               style: TextButton.styleFrom(
+                          //                 padding: EdgeInsets.zero,
+                          //                 fixedSize: Size(10, 10),
+                          //               ),
+                          //               child: Text((i).toString(),
+                          //                   style: TextStyle(
+                          //                       fontSize: 18,
+                          //                       fontWeight: FontWeight.w700,
+                          //                       color: i == clickedNumber
+                          //                           ? Colors.black
+                          //                           : Colors.grey)),
+                          //               onPressed: () {
+                          //                 clickedNumber = i;
+                          //                 setState(() {});
+                          //               },
+                          //             ))
+                          //     ]),
+                          // SizedBox(height: 30),
                           ////////// Design uniquement //////////
 
-                          
                           // SizedBox(height: 30),
                           // Row(
                           //     mainAxisAlignment: MainAxisAlignment.center,
@@ -1110,8 +1118,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           //                     : Colors.grey))
                           //     ]),
                           ////////// Design uniquement //////////
-                       
-                       
                         ],
                       ),
                     ],
@@ -1131,7 +1137,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
             widget.sellerID, selectedCategorie, clickedNumber),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
-          if (snapshot.data.docs.length == 0) return Text("Aucun produit disponible") ;
+          if (snapshot.data.docs.length == 0)
+            return Text("Aucun produit disponible");
           return GridView.builder(
               padding: EdgeInsets.zero,
               shrinkWrap: true,

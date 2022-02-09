@@ -58,22 +58,21 @@ class DatabaseMethods {
 
       // Vérifie si l'adresse supprimée est la première
       if (_myDocCount[0]["idDoc"] == idDoc) {
-      // Nouvelle requête pour ne pas garder l'adresse qui a été supprimée dans _myDoc
-      QuerySnapshot _myDoc2 = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(userid)
-          .collection("Address")
-          .get();
-      List<DocumentSnapshot> _myDocCount2 = _myDoc2.docs;
+        // Nouvelle requête pour ne pas garder l'adresse qui a été supprimée dans _myDoc
+        QuerySnapshot _myDoc2 = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userid)
+            .collection("Address")
+            .get();
+        List<DocumentSnapshot> _myDocCount2 = _myDoc2.docs;
 
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(userid)
-          .collection("Address")
-          .doc(_myDocCount2[0]["idDoc"])
-          .update({"chosen": true});
-      } else {
-      }
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userid)
+            .collection("Address")
+            .doc(_myDocCount2[0]["idDoc"])
+            .update({"chosen": true});
+      } else {}
 
       return true;
     }
@@ -513,44 +512,13 @@ class DatabaseMethods {
 
   Future addFavoriteShop(String? userID, sellerID, bool addFavorite) async {
     if (addFavorite == true) {
-      var seller = await FirebaseFirestore.instance
-          .collection('magasins')
-          .doc(sellerID)
-          .get();
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .collection('liked')
-          .doc(sellerID)
-          .set({
-        'ClickAndCollect': seller['ClickAndCollect'],
-        'FCMToken': seller['FCMToken'],
-        'admin': seller['admin'],
-        'adresse': seller['adresse'],
-        'colorStore': seller['colorStore'],
-        'commandNb': seller['commandNb'].toInt(),
-        'description': seller['description'],
-        'email': seller['email'],
-        'id': seller['id'],
-        'imgUrl': seller['imgUrl'],
-        'livraison': seller['livraison'],
-        'mainCategorie': seller['mainCategorie'],
-        'name': seller['name'],
-        'nameSearch': seller['nameSearch'],
-        'phone': seller['phone'],
-        'position': {
-          'geohash': seller['position']['geohash'],
-          'geopoint': seller['position']['geopoint']
-        },
-        'sponsored': seller['sponsored'],
+      await FirebaseFirestore.instance.collection('users').doc(userID).update({
+        "loved": FieldValue.arrayUnion([sellerID]),
       });
     } else {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .collection('liked')
-          .doc(sellerID)
-          .delete();
+      await FirebaseFirestore.instance.collection('users').doc(userID).update({
+        'loved': FieldValue.arrayRemove([sellerID]),
+      });
     }
   }
 
@@ -573,13 +541,12 @@ class DatabaseMethods {
   Future checkFavoriteShopSeller(String? sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userID = user.uid;
+
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection("users")
-        .doc(userID)
-        .collection("liked")
-        .where('id', isEqualTo: sellerID)
+        .where("id", isEqualTo: userID)
+        .where("loved", arrayContains: sellerID)
         .get();
-
     if (querySnapshot.docs.isEmpty) {
       return true;
     } else {
