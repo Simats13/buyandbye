@@ -48,8 +48,8 @@ class MapUtils {
   MapUtils._();
 
   static Future<void> openMap(double latitude, double longitude) async {
-    String googleUrl =
-        'https://www.google.com/maps/search/?api=1&query=43.6889085,4.2724933';
+    String googleUrl = Uri.encodeFull(
+        'https://www.google.com/maps/search/?api=1&query=43.6889085,4.2724933');
     if (await canLaunch(googleUrl)) {
       await launch(googleUrl);
     } else {
@@ -73,7 +73,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       dropdownValue;
   Stream? usersStream, chatRoomsStream;
   String? userid;
-  String adresseGoogleUrl = "145 avenue de la condamine, vauvert";
+  String? adresseGoogleUrl;
   Stream<List<DocumentSnapshot>>? stream;
   List listOfCategories = [];
   bool loved = true;
@@ -125,16 +125,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getMagasinInfo(widget.sellerID);
     selectedUserToken = "${querySnapshot.docs[0]["FCMToken"]}";
-    mainCategorie = "${querySnapshot.docs[0]["mainCategorie"]}";
+    mainCategorie = "${querySnapshot.docs[0]["type"]}";
+    adresseGoogleUrl = "${querySnapshot.docs[0]["adresse"]}";
     // Retire les caractères en trop et split les catégories dans une liste
-    mainCategorie = mainCategorie.replaceAll('[', '');
-    mainCategorie = mainCategorie.replaceAll(']', '');
-    List listOfCategories = mainCategorie.split(', ');
-    // Cherche si une des catégories est Restaurant
-    for (var i = 0; i < listOfCategories.length; i++) {
-      if (listOfCategories[i] == "Restaurant") {
-        isRestaurant = true;
-      }
+    if (mainCategorie == "Restaurant") {
+      isRestaurant = true;
     }
     setState(() {});
   }
@@ -173,17 +168,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         .collection("produits")
         .get();
 
-    // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
-    // pas déjà dans la liste
-    for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
-      String? categoryName = querySnapshot.docs[i]["categorie"];
-      if (!listOfCategories.contains(categoryName)) {
-        listOfCategories.add(querySnapshot.docs[i]["categorie"]);
+    if (querySnapshot.docs.length != 0) {
+      // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
+      // pas déjà dans la liste
+      for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
+        String? categoryName = querySnapshot.docs[i]["categorie"];
+        if (!listOfCategories.contains(categoryName)) {
+          listOfCategories.add(querySnapshot.docs[i]["categorie"]);
+        }
       }
+      setState(() {
+        dropdownValue = listOfCategories[0];
+      });
     }
-    setState(() {
-      dropdownValue = listOfCategories[0];
-    });
   }
 
   Widget getFooter() {
@@ -201,8 +198,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
               ),
             ),
             onPressed: () async {
-              await launch(
-                  "https://www.google.com/maps/search/?api=1&query=$adresseGoogleUrl");
+              await launch(Uri.encodeFull(
+                  "https://www.google.com/maps/search/?api=1&query=$adresseGoogleUrl"));
             }),
         SizedBox(
           width: 30,
@@ -846,57 +843,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                                   MultiImageProvider(
                                                       _imageProviders);
                                               showImageViewerPager(
-                                                  context, multiImageProvider, immersive: false);
+                                                  context, multiImageProvider,
+                                                  immersive: false);
                                             })),
                                     SizedBox(height: 30),
                                   ],
                                 )
                               : SizedBox.shrink(),
-                          Text(
-                            "Produits disponibles",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-
-                          dropdownValue == null
-                              ? CircularProgressIndicator()
-                              : produits(dropdownValue),
-                          SizedBox(height: 30),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 5),
-                                for (int i = 1; i < 6; i++)
-                                  Container(
-                                      height: 30,
-                                      width: 30,
-                                      margin:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          fixedSize: Size(10, 10),
-                                        ),
-                                        child: Text((i).toString(),
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: i == clickedNumber
-                                                    ? Colors.black
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          clickedNumber = i;
-                                          setState(() {});
-                                        },
-                                      ))
-                              ]),
-                          SizedBox(height: 30),
-                          ////////// Design uniquement //////////
-
-                          Text(
+                              Text(
                             "Recommandations du commerçant",
                             style: TextStyle(
                               fontSize: 21,
@@ -949,24 +903,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ],
                           ),
-                          // SizedBox(height: 30),
-                          // Row(
-                          //     mainAxisAlignment: MainAxisAlignment.center,
-                          //     children: [
-                          //       SizedBox(width: 5),
-                          //       for (int i = 0; i < 3; i++)
-                          //         Container(
-                          //             margin:
-                          //                 EdgeInsets.only(left: 5, right: 5),
-                          //             child: Icon(Icons.circle_rounded,
-                          //                 size: 12,
-                          //                 color: i == 0
-                          //                     ? Colors.black
-                          //                     : Colors.grey))
-                          //     ]),
-                          ////////// Design uniquement //////////
-                          SizedBox(height: 30),
-                          Text(
+                          SizedBox(height: 25),
+                           Text(
                             "Meilleures ventes",
                             style: TextStyle(
                               fontSize: 21,
@@ -1112,7 +1050,68 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ],
                           ),
+                           SizedBox(height: 30),
+                          Text(
+                            "Produits disponibles",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           SizedBox(height: 20),
+
+                           produits(dropdownValue),
+                          SizedBox(height: 30),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 5),
+                                for (int i = 1; i < 6; i++)
+                                  Container(
+                                      height: 30,
+                                      width: 30,
+                                      margin:
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          fixedSize: Size(10, 10),
+                                        ),
+                                        child: Text((i).toString(),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                                color: i == clickedNumber
+                                                    ? Colors.black
+                                                    : Colors.grey)),
+                                        onPressed: () {
+                                          clickedNumber = i;
+                                          setState(() {});
+                                        },
+                                      ))
+                              ]),
+                          SizedBox(height: 30),
+                          ////////// Design uniquement //////////
+
+                          
+                          // SizedBox(height: 30),
+                          // Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       SizedBox(width: 5),
+                          //       for (int i = 0; i < 3; i++)
+                          //         Container(
+                          //             margin:
+                          //                 EdgeInsets.only(left: 5, right: 5),
+                          //             child: Icon(Icons.circle_rounded,
+                          //                 size: 12,
+                          //                 color: i == 0
+                          //                     ? Colors.black
+                          //                     : Colors.grey))
+                          //     ]),
+                          ////////// Design uniquement //////////
+                       
+                       
                         ],
                       ),
                     ],
@@ -1132,6 +1131,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
             widget.sellerID, selectedCategorie, clickedNumber),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
+          if (snapshot.data.docs.length == 0) return Text("Aucun produit disponible") ;
           return GridView.builder(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
