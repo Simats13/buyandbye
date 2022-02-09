@@ -11,7 +11,7 @@ if(isset($_GET['page']) && !empty($_GET['page'])){
         $page = "error";
     }
 }else{
-    $page = "dashboard";
+    $page = "connection";
 }
 if(isset($_SESSION['cookie'])){
 	$_SESSION['status'] = "Vous êtes déjà connecté";
@@ -170,8 +170,8 @@ if(isset($_POST['reset'])){
 
 		<head>
 			<meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
-			<title>Modification du Mot de Passe - Petite Camargue</title>
-			<meta name='description' content='Modification du Mot de Passe - Petite Camargue'>
+			<title>Modification du Mot de Passe - Bye&Bye</title>
+			<meta name='description' content='Modification du Mot de Passe - Buy&Bye'>
 			<style type='text/css'>
 				a:hover {text-decoration: underline !important;}
 			</style>
@@ -228,7 +228,7 @@ if(isset($_POST['reset'])){
 							</tr>
 							<tr>
 								<td style='text-align:center;'>
-									<p style='font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;'>&copy; <strong>La Petite Camargue</strong></p>
+									<p style='font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;'>&copy; <strong>Buy&Bye</strong></p>
 								</td>
 							</tr>
 							<tr>
@@ -294,7 +294,7 @@ if(isset($_POST['resetConfirm'])){
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Panel Admin - Petite Camargue</title>
+	<title>Espace Professionel - Buy&Bye</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
