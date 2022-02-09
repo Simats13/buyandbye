@@ -1,5 +1,3 @@
-
-
 <style>
   .padding {
     padding: 0 10%;

@@ -1,4 +1,4 @@
-<form class="login100-form validate-form" method="post">
+<form class="login100-form validate-form" method="post" style="width: 100%; height: 100%;">
 	<span class="login100-form-title p-b-43">
 		Panel Administration
 		<br> Buy&Bye
@@ -52,5 +52,10 @@
 		<button class="login100-form-btn" name="login">
 			Connexion
 		</button>
+	</div>
+	<div>
+		<a href="?page=create" class="txt1">
+			Pas de compte ? Créez-en un !
+		</a>
 	</div>
 </form>
