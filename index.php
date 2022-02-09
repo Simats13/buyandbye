@@ -295,7 +295,7 @@ if(isset($_POST['resetConfirm'])){
 <html lang="en">
 
 <head>
-	<title>Espace Professionel - Buy&Bye</title>
+	<title>Espace Professionnel - Buy&Bye</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
@@ -319,7 +319,9 @@ if(isset($_POST['resetConfirm'])){
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<!--===============================================================================================-->
+<!--===============================================================================================-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animsition/4.0.2/css/animsition.css" integrity="sha512-QOEtUtkXE66sy/LeOXlkdQn8ke3DDTTyJ/L17lGdUhnhEsA3dAWfl+EBCoEFyJcFHP9Cs0hgTCtntO4Ty8Knlg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body>
@@ -412,6 +414,39 @@ if(isset($_POST['resetConfirm'])){
 	<!--===============================================================================================-->
 	<script src="js/main.js"></script>
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/animsition/4.0.2/js/animsition.js" integrity="sha512-/k3xzxE438Du+m59yJ+coGSyEVot71Mq4TbMTPLUbxTuBe8wGpkpJp0rgsM+5qLuu3OL7+JBY0Pnas2V/8bl1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+	<script>
+	
+
+
+		$(document).ready(function() {
+			$(".animsition").animsition({
+				inClass: 'fade-in-right',
+				outClass: 'fade-out-right',
+				inDuration: 1500,
+				outDuration: 800,
+				linkElement: '.animsition-link',
+				// e.g. linkElement: 'a:not([target="_blank"]):not([href^="#"])'
+				loading: true,
+				loadingParentElement: 'body', //animsition wrapper element
+				loadingClass: 'animsition-loading',
+				loadingInner: '', // e.g '<img src="loading.svg" />'
+				timeout: false,
+				timeoutCountdown: 5000,
+				onLoadEvent: true,
+				browser: [ 'animation-duration', '-webkit-animation-duration'],
+				// "browser" option allows you to disable the "animsition" in case the css property in the array is not supported by your browser.
+				// The default setting is to disable the "animsition" in a browser that does not support "animation-duration".
+				overlay : false,
+				overlayClass : 'animsition-overlay-slide',
+				overlayParentElement : 'body',
+				transition: function(url){ window.location.href = url; }
+			});
+			});
+
+	</script>
+	
 </body>
 
 </html>
