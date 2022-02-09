@@ -1,6 +1,6 @@
 <form class="login100-form validate-form" method="post">
 	<span class="login100-form-title p-b-43">
-		Panel Administration
+		Connexion Espace Professionnel
 		<br> Buy&Bye
 	</span>
 
@@ -53,4 +53,16 @@
 			Connexion
 		</button>
 	</div>
+
+	<br>
+	<span >
+		Pas de compte ? Inscrivez-vous dès maintenant !
+	</span>
+
+	<div class="container-login100-form-btn">
+		<a href="?page=inscription" class="login100-form-btn" name="login">
+			Inscription
+		</a>
+	</div>
+
 </form>
