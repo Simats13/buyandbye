@@ -9,33 +9,54 @@ if(isset($_SESSION['cookie'])){
     $sessionCookieString = $_SESSION['cookie'];
     try {
         $verifiedSessionCookie = $auth->verifySessionCookie($sessionCookieString);
-    } catch(InvalidToken $e)
+            
+        $uid = $verifiedSessionCookie->claims()->get('sub');
+        
+        $user = $auth->getUser($uid);
+    } 
+    
+    catch(InvalidToken $e)
     {
         
         $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
         header("Location:/admin/logout.php");
         exit();
     }
-    catch(InvalidArgumentException $e)
-    {
+
+    // catch(InvalidArgumentException $e)
+    // {
        
-        $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
-        header("Location:/admin/logout.php");
-        exit();
-    } catch (FailedToVerifyToken $e) {
+    //     $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
+    //     header("Location:/admin/logout.php");
+    //     exit();
+    // } 
+    
+    catch (FailedToVerifyToken $e) {
        
-        $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
-        header("Location:/admin/logout.php");
-        exit();
-    } catch (FailedToVerifySessionCookie $e) {
         $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
         header("Location:/admin/logout.php");
         exit();
     }
     
-    $uid = $verifiedSessionCookie->claims()->get('sub');
+    catch (FailedToVerifySessionCookie $e) {
+        $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
+        header("Location:/admin/logout.php");
+        exit();
+    }
     
-    $user = $auth->getUser($uid);
+    catch(\Kreait\Firebase\Exception\Auth\UserNotFound $e)
+    {
+        $_SESSION['expiry_status'] = "Utilisateur introuvable, veuillez vous authentifier de nouveau ou créer un compte !";
+        header("Location:/admin/logout.php");
+        exit();
+    }
+
+    catch(Exception $e){
+        $_SESSION['expiry_status'] = "Utilisateur introuvable, veuillez vous authentifier de nouveau ou créer un compte !";
+        header("Location:/admin/logout.php");
+        exit();
+    }
+
 }else{
     if(isset($_SESSION['verified_user_id']))
     {
@@ -47,6 +68,9 @@ if(isset($_SESSION['cookie'])){
             try
             {
                 $verifiedIdToken = $auth->verifyIdToken($idTokenString);
+                $uid = $verifiedIdToken->claims()->get('sub');
+        
+                $user = $auth->getUser($uid);
             }
             catch(InvalidToken $e)
             {
@@ -61,6 +85,16 @@ if(isset($_SESSION['cookie'])){
                 exit();
             } catch (FailedToVerifyToken $e) {
                 $_SESSION['expiry_status'] = "Votre session a expiré, veuillez vous authentifier de nouveau !";
+                header("Location:/admin/logout.php");
+                exit();
+            }catch(Kreait\Firebase\Exception\Auth\UserNotFound $e)
+            {
+                $_SESSION['expiry_status'] = "Utilisateur introuvable, veuillez vous authentifier de nouveau ou créer un compte !";
+                header("Location:/admin/logout.php");
+                exit();
+            }
+            catch(Exception $e){
+                $_SESSION['expiry_status'] = "Utilisateur introuvable, veuillez vous authentifier de nouveau ou créer un compte !";
                 header("Location:/admin/logout.php");
                 exit();
             }

@@ -173,34 +173,20 @@
     <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">Enregistrer une nouvelle entreprise</h6>
     </div>
-
-    <!-- Affiche les erreurs de PHP si il y en a -->
+    <br>
+    <?php  if(isset($_SESSION['success'])) { ?>
     <div class="card-body">
-      <?php
-      if(isset($_SESSION['status']))
-      {
-          echo "<h5 class='alert alert-danger'>".$_SESSION['status']."</h5>";
-          unset($_SESSION['status']);
-      }
-      ?>
 
-      <?php
+
+<?php
         if(isset($_SESSION['success']))
         {
             echo "<h5 class='alert alert-success'>".$_SESSION['success']."</h5>";
             unset($_SESSION['success']);
         }
       ?>
-
-      <?php
-      if(isset($_SESSION['errors']))
-      {
-          echo "<h5 class='alert alert-danger'>".$_SESSION['errors']."</h5>";
-          unset($_SESSION['errors']);
-      }
-      ?>
-    </div>
-
+      </div>
+      <?php } ?>
     <div class="d-flex justify-content-center">
 						<button class="btn btn-success" style="background-color:#2ea44f;" role="button" data-toggle="modal" data-target="#addShop">Ajouter manuellement
 						</button>
@@ -220,12 +206,39 @@
               <span aria-hidden="true">×</span>
             </button>
           </div>
+          <?php if(isset($_SESSION['status']) || isset($_SESSION['success']) || isset($_SESSION['errors'])){ ?>
+    <div class="card-body">
+      <?php
+      if(isset($_SESSION['status']))
+      {
+          echo "<h5 class='alert alert-danger'>".$_SESSION['status']."</h5>";
+          unset($_SESSION['status']);
+          ?>
+          <script type="text/javascript">
+            $('#addShop').modal('show'); 
+        </script>
+          <?php
+      } ?>
+
+<?php
+        if(isset($_SESSION['success']))
+        {
+            echo "<h5 class='alert alert-success'>".$_SESSION['success']."</h5>";
+            unset($_SESSION['success']);
+        }
+      ?>
+
+          </div>
+          <?php }?>
           <div class="modal-body">
             <div class="popup-header">
               Une fois la boutique créée, un e-mail sera envoyé au professionnel avec les informations entrées
               ci-dessous.<br>
               Il devra alors confirmer les informations et choisir un mot de passe pour son espace personnel.
             </div>
+            
+    <!-- Affiche les erreurs de PHP si il y en a -->
+   
             <div class="conteneur">
               <div class="flex">
                 <h3>Informations personnelles</h3>
@@ -235,31 +248,31 @@
                 <span class="textOver">Informations personnelles de la personne propriétaire de l'entreprise</span>
               </div>
             </div>
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" id="add_form">
               <div class="form-group">
                 <label for="lastname">Nom</label>
-                <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont" required>
+                <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont" value="<?php echo isset($_POST["ownerLastName"]) ? $_POST["ownerLastName"] : ''; ?>" required>
               </div>
               <div class="form-group">
                 <label for="firstname">Prénom</label>
-                <input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric" required>
+                <input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric" value="<?php echo isset($_POST["ownerFirstName"]) ? $_POST["ownerFirstName"] : ''; ?>" required>
               </div>
               <div class="form-group">
                 <label for="mail">Adresse E-Mail</label>
-                <input type="text" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" required>
+                <input type="text" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" required>
               </div>
               <br>
               <h3>Informations de l'entreprise</h3>
               <div class="form-group">
                 <label for="enterprisename">Nom</label>
                 <input type="text" name="enterpriseName" class="form-control" id="enterprisename"
-                  placeholder="ex: Dupont SAS" required>
+                  placeholder="ex: Dupont SAS" value="<?php echo isset($_POST["enterpriseName"]) ? $_POST["enterpriseName"] : ''; ?>" required>
               </div>
               <div class="form-group">
                 <label for="autocomplete">Adresse</label>
-                <input type="text" name="autocomplete" class="form-control" id="autocomplete" required>
-                <input type="hidden" name="latitude" id="latitude" class="form-control" >  
-                <input type="hidden" name="longitude" id="longitude" class="form-control" >
+                <input type="text" name="autocomplete" class="form-control" id="autocomplete" value="<?php echo isset($_POST["autocomplete"]) ? $_POST["autocomplete"] : ''; ?>" required>
+                <input type="hidden" name="latitude" id="latitude" class="form-control" value="<?php echo isset($_POST["latitude"]) ? $_POST["latitude"] : '0'; ?>" required >  
+                <input type="hidden" name="longitude" id="longitude" class="form-control" value="<?php echo isset($_POST["longitude"]) ? $_POST["longitude"] : '0'; ?>" required>
               </div>
               <div class="form-group">
                 <label for="enterprisephone">Numéro de téléphone</label>
@@ -267,7 +280,7 @@
                   placeholder="ex: 01 02 03 04 05" required> -->
                   <input type="tel" id="enterprisePhone" class="form-control" name="enterprisePhone"   placeholder="ex: 01 02 03 04 05"
                   pattern="^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$"
-                          required>
+                  value="<?php echo isset($_POST["enterprisePhone"]) ? $_POST["enterprisePhone"] : ''; ?>" required>
               </div>
 
               <div class="form-group">
@@ -277,7 +290,7 @@
                     <span class="textOver">Afficher le numéro de téléphone aux clients ?</span>
                   </div>
                 </div>
-                <input type="checkbox" name="isPhoneVisible" id="isphonevisible">
+                <input type="checkbox" name="isPhoneVisible" id="isphonevisible" <?php echo isset($_POST["livraison"]) ? "checked" : ''; ?>>
               </div>
 
               <!-- <div class="form-group">
@@ -292,22 +305,22 @@
               </div> -->
               <div class="form-group">
                 <label for="livraison">L'entreprise propose-t-elle la livraison de produit ?</label><br>
-                <input type="checkbox" name="livraison" id="livraison" >
+                <input type="checkbox" name="livraison" id="livraison" <?php echo isset($_POST["livraison"]) ? "checked" : ''; ?>>
               </div>
               <div class="form-group">
                 <label for="exampleFormControlTextarea1">Description</label>
                 <textarea class="form-control" name="description" id="exampleFormControlTextarea1"
-                  rows="3" required></textarea>
+                  rows="3"  required><?php echo isset($_POST["description"]) ? $_POST["description"] : ''; ?></textarea>
               </div>
               <div class="form-group">
                 <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
                 <select value="" class="custom-select mr-sm-2 companyType" name="companyType" id="companyType" required>
                   <option value="" selected disabled hidden>Veuillez choisir un type d'entreprise</option>
-                  <option value="Magasin">Magasin</option>
-                  <option value="Service">Service</option>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Santé">Santé</option>
-                  <option value="Culture & Loisirs">Culture & Loisirs</option>
+                  <option value="Magasin"<?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Magasin</option>
+                  <option value="Service" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Service</option>
+                  <option value="Restaurant" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Restaurant</option>
+                  <option value="Santé" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Santé</option>
+                  <option value="Culture & Loisirs" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Culture & Loisirs</option>
                 </select>
               </div>
 
@@ -459,17 +472,17 @@
               <div class="form-group">
                 <label for="siretnumber">Numéro de SIRET</label>
                 <input type="text" name="siretNumber" class="form-control" id="siretnumber"
-                  placeholder="ex: 123 456 789 00012" required>
+                  placeholder="ex: 123 456 789 00012" value="<?php echo isset($_POST["siretNumber"]) ? $_POST["siretNumber"] : ''; ?>" required>
               </div>
               <div class="form-group">
                 <label for="tvanumber">Numéro de TVA</label>
                 <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
-                  placeholder="ex: FR 00 123456789" required>
+                  placeholder="ex: FR 00 123456789" value="<?php echo isset($_POST["tvaNumber"]) ? $_POST["tvaNumber"] : ''; ?>" required>
               </div>
               <div class="form-group ">
                 <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
                 <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput"
-                  style="width:50px" title="Choissisez une couleur">
+                  style="width:50px" title="Choissisez une couleur" value="<?php echo isset($_POST["color"]) ? $_POST["color"] : ''; ?>">
               </div>
               <label for="banniere">Ajouter une image de couverture</label><br>
               <input type="file" name="banniere" id="banniere" onchange="readURL(this);"><br><br>
@@ -505,7 +518,18 @@
   $(document).ready(function () {
     $("#lat_area").addClass("d-none");
     $("#long_area").addClass("d-none");
+
+    
   });
+  $(document).ready(function(){
+        $('#add_form input[type="text"]').blur(function(){
+          if(!$(this).val()){
+            $(this).addClass("border border-danger");
+          } else{
+            $(this).removeClass("border border-danger");
+          }
+        });
+      });
   google.maps.event.addDomListener(window, 'load', initialize);
 
   function initialize() {

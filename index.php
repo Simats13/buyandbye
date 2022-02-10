@@ -4,6 +4,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 include('config/dbconfig.php');
 $pages = scandir('pages/');
+
 if(isset($_GET['page']) && !empty($_GET['page'])){
     if(in_array($_GET['page'].'.php',$pages)){
         $page = $_GET['page'];
@@ -16,13 +17,13 @@ if(isset($_GET['page']) && !empty($_GET['page'])){
 if(isset($_SESSION['cookie'])){
 	$_SESSION['status'] = "Vous êtes déjà connecté";
 	header('Location: /admin/index.php');
-	exit();
+	//exit();
 }else{
 	if(isset($_SESSION['verified_user_id']))
 	{
 		$_SESSION['status'] = "Vous êtes déjà connecté";
 		header('Location: /admin/index.php');
-		exit();
+		//exit();
 	}
 }
 
@@ -33,23 +34,28 @@ if(isset($_POST['login']))
 {
     $email = htmlspecialchars(trim($_POST['email']));
     $password = htmlspecialchars(trim($_POST['password']));
-	$fiveMinutes = 300;
-	$oneWeek = new \DateInterval('P7D');
+	$oneWeek = new \DateInterval('P7D'); // PERIOD 7 JOURS
 	$cookie = isset($_POST['remember-me']) ? true : false; 
     
 
     try
     {
+		//Vérifie si l'adresse email existe sinon erreur
         $user = $auth->getUserByEmail($email);
+
+		//Si l'adresse email existe tente de se connecter avec le mot de passe sinon erreur
         try
         {
             $signInResult = $auth->signInWithEmailAndPassword($email, $password);
             $idTokenString = $signInResult->idToken();
 
+
+			//Si la case cookie est coché, crée alors une session via un cookie (1 semaine) sinon crée une session normale (1h), s'il n'y arrive pas, il y a une erreur
+
 			if($cookie == true){
 				$sessionCookieString = $auth->createSessionCookie($idTokenString, $oneWeek);
 				try {
-					$verifiedSessionCookie = $auth->verifySessionCookie($sessionCookieString);
+					$verifiedSessionCookie = $auth->verifySessionCookie($sessionCookieString,false,1200);
 					$uid = $verifiedSessionCookie->claims()->get('sub');
 					$_SESSION['cookie'] = $sessionCookieString;
 					$_SESSION['verified_user_id'] = $uid;
@@ -58,18 +64,18 @@ if(isset($_POST['login']))
 					exit();
 				} catch (\Kreait\Firebase\Exception\Auth\FailedToCreateSessionCookie $e) {
 					echo $e->getMessage();
-					$_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
+					$_SESSION['status'] = "Impossible de créer la session, veuillez réessayer ultérieurement <br>  ERROR U-05 ";
 					header('Location: /');
-					// exit();
+					exit();
 				} catch(\Kreait\Firebase\Exception\Auth\FailedToVerifySessionCookie $e){
 					echo $e->getMessage();
-					$_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
+					$_SESSION['status'] = "Impossible de vérifier la session, veuillez réessayer ultérieurement <br>  ERROR U-06";
 					header('Location: /');
-					// exit();
+					exit();
 				}
 			}else{
 				try {
-					$verifiedIdToken = $auth->verifyIdToken($idTokenString, false);
+					$verifiedIdToken = $auth->verifyIdToken($idTokenString,false,1200);
 					$uid = $verifiedIdToken->claims()->get('sub');
 					$_SESSION['verified_user_id'] = $uid;
 					$_SESSION['idToken'] = $idTokenString;
@@ -78,61 +84,40 @@ if(isset($_POST['login']))
 					exit();
 				} catch (\Kreait\Firebase\Exception\Auth\FailedToVerifyToken $e) 
 				{
-					echo $e->getMessage();
-					$_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
+					
+					$_SESSION['status'] = "Le jeton d'accès n'est pas valide, veuillez réessayer ultérieurement <br>  ERROR U-04";
 					header('Location: /');
-					// exit();
+					exit();
 				}catch (\Kreait\Firebase\Exception\Auth\IssuedInTheFuture $e)
 				{
-					echo $e->getMessage();
-					$verifiedIdToken = (new Parser())->parse($this->idToken);
+					$_SESSION['status'] = "Une erreur s'est produite, veuillez réessayer ultérieurement <br> ERROR U-03";
+					header('Location: /');
+					exit();
 				}
-				return $verifiedIdToken->getClaims();
 			}
 
-
-            
-
-        }
-		
-        catch(\Kreait\Firebase\Exception\Auth\FailedToVerifySessionCookie $e)
-        {
+        }catch(Exception $e){
 			echo $e->getMessage();
-            $_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
-            header('Location:/');
-            // exit();
-        }
-		catch(Exception $e)
-	{
-		echo $e->getMessage();
-		$_SESSION['status'] = "Erreur, veuillez réessayer ultérieurement";
-		header('Location:/');
-		// exit();
-	}
+			exit();
+		}
    
     } 
-    catch(\Kreait\Firebase\Exception\Auth\UserNotFound $e)
-    {
-		
-        $_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";
-        header('Location:/');
-        exit();
-    }catch (\Kreait\Firebase\Auth\SignIn\FailedToSignIn $e){
-		$_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";
-        header('Location:/');
-        exit();
-	}catch(Exception $e)
+	catch(\Kreait\Firebase\Exception\Auth\UserNotFound $e)
 	{
-		echo $e->getMessage();
-		$_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer !";	
+	
+		$_SESSION['status'] = "Utilisateur introuvable, veuillez réessayer ! <br> ERROR U-01";
+		header('Location:/');
+		exit();
+	}catch (\Kreait\Firebase\Auth\SignIn\FailedToSignIn $e){
+	
+		$_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer ! <br> ERROR U-02";
+		header('Location:/');
+		exit();
+	}catch(\Kreait\Firebase\Exception\InvalidArgumentException $e){
+		$_SESSION['status'] = "Mauvais couple d'identifiants, veuillez réessayer ! <br> ERROR U-02";
 		header('Location:/');
 		exit();
 	}
-	
-	
-    
-    
-
 }
 
 if(isset($_POST['reset'])){
@@ -249,7 +234,7 @@ if(isset($_POST['reset'])){
 	 $mail->send();
  
 	header('Location: ../../');
-	exit();
+	//exit();
 
 
 }
@@ -264,23 +249,23 @@ if(isset($_POST['resetConfirm'])){
 		$auth->confirmPasswordReset($oobCode, $newPassword, $invalidatePreviousSessions);
 		$_SESSION['success'] = "Votre mot de passe a bien été changé !";
 		header('Location: ../../');
-		exit();
+		//exit();
 	} catch (\Kreait\Firebase\Exception\Auth\ExpiredOobCode $e) {
 		// Handle the case of an expired reset code
 		$_SESSION['status'] = "Votre demande de réinitialisation du mot de passe a expiré ou ce lien a déjà été utilisé.
-		Veuillez en refaire la demande.";
+		Veuillez en refaire la demande. <br>  ERROR U-07 ";
 		header('Location: ../../');
 		exit();
 	} catch (\Kreait\Firebase\Exception\Auth\InvalidOobCode $e) {
 		// Handle the case of an invalid reset code
 		$_SESSION['status'] = "Votre demande de réinitialisation du mot de passe a expiré ou ce lien a déjà été utilisé.
-		Veuillez en refaire la demande.";
+		Veuillez en refaire la demande. <br>  ERROR U-07";
 		header('Location: ../../');
 		exit();
 	} catch (\Kreait\Firebase\Exception\AuthException $e) {
 		// Another error has occurred
 		$_SESSION['status'] = "Votre demande de réinitialisation du mot de passe a expiré ou ce lien a déjà été utilisé.
-		Veuillez en refaire la demande.";
+		Veuillez en refaire la demande. <br>  ERROR U-07 ";
 		header('Location: ../../');
 		exit();
 	}
@@ -292,7 +277,7 @@ if(isset($_POST['resetConfirm'])){
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 	<title>Espace Professionnel - Buy&Bye</title>
 	<meta charset="UTF-8">

@@ -4,7 +4,7 @@ use Kreait\Firebase\Factory;
 
    // $serviceAccount = ServiceAccount::fromJsonFile('oficium-11bf9-firebase-adminsdk-2w9v8-930d68fc97.json');
    $firebase = (new Factory)
-      ->withServiceAccount(__DIR__.'\la-petite-camargue-firebase-adminsdk-oqrlr-b53912bdc7.json');
+      ->withServiceAccount(__DIR__.'\oficium-11bf9-firebase-adminsdk-2w9v8-930d68fc97.json');
       
    $database = $firebase->createFirestore();
 
