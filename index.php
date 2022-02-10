@@ -287,9 +287,6 @@ if(isset($_POST['resetConfirm'])){
 
 }
 
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
