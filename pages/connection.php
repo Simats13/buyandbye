@@ -1,4 +1,4 @@
-<form class="login100-form validate-form" method="post">
+<form class="login100-form validate-form" method="post" style="width: 100%; height: 100%;">
 	<span class="login100-form-title p-b-43">
 		Connexion Espace Professionnel
 		<br> Buy&Bye
@@ -55,14 +55,9 @@
 	</div>
 
 	<br>
-	<span >
-		Pas de compte ? Inscrivez-vous dès maintenant !
-	</span>
-
-	<div class="container-login100-form-btn">
-		<a href="?page=inscription" class="login100-form-btn" name="login">
-			Inscription
+	<div>
+		<a href="?page=create" class="txt1">
+			Pas de compte ? Créez-en un !
 		</a>
 	</div>
-
 </form>
