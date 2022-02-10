@@ -1,4 +1,4 @@
-<form class="login100-form validate-form" method="post" style="width: 100%; height: 100%;">
+<form class="login100-form validate-form" method="post" style="width: 100%;">
 	<span class="login100-form-title p-b-43">
 		Mot de passe oublié
 		<br> Buy&Bye

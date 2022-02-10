@@ -1,5 +1,5 @@
 
-<form class="login100-form validate-form" method="post">
+<form class="login100-form validate-form" method="post" style="width: 100%;">
 	<span class="login100-form-title p-b-43">
 		Inscription Entreprise
 		<br> Buy&Bye
