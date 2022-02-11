@@ -27,8 +27,15 @@ if(isset($_SESSION['cookie'])){
 	}
 }
 
-
-
+function enterpriseOrAdmin($auth) {
+	$uid = $_SESSION['verified_user_id'];
+	$claims = $auth->getUser($uid)->customClaims;
+	if(isset($claims['shop'])){
+		header('Location: /professional/index.php');
+	} else {
+		header('Location: /admin/index.php');
+	}
+}
 
 if(isset($_POST['login']))
 {
@@ -36,8 +43,6 @@ if(isset($_POST['login']))
     $password = htmlspecialchars(trim($_POST['password']));
 	$oneWeek = new \DateInterval('P7D'); // PERIOD 7 JOURS
 	$cookie = isset($_POST['remember-me']) ? true : false; 
-    
-
     try
     {
 		//Vérifie si l'adresse email existe sinon erreur
@@ -49,9 +54,7 @@ if(isset($_POST['login']))
             $signInResult = $auth->signInWithEmailAndPassword($email, $password);
             $idTokenString = $signInResult->idToken();
 
-
-			//Si la case cookie est coché, crée alors une session via un cookie (1 semaine) sinon crée une session normale (1h), s'il n'y arrive pas, il y a une erreur
-
+			//Si la case cookie est cochée, crée alors une session via un cookie (1 semaine) sinon crée une session normale (1h), s'il n'y arrive pas, il y a une erreur
 			if($cookie == true){
 				$sessionCookieString = $auth->createSessionCookie($idTokenString, $oneWeek);
 				try {
@@ -60,7 +63,7 @@ if(isset($_POST['login']))
 					$_SESSION['cookie'] = $sessionCookieString;
 					$_SESSION['verified_user_id'] = $uid;
 					$_SESSION['status'] = "Connexion réussie !";
-					header('Location: /admin/index.php');
+					enterpriseOrAdmin($auth);
 					exit();
 				} catch (\Kreait\Firebase\Exception\Auth\FailedToCreateSessionCookie $e) {
 					echo $e->getMessage();
@@ -80,7 +83,7 @@ if(isset($_POST['login']))
 					$_SESSION['verified_user_id'] = $uid;
 					$_SESSION['idToken'] = $idTokenString;
 					$_SESSION['status'] = "Connexion réussie !";
-					header('Location: /admin/index.php');
+					enterpriseOrAdmin($auth);
 					exit();
 				} catch (\Kreait\Firebase\Exception\Auth\FailedToVerifyToken $e) 
 				{
