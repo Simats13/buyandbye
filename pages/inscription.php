@@ -1,4 +1,14 @@
 
+<style>
+
+.popup-header {
+    padding: 1% 1%;
+    background-color: #CCCCCC;
+    font-size: 0.9em;
+    color: white;
+    margin: 0 0 5% 0;
+  }
+</style>
 <form class="login100-form validate-form" method="post" style="width: 100%;">
 	<span class="login100-form-title p-b-43">
 		Inscription Entreprise
@@ -18,28 +28,21 @@
     ?>
 	<span class="login100-form-title p-b-43">
 	</span>
-
-
-        <div class="wrap-input100 validate-input" data-validate="Veuillez entrer une adresse e-mail valide : ex@abc.xyz">
-            <input class="input100" type="text" name="email">
-            <span class="focus-input100"></span>
-            <span class="label-input100">Email</span>
-        </div>
-
-
-        <div class="wrap-input100 validate-input" data-validate="Veuillez entrer un mot de passe">
-            <input class="input100" type="password" name="password">
-            <span class="focus-input100"></span>
-            <span class="label-input100">Mot de passe</span>
-        </div>
-
-        <div class="flex-sb-m w-full p-t-3 p-b-32">
-            <div class="contact100-form-checkbox">
-                <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
-                <label class="label-checkbox100" for="ckb1">
-                    Se souvenir de moi
-                </label>
+    <div class="popup-header">
+              Une fois la boutique créée, un e-mail sera envoyé au professionnel avec les informations entrées
+              ci-dessous.<br>
+              Il devra alors confirmer les informations et choisir un mot de passe pour son espace personnel.
             </div>
+            
+  
+    <div class="col">
+      <input type="text" class="form-control" placeholder="First name">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="Last name">
+    </div>
+  
+
 
             <div>
                 <a href="?page=reset" class="txt1">
