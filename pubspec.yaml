@@ -28,7 +28,7 @@ dependencies:
   firebase_analytics:
   cloud_firestore_web:
   flutter_spinkit:
-  cloud_firestore:
+  cloud_firestore: ^2.5.4
   firebase_storage:
   provider:
   firebase_core:
