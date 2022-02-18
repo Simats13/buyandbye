@@ -1,7 +1,5 @@
-import 'package:buyandbye/templates/pages/cart.dart';
-
 import 'package:buyandbye/templates/pages/chatscreen.dart';
-import 'package:full_screen_image/full_screen_image.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,7 +12,10 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:status_alert/status_alert.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'dart:async';
 
@@ -44,9 +45,24 @@ class PageDetail extends StatefulWidget {
   _PageDetail createState() => _PageDetail();
 }
 
+class MapUtils {
+  MapUtils._();
+
+  static Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl = Uri.encodeFull(
+        'https://www.google.com/maps/search/?api=1&query=43.6889085,4.2724933');
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      throw 'Could not open the map.';
+    }
+  }
+}
+
 class _PageDetail extends State<PageDetail> with LocalNotificationView {
   double cartTotal = 0.0;
   double cartDeliver = 0.0;
+  String mainCategorie = "";
   String? myID,
       myName,
       myProfilePic,
@@ -58,11 +74,25 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       dropdownValue;
   Stream? usersStream, chatRoomsStream;
   String? userid;
+  String? adresseGoogleUrl;
   Stream<List<DocumentSnapshot>>? stream;
   List listOfCategories = [];
-  List<DocumentSnapshot> _myDocCount = [];
+
+  bool listCategorie = false;
   bool loved = true;
+  bool isRestaurant = false;
   bool checkFavoriteShop = false;
+  final List<ImageProvider> _imageProviders = [
+    Image.network(
+            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD2.jpg")
+        .image,
+    Image.network(
+            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD3.jpg")
+        .image,
+    Image.network(
+            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD4.jpg")
+        .image,
+  ];
   @override
   void setState(fn) {
     if (mounted) {
@@ -76,7 +106,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     getMyInfo();
     getSellerInfo();
     categoriesInDb();
-    countCart();
     NotificationController.instance.updateTokenToServer();
     if (mounted) {
       checkLocalNotification(localNotificationAnimation, "");
@@ -93,20 +122,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     loved = await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
-    //print(cartEmpty);
+    setState(() {});
   }
 
   getSellerInfo() async {
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getMagasinInfo(widget.sellerID);
     selectedUserToken = "${querySnapshot.docs[0]["FCMToken"]}";
-    setState(() {});
-  }
-
-  countCart() async {
-    QuerySnapshot _myDoc =
-        await DatabaseMethods().getCartProducts(widget.sellerID);
-    _myDocCount = _myDoc.docs;
+    mainCategorie = "${querySnapshot.docs[0]["type"]}";
+    adresseGoogleUrl = "${querySnapshot.docs[0]["adresse"]}";
+    // Retire les caractères en trop et split les catégories dans une liste
+    if (mainCategorie == "Restaurant") {
+      isRestaurant = true;
+    }
     setState(() {});
   }
 
@@ -133,7 +161,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomSheet: getFooter(),
-      body: getBody(widget.sellerID),
+      body: getBody(isRestaurant),
     );
   }
 
@@ -144,79 +172,65 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         .collection("produits")
         .get();
 
-    // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
-    // pas déjà dans la liste
-    for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
-      String? categoryName = querySnapshot.docs[i]["categorie"];
-      if (!listOfCategories.contains(categoryName)) {
-        listOfCategories.add(querySnapshot.docs[i]["categorie"]);
+    if (querySnapshot.docs.length != 0) {
+      // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
+      // pas déjà dans la liste
+      for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
+        String? categoryName = querySnapshot.docs[i]["categorie"];
+        if (!listOfCategories.contains(categoryName)) {
+          listOfCategories.add(querySnapshot.docs[i]["categorie"]);
+        }
       }
+      setState(() {
+        dropdownValue = listOfCategories[0];
+      });
+      return listCategorie = true;
+    } else {
+      return listCategorie = false;
     }
-    setState(() {
-      dropdownValue = listOfCategories[0];
-    });
   }
 
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
-    var size = MediaQuery.of(context).size;
-    return Stack(children: [
-      GestureDetector(
-          onTap: () {
-            affichageCart();
-          },
-          child: Container(
-            height: 60,
-            width: size.width,
-            margin: EdgeInsets.only(left: 12, right: 12),
-            decoration: BoxDecoration(
-              color: white,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      // style: Theme.of(context).textTheme.bodyText2,
-                      children: [
-                        TextSpan(
-                            text: _myDocCount.length == 0
-                                ? "PANIER"
-                                : "PANIER (${_myDocCount.length})",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Color(int.parse("0x$pimpMyStore"))
-                                    .withOpacity(0.8))),
-                        WidgetSpan(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: Icon(
-                              Icons.shopping_basket,
-                              color: Color(int.parse("0x$pimpMyStore"))
-                                  .withOpacity(0.8),
-                              size: 25,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        ElevatedButton(
+            child: const Text("VOIR SUR LA CARTE"),
+            style: ElevatedButton.styleFrom(
+              primary: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+              shadowColor: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
               ),
             ),
-          ))
-    ]);
+            onPressed: () async {
+              await launch(Uri.encodeFull(
+                  "https://www.google.com/maps/search/?api=1&query=$adresseGoogleUrl"));
+            }),
+        SizedBox(
+          width: 30,
+        ),
+        ElevatedButton(
+            child: const Text("VOIR LE NUMÉRO"),
+            style: ElevatedButton.styleFrom(
+                primary: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                shadowColor:
+                    Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                )),
+            onPressed: () {
+              FlutterPhoneDirectCaller.callNumber("0695559127");
+            }),
+      ]),
+    );
   }
 
   // La variable avant le Widget sinon elle n'est pas modifiée dynamiquement
   // String dropdownValue = 'Alimentation';
   int clickedNumber = 1;
-  Widget getBody(shopName) {
+  Widget getBody(isRestaurant) {
     var pimpMyStore = widget.colorStore;
     var size = MediaQuery.of(context).size;
     return CupertinoPageScaffold(
@@ -674,17 +688,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       SizedBox(
                         height: 15,
                       ),
-                      shopName == "5HZBy8qA2wbbqjDuQekjvdgI6Tl2"
+                      isRestaurant
                           ? SizedBox.shrink()
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                  Text(
-                                    "Catégories",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                  listCategorie
+                                      ? Text(
+                                          "Catégories",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : Container(),
                                   SizedBox(
                                     height: 10,
                                   ),
@@ -803,7 +819,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          shopName == "5HZBy8qA2wbbqjDuQekjvdgI6Tl2"
+                          isRestaurant
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -814,96 +830,35 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(height: 30),
-                                    FullScreenWidget(
-                                      child: Hero(
-                                        tag: "smallImage",
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Image.network(
-                                            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD2.jpg",
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
                                     SizedBox(height: 20),
-                                    FullScreenWidget(
-                                      child: Hero(
-                                        tag: "customTag",
-                                        child: ClipRRect(
+                                    Container(
+                                        height: size.height / 20,
+                                        width: size.width / 3,
+                                        decoration: BoxDecoration(
                                           borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Image.network(
-                                            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD3.jpg",
-                                            fit: BoxFit.contain,
-                                          ),
+                                              BorderRadius.circular(20),
+                                          color:
+                                              Color(int.parse("0x$pimpMyStore"))
+                                                  .withOpacity(0.5),
                                         ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
-                                    FullScreenWidget(
-                                      child: Hero(
-                                        tag: "customTag",
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Image.network(
-                                            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD4.jpg",
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                        child: MaterialButton(
+                                            child: Center(
+                                                child: Text("Voir le menu",
+                                                    style: TextStyle(
+                                                        color: Colors.white))),
+                                            onPressed: () {
+                                              MultiImageProvider
+                                                  multiImageProvider =
+                                                  MultiImageProvider(
+                                                      _imageProviders);
+                                              showImageViewerPager(
+                                                  context, multiImageProvider,
+                                                  immersive: false);
+                                            })),
                                     SizedBox(height: 30),
                                   ],
                                 )
                               : SizedBox.shrink(),
-                          Text(
-                            "Produits disponibles",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-
-                          dropdownValue == null
-                              ? CircularProgressIndicator()
-                              : produits(dropdownValue),
-                          SizedBox(height: 30),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 5),
-                                for (int i = 1; i < 6; i++)
-                                  Container(
-                                      height: 30,
-                                      width: 30,
-                                      margin:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          fixedSize: Size(10, 10),
-                                        ),
-                                        child: Text((i).toString(),
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                                color: i == clickedNumber
-                                                    ? Colors.black
-                                                    : Colors.grey)),
-                                        onPressed: () {
-                                          clickedNumber = i;
-                                          setState(() {});
-                                        },
-                                      ))
-                              ]),
-                          SizedBox(height: 30),
-                          ////////// Design uniquement //////////
-
                           Text(
                             "Recommandations du commerçant",
                             style: TextStyle(
@@ -957,23 +912,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ],
                           ),
-                          // SizedBox(height: 30),
-                          // Row(
-                          //     mainAxisAlignment: MainAxisAlignment.center,
-                          //     children: [
-                          //       SizedBox(width: 5),
-                          //       for (int i = 0; i < 3; i++)
-                          //         Container(
-                          //             margin:
-                          //                 EdgeInsets.only(left: 5, right: 5),
-                          //             child: Icon(Icons.circle_rounded,
-                          //                 size: 12,
-                          //                 color: i == 0
-                          //                     ? Colors.black
-                          //                     : Colors.grey))
-                          //     ]),
-                          ////////// Design uniquement //////////
-                          SizedBox(height: 30),
+                          SizedBox(height: 25),
                           Text(
                             "Meilleures ventes",
                             style: TextStyle(
@@ -1120,7 +1059,65 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ],
                           ),
+                          SizedBox(height: 30),
+                          Text(
+                            "Produits disponibles",
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           SizedBox(height: 20),
+
+                          produits(dropdownValue),
+                          SizedBox(height: 30),
+                          // Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       SizedBox(width: 5),
+                          //       for (int i = 1; i < 6; i++)
+                          //         Container(
+                          //             height: 30,
+                          //             width: 30,
+                          //             margin:
+                          //                 EdgeInsets.only(left: 10, right: 10),
+                          //             child: TextButton(
+                          //               style: TextButton.styleFrom(
+                          //                 padding: EdgeInsets.zero,
+                          //                 fixedSize: Size(10, 10),
+                          //               ),
+                          //               child: Text((i).toString(),
+                          //                   style: TextStyle(
+                          //                       fontSize: 18,
+                          //                       fontWeight: FontWeight.w700,
+                          //                       color: i == clickedNumber
+                          //                           ? Colors.black
+                          //                           : Colors.grey)),
+                          //               onPressed: () {
+                          //                 clickedNumber = i;
+                          //                 setState(() {});
+                          //               },
+                          //             ))
+                          //     ]),
+                          // SizedBox(height: 30),
+                          ////////// Design uniquement //////////
+
+                          // SizedBox(height: 30),
+                          // Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       SizedBox(width: 5),
+                          //       for (int i = 0; i < 3; i++)
+                          //         Container(
+                          //             margin:
+                          //                 EdgeInsets.only(left: 5, right: 5),
+                          //             child: Icon(Icons.circle_rounded,
+                          //                 size: 12,
+                          //                 color: i == 0
+                          //                     ? Colors.black
+                          //                     : Colors.grey))
+                          //     ]),
+                          ////////// Design uniquement //////////
                         ],
                       ),
                     ],
@@ -1135,14 +1132,13 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   Widget produits(selectedCategorie) {
-    setState(() {
-      countCart();
-    });
     return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getVisibleProducts(
             widget.sellerID, selectedCategorie, clickedNumber),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
+          if (snapshot.data.docs.length == 0)
+            return Text("Aucun produit disponible");
           return GridView.builder(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
@@ -1290,31 +1286,4 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   //     },
   //   );
   // }
-
-  void affichageCart() {
-    showGeneralDialog(
-      barrierLabel: "Label",
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: Duration(milliseconds: 400),
-      context: context,
-      pageBuilder: (context, anim1, anim2) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
-            child: CartPage(),
-            margin: EdgeInsets.only(left: 12, right: 12),
-          ),
-        );
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return SlideTransition(
-          position:
-              Tween(begin: Offset(0, 0), end: Offset(0, 0)).animate(anim1),
-          child: child,
-        );
-      },
-    );
-  }
 }

@@ -96,7 +96,9 @@ dependencies:
   sliding_up_panel:
   cool_dropdown:
   flutter_slidable:
-  full_screen_image:
+  easy_image_viewer:
+  flutter_phone_direct_caller:
+  algolia:
 
 flutter_native_splash:
   #color: "#42a5f5"
