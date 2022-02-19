@@ -7,6 +7,8 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageCategorie.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:algolia/algolia.dart';
+import 'package:buyandbye/services/AlgoliaApplication.dart';
 import '../buyandbye_app_theme.dart';
 
 class PageSearch extends StatefulWidget {
@@ -15,9 +17,20 @@ class PageSearch extends StatefulWidget {
 }
 
 class _PageSearchState extends State<PageSearch> {
+  final Algolia _algoliaApp = AlgoliaApplication.algolia;
+  String _searchTerm = "";
+
+  Future<List<AlgoliaObjectSnapshot>> _operation(String input) async {
+    AlgoliaQuery query = _algoliaApp.instance.index("magasins").search(input);
+    AlgoliaQuerySnapshot querySnap = await query.getObjects();
+    List<AlgoliaObjectSnapshot> results = querySnap.hits;
+    return results;
+  }
+
   final TextEditingController searchController = TextEditingController();
   QuerySnapshot? snapshotData;
   Stream? streamStore;
+  bool affichageCategories = true;
   bool isExecuted = false;
   int activeMenu = 0;
 
@@ -160,100 +173,111 @@ class _PageSearchState extends State<PageSearch> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-          backgroundColor: BuyandByeAppTheme.white,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(50.0),
-            child: AppBar(
-              title: RichText(
-                text: TextSpan(
-                  // style: Theme.of(context).textTheme.bodyText2,
-                  children: [
-                    TextSpan(
-                        text: 'Recherche',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: BuyandByeAppTheme.orangeMiFonce,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    WidgetSpan(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Icon(
-                          Icons.search,
-                          color: BuyandByeAppTheme.orangeFonce,
-                          size:25,
-                        ),
+        backgroundColor: BuyandByeAppTheme.white,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: AppBar(
+            title: RichText(
+              text: TextSpan(
+                // style: Theme.of(context).textTheme.bodyText2,
+                children: [
+                  TextSpan(
+                      text: 'Recherche',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: BuyandByeAppTheme.orangeMiFonce,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  WidgetSpan(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(
+                        Icons.search,
+                        color: BuyandByeAppTheme.orangeFonce,
+                        size: 25,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              backgroundColor: BuyandByeAppTheme.white,
-              automaticallyImplyLeading: false,
-              elevation: 0.0,
-              bottomOpacity: 0.0,
             ),
+            backgroundColor: BuyandByeAppTheme.white,
+            automaticallyImplyLeading: false,
+            elevation: 0.0,
+            bottomOpacity: 0.0,
           ),
-          body: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(children: [
-                Row(children: [
-                  isExecuted
-                      ? GestureDetector(
-                          onTap: () {
-                            isExecuted = false;
-                            searchController.text = "";
-                            setState(() {});
-                          },
-                          child: Padding(
-                              padding: EdgeInsets.only(right: 12),
-                              child: Icon(Icons.arrow_back)),
-                        )
-                      : Container(),
-                  Expanded(
-                      child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 16),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            onChanged: (value) {
-                              if (value.length > 0) {
-                                research();
-                              }
-                              if (value.length < 1) {
-                                setState(() {
-                                  isExecuted = false;
-                                });
-                              }
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Trouver un commerce',
-                              border: InputBorder.none,
-                            ),
-                            controller: searchController,
-                          ),
-                        ),
-                        GestureDetector(
-                            onTap: () {
-                              if (searchController.text != "") {
-                                research();
-                              }
-                            },
-                            child: Icon(Icons.search))
-                      ],
+        ),
+        body: Column(
+          children: [
+            Container(
+                margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Colors.grey, width: 1, style: BorderStyle.solid),
+                    borderRadius: BorderRadius.circular(20)),
+                child: TextField(
+                    textAlignVertical: TextAlignVertical.center,
+                    onChanged: (val) {
+                      setState(() {
+                        affichageCategories = !affichageCategories;
+                        _searchTerm = val;
+                      });
+                    },
+                    style: new TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
-                  ))
-                ]),
-                isExecuted ? searchStoreList() : CategoryStore()
-              ]))),
+                    decoration: new InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Trouver un commerçant ...',
+                        hintStyle: TextStyle(color: Colors.black),
+                        prefixIcon:
+                            const Icon(Icons.search, color: Colors.black))),
+              ),
+            StreamBuilder<List<AlgoliaObjectSnapshot>>(
+              stream: Stream.fromFuture(_operation(_searchTerm)),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return Text(
+                    "Start Typing",
+                    style: TextStyle(color: Colors.black),
+                  );
+                else {
+                  List<AlgoliaObjectSnapshot>? currSearchStuff = snapshot.data;
+
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return Container();
+                    default:
+                      if (snapshot.hasError)
+                        return new Text('Error: ${snapshot.error}');
+                      else
+                        return CustomScrollView(
+                          shrinkWrap: true,
+                          slivers: <Widget>[
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  return _searchTerm.length > 0
+                                      ? DisplaySearchResult(
+                                          nameMagasin: currSearchStuff![index]
+                                              .data["name"])
+                                      : Container();
+                                },
+                                childCount: currSearchStuff!.length,
+                              ),
+                            ),
+                          ],
+                        );
+                  }
+                }
+              },
+            ),
+            affichageCategories ? CategoryStore() : Container()
+          ],
+        ),
+      ),
     );
   }
 }
@@ -308,8 +332,28 @@ class CategoryStore extends StatelessWidget {
   }
 }
 
+@override
+Widget build(BuildContext context) {
+  // TODO: implement build
+  throw UnimplementedError();
+}
+
+class DisplaySearchResult extends StatelessWidget {
+  final String nameMagasin;
+
+  DisplaySearchResult({Key? key, required this.nameMagasin}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Column(children: <Widget>[
+      Text(
+        nameMagasin,
+        style: TextStyle(color: Colors.black),
+      ),
+      Divider(
+        color: Colors.black,
+      ),
+      SizedBox(height: 20)
+    ]);
   }
+}
