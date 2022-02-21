@@ -159,15 +159,6 @@ class _PageSearchState extends State<PageSearch> {
     );
   }
 
-  research() async {
-    isExecuted = true;
-    setState(() {});
-    streamStore =
-        await DatabaseMethods().searchBarGetStoreInfo(searchController.text);
-
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -210,36 +201,36 @@ class _PageSearchState extends State<PageSearch> {
         body: Column(
           children: [
             Container(
-                margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Colors.grey, width: 1, style: BorderStyle.solid),
-                    borderRadius: BorderRadius.circular(20)),
-                child: TextField(
-                    textAlignVertical: TextAlignVertical.center,
-                    onChanged: (val) {
-                      setState(() {
-                        _searchTerm = val;
-                      });
-                    },
-                    style: new TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                    decoration: new InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Trouver un commerçant ...',
-                        hintStyle: TextStyle(color: Colors.black),
-                        prefixIcon:
-                            const Icon(Icons.search, color: Colors.black))),
-              ),
+              margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Colors.grey, width: 1, style: BorderStyle.solid),
+                  borderRadius: BorderRadius.circular(20)),
+              child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  onChanged: (val) {
+                    setState(() {
+                      _searchTerm = val;
+                    });
+                  },
+                  style: new TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                  ),
+                  decoration: new InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Trouver un commerçant ...',
+                      hintStyle: TextStyle(color: Colors.black),
+                      prefixIcon:
+                          const Icon(Icons.search, color: Colors.black))),
+            ),
             StreamBuilder<List<AlgoliaObjectSnapshot>>(
               stream: Stream.fromFuture(_operation(_searchTerm)),
               builder: (context, snapshot) {
                 if (!snapshot.hasData)
                   return Text(
-                    "Start Typing",
+                    "",
                     style: TextStyle(color: Colors.black),
                   );
                 else {
@@ -260,8 +251,26 @@ class _PageSearchState extends State<PageSearch> {
                                 (context, index) {
                                   return _searchTerm.length > 0
                                       ? DisplaySearchResult(
-                                          nameMagasin: currSearchStuff![index]
-                                              .data["name"])
+                                          imgMagasin: currSearchStuff![index]
+                                              .data["imgUrl"],
+                                          nameMagasin: currSearchStuff[index]
+                                              .data["name"],
+                                          adresseMagasin: currSearchStuff[index]
+                                              .data["adresse"],
+                                          descriptionMagasin:
+                                              currSearchStuff[index]
+                                                  .data["description"],
+                                          clickAndCollectMagasin:
+                                              currSearchStuff[index]
+                                                  .data["ClickAndCollect"],
+                                          livraisonMagasin:
+                                              currSearchStuff[index]
+                                                  .data["livraison"],
+                                          colorStoreMagasin:
+                                              currSearchStuff[index]
+                                                  .data["colorStore"],
+                                          sellerIDMagasin:
+                                              currSearchStuff[index].data["id"])
                                       : Container();
                                 },
                                 childCount: currSearchStuff!.length,
@@ -338,16 +347,57 @@ Widget build(BuildContext context) {
 }
 
 class DisplaySearchResult extends StatelessWidget {
-  final String nameMagasin;
+  final String nameMagasin, adresseMagasin, imgMagasin;
+  String? descriptionMagasin,
+      colorStoreMagasin,
+      sellerIDMagasin;
+  bool? clickAndCollectMagasin, livraisonMagasin;
 
-  DisplaySearchResult({Key? key, required this.nameMagasin}) : super(key: key);
+  DisplaySearchResult(
+      {Key? key,
+      required this.nameMagasin,
+      required this.imgMagasin,
+      required this.adresseMagasin,
+      this.clickAndCollectMagasin,
+      this.colorStoreMagasin,
+      this.descriptionMagasin,
+      this.livraisonMagasin,
+      this.sellerIDMagasin})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
-      Text(
-        nameMagasin,
-        style: TextStyle(color: Colors.black),
+      ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PageDetail(
+                      img: imgMagasin,
+                      name: nameMagasin,
+                      description: descriptionMagasin,
+                      adresse: adresseMagasin,
+                      clickAndCollect: clickAndCollectMagasin,
+                      livraison: livraisonMagasin,
+                      sellerID: sellerIDMagasin,
+                      colorStore: colorStoreMagasin,
+                    )),
+          );
+        },
+        leading: Container(
+          child: Center(child: Image.network(imgMagasin)),
+          height: 100,
+          width: 100,
+        ),
+        title: Text(
+          nameMagasin,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
+        subtitle: Text(
+        adresseMagasin,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+      ),
       ),
       Divider(
         color: Colors.black,
