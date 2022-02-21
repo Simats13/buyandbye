@@ -36,6 +36,9 @@ class _PageCompteState extends State<PageCompte> {
   }
 
   Widget build(BuildContext context) {
+  var size = MediaQuery.of(context).size;
+  final double itemWidth = size.width;
+  final double itemHeight = (size.height - kToolbarHeight) / 2;
     return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getMyInfo2(userid),
         builder: (context, snapshot) {
@@ -81,6 +84,7 @@ class _PageCompteState extends State<PageCompte> {
                       ],
                     ),
               GridView.count(
+                childAspectRatio: (itemWidth / itemHeight),
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(20),
                 crossAxisCount: 2,
@@ -100,8 +104,8 @@ class _PageCompteState extends State<PageCompte> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Container(
-                        height: 140,
-                        width: 140,
+                        height: 130,
+                        width: 130,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -116,7 +120,7 @@ class _PageCompteState extends State<PageCompte> {
                               'Mon Compte',
                               style: kTitleTextStyle.copyWith(
                                 fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                                fontSize: 15,
                                 color: BuyandByeAppTheme.orangeMiFonce,
                               ),
                             ),
@@ -132,8 +136,8 @@ class _PageCompteState extends State<PageCompte> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Container(
-                          height: 140,
-                          width: 140,
+                          height: 130,
+                          width: 130,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -148,7 +152,7 @@ class _PageCompteState extends State<PageCompte> {
                                 'Compte Fidélité',
                                 style: kTitleTextStyle.copyWith(
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     color: BuyandByeAppTheme.orangeMiFonce),
                               ),
                             ],
@@ -182,8 +186,8 @@ class _PageCompteState extends State<PageCompte> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Container(
-                        height: 140,
-                        width: 140,
+                        height: 130,
+                        width: 130,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -198,7 +202,7 @@ class _PageCompteState extends State<PageCompte> {
                               'Mes commandes',
                               style: kTitleTextStyle.copyWith(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 16,
+                                  fontSize: 15,
                                   color: BuyandByeAppTheme.orangeMiFonce),
                             ),
                           ],
@@ -221,8 +225,8 @@ class _PageCompteState extends State<PageCompte> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Container(
-                        height: 140,
-                        width: 140,
+                        height: 130,
+                        width: 130,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -237,7 +241,7 @@ class _PageCompteState extends State<PageCompte> {
                               'Aide / Support',
                               style: kTitleTextStyle.copyWith(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 16,
+                                  fontSize: 15,
                                   color: BuyandByeAppTheme.orangeMiFonce),
                             ),
                           ],

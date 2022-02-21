@@ -220,7 +220,6 @@ class _PageSearchState extends State<PageSearch> {
                     textAlignVertical: TextAlignVertical.center,
                     onChanged: (val) {
                       setState(() {
-                        affichageCategories = !affichageCategories;
                         _searchTerm = val;
                       });
                     },
@@ -274,7 +273,7 @@ class _PageSearchState extends State<PageSearch> {
                 }
               },
             ),
-            affichageCategories ? CategoryStore() : Container()
+            _searchTerm.length > 0 ? Container() : CategoryStore()
           ],
         ),
       ),
