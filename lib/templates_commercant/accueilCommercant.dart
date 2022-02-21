@@ -27,7 +27,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
   String? myID;
   late String myFirstName, myLastName, myUserName, myEmail;
   String? myProfilePic;
-  String? myPremium;
+  bool? myPremium;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
     myLastName = "${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
-    myPremium = "${querySnapshot.docs[0]["premium"]}";
+    myPremium = querySnapshot.docs[0]["premium"];
     setState(() {});
   }
 
@@ -188,7 +188,6 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                               )
                             ]),
                         SizedBox(height: 20),
-                        
                         SizedBox(height: 20),
                       ],
                     )),
