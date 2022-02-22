@@ -18,7 +18,8 @@ class PageSearch extends StatefulWidget {
 
 class _PageSearchState extends State<PageSearch> {
   final Algolia _algoliaApp = AlgoliaApplication.algolia;
-  String _searchTerm = "";
+  // String _searchTerm = "";
+  TextEditingController _searchTerm = TextEditingController();
 
   Future<List<AlgoliaObjectSnapshot>> _operation(String input) async {
     AlgoliaQuery query = _algoliaApp.instance.index("magasins").search(input);
@@ -207,26 +208,52 @@ class _PageSearchState extends State<PageSearch> {
                   border: Border.all(
                       color: Colors.grey, width: 1, style: BorderStyle.solid),
                   borderRadius: BorderRadius.circular(20)),
-              child: TextField(
-                  textAlignVertical: TextAlignVertical.center,
-                  onChanged: (val) {
-                    setState(() {
-                      _searchTerm = val;
-                    });
-                  },
-                  style: new TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _searchTerm.text = "";
+                      });
+                    },
+                    child: Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(right: 12),
+                        child: Icon(Icons.arrow_back)),
                   ),
-                  decoration: new InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Trouver un commerçant ...',
-                      hintStyle: TextStyle(color: Colors.black),
-                      prefixIcon:
-                          const Icon(Icons.search, color: Colors.black))),
+                  Container(
+                    width: 250,
+                    height: 50,
+                    child: TextField(
+                          controller: _searchTerm,
+                          textInputAction: TextInputAction.search,
+                          textAlignVertical: TextAlignVertical.center,
+                          onSubmitted: (val) {
+                            setState(() {
+                              _searchTerm.text = val;
+                            });
+                          },
+                          style: new TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          decoration: new InputDecoration(
+                            contentPadding: EdgeInsets.only(bottom: 14),
+                            floatingLabelBehavior: FloatingLabelBehavior.auto,
+                            border: InputBorder.none,
+                            hintText: 'Trouver un commerçant ...',
+                          )),
+                    ),
+                  Container(
+                    child: Icon(Icons.search),
+                    alignment: Alignment.centerRight,
+                  )
+                ],
+              ),
             ),
             StreamBuilder<List<AlgoliaObjectSnapshot>>(
-              stream: Stream.fromFuture(_operation(_searchTerm)),
+              stream: Stream.fromFuture(_operation(_searchTerm.text)),
               builder: (context, snapshot) {
                 if (!snapshot.hasData)
                   return Text(
@@ -249,7 +276,7 @@ class _PageSearchState extends State<PageSearch> {
                             SliverList(
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) {
-                                  return _searchTerm.length > 0
+                                  return _searchTerm.text.length > 0
                                       ? DisplaySearchResult(
                                           imgMagasin: currSearchStuff![index]
                                               .data["imgUrl"],
@@ -282,7 +309,7 @@ class _PageSearchState extends State<PageSearch> {
                 }
               },
             ),
-            _searchTerm.length > 0 ? Container() : CategoryStore()
+            _searchTerm.text.length > 0 ? Container() : CategoryStore()
           ],
         ),
       ),
@@ -348,9 +375,7 @@ Widget build(BuildContext context) {
 
 class DisplaySearchResult extends StatelessWidget {
   final String nameMagasin, adresseMagasin, imgMagasin;
-  String? descriptionMagasin,
-      colorStoreMagasin,
-      sellerIDMagasin;
+  String? descriptionMagasin, colorStoreMagasin, sellerIDMagasin;
   bool? clickAndCollectMagasin, livraisonMagasin;
 
   DisplaySearchResult(
@@ -395,9 +420,9 @@ class DisplaySearchResult extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
         ),
         subtitle: Text(
-        adresseMagasin,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
-      ),
+          adresseMagasin,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+        ),
       ),
       Divider(
         color: Colors.black,
