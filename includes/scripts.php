@@ -1,0 +1,151 @@
+<!-- <script type="text/javascript" src="js/mdb.min.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+        <!--===============================================================================================-->
+	<!-- <script src="vendor/jquery/jquery-3.2.1.min.js"></script> -->
+	<!--===============================================================================================-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+<!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
+	<!--===============================================================================================-->
+<script src="vendor/select2/select2.min.js"></script>
+	<!--===============================================================================================-->
+<script src="vendor/daterangepicker/moment.min.js"></script>
+<script src="vendor/daterangepicker/daterangepicker.js"></script>
+	<!--===============================================================================================-->
+<script src="vendor/countdowntime/countdowntime.js"></script>
+	<!--===============================================================================================-->
+<script src="js/main.js"></script>
+
+		<!-- JQUERY STEP -->
+<script src="js/jquery.steps.js"></script>
+    
+<script>
+
+$(document).ready(function() {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+});
+</script>
+
+<script
+  src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete"
+  type="text/javascript"></script>
+
+<script>
+  $(document).ready(function () {
+    $("#lat_area").addClass("d-none");
+    $("#long_area").addClass("d-none");
+
+    
+  });
+  $(document).ready(function(){
+        $('#add_form input[type="text"]').blur(function(){
+          if(!$(this).val()){
+            $(this).addClass("border border-danger");
+          } else{
+            $(this).removeClass("border border-danger");
+          }
+        });
+      });
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+  function initialize() {
+    var input = document.getElementById('autocomplete');
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.addListener('place_changed', function () {
+      var place = autocomplete.getPlace();
+      $('#latitude').val(place.geometry['location'].lat());
+      $('#longitude').val(place.geometry['location'].lng());
+      // // --------- show lat and long ---------------
+      // $("#lat_area").removeClass("d-none");
+      // $("#long_area").removeClass("d-none");
+    });
+  }
+</script>
+<!-- Script permettant la gestion des catégories -->
+<script>
+// $(function(){
+// 	$(".chosen-select").chosen({
+// 		max_selected_options: 3,
+// 		width: '100%'
+// 	}); 
+// });
+$(document).ready(function () {
+	$(".category1").addClass("d-none");
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+	
+});
+
+$(".companyType").on('change', function() {
+
+if ($(this).val() == 'Magasin'){
+	$(".category1").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+} else if ($(this).val() == 'Service'){
+	$(".category2").removeClass("d-none");
+
+	$(".category1").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Restaurant'){
+	$(".category3").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category1").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Santé'){
+	$(".category4").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category1").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Culture & Loisirs'){
+	$(".category5").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category1").addClass("d-none");
+
+}
+});
+</script>   
+<script>
+  function readURL(input) {
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+              $('#imagePreview')
+                  .attr('src', e.target.result)
+                  .removeAttr('hidden')
+                  .height(200);
+          };
+
+          reader.readAsDataURL(input.files[0]);
+      }
+  };
+  $(function () {
+    var input = document.getElementById("autocomplete");
+    var autocomplete = new google.maps.places.Autocomplete(input);
+
+
+  });
+
+</script>

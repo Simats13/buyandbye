@@ -33,9 +33,9 @@
 	</div>
 
 	<div class="flex-sb-m w-full p-t-3 p-b-32">
-		<div class="contact100-form-checkbox">
-			<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
-			<label class="label-checkbox100" for="ckb1">
+		<div class="form-check">
+			<input class="form-check-input" id="ckb1"  name="remember-me" type="checkbox" value="" id="flexCheckDefault">
+			<label class="form-check-label" for="ckb1">
 				Se souvenir de moi
 			</label>
 		</div>
@@ -55,14 +55,8 @@
 	</div>
 	<br>
 	<div>
-		<a href="?page=create" class="txt1">
+		<a href="?page=inscription" class="txt1">
 			<h6>Pas de compte ? Créez-en un !</h6>
-		</a>
-	</div>
-	<br>
-	<div>
-		<a href="?page=inscription">
-			<h6>TEEEEEST</h6>
 		</a>
 	</div>
 </form>

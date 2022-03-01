@@ -1,6 +1,6 @@
 <?php 
 
-$user = $auth->getUser($_SESSION['verified_user_id']);
+// $user = $auth->getUser($_SESSION['verified_user_id']);
 $uid = $_SESSION['verified_user_id'];
 $claims = $auth->getUser($uid)->customClaims;
 
