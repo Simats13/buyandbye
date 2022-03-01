@@ -48,17 +48,22 @@ $claims = $auth->getUser($uid)->customClaims;
   </div>
 </li>-->
 
-
 <li class="nav-item">
-  <a class="nav-link" href="?page=modify">
-    <i class="fas fa-fw fa-chart-pie"></i>
-    <span>Modifier ma page personnelle</span></a>
+  <a class="nav-link" href="?page=enterprise">
+    <i class="fas fa-store-alt"></i>
+    <span>Mon entreprise</span></a>
 </li>
 
 <li class="nav-item">
   <a class="nav-link" href="?page=products">
-    <i class="far  fa-plus-square""></i>
-    <span>Gérer mes produits</span></a>
+  <i class="fas fa-clipboard-list"></i>
+    <span>Mes produits</span></a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="?page=commands">
+    <i class="fas fa-shopping-bag"></i>
+    <span>Mes commandes</span></a>
 </li>
 
 <li class="nav-item">

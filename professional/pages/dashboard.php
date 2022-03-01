@@ -4,7 +4,11 @@
         if(isset($_SESSION['status'])){
             echo "<h5 class='alert alert-success'>".$_SESSION['status']."</h5>";
             unset($_SESSION['status']);
-        }?>
+        }
+
+        $collectionReference = $firestore->collection('magasins')->document($uid);;
+        $snapshot = $collectionReference->snapshot();    
+    ?>
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -15,8 +19,6 @@
 
     <!-- Content Row -->
     <div class="row">
-
-
         <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
@@ -65,13 +67,12 @@
 <!-- Content Row -->
 
 <div class="row">
-
     <!-- Area Chart -->
     <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Nombre de visite sur le mois en cours</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Nombre de visites sur le mois en cours</h6>
                 <div class="dropdown no-arrow">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
@@ -101,9 +102,8 @@
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Top 3 des mot clés les plus recherchés pour votre
+                <h6 class="m-0 font-weight-bold text-primary">Top 3 des mots-clés les plus recherchés pour votre
                     entreprise</h6>
-
             </div>
             <!-- Card Body -->
             <div class="card-body">
@@ -122,5 +122,4 @@
             </div>
         </div>
     </div>
-</div>
 </div>
