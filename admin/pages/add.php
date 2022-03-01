@@ -477,14 +477,77 @@
                 <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
                   placeholder="ex: FR 00 123456789" value="<?php echo isset($_POST["tvaNumber"]) ? $_POST["tvaNumber"] : ''; ?>" required>
               </div>
-              <div class="form-group ">
-                <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
-                <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput"
-                  style="width:50px" title="Choissisez une couleur" value="<?php echo isset($_POST["color"]) ? $_POST["color"] : ''; ?>">
+              <div class="category1">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Magasin" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Electroménager</option>
+                      <option>Jeux-Vidéos</option>
+                      <option>High-Tech</option>
+                      <option>Alimentation</option>
+                      <option>Vêtements</option>
+                      <option>Films & Séries</option>
+                      <option>Chaussures</option>
+                      <option>Bricolage</option>
+                      <option>Montres & Bijoux</option>
+                      <option>Téléphonie</option>
+                      <option>Restaurant</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <label for="banniere">Ajouter une image de couverture</label><br>
-              <input type="file" name="banniere" id="banniere" onchange="readURL(this);"><br><br>
-              <img id="imagePreview" src="#" hidden />
+              <div class="category2">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Service" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Menuiserie</option>
+                      <option>Plomberie</option>
+                      <option>Piscine</option>
+                      <option>Meubles</option>
+                      <option>Vêtements</option>
+                      <option>Gestion de patrimoine</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category3">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Restaurant" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Français</option>
+                      <option>Local</option>
+                      <option>Italien</option>
+                      <option>Fast-Food</option>
+                      <option>Asiatique</option>
+                      <option>Pizzeria</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category4">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Santé" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Pharmacie</option>
+                      <option>Aide à la personne</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category5">
+                <div class="form-group">
+                  <div class="color-2">
+                    <select data-placeholder="Tags Culture et loisirs" name="select[]" multiple class="chosen-select" tabindex="8">
+                      <option>Parc d'attraction</option>
+                      <option>Musée</option>
+                      <option>Tourisme</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
               
 
               <!-- Boutons de validation et d'annulation -->

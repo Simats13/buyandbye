@@ -285,9 +285,9 @@ if(isset($_POST['resetConfirm'])){
 	<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css">
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
 	<!--===============================================================================================-->
@@ -303,8 +303,11 @@ if(isset($_POST['resetConfirm'])){
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<!-- <link rel="stylesheet" href="css/mdb.min.css" /> -->
+	<link rel="stylesheet" href="fonts/material-design-iconic-font/css/material-design-iconic-font.css">
+		<!-- STYLE CSS -->
+	<link rel="stylesheet" href="css/style.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animsition/4.0.2/css/animsition.css" integrity="sha512-QOEtUtkXE66sy/LeOXlkdQn8ke3DDTTyJ/L17lGdUhnhEsA3dAWfl+EBCoEFyJcFHP9Cs0hgTCtntO4Ty8Knlg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
 
@@ -356,7 +359,7 @@ if(isset($_POST['resetConfirm'])){
 		}
 
 		.RightContent {
-			background-color: orange;
+			background-color: white;
 			overflow: auto;
 		}
 	</style>
@@ -370,6 +373,7 @@ if(isset($_POST['resetConfirm'])){
 		</div>
 	</div>-->
 
+  
 	<div class="Container">
 		<div class="Content">
 			<div class="Wrapper">
@@ -381,56 +385,76 @@ if(isset($_POST['resetConfirm'])){
 		</div>
 	</div>
 
-	<!--===============================================================================================-->
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/animsition/js/animsition.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/daterangepicker/moment.min.js"></script>
-	<script src="vendor/daterangepicker/daterangepicker.js"></script>
-	<!--===============================================================================================-->
-	<script src="vendor/countdowntime/countdowntime.js"></script>
-	<!--===============================================================================================-->
-	<script src="js/main.js"></script>
+	
+	<?php include('includes/scripts.php');?>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/animsition/4.0.2/js/animsition.js" integrity="sha512-/k3xzxE438Du+m59yJ+coGSyEVot71Mq4TbMTPLUbxTuBe8wGpkpJp0rgsM+5qLuu3OL7+JBY0Pnas2V/8bl1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-	<script>
+
 	
 
+<script>$(function(){
+	$("#wizard").steps({
+        headerTag: "h4",
+        bodyTag: "section",
+        transitionEffect: "fade",
+        enableAllSteps: true,
+        transitionEffectSpeed: 500,
+        onStepChanging: function (event, currentIndex, newIndex) { 
+            if ( newIndex === 1 ) {
+                $('.steps ul').addClass('step-2');
+            } else {
+                $('.steps ul').removeClass('step-2');
+            }
+            if ( newIndex === 2 ) {
+                $('.steps ul').addClass('step-3');
+            } else {
+                $('.steps ul').removeClass('step-3');
+            }
 
-		$(document).ready(function() {
-			$(".animsition").animsition({
-				inClass: 'fade-in-right',
-				outClass: 'fade-out-right',
-				inDuration: 1500,
-				outDuration: 800,
-				linkElement: '.animsition-link',
-				// e.g. linkElement: 'a:not([target="_blank"]):not([href^="#"])'
-				loading: true,
-				loadingParentElement: 'body', //animsition wrapper element
-				loadingClass: 'animsition-loading',
-				loadingInner: '', // e.g '<img src="loading.svg" />'
-				timeout: false,
-				timeoutCountdown: 5000,
-				onLoadEvent: true,
-				browser: [ 'animation-duration', '-webkit-animation-duration'],
-				// "browser" option allows you to disable the "animsition" in case the css property in the array is not supported by your browser.
-				// The default setting is to disable the "animsition" in a browser that does not support "animation-duration".
-				overlay : false,
-				overlayClass : 'animsition-overlay-slide',
-				overlayParentElement : 'body',
-				transition: function(url){ window.location.href = url; }
-			});
-			});
+            if ( newIndex === 3 ) {
+                $('.steps ul').addClass('step-4');
+                $('.actions ul').addClass('step-last');
+            } else {
+                $('.steps ul').removeClass('step-4');
+                $('.actions ul').removeClass('step-last');
+            }
+			if ( newIndex === 4 ) {
+                $('.steps ul').addClass('step-5');
+                $('.actions ul').addClass('step-last');
+            } else {
+                $('.steps ul').removeClass('step-5');
+                $('.actions ul').removeClass('step-last');
+            }
+            return true; 
+        },
+        labels: {
+            finish: "Finaliser",
+            next: "Suivant",
+            previous: "Retour"
+        }
+    });
+    // Custom Steps Jquery Steps
+    $('.wizard > .steps li a').click(function(){
+    	$(this).parent().addClass('checked');
+		$(this).parent().prevAll().addClass('checked');
+		$(this).parent().nextAll().removeClass('checked');
+    });
+    // Custom Button Jquery Steps
+    $('.forward').click(function(){
+    	$("#wizard").steps('next');
+    })
+    $('.backward').click(function(){
+        $("#wizard").steps('previous');
+    })
+    // Checkbox
+    $('.checkbox-circle label').click(function(){
+        $('.checkbox-circle label').removeClass('active');
+        $(this).addClass('active');
+    })
+});
 
-	</script>
-	
+</script>
+
 </body>
 
 </html>
