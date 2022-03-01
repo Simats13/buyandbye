@@ -2,7 +2,6 @@
 $uid = $_SESSION['verified_user_id'];
 $docRef = $firestore->collection('magasins')->document($uid);
 $snapshot = $docRef->snapshot();
-
 ?>
 <!-- Begin Page Content -->
 <div class="container-fluid">
@@ -18,7 +17,7 @@ $snapshot = $docRef->snapshot();
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard Professionnel <strong><?=$snapshot['name']?></strong> </h1>
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Professionnel <strong><?=$snapshot['name']?></strong></h1>
         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                 class="fas fa-download fa-sm text-white-50"></i> Générer un rapport</a>
     </div>
@@ -33,7 +32,7 @@ $snapshot = $docRef->snapshot();
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Nombre de vues</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <h4>3500 sur 7 J</h4>
+                                <h4>3500 sur 7J</h4>
                             </div>
                         </div>
                         <div class="col-auto">
