@@ -4,100 +4,12 @@ $docRef = $firestore->collection('magasins')->document($uid);
 $document = $docRef->snapshot();
 ?>
 
-<!-- Script permettant l'ajout de l'autocomplétion d'adresse -->
-<script>
-    google.maps.event.addDomListener(window, 'load', initialize);
+<link rel="stylesheet" href="css/chosen.css">
+<link rel="stylesheet" href="fonts/icomoon/style.css">
 
-    function initialize() {
-        var input = document.getElementById('autocomplete_<?=$document->id()?>');
-        var autocomplete = new google.maps.places.Autocomplete(input);
-        autocomplete.addListener('place_changed', function () {
-            var place = autocomplete.getPlace();
-            $('#latitude_<?=$document->id()?>').val(place.geometry['location'].lat());
-            $('#longitude_<?=$document->id()?>').val(place.geometry['location'].lng());
 
-        });
-    };
-    $(function () {
-        var input = document.getElementById("autocomplete_<?=$document->id()?>");
-        var autocomplete = new google.maps.places.Autocomplete(input);
 
-        $('#my-modal').modal('show');
-    });
-</script>
 
-<!-- Script permettant la gestion des catégories -->
-<script>
-    $(function () {
-        $(".chosen-select").chosen({
-            max_selected_options: 3,
-            width: '100%'
-        });
-    });
-    $(document).ready(function () {
-        $(".category1_<?=$count?>").addClass("d-none");
-        $(".category2_<?=$count?>").addClass("d-none");
-        $(".category3_<?=$count?>").addClass("d-none");
-        $(".category4_<?=$count?>").addClass("d-none");
-        $(".category5_<?=$count?>").addClass("d-none");
-
-        if ($(".companyType_<?=$count?>").val() == "Magasin") {
-            $(".category1_<?=$count?>").removeClass("d-none");
-        } else if ($(".companyType_<?=$count?>").val() == "Service") {
-            $(".category2_<?=$count?>").removeClass("d-none");
-        } else if ($(".companyType_<?=$count?>").val() == "Restaurant") {
-            $(".category3_<?=$count?>").removeClass("d-none");
-        } else if ($(".companyType_<?=$count?>").val() == "Santé") {
-            $(".category4_<?=$count?>").removeClass("d-none");
-        } else if ($(".companyType_<?=$count?>").val() == "Culture & Loisirs") {
-            $(".category5_<?=$count?>").removeClass("d-none");
-        }
-
-    });
-
-    $(".companyType_<?=$count?>").on('change', function () {
-
-        if ($(this).val() == 'Magasin') {
-            $(".category1_<?=$count?>").removeClass("d-none");
-            $(".category2_<?=$count?>").addClass("d-none");
-            $(".category3_<?=$count?>").addClass("d-none");
-            $(".category4_<?=$count?>").addClass("d-none");
-            $(".category5_<?=$count?>").addClass("d-none");
-        } else if ($(this).val() == 'Service') {
-            $(".category2_<?=$count?>").removeClass("d-none");
-            $("#select2_<?=$count?> option:selected").remove();
-            $('#select2_<?=$count?> :selected').remove();
-            $(".category1_<?=$count?>").addClass("d-none");
-            $(".category3_<?=$count?>").addClass("d-none");
-            $(".category4_<?=$count?>").addClass("d-none");
-            $(".category5_<?=$count?>").addClass("d-none");
-
-        } else if ($(this).val() == 'Restaurant') {
-            $(".category3_<?=$count?>").removeClass("d-none");
-            $(".category2_<?=$count?>").addClass("d-none");
-            $(".category1_<?=$count?>").addClass("d-none");
-            $(".category4_<?=$count?>").addClass("d-none");
-            $(".category5_<?=$count?>").addClass("d-none");
-
-        } else if ($(this).val() == 'Santé') {
-            $(".category4_<?=$count?>").removeClass("d-none");
-
-            $(".category2_<?=$count?>").addClass("d-none");
-            $(".category3_<?=$count?>").addClass("d-none");
-            $(".category1_<?=$count?>").addClass("d-none");
-            $(".category5_<?=$count?>").addClass("d-none");
-
-        } else if ($(this).val() == 'Culture & Loisirs') {
-            $(".category5_<?=$count?>").removeClass("d-none");
-
-            $(".category2_<?=$count?>").addClass("d-none");
-            $(".category3_<?=$count?>").addClass("d-none");
-            $(".category4_<?=$count?>").addClass("d-none");
-            $(".category1_<?=$count?>").addClass("d-none");
-
-        }
-    });
-</script>
 
 <style>
     #page {
@@ -160,6 +72,10 @@ $document = $docRef->snapshot();
         z-index: 10000 !important;
     }
 </style>
+
+<script
+  src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete"
+  type="text/javascript"></script>
 
 <div id="page">
     <h1>Mon entreprise</h1>
@@ -238,6 +154,28 @@ $document = $docRef->snapshot();
                 <td class="middleColumn"></td>
                 <td>
                     <div class="form-group">
+                        <!-- Script permettant l'ajout de l'autocomplétion d'adresse -->
+                        <script>
+                            google.maps.event.addDomListener(window, 'load', initialize);
+
+                            function initialize() {
+                                var input = document.getElementById('autocomplete_<?=$document->id()?>');
+                                var autocomplete = new google.maps.places.Autocomplete(input);
+                                autocomplete.addListener('place_changed', function () {
+                                    var place = autocomplete.getPlace();
+                                    $('#latitude_<?=$document->id()?>').val(place.geometry['location'].lat());
+                                    $('#longitude_<?=$document->id()?>').val(place.geometry['location'].lng());
+
+                                });
+                            };
+                            $(function () {
+                                var input = document.getElementById("autocomplete_<?=$document->id()?>");
+                                var autocomplete = new google.maps.places.Autocomplete(input);
+
+                                $('#my-modal').modal('show');
+                            });
+                        </script>
+
                         <label for="autocomplete"> Adresse de l'entreprise </label>
                         <input type="text" name="autocomplete" id="autocomplete_<?=$document->id()?>"
                             class="form-control" size="40" placeholder="Avenue des Champs-Elysée, Paris"
@@ -265,8 +203,7 @@ $document = $docRef->snapshot();
                         <!-- <input type="text" name="phone" class="form-control" id="exampleFormControlInput1"
                                 placeholder="01 02 03 04 05" value="" required> -->
                         <input type="tel" id="phone" class="form-control" name="phone" size="40"
-                            value="<?=$document['phone']?>" pattern="[0-9]{10}"
-                            required>
+                            value="<?=$document['phone']?>" pattern="[0-9]{10}" required>
                     </div>
                 </td>
             </tr>
@@ -305,6 +242,79 @@ $document = $docRef->snapshot();
                     </div>
                 </td>
                 <td colspan="2">
+                    <!-- Script permettant la gestion des catégories -->
+                    <script>
+                        $(function () {
+                            $(".chosen-select").chosen({
+                                max_selected_options: 3,
+                                width: '100%'
+                            });
+                        });
+                        $(document).ready(function () {
+                            $(".category1_<?=$count?>").addClass("d-none");
+                            $(".category2_<?=$count?>").addClass("d-none");
+                            $(".category3_<?=$count?>").addClass("d-none");
+                            $(".category4_<?=$count?>").addClass("d-none");
+                            $(".category5_<?=$count?>").addClass("d-none");
+
+                            if ($(".companyType_<?=$count?>").val() == "Magasin") {
+                                $(".category1_<?=$count?>").removeClass("d-none");
+                            } else if ($(".companyType_<?=$count?>").val() == "Service") {
+                                $(".category2_<?=$count?>").removeClass("d-none");
+                            } else if ($(".companyType_<?=$count?>").val() == "Restaurant") {
+                                $(".category3_<?=$count?>").removeClass("d-none");
+                            } else if ($(".companyType_<?=$count?>").val() == "Santé") {
+                                $(".category4_<?=$count?>").removeClass("d-none");
+                            } else if ($(".companyType_<?=$count?>").val() == "Culture & Loisirs") {
+                                $(".category5_<?=$count?>").removeClass("d-none");
+                            }
+
+                        });
+
+                        $(".companyType_<?=$count?>").on('change', function () {
+
+                            if ($(this).val() == 'Magasin') {
+                                $(".category1_<?=$count?>").removeClass("d-none");
+                                $(".category2_<?=$count?>").addClass("d-none");
+                                $(".category3_<?=$count?>").addClass("d-none");
+                                $(".category4_<?=$count?>").addClass("d-none");
+                                $(".category5_<?=$count?>").addClass("d-none");
+                            } else if ($(this).val() == 'Service') {
+                                $(".category2_<?=$count?>").removeClass("d-none");
+                                $("#select2_<?=$count?> option:selected").remove();
+                                $('#select2_<?=$count?> :selected').remove();
+                                $(".category1_<?=$count?>").addClass("d-none");
+                                $(".category3_<?=$count?>").addClass("d-none");
+                                $(".category4_<?=$count?>").addClass("d-none");
+                                $(".category5_<?=$count?>").addClass("d-none");
+
+                            } else if ($(this).val() == 'Restaurant') {
+                                $(".category3_<?=$count?>").removeClass("d-none");
+                                $(".category2_<?=$count?>").addClass("d-none");
+                                $(".category1_<?=$count?>").addClass("d-none");
+                                $(".category4_<?=$count?>").addClass("d-none");
+                                $(".category5_<?=$count?>").addClass("d-none");
+
+                            } else if ($(this).val() == 'Santé') {
+                                $(".category4_<?=$count?>").removeClass("d-none");
+
+                                $(".category2_<?=$count?>").addClass("d-none");
+                                $(".category3_<?=$count?>").addClass("d-none");
+                                $(".category1_<?=$count?>").addClass("d-none");
+                                $(".category5_<?=$count?>").addClass("d-none");
+
+                            } else if ($(this).val() == 'Culture & Loisirs') {
+                                $(".category5_<?=$count?>").removeClass("d-none");
+
+                                $(".category2_<?=$count?>").addClass("d-none");
+                                $(".category3_<?=$count?>").addClass("d-none");
+                                $(".category4_<?=$count?>").addClass("d-none");
+                                $(".category1_<?=$count?>").addClass("d-none");
+
+                            }
+                        });
+                    </script>
+
                     <div class="category1_<?=$count?>">
                         <div class="form-group">
                             <div class="color-2">
@@ -450,10 +460,10 @@ $document = $docRef->snapshot();
                 </td>
                 <td></td>
                 <td>
-                <div class="form-group">
+                    <div class="form-group">
                         <div class="form-check">
-                            <input class="form-check-input" name="clickandcollect" type="checkbox" value="" id="defaultCheck1"
-                                <?php if($document['ClickAndCollect'] == true) { echo "checked";}?>>
+                            <input class="form-check-input" name="clickandcollect" type="checkbox" value=""
+                                id="defaultCheck1" <?php if($document['ClickAndCollect'] == true) { echo "checked";}?>>
                             <label class="form-check-label" name="clickandcollect" for="defaultCheck1">
                                 Click & Collect
                             </label>
@@ -476,13 +486,15 @@ $document = $docRef->snapshot();
 
         <div class="form-group">
             <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
-            <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>" style="max-width:600px; width:100%">
+            <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>"
+                style="max-width:600px; width:100%">
             <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>"><br>
             <input type="file" name="banniere" id="banniere">
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
-            <button type="submit" value="<?=$document->id()?>" name="edit_enterprise" class="btn btn-primary">Enregistrer
+            <button type="submit" value="<?=$document->id()?>" name="edit_enterprise"
+                class="btn btn-primary">Enregistrer
                 les modifications</button>
         </div>
     </form>
