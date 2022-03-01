@@ -661,29 +661,52 @@ class DatabaseMethods {
         .where("chosen", isEqualTo: true)
         .get();
 
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(userid)
-        .collection("Address")
-        .doc(chosenAdress.docs[0]["idDoc"])
-        .update({"chosen": false});
+    if (chosenAdress.docs.isEmpty) {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userid)
+          .update({"firstConnection": false});
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userid)
+          .collection('Address')
+          .doc(iD)
+          .set({
+        'addressName': adressTitle,
+        'buildingDetails': buildingDetails,
+        'buildingName': buildingName,
+        'familyName': familyName,
+        'latitude': latitude,
+        'chosen': true,
+        'longitude': longitude,
+        'address': address,
+        'idDoc': iD,
+      });
+    } else {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userid)
+          .collection("Address")
+          .doc(chosenAdress.docs[0]["idDoc"])
+          .update({"chosen": false});
 
-    return await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userid)
-        .collection('Address')
-        .doc(iD)
-        .set({
-      'addressName': adressTitle,
-      'buildingDetails': buildingDetails,
-      'buildingName': buildingName,
-      'familyName': familyName,
-      'latitude': latitude,
-      'chosen': true,
-      'longitude': longitude,
-      'address': address,
-      'idDoc': iD,
-    });
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userid)
+          .collection('Address')
+          .doc(iD)
+          .set({
+        'addressName': adressTitle,
+        'buildingDetails': buildingDetails,
+        'buildingName': buildingName,
+        'familyName': familyName,
+        'latitude': latitude,
+        'chosen': true,
+        'longitude': longitude,
+        'address': address,
+        'idDoc': iD,
+      });
+    }
   }
 
   Future editAdresses(

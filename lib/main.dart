@@ -185,7 +185,7 @@ class _MainScreenState extends State<MainScreen> {
                 },
               );
               //Recherche de l'id dans la table magasins
-            } else {
+            } else  {
               return StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("magasins")

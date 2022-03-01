@@ -7,11 +7,14 @@ import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
 import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:buyandbye/templates/pages/address_search.dart';
+import 'package:buyandbye/templates/pages/place_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:location/location.dart';
 import 'package:geocoding/geocoding.dart' as geocoder;
@@ -363,6 +366,7 @@ class _AddressChooseState extends State<AddressChoose> {
 
   late LocationData _locationData;
   Location location = Location();
+  final _controller = TextEditingController();
 
 //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
 //S'il n'a pas accepté alors cela renvoit false
@@ -647,7 +651,7 @@ class _AddressChooseState extends State<AddressChoose> {
           height: 15,
         ),
         //TODO Réparer et remettre les adresses
-        /*Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
           child: SizedBox(
             height: 40,
@@ -655,41 +659,41 @@ class _AddressChooseState extends State<AddressChoose> {
             child: InkWell(
               onTap: () async {
                 // generate a new token here
-                final sessionToken = Uuid().v4();
-                final Suggestion? result = await showSearch(
-                  context: context,
-                  delegate: AddressSearch(sessionToken),
-                );
+                  final sessionToken = Uuid().v4();
+                  final  result =
+                      await showSearch(
+                    context: context,
+                    delegate: AddressSearch(sessionToken),
+                  );
+
                 // This will change the text displayed in the TextField
-                if (result != null) {
-                  final placeDetails = await PlaceApiProvider(sessionToken)
-                      .getPlaceDetailFromId(result.placeId);
+                final placeDetails = await PlaceApiProvider(sessionToken)
+                    .getPlaceDetailFromId(result.placeId);
 
-                  setState(() {
-                    _controller.text = result.description!;
-                    streetNumber = placeDetails.streetNumber;
-                    street = placeDetails.street;
-                    city = placeDetails.city;
-                    zipCode = placeDetails.zipCode;
-                    currentAddressLocation =
-                        "$streetNumber $street, $city ";
-                  });
+                setState(() {
+                  _controller.text = result.description!;
+                  streetNumber = placeDetails.streetNumber;
+                  street = placeDetails.street;
+                  city = placeDetails.city;
+                  zipCode = placeDetails.zipCode;
+                  currentAddressLocation =
+                      "$streetNumber $street, $city ";
+                });
 
-                  final query = "$streetNumber $street , $city";
+                final query = "$streetNumber $street , $city";
 
-                  List<geocoder.Location> locations =
-                      await geocoder.locationFromAddress(query);
-                  var first = locations.first;
+                List<geocoder.Location> locations =
+                    await geocoder.locationFromAddress(query);
+                var first = locations.first;
 
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PageAddressNext(
-                                lat: first.latitude,
-                                long: first.longitude,
-                                adresse: query,
-                              )));
-                }
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PageAddressNext(
+                              lat: first.latitude,
+                              long: first.longitude,
+                              adresse: query,
+                            )));
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -720,7 +724,7 @@ class _AddressChooseState extends State<AddressChoose> {
               ),
             ),
           ),
-        ),*/
+        ),
       ],
     );
   }
