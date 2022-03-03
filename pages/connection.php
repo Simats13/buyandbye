@@ -1,7 +1,11 @@
+<div class="wrapper"> 
+			<div class="image-holder">
+				<img src="../images/logo.png" alt="">
+			</div>
+			
 <form class="login100-form validate-form" method="post" style="width: 100%;">
 	<span class="login100-form-title p-b-43">
-		Connexion Espace Professionnel
-		<br> Buy&Bye
+		Connexion Espace Buy&Bye
 	</span>
 
 	<?php 
@@ -60,3 +64,4 @@
 		</a>
 	</div>
 </form>
+</div>

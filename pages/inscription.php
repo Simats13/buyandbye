@@ -1,11 +1,129 @@
+<!-- Script permettant la gestion des catégories -->
+<script>
+$(function(){
+	$(".chosen-select").chosen({
+		max_selected_options: 3,
+		width: '100%'
+	}); 
+});
+$(document).ready(function () {
+	$(".category1").addClass("d-none");
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+	
+});
+
+$(".companyType").on('change', function() {
+
+if ($(this).val() == 'Magasin'){
+	$(".category1").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+} else if ($(this).val() == 'Service'){
+	$(".category2").removeClass("d-none");
+
+	$(".category1").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Restaurant'){
+	$(".category3").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category1").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Santé'){
+	$(".category4").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category1").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Culture & Loisirs'){
+	$(".category5").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category1").addClass("d-none");
+
+}
+});
+</script>   
+<link rel="stylesheet" href="css/chosen.css">
+<link rel="stylesheet" href="fonts/icomoon/style.css">
 
 <style>
+  .chosen-container-multi {
+    border: none;
+  }
 
-  .background{
-    background: url("../images/seller.jpg");
-    background-size: 100% 100%;
-    float: left;
-    width: 60%;
+  .chosen-container-multi .chosen-choices {
+    background-image: none;
+    padding: 7px;
+    border: none !important;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .chosen-container-multi .chosen-choices li.search-choice {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 10px;
+    padding-right: 26px;
+    border: none;
+    background-image: none;
+  }
+
+  .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+    top: 9px;
+    right: 8px;
+  }
+
+  .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .chosen-container .chosen-drop {
+    border: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    margin-top: 3px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /*Colors*/
+  .color-1 .chosen-container-multi .chosen-choices li.search-choice {
+    background-color: #e5e4cc;
+  }
+
+  .color-2 .chosen-container-multi .chosen-choices li.search-choice {
+    background-color: #c7f0db;
+  }
+
+  .color-3 .chosen-container-multi .chosen-choices li.search-choice {
+    background-color: #d3f4ff;
+  }
+  .RightContent{
+    /* background: url("../images/3883063.png"); */
+    background-size:cover;
+    background-color:#f3d4b7;
+
   };
 
 .popup-header {
@@ -48,9 +166,16 @@
   }
   
 </style>
+<div class="wrapper">
+			<div class="image-holder">
+				<img src="../images/3883063.png" alt="">
+			</div>
+
 <form method="post">
 
             	<div id="wizard">
+                
+                
             		<!-- SECTION 1 -->
 	                <h4></h4>
 	                <section>
@@ -73,6 +198,7 @@
                         <input type="text" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" required>
                     </div>
 
+
                     <!-- Numéro de téléphone -->
                     <div class="form-row">
                       <label for="personnalphone">Numéro de téléphone *</label>
@@ -89,6 +215,7 @@
 	                    	</label>
 	                    	<div class="form-holder">
                           <input type="password" class="form-control" id="Password1" placeholder="Mot de passe">
+                          <i class="bi bi-eye-slash" id="togglePassword"></i>
                         </div>
                       </div>
                       <div class="form-row">
@@ -97,19 +224,10 @@
 	                    	</label>
 	                    	<div class="form-holder">
                           <input type="password" class="form-control" id="Password2" placeholder="Répéter le Mot de passe">
+                          <i class="bi bi-eye-slash" id="togglePassword"></i>
                         </div>
                       </div>
-                      <div class="form-row">
-                      <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
-                      <div class="form-holder">
-                        <select class="form-select" aria-label="Default select example">
-                          <option selected>Open this select menu</option>
-                          <option value="1">One</option>
-                          <option value="2">Two</option>
-                          <option value="3">Three</option>
-                        </select>
-                      </div>
-                    </div>
+                      
 	                </section>
 	                
 					<!-- SECTION 2 -->
@@ -117,7 +235,7 @@
 	                <section>
                     <div class="form-row">
                       <label for="autocomplete">Adresse Postale *</label>
-                      <input type="text" name="autocomplete" class="form-control" id="autocomplete" value="<?php echo isset($_POST["autocomplete"]) ? $_POST["autocomplete"] : ''; ?>" required>
+                      <input type="text" name="autocomplete" class="form-control" id="autocomplete" value="<?php echo isset($_POST["autocomplete"]) ? $_POST["autocomplete"] : ''; ?>" placeholder="Indiquer l'adresse postale complète" required>
                       <input type="hidden" name="latitude" id="latitude" class="form-control" value="<?php echo isset($_POST["latitude"]) ? $_POST["latitude"] : '0'; ?>" required >  
                       <input type="hidden" name="longitude" id="longitude" class="form-control" value="<?php echo isset($_POST["longitude"]) ? $_POST["longitude"] : '0'; ?>" required>
                     </div>	
@@ -130,8 +248,8 @@
                       value="<?php echo isset($_POST["enterprisePhone"]) ? $_POST["enterprisePhone"] : ''; ?>" required>
                     </div>
                     <div class="form-row">
+                    <label for="isphonevisible">Numéro de téléphone visible ? <a data-toggle="tooltip" data-bs-placement="right" title="Permet d'afficher aux clients le numéro de téléphone sur l'application">ⓘ</a></label>
                       <div class="form-group">
-                        <label for="isphonevisible">Numéro de téléphone visible ? <a href="#" data-toggle="tooltip" data-bs-placement="right" title="Permet d'afficher aux clients le numéro de téléphone sur l'application">ⓘ</a></label>
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox" name="isPhoneVisible" id="isphonevisible" <?php echo isset($_POST["livraison"]) ? "checked" : ''; ?>>
                           <label class="form-check-label" for="isPhoneVisible">Afficher le numéro de téléphone aux clients </label>
@@ -141,31 +259,36 @@
 						
                     <div class="form-row form-group">
                       <div class="form-holder">
-                        <label for="siritnumber">Numéro de SIRET *</label>
-                        <input type="text" class="form-control" id="siretNumber" placeholder="000000000">     		
+                      <label for="siritnumber">Numéro de SIRET *</label>
+                        <input type="text" class="form-control" id="siretNumber" placeholder="000000000">  
                       </div>
                       <div class="form-holder">
-                        <label for="siritnumber">Numéro de TVA *</label>
-                        <input type="text" class="form-control" id="tvaNumber" placeholder="000000000">
+                      <label for="siritnumber">Numéro de TVA *</label>
+                        <div class="input-group">
+                          
+                            <span class="input-group-text">FR</span>
+                            <input type="text" class="form-control" id="tvaNumber" placeholder="000000000">
+                        </div>		
                       </div>
                     </div>
                     
                     <div class="form-row">
                       <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
-                      <div class="form-holder">
-                        <select class="form-select" aria-label="Default select example">
-                          <option selected>Open this select menu</option>
-                          <option value="1">One</option>
-                          <option value="2">Two</option>
-                          <option value="3">Three</option>
-                        </select>
-                      </div>
+                      <select value="" class="form-select companyType" name="companyType" id="companyType" required>
+                        <option value="" selected disabled hidden>Veuillez choisir un type d'entreprise</option>
+                        <option value="Magasin"<?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Magasin</option>
+                        <option value="Service" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Service</option>
+                        <option value="Restaurant" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Restaurant</option>
+                        <option value="Santé" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Santé</option>
+                        <option value="Culture & Loisirs" <?php echo isset($_POST["companyType"]) ? "selected" : ''; ?>>Culture & Loisirs</option>
+                      </select>
                     </div>
 	                </section>
 
 	                <!-- SECTION 3 -->
 	                <h4></h4>
 	                <section>
+                    
 					<div class="category1">
                 <div class="form-group">
                   <div class="color-2">
@@ -355,4 +478,6 @@
             
     
 </form>
+
+</div>
 

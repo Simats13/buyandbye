@@ -423,8 +423,7 @@ $document = $docRef->snapshot();
             $(".category5").addClass("d-none");
         } else if ($(this).val() == 'Service') {
             $(".category2").removeClass("d-none");
-            $("#select2 option:selected").remove();
-            $('#select2 :selected').remove();
+          
             $(".category1").addClass("d-none");
             $(".category3").addClass("d-none");
             $(".category4").addClass("d-none");
