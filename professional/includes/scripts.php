@@ -5,7 +5,7 @@
   <script src="js/popper.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/chosen.jquery.min.js"></script>
-  
+  <script type="text/javascript" src="../js/mdb.min.js"></script>
   <!-- <script src="js/main.js"></script> -->
   <!-- Core plugin JavaScript-->
   <!-- <script src="vendor/jquery-easing/jquery.easing.min.js"></script> -->
@@ -20,3 +20,9 @@
   <!-- <script src="js/demo/chart-area-demo.js"></script> -->
   <!-- <script src="js/demo/chart-pie-demo.js"></script> -->
 
+  <script>
+
+$(document).ready(function() {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+});
+</script>

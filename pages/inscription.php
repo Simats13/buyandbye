@@ -99,13 +99,17 @@
                           <input type="password" class="form-control" id="Password2" placeholder="Répéter le Mot de passe">
                         </div>
                       </div>
-                      <select class="select" multiple data-mdb-clear-button="true">
-  <option value="1">One</option>
-  <option value="2">Two</option>
-  <option value="3">Three</option>
-  <option value="4">Four</option>
-  <option value="5">Five</option>
-</select>
+                      <div class="form-row">
+                      <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
+                      <div class="form-holder">
+                        <select class="form-select" aria-label="Default select example">
+                          <option selected>Open this select menu</option>
+                          <option value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </select>
+                      </div>
+                    </div>
 	                </section>
 	                
 					<!-- SECTION 2 -->
@@ -149,12 +153,12 @@
                     <div class="form-row">
                       <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
                       <div class="form-holder">
-                      <select class="form-select" aria-label="Default select example">
-  <option selected>Open this select menu</option>
-  <option value="1">One</option>
-  <option value="2">Two</option>
-  <option value="3">Three</option>
-</select>
+                        <select class="form-select" aria-label="Default select example">
+                          <option selected>Open this select menu</option>
+                          <option value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </select>
                       </div>
                     </div>
 	                </section>
