@@ -309,16 +309,16 @@ $document = $docRef->snapshot();
                     <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput" style="width:50px; height:50px" value="#<?=$document['colorStore']?>" title="Choissisez une couleur">
                 </div>
                 <div class="form-check form-switch">
+                        <input class="form-check-input" name="clickandcollect" type="checkbox" value="" id="defaultCheck1" <?php if($document['ClickAndCollect'] == true) { echo "checked";}?>>
                         <label class="form-check-label" name="clickandcollect" for="defaultCheck1"> Click & Collect </label>
-                        <input class="form-check-input" name="clickandcollect" type="checkbox" value="" id="defaultCheck1" <?php if($document['ClickAndCollect'] == true) { echo "checked";}?>>   
                     </div>
                     <div class="form-check form-switch">
+                        <input class="form-check-input" name="livraison" type="checkbox" value="" id="defaultCheck1" <?php if($document['livraison'] == true) { echo "checked";}?>>
                         <label class="form-check-label" name="livraison" for="defaultCheck1"> Livraison à domicile</label>
-                        <input class="form-check-input" name="livraison" type="checkbox" value="" id="defaultCheck1" <?php if($document['livraison'] == true) { echo "checked";}?>> 
                     </div>
                     <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="isPhoneVisible" id="isphonevisible" <?php if($document['isPhoneVisible'] == true) { echo "checked";}?>> 
                         <label class="form-check-label" for="isPhoneVisible">Afficher le numéro de téléphone aux clients <a  data-toggle="tooltip" data-bs-placement="right" title="Permet d'afficher aux clients le numéro de téléphone sur l'application">ⓘ</a></label>
-                        <input class="form-check-input" type="checkbox" name="isPhoneVisible" id="isphonevisible" <?php if($document['isPhoneVisible'] == true) { echo "checked";}?>>
                     </div>
             </div>
         </div>
