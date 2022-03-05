@@ -10,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
 <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
-	===============================================================================================
+	
 <!-- <script src="vendor/select2/select2.min.js"></script> -->
 	<!--===============================================================================================-->
 <!-- <script src="vendor/daterangepicker/moment.min.js"></script>
