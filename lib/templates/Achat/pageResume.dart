@@ -198,14 +198,15 @@ class _PageResumeState extends State<PageResume> {
                                     children: [
                                       Center(
                                         child: Container(
-                                          width:
-                                              MediaQuery.of(context).size.width - 40,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              40,
                                           height: 50,
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                           ),
                                         ),
-                                        
                                       ),
                                       // SizedBox(height: 10,)
                                     ],

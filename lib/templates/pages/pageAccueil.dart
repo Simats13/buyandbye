@@ -671,7 +671,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                       sellerID: documents[index]["id"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
-                      mainCategorie: [],
+                      mainCategorie: documents[index]["mainCategorie"],
                     ),
                   );
                 },

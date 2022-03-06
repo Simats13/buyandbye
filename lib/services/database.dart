@@ -267,13 +267,14 @@ class DatabaseMethods {
   //   return query;
   // }
 
-    Stream getVisibleProducts(String? sellerId, String? selectedCategorie) {
+  Stream getVisibleProducts(String? sellerId, String selectedCategorie) {
     Stream query = FirebaseFirestore.instance
         .collection("magasins")
-        .where("id", isEqualTo: sellerId)
-        // .where('categorie', isEqualTo: selectedCategorie)
-        // .where("produits", arrayContains: selectedCategorie)
-        // .limit(6)
+        .doc(sellerId)
+        .collection("produits")
+        .where("visible", isEqualTo: true)
+        .where("categorie", isEqualTo: selectedCategorie)
+        .limit(6)
         .snapshots();
     return query;
   }

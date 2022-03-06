@@ -167,20 +167,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   categoriesInDb() async {
-    DocumentSnapshot querySnapshot = await FirebaseFirestore.instance
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection("magasins")
         .doc(widget.sellerID)
+        .collection("produits")
         .get();
 
-    var categorieInDb = querySnapshot["produits"];
-    if (categorieInDb.length != 0) {
+    if (querySnapshot.docs.length != 0) {
       // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
       // pas déjà dans la liste
-      for (var i = 0; i <= categorieInDb.length - 1; i++) {
-        var catInDb = categorieInDb[i.toString()]["categorie"];
-        String? categoryName = catInDb;
+      for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
+        String? categoryName = querySnapshot.docs[i]["categorie"];
         if (!listOfCategories.contains(categoryName)) {
-          listOfCategories.add(catInDb);
+          listOfCategories.add(querySnapshot.docs[i]["categorie"]);
         }
       }
       setState(() {
@@ -1135,14 +1134,12 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   Widget produits(selectedCategorie) {
     return StreamBuilder<dynamic>(
-        stream: DatabaseMethods()
-            .getVisibleProducts(widget.sellerID, selectedCategorie),
+        stream: DatabaseMethods().getVisibleProducts(
+            widget.sellerID, selectedCategorie),
         builder: (context, snapshot) {
-          var products = snapshot.data.docs[0]["produits"];
-          print("bere");
-          print(products);
           if (!snapshot.hasData) return CircularProgressIndicator();
-          if (products.length == 0) return Text("Aucun produit disponible");
+          if (snapshot.data.docs.length == 0)
+            return Text("Aucun produit disponible");
           return GridView.builder(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
@@ -1152,12 +1149,11 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   childAspectRatio: 1,
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 20),
-              itemCount: products.length,
+              itemCount: (snapshot.data! as QuerySnapshot).docs.length,
               itemBuilder: (context, index) {
-                var product = products[index];
-                print("product");
-                print(product["categorie"]);
-                var money = product['prix'].toStringAsFixed(2);
+                var money = (snapshot.data! as QuerySnapshot)
+                    .docs[index]['prix']
+                    .toStringAsFixed(2);
                 return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -1165,10 +1161,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           MaterialPageRoute(
                               builder: (context) => PageProduit(
                                     userid: userid,
-                                    imagesList: product['images'],
-                                    nomProduit: product['nom'],
-                                    descriptionProduit: product['description'],
-                                    prixProduit: product['prix'],
+                                    imagesList: snapshot.data.docs[index]
+                                        ['images'],
+                                    nomProduit: snapshot.data.docs[index]
+                                        ['nom'],
+                                    descriptionProduit: snapshot
+                                        .data.docs[index]['description'],
+                                    prixProduit: snapshot.data.docs[index]
+                                        ['prix'],
                                     img: widget.img,
                                     name: widget.name,
                                     description: widget.description,
@@ -1176,7 +1176,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     clickAndCollect: widget.clickAndCollect,
                                     livraison: widget.livraison,
                                     idCommercant: widget.sellerID,
-                                    idProduit: product['id'],
+                                    idProduit: (snapshot.data! as QuerySnapshot)
+                                        .docs[index]['id'],
                                   )));
                     },
                     child: Container(
@@ -1188,12 +1189,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.network(
-                              product["images"][0],
+                              (snapshot.data! as QuerySnapshot).docs[index]
+                                  ["images"][0],
                               width: MediaQuery.of(context).size.width,
                               height: 100,
                             ),
                             SizedBox(height: 5),
-                            Text(product['nom'],
+                            Text(
+                                (snapshot.data! as QuerySnapshot).docs[index]
+                                    ['nom'],
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: BuyandByeAppTheme.grey)),
