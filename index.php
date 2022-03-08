@@ -16,14 +16,12 @@ if(isset($_GET['page']) && !empty($_GET['page'])){
 }
 if(isset($_SESSION['cookie'])){
 	$_SESSION['status'] = "Vous êtes déjà connecté";
-	header('Location: /admin/index.php');
-	//exit();
+	enterpriseOrAdmin($auth);
 }else{
 	if(isset($_SESSION['verified_user_id']))
 	{
 		$_SESSION['status'] = "Vous êtes déjà connecté";
-		header('Location: /admin/index.php');
-		//exit();
+		enterpriseOrAdmin($auth);
 	}
 }
 

@@ -7,10 +7,6 @@ $document = $docRef->snapshot();
 <link rel="stylesheet" href="css/chosen.css">
 <link rel="stylesheet" href="fonts/icomoon/style.css">
 
-
-
-
-
 <style>
     #page {
         padding: 0 5%;
@@ -23,7 +19,6 @@ $document = $docRef->snapshot();
     /* Met les éléments du formulaires dans des tableaux pour pouvoir les mettre à l'horizontale 2 par 2 */
     /*table,
     td {
-        text-align: center;
         border: 1px solid #333;
     }*/
 
@@ -217,7 +212,7 @@ $document = $docRef->snapshot();
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
+                <td colspan="1">
                     <div class="form-group">
                         <label class="mr-sm-2" for="companyType_<?=$count?>">Type d'entreprise</label>
                         <select value="" class="custom-select mr-sm-2 companyType_<?=$count?>"
@@ -241,7 +236,8 @@ $document = $docRef->snapshot();
                         </select>
                     </div>
                 </td>
-                <td colspan="2">
+                <td></td>
+                <td>
                     <!-- Script permettant la gestion des catégories -->
                     <script>
                         $(function () {
@@ -482,15 +478,18 @@ $document = $docRef->snapshot();
                     </div>
                 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
+                        <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>"
+                            style="max-width:600px; width:100%">
+                        <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>"><br>
+                        <input type="file" name="banniere" id="banniere">
+                    </div>
+                </td>
+            </tr>
         </table>
-
-        <div class="form-group">
-            <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
-            <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>"
-                style="max-width:600px; width:100%">
-            <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>"><br>
-            <input type="file" name="banniere" id="banniere">
-        </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
             <button type="submit" value="<?=$document->id()?>" name="edit_enterprise"
