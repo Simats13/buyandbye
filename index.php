@@ -287,17 +287,17 @@ if(isset($_POST['resetConfirm'])){
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css"> -->
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<!-- <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css"> -->
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css"> -->
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css"> -->
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css"> -->
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+	<!-- <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css"> -->
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
@@ -375,7 +375,6 @@ if(isset($_POST['resetConfirm'])){
 	<div class="Container">
 		<div class="Content">
 			<div class="Wrapper">
-				<div class="background"></div>
 				<div class="RightContent">
 					<?php include('pages/'.$page.'.php');?>
 				</div>

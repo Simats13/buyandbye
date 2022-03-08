@@ -10,13 +10,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
 <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
+	
+<!-- <script src="vendor/select2/select2.min.js"></script> -->
 	<!--===============================================================================================-->
-<script src="vendor/select2/select2.min.js"></script>
+<!-- <script src="vendor/daterangepicker/moment.min.js"></script>
+<script src="vendor/daterangepicker/daterangepicker.js"></script> -->
 	<!--===============================================================================================-->
-<script src="vendor/daterangepicker/moment.min.js"></script>
-<script src="vendor/daterangepicker/daterangepicker.js"></script>
-	<!--===============================================================================================-->
-<script src="vendor/countdowntime/countdowntime.js"></script>
+<!-- <script src="vendor/countdowntime/countdowntime.js"></script> -->
 	<!--===============================================================================================-->
 <script src="js/main.js"></script>
 
@@ -65,67 +65,7 @@ $(document).ready(function() {
     });
   }
 </script>
-<!-- Script permettant la gestion des catégories -->
-<script>
-// $(function(){
-// 	$(".chosen-select").chosen({
-// 		max_selected_options: 3,
-// 		width: '100%'
-// 	}); 
-// });
-$(document).ready(function () {
-	$(".category1").addClass("d-none");
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-	
-});
 
-$(".companyType").on('change', function() {
-
-if ($(this).val() == 'Magasin'){
-	$(".category1").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-} else if ($(this).val() == 'Service'){
-	$(".category2").removeClass("d-none");
-
-	$(".category1").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-
-}else if ($(this).val() == 'Restaurant'){
-	$(".category3").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category1").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-
-}else if ($(this).val() == 'Santé'){
-	$(".category4").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category1").addClass("d-none");
-	$(".category5").addClass("d-none");
-
-}else if ($(this).val() == 'Culture & Loisirs'){
-	$(".category5").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category1").addClass("d-none");
-
-}
-});
-</script>   
 <script>
   function readURL(input) {
       if (input.files && input.files[0]) {
