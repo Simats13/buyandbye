@@ -5,82 +5,122 @@ $commands = $firestore->collection('commandes');
 $query = $commands->where('users', 'array-contains', $uid);
 $snapshot = $query->documents();
 
-function getCommands($snapshot, $firestore, $statut) {
+function getCommands($snapshot, $firestore, $statut, $uid) {
+    # Premier compteur qui s'incrémente à chaque client différent
     $count1 = 0;
-    foreach ($snapshot as $document) {
-        $ids = $document['users'][0] . $document['users'][1];
+    ?>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="75%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Commande n°</th>
+                    <th>Date</th>
+                    <th>Nombre d'articles</th>
+                    <th>Prix</th>
+                    <th>Détail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                # On boucle sur chaque client
+                foreach ($snapshot as $document) {
+                    $ids = $document['users'][0] . $document['users'][1];
 
-        if ($statut == 0) {
-        // Récupère les commandes dont le statut est 0 (en attente)
-            $statut1 = $firestore->collection('commandes')->document($ids)->collection("commands");
-            $query1 = $statut1->where('statut', '=', 0);
-            $snapshot1 = $query1->documents();
-        } elseif ($statut == 1) {
-        // Récupère les commandes dont le statut est 1 (en cours)
-            $statut1 = $firestore->collection('commandes')->document($ids)->collection("commands");
-            $query1 = $statut1->where('statut', '=', 1);
-            $snapshot1 = $query1->documents();
-        } else {
-        // Récupère les commandes dont le statut est 2 (terminé)
-            $statut1 = $firestore->collection('commandes')->document($ids)->collection("commands");
-            $query1 = $statut1->where('statut', '=', 2);
-            $snapshot1 = $query1->documents();
-        }
-
-        $count2 = 0;
-        foreach ($snapshot1 as $doc) {
-            ?>
-            <div class="frame">
-                <div class="infosInRow">
-                    <div class="left">
-                        <?php
-                        echo 'Date de commande : ' . date('d/m/Y à H:i', strtotime($doc['horodatage']));
-                        echo nl2br("\n");
-                        echo nl2br("\n");
-                        echo 'Référence de commande : ' . $doc['reference'];
-                        ?>
-                    </div>
-                    <div class="right">
-                        <?php
+                    if ($statut == 0) {
+                    // Récupère les commandes dont le statut est 0 (en attente)
+                        $statut1 = $firestore->collection('commandes')->document($ids)->collection("commands");
+                        $query1 = $statut1->where('statut', '=', 0);
+                        $snapshot1 = $query1->documents();
+                    } elseif ($statut == 1) {
+                    // Récupère les commandes dont le statut est 1 (en cours)
+                        $statut1 = $firestore->collection('commandes')->document($ids)->collection("commands");
+                        $query1 = $statut1->where('statut', '=', 1);
+                        $snapshot1 = $query1->documents();
+                    } else {
+                    // Récupère les commandes dont le statut est 2 (terminé)
+                        $statut1 = $firestore->collection('commandes')->document($ids)->collection("commands");
+                        $query1 = $statut1->where('statut', '=', 2);
+                        $snapshot1 = $query1->documents();
+                    }
+                    # Second compteur qui s'incrémente à chaque commande d'un client
+                    $count2 = 0;
+                    # On boucle sur chaque commande d'un client
+                    foreach ($snapshot1 as $doc) {
+                    ?>
+                    <tr>
+                        <td><?=$doc['reference']?></td>
+                        <td><?=date('d/m/Y à H:i', strtotime($doc['horodatage']))?></td>
+                        <td><?php 
                         if ($doc['articles'] == 1) {
                             echo $doc['articles'] . ' article';
                         } else {
                             echo $doc['articles'] . ' articles';
-                        }
-                        echo nl2br("\n");
-                        echo nl2br("\n");
-                        echo 'Prix : ' . $doc['prix'] . '€';
-                        ?>
-                    </div>
-                </div>
-                <div>
-                    <button class="btn btn-primary shadowButtons" title="<?=$statut.$count1.$count2?>" data-toggle="modal" data-target="#commandDetails<?=$statut.$count1.$count2?>">
-                        Voir le détail
-                    </button>
-                </div>
-            </div>
+                        }?></td>
+                        <td><?=$doc['prix'] . '€'?></td>
+                        <td>
+                        <button class="btn btn-primary shadowButtons" data-toggle="modal" data-target="#commandDetails<?=$statut.$count1.$count2?>">
+                            Voir le détail
+                        </button>
+                        </td>
+                    </tr>
 
-            <!-- Popup -->
-            <div class="modal fade" id="commandDetails<?=$statut.$count1.$count2?>" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ModalLabel">Informations sur la commande n°<?=$doc['reference']?></h5>
-                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <?php echo 'Référence de commande : ' . $doc['reference'] ?>
+                    <!-- Chaque popup doit être unique sinon elle ne s'affiche pas -->
+                    <!-- On lui attribue donc un id unique composé du statut de la commande et des 2 compteurs ci-dessus -->
+                    <div class="modal fade" id="commandDetails<?=$statut.$count1.$count2?>" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="ModalLabel">Informations sur la commande n°<?=$doc['reference']?></h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <?php
+                                    echo 'Le ' . date('d/m/Y à H:i', strtotime($doc['horodatage']));
+                                    echo nl2br("\n");
+                                    if ($doc['articles'] == 1) {
+                                        echo $doc['articles'] . ' article';
+                                    } else {
+                                        echo $doc['articles'] . ' articles';
+                                    }
+                                    echo nl2br("\n");
+                                    echo 'Total : ' . $doc['prix'] . '€';
+                                    echo nl2br("\n");
+                                    # Récupère les produits de la commande
+                                    $products = $firestore->collection('commandes')->document($ids)->collection("commands")->document($doc['id'])->collection('products');
+                                    $snapshot2 = $products->documents();
+
+                                    ?> <div class="grid">
+                                        <span>Image produit</span>
+                                        <span>Nom</span>
+                                        <span>Référence</span>
+                                        <span>Prix unitaire</span>
+                                        <span>Quantité</span>
+                                    
+                                        <?php
+                                        foreach ($snapshot2 as $prod) {
+                                            $product = $firestore->collection('magasins')->document($uid)->collection('produits')->document($prod['produit']);
+                                            $snapshot3 = $product->snapshot();
+                                            ?>
+                                            <span><img src=<?=$snapshot3['images'][0]?> alt=<?=$snapshot3['nom']?>></span>
+                                            <span><?=$snapshot3['nom']?></span>
+                                            <span><?=$snapshot3['reference']?></span>
+                                            <span><?=$snapshot3['prix']?>€</span>
+                                            <span><?=$prod['quantite']?></span>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <?php
-            $count2++;
-        }
-        $count1++;
-    }
+
+                    <?php $count2++; }
+                $count1++; } ?>
+            </tbody>
+        </table>
+    </div>
+<?php
 }
 ?>
 
@@ -116,6 +156,7 @@ function getCommands($snapshot, $firestore, $statut) {
 </script>
 
 <style>
+
     #page {
         padding: 0 5%;
     }
@@ -166,37 +207,33 @@ function getCommands($snapshot, $firestore, $statut) {
         padding-bottom: 2.5vh;
     }
 
-    .frame {
-        padding: 2vw;
-        border-radius: 25px;
-        margin-bottom: 3vw;
-        text-align: center;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        border-top: 1px solid black;
+        border-right: 1px solid black;
     }
 
-    .infosInRow {
-        overflow: hidden;
-        margin-bottom: 1vw;
+    .grid > span {
+        padding: 8px 4px;
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
     }
 
-    .left {
-        float: left;
-        text-align: left;
-    }
-
-    .right {
-        float: right;
+    img {
+        max-width: 10vw;
+        max-height: 10vw;
     }
 </style>
 
 <div id="page">
     <h1>Voir mes commandes</h1>
     <div id="buttons">
-        <button class="shadowButtons" id="button1" onclick="button1()" style="background-color: #359738">En
-            attente</button>
+        <button class="shadowButtons" id="button1" onclick="button1()" style="background-color: #359738">En attente</button>
         <button class="shadowButtons" id="button2" onclick="button2()">En cours</button>
         <button class="shadowButtons" id="button3" onclick="button3()">Terminées</button>
     </div>
+    
     <!-- Tableau des commandes en attente -->
     <div id="table1" class="card shadow mb-4">
         <div class="card-header py-3">
@@ -204,7 +241,7 @@ function getCommands($snapshot, $firestore, $statut) {
         </div>
 
         <div class="card-body">
-            <?php getCommands($snapshot, $firestore, 0);?>
+            <?php getCommands($snapshot, $firestore, 0, $uid);?>
         </div>
     </div>
 
@@ -215,7 +252,7 @@ function getCommands($snapshot, $firestore, $statut) {
         </div>
 
         <div class="card-body">
-            <?php getCommands($snapshot, $firestore, 1);?>
+            <?php getCommands($snapshot, $firestore, 1, $uid);?>
         </div>
     </div>
 
@@ -226,7 +263,7 @@ function getCommands($snapshot, $firestore, $statut) {
         </div>
 
         <div class="card-body">
-            <?php getCommands($snapshot, $firestore, 2);?>
+            <?php getCommands($snapshot, $firestore, 2, $uid);?>
         </div>
     </div>
 </div>
