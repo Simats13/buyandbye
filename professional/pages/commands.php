@@ -6,6 +6,7 @@ $query = $commands->where('users', 'array-contains', $uid);
 $snapshot = $query->documents();
 
 function getCommands($snapshot, $firestore, $statut) {
+    $count1 = 0;
     foreach ($snapshot as $document) {
         $ids = $document['users'][0] . $document['users'][1];
 
@@ -26,32 +27,59 @@ function getCommands($snapshot, $firestore, $statut) {
             $snapshot1 = $query1->documents();
         }
 
+        $count2 = 0;
         foreach ($snapshot1 as $doc) {
             ?>
-            <div class="parent">
-                <div class="left">
-                    <?php
-                    echo 'Date de commande : ' . date('d/m/Y à H:i', strtotime($doc['horodatage']));
-                    echo nl2br("\n");
-                    echo nl2br("\n");
-                    echo 'Référence de commande : ' . $doc['reference'];
-                    ?>
+            <div class="frame">
+                <div class="infosInRow">
+                    <div class="left">
+                        <?php
+                        echo 'Date de commande : ' . date('d/m/Y à H:i', strtotime($doc['horodatage']));
+                        echo nl2br("\n");
+                        echo nl2br("\n");
+                        echo 'Référence de commande : ' . $doc['reference'];
+                        ?>
+                    </div>
+                    <div class="right">
+                        <?php
+                        if ($doc['articles'] == 1) {
+                            echo $doc['articles'] . ' article';
+                        } else {
+                            echo $doc['articles'] . ' articles';
+                        }
+                        echo nl2br("\n");
+                        echo nl2br("\n");
+                        echo 'Prix : ' . $doc['prix'] . '€';
+                        ?>
+                    </div>
                 </div>
-                <div class="right">
-                    <?php
-                    if ($doc['articles'] == 1) {
-                        echo $doc['articles'] . ' article';
-                    } else {
-                        echo $doc['articles'] . ' articles';
-                    }
-                    echo nl2br("\n");
-                    echo nl2br("\n");
-                    echo 'Prix : ' . $doc['prix'] . '€';
-                    ?>
+                <div>
+                    <button class="btn btn-primary shadowButtons" title="<?=$statut.$count1.$count2?>" data-toggle="modal" data-target="#commandDetails<?=$statut.$count1.$count2?>">
+                        Voir le détail
+                    </button>
+                </div>
+            </div>
+
+            <!-- Popup -->
+            <div class="modal fade" id="commandDetails<?=$statut.$count1.$count2?>" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ModalLabel">Informations sur la commande n°<?=$doc['reference']?></h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <?php echo 'Référence de commande : ' . $doc['reference'] ?>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php
+            $count2++;
         }
+        $count1++;
     }
 }
 ?>
@@ -92,8 +120,13 @@ function getCommands($snapshot, $firestore, $statut) {
         padding: 0 5%;
     }
 
-    button {
+    #button1,
+    #button2,
+    #button3 {
         background-color: #4CAF50;
+    }
+
+    .shadowButtons {
         border: none;
         color: white;
         text-align: center;
@@ -103,11 +136,11 @@ function getCommands($snapshot, $firestore, $statut) {
         transition-duration: 0.4s;
     }
 
-    button:hover {
+    .shadowButtons:hover {
         box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.24), 0 10px 16px rgba(0, 0, 0, 0.18);
     }
 
-    button:focus {
+    .shadowButtons:focus {
         outline: none;
     }
 
@@ -133,17 +166,22 @@ function getCommands($snapshot, $firestore, $statut) {
         padding-bottom: 2.5vh;
     }
 
-    .parent {
-        clear: both;
-        overflow: hidden;
+    .frame {
         padding: 2vw;
         border-radius: 25px;
         margin-bottom: 3vw;
+        text-align: center;
         box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    }
+
+    .infosInRow {
+        overflow: hidden;
+        margin-bottom: 1vw;
     }
 
     .left {
         float: left;
+        text-align: left;
     }
 
     .right {
@@ -151,12 +189,13 @@ function getCommands($snapshot, $firestore, $statut) {
     }
 </style>
 
-<div id="page"> 
+<div id="page">
     <h1>Voir mes commandes</h1>
     <div id="buttons">
-        <button id="button1" onclick="button1()" style="background-color: #359738">En attente</button>
-        <button id="button2" onclick="button2()">En cours</button>
-        <button id="button3" onclick="button3()">Terminées</button>
+        <button class="shadowButtons" id="button1" onclick="button1()" style="background-color: #359738">En
+            attente</button>
+        <button class="shadowButtons" id="button2" onclick="button2()">En cours</button>
+        <button class="shadowButtons" id="button3" onclick="button3()">Terminées</button>
     </div>
     <!-- Tableau des commandes en attente -->
     <div id="table1" class="card shadow mb-4">
@@ -191,5 +230,3 @@ function getCommands($snapshot, $firestore, $statut) {
         </div>
     </div>
 </div>
-
-<!-- Données à afficher : 'horodatage', 'reference' | 'articles', 'prix'
