@@ -33,6 +33,20 @@ function randomPassword() {
     return implode($pass); //turn the array into a string
 }
 
+// Generate 16 bytes (128 bits) of random data or use the data passed into the function.
+function guidv4($data = null) {
+    $data = $data ?? random_bytes(16);
+    assert(strlen($data) == 16);
+
+    // Set version to 0100
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+    // Set bits 6-7 to 10
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+    // Output the 36 character UUID.
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
 // Vérifie si l'image est correcte, renvoie true si c'est le cas
 function checkImageParameters($storage, $id) {
     
@@ -136,7 +150,7 @@ if(isset($_POST['edit_enterprise'])){
     }
 }
 
-/** PARTIE RESERVEE A LA PAGE COMMANDS
+/* PARTIE RESERVEE A LA PAGE COMMANDS
  *  Fonction permettant de modifier l'état d'une commande
  */
 
@@ -164,6 +178,35 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
     $firestore->collection('commandes')->document($ids)->collection('commands')->document($docId)
     ->delete();
 }
+
+/* PARTIE RESERVEE A LA PAGE PRODUCTS
+ *  Fonction permettant de modifier l'état d'une commande
+ */
+
+ if(isset($_POST['add_product'])) {
+    $uid = htmlspecialchars(trim($_POST['uid']));
+    $name = htmlspecialchars(trim($_POST['productName']));
+    $category = htmlspecialchars(trim($_POST['category']));
+    $description = htmlspecialchars(trim($_POST['description']));
+    $prix= htmlspecialchars(trim($_POST['prix']));
+    $quantite = htmlspecialchars(trim($_POST['quantite']));
+    $reference = htmlspecialchars(trim($_POST['reference']));
+    $visibilite = isset($_POST['visibilite']) ? true : false;
+    $uuid = guidv4();
+
+    $data = [
+        'categorie' => $category,
+        'description' => $description,
+        'nom' => $name,
+        'prix' => $prix,
+        'quantite' => $quantite,
+        'reference' => $reference,
+        'visible' => $visibilite,
+        'id' => $uuid,
+    ];
+
+    $firestore->collection('magasins')->document($uid)->collection('produits')->document($uuid)->set($data);
+ }
 ?>
 
 <!-- INCLUS LES PAGES PHP  -->

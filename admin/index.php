@@ -250,7 +250,7 @@ if(isset($_POST['add_enterprise'])){
             'type' => $type,
         ];
         
-        $firestore->collection('magasins')->document("$uid")->set($data);
+        $firestore->collection('magasins')->document($uid)->set($data);
    
 
         if($_FILES["banniere"]['size'] != 0){
