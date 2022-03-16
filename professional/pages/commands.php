@@ -1,3 +1,4 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <?php
 // Récupère toutes les commandes du professionnel
 $uid = $_SESSION['verified_user_id'];
@@ -108,8 +109,21 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
                                             <span><?=$snapshot3['reference']?></span>
                                             <span><?=$snapshot3['prix']?>€</span>
                                             <span><?=$prod['quantite']?></span>
-                                        <?php } ?>
+                                        <?php } ?> 
                                     </div>
+                                    <br>
+                                    <form method='POST'>
+                                        <input type="hidden" name="ids" value="<?=$ids?>">
+                                        <input type="hidden" name="docId" value="<?=$doc['id']?>">
+                                        <button type="submit" class="btn btn-success waitingForm visible" name="accept">Accepter la commande</button>
+                                        <button type="submit" class="btn btn-light waitingForm visible" name="refuse">Refuser la commande</button>
+                                    </form>
+                                    <form method='POST'>
+                                        <input type="hidden" name="ids" value="<?=$ids?>">
+                                        <input type="hidden" name="docId" value="<?=$doc['id']?>">
+                                        <button type="submit" class="btn btn-success inProgressForm notVisible" name="validate">Valider la commande</button>
+                                        <button type="submit" class="btn btn-light inProgressForm notVisible" name="cancel">Annuler la commande</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -153,10 +167,34 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
         document.getElementById("button2").style.backgroundColor = "#4CAF50";
         document.getElementById("button3").style.backgroundColor = "#359738";
     }
+
+    $(document).ready(function(){
+        $("#button1").click(function(){
+            $(".waitingForm").removeClass("notVisible");
+            $(".inProgressForm").removeClass("visible");
+            $(".waitingForm").addClass("visible");
+            $(".inProgressForm").addClass("notVisible");
+        });
+    });
+
+    $(document).ready(function(){
+        $("#button2").click(function(){
+            $(".waitingForm").removeClass("visible");
+            $(".inProgressForm").removeClass("notVisible");
+            $(".waitingForm").addClass("notVisible");
+            $(".inProgressForm").addClass("visible");
+        });
+    });
+
+    $(document).ready(function(){
+        $("#button3").click(function(){
+            $(".waitingForm, .inProgressForm").removeClass("visible");
+            $(".waitingForm, .inProgressForm").addClass("notVisible");
+        });
+    });
 </script>
 
 <style>
-
     #page {
         padding: 0 5%;
     }
@@ -221,8 +259,20 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
     }
 
     img {
-        max-width: 10vw;
-        max-height: 10vw;
+        max-width: 5vw;
+        max-height: 5vw;
+    }
+
+    .btn-light {
+        background-color: #E8E8E8;
+    }
+
+    .visible {
+        display: inline;
+    }
+
+    .notVisible {
+        display: none;
     }
 </style>
 

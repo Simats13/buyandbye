@@ -85,7 +85,7 @@ function checkImageParameters($storage, $id) {
  *  Fonction permettant d'éditer une entreprise dans la BDD Firebase
  */
 
-/* Edition d'une entreprise */
+// Edition d'une entreprise
 if(isset($_POST['edit_enterprise'])){
     $g = new Geohash();
     $id = $_POST['edit_enterprise'];
@@ -103,7 +103,7 @@ if(isset($_POST['edit_enterprise'])){
     $color = htmlspecialchars(trim(ltrim($_POST['color'],"#")));
     $clickandcollect = isset($_POST['clickandcollect']) ? true : false;
     $livraison = isset($_POST['livraison']) ? true : false; 
-    $image_url = htmlspecialchars(trim($_POST['old_banniere']));
+    $image_url = htmlspecialchars(trim($_POST['banniere']));
     $longitude = htmlspecialchars(trim($_POST['longitude']));
     $latitude = htmlspecialchars(trim($_POST['latitude']));
     $geohash = $g->encode($latitude,$longitude,9);
@@ -134,6 +134,35 @@ if(isset($_POST['edit_enterprise'])){
             ['path' => 'imgUrl', 'value' => $image_url],
         ]);
     }
+}
+
+/** PARTIE RESERVEE A LA PAGE COMMANDS
+ *  Fonction permettant de modifier l'état d'une commande
+ */
+
+if(isset($_POST['accept'])) {
+    $ids = htmlspecialchars(trim($_POST['ids']));
+    $docId = htmlspecialchars(trim($_POST['docId']));
+    $firestore->collection('commandes')->document($ids)->collection('commands')->document($docId)
+    ->update([
+        ['path' => 'statut', 'value' => 1]
+    ]);
+}
+
+if(isset($_POST['validate'])) {
+    $ids = htmlspecialchars(trim($_POST['ids']));
+    $docId = htmlspecialchars(trim($_POST['docId']));
+    $firestore->collection('commandes')->document($ids)->collection('commands')->document($docId)
+    ->update([
+        ['path' => 'statut', 'value' => 2]
+    ]);
+}
+
+if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
+    $ids = htmlspecialchars(trim($_POST['ids']));
+    $docId = htmlspecialchars(trim($_POST['docId']));
+    $firestore->collection('commandes')->document($ids)->collection('commands')->document($docId)
+    ->delete();
 }
 ?>
 

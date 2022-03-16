@@ -81,12 +81,12 @@ function checkImageParameters($storage, $id) {
     return $image_url;
 }
 
-/** PARTIE RESERVEE A LA PAGE LISTING
- *  Fonction permettant de supprimer une entreprise dans la BDD Firebase
- *  Fonction permettant d'éditer une entreprise dans la BDD Firebase
+/* PARTIE RESERVEE A LA PAGE LISTING
+ * Fonction permettant de supprimer une entreprise dans la BDD Firebase
+ * Fonction permettant d'éditer une entreprise dans la BDD Firebase
  */
 
- /**Suppression d'une entreprise */
+ /* Suppression d'une entreprise */
 if(isset($_POST['delete_listing']))
 {
     $collectionReference = $firestore->collection('test');
@@ -107,7 +107,7 @@ if(isset($_POST['delete_listing']))
     }
 }
 
-/**Edition d'une entreprise */
+/* Edition d'une entreprise */
 if(isset($_POST['edit_listing'])){
     $g = new Geohash();
     $id = $_POST['edit_listing'];
