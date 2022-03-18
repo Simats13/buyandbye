@@ -111,19 +111,20 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
                                             <span><?=$prod['quantite']?></span>
                                         <?php } ?> 
                                     </div>
-                                    <br>
-                                    <form method='POST'>
-                                        <input type="hidden" name="ids" value="<?=$ids?>">
-                                        <input type="hidden" name="docId" value="<?=$doc['id']?>">
-                                        <button type="submit" class="btn btn-success waitingForm visible" name="accept">Accepter la commande</button>
-                                        <button type="submit" class="btn btn-light waitingForm visible" name="refuse">Refuser la commande</button>
-                                    </form>
-                                    <form method='POST'>
-                                        <input type="hidden" name="ids" value="<?=$ids?>">
-                                        <input type="hidden" name="docId" value="<?=$doc['id']?>">
-                                        <button type="submit" class="btn btn-success inProgressForm notVisible" name="validate">Valider la commande</button>
-                                        <button type="submit" class="btn btn-light inProgressForm notVisible" name="cancel">Annuler la commande</button>
-                                    </form>
+                                    <div class="modal-footer">
+                                        <form method='POST'>
+                                            <input type="hidden" name="ids" value="<?=$ids?>">
+                                            <input type="hidden" name="docId" value="<?=$doc['id']?>">
+                                            <button type="submit" class="btn btn-success waitingForm visible" name="accept">Accepter la commande</button>
+                                            <button type="submit" class="btn btn-light waitingForm visible" name="refuse">Refuser la commande</button>
+                                        </form>
+                                        <form method='POST'>
+                                            <input type="hidden" name="ids" value="<?=$ids?>">
+                                            <input type="hidden" name="docId" value="<?=$doc['id']?>">
+                                            <button type="submit" class="btn btn-success inProgressForm notVisible" name="validate">Valider la commande</button>
+                                            <button type="submit" class="btn btn-light inProgressForm notVisible" name="cancel">Annuler la commande</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

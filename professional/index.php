@@ -185,6 +185,7 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
 
  if(isset($_POST['add_product'])) {
     $uid = htmlspecialchars(trim($_POST['uid']));
+
     $name = htmlspecialchars(trim($_POST['productName']));
     $category = htmlspecialchars(trim($_POST['category']));
     $description = htmlspecialchars(trim($_POST['description']));
@@ -206,6 +207,37 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
     ];
 
     $firestore->collection('magasins')->document($uid)->collection('produits')->document($uuid)->set($data);
+ }
+
+ // Suppression d'un produit
+ if(isset($_POST['delete_product'])) {
+    $uid = htmlspecialchars(trim($_POST['uid']));
+    $docId = htmlspecialchars(trim($_POST['docId']));
+    $delete = $firestore->collection('magasins')->document($uid)->collection('produits')->document($docId)->delete();
+ }
+
+ // Modification d'un produit
+ if(isset($_POST['edit_product'])) {
+    $uid = htmlspecialchars(trim($_POST['uid']));
+    $docId = htmlspecialchars(trim($_POST['docId']));
+
+    $name = htmlspecialchars(trim($_POST['productName']));
+    $category = htmlspecialchars(trim($_POST['category']));
+    $description = htmlspecialchars(trim($_POST['description']));
+    $prix= htmlspecialchars(trim($_POST['prix']));
+    $quantite = htmlspecialchars(trim($_POST['quantite']));
+    $reference = htmlspecialchars(trim($_POST['reference']));
+    $visibilite = isset($_POST['visibilite']) ? true : false;
+
+    $firestore->collection('magasins')->document($uid)->collection('produits')->document($docId)->update([
+        ['path' => 'nom', 'value' => $name],
+        ['path' => 'categorie', 'value' => $category],
+        ['path' => 'description', 'value' => $description],
+        ['path' => 'prix', 'value' => $prix],
+        ['path' => 'quantite', 'value' => $quantite],
+        ['path' => 'reference', 'value' => $reference],
+        ['path' => 'visible', 'value' => $visibilite],
+    ]);
  }
 ?>
 
