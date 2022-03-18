@@ -192,7 +192,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                       ],
                     )),
                 SizedBox(height: 15),
-                myPremium == "true"
+                myPremium == true
                     ? Container(
                         width: size.width / 1.05,
                         child: Stack(

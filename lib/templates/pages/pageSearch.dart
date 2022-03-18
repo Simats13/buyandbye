@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/json/menu_json.dart';
-import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageCategorie.dart';
 import 'package:buyandbye/templates/pages/pageDetail.dart';
 import 'package:shimmer/shimmer.dart';

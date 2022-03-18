@@ -1,4 +1,3 @@
-import 'package:buyandbye/json/menu_json.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:buyandbye/theme/styles.dart';
@@ -13,7 +12,6 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:status_alert/status_alert.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:url_launcher/url_launcher.dart';

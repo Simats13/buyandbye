@@ -34,7 +34,6 @@ dependencies:
   firebase_core:
   curved_navigation_bar:
   get_it:
-  shared_preferences:
   random_string:
   cached_network_image:
   line_icons:
@@ -63,11 +62,9 @@ dependencies:
   flutter_credit_card:
   flutter_app_badger:
   animations:
-  image_picker: 
   image_cropper:  
   photo_view: 
   font_awesome_flutter:
-  url_launcher:
   intl:
   shimmer:
   firebase_storage_web:
@@ -86,7 +83,7 @@ dependencies:
   geocoding:
   slide_popup_dialog:
     git:
-      url: git://github.com/kw2019ltd/slide_popup_dialog.git
+      url: https://github.com/dhimasdewanto/slide_popup_dialog.git
       ref: master
   mailer:
   qr_flutter:
@@ -99,6 +96,8 @@ dependencies:
   easy_image_viewer:
   flutter_phone_direct_caller:
   algolia:
+  image_picker: ^0.8.4+11
+  url_launcher: ^6.0.20
 
 flutter_native_splash:
   #color: "#42a5f5"
@@ -113,6 +112,7 @@ flutter_launcher_name:
   name: "Buy & Bye"
 
 dev_dependencies:
+  flutter_lints: ^1.0.4
   flutter_test:
     sdk: flutter
 
