@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +9,9 @@ import 'package:buyandbye/services/auth.dart';
 
 class EditProfileComPage extends StatefulWidget {
   @override
-  const EditProfileComPage(this.premium);
+  const EditProfileComPage(this.premium, {Key? key}) : super(key: key);
   final bool? premium;
+  @override
   _EditProfileComPageState createState() => _EditProfileComPageState();
 }
 
@@ -45,15 +48,16 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
 
   // Première classe qui affiche les informations du commerçant
   bool isVisible = true;
+  @override
   Widget build(BuildContext context) {
     String? dropdownValue = colorStore;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BuyandByeAppTheme.black_electrik,
-        title: Text("Mes informations"),
+        title: const Text("Mes informations"),
         elevation: 1,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: BuyandByeAppTheme.orange,
           ),
@@ -64,7 +68,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
         actions: [
           // Boutons pour modifier les informations du commerçant
           Padding(
-              padding: EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.only(right: 20),
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -72,18 +76,18 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                   });
                 },
                 child:
-                    Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+                    const Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
               ))
         ],
       ),
       body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(left: 16, top: 40, right: 16),
+          padding: const EdgeInsets.only(left: 16, top: 40, right: 16),
           // Affiche les informations
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 height: 100,
                 width: 200,
                 child: Stack(
@@ -100,7 +104,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                     ),
                     // Boutons de changement d'image quand on est en mode modification
                     isVisible
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : Positioned(
                             bottom: 0,
                             right: 0,
@@ -118,7 +122,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                               ),
                               child: IconButton(
                                 padding: EdgeInsets.zero,
-                                icon: Icon(Icons.edit,
+                                icon: const Icon(Icons.edit,
                                     color: Colors.white, size: 14),
                                 onPressed: () {},
                               ),
@@ -126,43 +130,43 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 50),
-              Divider(thickness: 0.5, color: Colors.black),
-              SizedBox(height: 20),
+              const SizedBox(height: 50),
+              const Divider(thickness: 0.5, color: Colors.black),
+              const SizedBox(height: 20),
               // De base, affiche les informations du commerçant
               Visibility(
                   visible: isVisible,
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Nom :",
+                          const Text("Nom :",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           myFirstName == null
-                              ? CircularProgressIndicator()
+                              ? const CircularProgressIndicator()
                               : Text(myFirstName! + " " + myLastName!),
-                          SizedBox(height: 20),
-                          Text("E-mail :",
+                          const SizedBox(height: 20),
+                          const Text("E-mail :",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           myEmail == null
-                              ? CircularProgressIndicator()
+                              ? const CircularProgressIndicator()
                               : Text(myEmail!),
-                          SizedBox(height: 20),
-                          Text("Numéro de téléphone :",
+                          const SizedBox(height: 20),
+                          const Text("Numéro de téléphone :",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           myPhone == null
-                              ? CircularProgressIndicator()
+                              ? const CircularProgressIndicator()
                               : Text(myPhone!),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           widget.premium == true
-                              ? Text("Couleur de mon magasin :",
+                              ? const Text("Couleur de mon magasin :",
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700))
@@ -200,12 +204,12 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                                   ),
                                 ])
                               : Container(),
-                          SizedBox(height: 10),
-                          Divider(thickness: 0.5, color: Colors.black),
-                          Text("Mes adresses"),
-                          Divider(thickness: 0.5, color: Colors.black),
-                          Text("Mes moyens de paiement"),
-                          Divider(thickness: 0.5, color: Colors.black),
+                          const SizedBox(height: 10),
+                          const Divider(thickness: 0.5, color: Colors.black),
+                          const Text("Mes adresses"),
+                          const Divider(thickness: 0.5, color: Colors.black),
+                          const Text("Mes moyens de paiement"),
+                          const Divider(thickness: 0.5, color: Colors.black),
                         ]),
                   )),
               // Affiche les champs de texte pour modifier les informations
@@ -224,9 +228,10 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
 }
 
 class ModifyProfile extends StatefulWidget {
-  ModifyProfile(
-      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myID);
+  const ModifyProfile(
+      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myID, {Key? key}) : super(key: key);
   final String? myFirstName, myLastName, myEmail, myPhone, myID;
+  @override
   _ModifyProfileState createState() => _ModifyProfileState();
 }
 
@@ -239,6 +244,7 @@ final passwordField = TextEditingController();
 
 // Afiche les champ de modification des informations
 class _ModifyProfileState extends State<ModifyProfile> {
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +262,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
             children: [
               Container(
                   height: 35,
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                   ),
                   decoration: BoxDecoration(
@@ -267,11 +273,11 @@ class _ModifyProfileState extends State<ModifyProfile> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text("Annuler"),
+                    child: const Text("Annuler"),
                   )),
               Container(
                   height: 35,
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                   ),
                   decoration: BoxDecoration(
@@ -296,12 +302,12 @@ class _ModifyProfileState extends State<ModifyProfile> {
                           .updateSellerInfo(widget.myID, fName, lName, email, phone);
                       Navigator.pop(context);
                     },
-                    child: Text("Confirmer"),
+                    child: const Text("Confirmer"),
                   ))
             ],
           ),
         ),
-        SizedBox(height: 20)
+        const SizedBox(height: 20)
       ],
     );
   }
@@ -318,11 +324,11 @@ class _ModifyProfileState extends State<ModifyProfile> {
             ? TextCapitalization.sentences
             : TextCapitalization.none,
         decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(bottom: 3),
+            contentPadding: const EdgeInsets.only(bottom: 3),
             labelText: labelText,
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: placeholder,
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             )),

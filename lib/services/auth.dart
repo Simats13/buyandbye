@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -6,7 +8,6 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as messasing;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -75,7 +76,7 @@ class AuthMethods {
         return false;
       } else if (userCredential.additionalUserInfo!.isNewUser) {
         if (docExists == false) {
-          final url = "https://api.stripe.com/v1/customers";
+          const url = "https://api.stripe.com/v1/customers";
 
           var secret =
               'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
@@ -170,7 +171,7 @@ class AuthMethods {
 
           bool docExists = await (DatabaseMethods()
               .checkIfDocExists(userDetails.uid) as FutureOr<bool>);
-          final url = "https://api.stripe.com/v1/customers";
+          const url = "https://api.stripe.com/v1/customers";
 
           var secret =
               'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
@@ -223,7 +224,7 @@ class AuthMethods {
                 "providers.Facebook": true, //Facebook
               });
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
+                  context, MaterialPageRoute(builder: (context) => const MyApp()));
             }
           }
 
@@ -236,14 +237,14 @@ class AuthMethods {
         default:
           return null;
       }
-    } on FirebaseAuthException catch (e) {
-      throw e;
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
   // Génère un nonce sécurié cryptographiquement et inclus dans la requête d'authentification
   String generateNonce([int length = 32]) {
-    final charset =
+    const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
     return List.generate(length, (_) => charset[random.nextInt(charset.length)])
@@ -334,7 +335,7 @@ class AuthMethods {
             "providers.Apple": true, //Facebook
           });
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => MyApp()));
+              context, MaterialPageRoute(builder: (context) => const MyApp()));
         }
       }
 
@@ -492,7 +493,7 @@ class AuthMethods {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
 
-    final url = "https://api.stripe.com/v1/customers";
+    const url = "https://api.stripe.com/v1/customers";
 
     var secret =
         'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';

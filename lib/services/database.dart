@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -231,9 +233,9 @@ class DatabaseMethods {
           .collection('magasins')
           .get()
           .then((querySnapshot) {
-        querySnapshot.docs.forEach((element) {
+        for (var element in querySnapshot.docs) {
           magasinList.add(element.data());
-        });
+        }
       });
       return magasinList;
     } catch (e) {
@@ -653,7 +655,7 @@ class DatabaseMethods {
       String? address) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
-    String iD = Uuid().v4();
+    String iD = const Uuid().v4();
 
     QuerySnapshot chosenAdress = await FirebaseFirestore.instance
         .collection("users")

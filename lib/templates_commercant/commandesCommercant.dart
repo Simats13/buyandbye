@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:buyandbye/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,13 +12,15 @@ import 'package:shimmer/shimmer.dart';
 import 'detailCommande.dart';
 
 class CommandesCommercant extends StatefulWidget {
+  const CommandesCommercant({Key? key}) : super(key: key);
+
   @override
   _CommandesCommercantState createState() => _CommandesCommercantState();
 }
 
 // Fonction qui renvoie l'horodatage actuel
 String getDate(time) {
-  var format = new DateFormat(' dd/MM/yy à hh:mm');
+  var format = DateFormat(' dd/MM/yy à hh:mm');
   return format.format(time.toDate());
 }
 
@@ -24,6 +28,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
   var clickedCategorie = 0;
   String? userid;
 
+  @override
   void initState() {
     super.initState();
     getMyInfo();
@@ -37,12 +42,13 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
   }
 
   // Première classe qui affiche les 3 boutons de statut des commandes
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: BuyandByeAppTheme.black_electrik,
-          title: Text("Commandes"),
+          title: const Text("Commandes"),
           centerTitle: true,
           elevation: 1,
         ),
@@ -52,20 +58,20 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
               if (snapshot.hasData) {
                 return SingleChildScrollView(
                   child: Column(children: [
-                    Container(
+                    SizedBox(
                       height: size.height * 0.08,
                       child: Stack(
                         children: [
                           Container(
                             height: size.height * 0.08,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                 color: BuyandByeAppTheme.black_electrik,
                                 borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(36),
                                   bottomRight: Radius.circular(36),
                                 )),
                           ),
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           // Affichage des 3 boutons
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -73,7 +79,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                               // En attente
                               Container(
                                   height: 30,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
                                   ),
                                   decoration: BoxDecoration(
@@ -103,7 +109,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                               // En cours
                               Container(
                                   height: 30,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
                                   ),
                                   decoration: BoxDecoration(
@@ -130,7 +136,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                               // Terminées
                               Container(
                                   height: 30,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
                                   ),
                                   decoration: BoxDecoration(
@@ -160,27 +166,25 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Command(clickedCategorie, userid),
                   ]),
                 );
               } else {
                 return Shimmer.fromColors(
-                  child: Container(
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
@@ -191,26 +195,29 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
 }
 
 class Command extends StatefulWidget {
+  // ignore: use_key_in_widget_constructors
   const Command(this.clickedCategorie, this.sellerId);
   final String? sellerId;
   final int clickedCategorie;
+  @override
   _CommandState createState() => _CommandState();
 }
 
 // Affichage de chacune des commandes du client
 class _CommandState extends State<Command> {
   int clickedNumber = 1;
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: DatabaseMethods()
           .getSellerCommandDetails(widget.sellerId, widget.clickedCategorie),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return (snapshot.data!as QuerySnapshot).docs.length == 0
+          return (snapshot.data!as QuerySnapshot).docs.isEmpty
               ? //Affiche un message s'il n'y a aucune commande dans une catégorie
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
+                  children: const [
                     Text("Aucune commande dans cette catégorie",
                         style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 16)),
@@ -267,11 +274,11 @@ class _CommandState extends State<Command> {
                               // ),
                               // Affiche un résumé de chaque commande
                               Container(
-                                margin: EdgeInsets.all(15),
+                                margin: const EdgeInsets.all(15),
                                 decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
+                                    boxShadow: const [
                                       BoxShadow(
                                           color: Colors.grey,
                                           blurRadius: 4,
@@ -279,62 +286,62 @@ class _CommandState extends State<Command> {
                                     ]),
                                 child: Column(
                                   children: [
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     // Affiche en ligne le numéro de commande et le prix total
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        SizedBox(width: 30),
+                                        const SizedBox(width: 30),
                                         Text(
                                             "Commande n°" +
                                                 reference.toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w800,
                                                 fontSize: 16)),
-                                        SizedBox(width: 100),
+                                        const SizedBox(width: 100),
                                         Text(prix.toStringAsFixed(2) + "€",
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w800,
                                                 fontSize: 16)),
                                       ],
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     // Affiche en ligne la date de la commande et le nombre d'articles différents
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
+                                      children: const [
                                         Icon(Icons.arrow_forward_ios_rounded),
                                         SizedBox(width: 20)
                                       ],
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        SizedBox(width: 30),
+                                        const SizedBox(width: 30),
                                         Text(date,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w800,
                                                 fontSize: 16)),
-                                        SizedBox(width: 100),
+                                        const SizedBox(width: 100),
                                         nbArticles <= 1
                                             ? Text(
                                                 nbArticles.toString() +
                                                     " article",
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w800,
                                                     fontSize: 16))
                                             : Text(
                                                 nbArticles.toString() +
                                                     " articles",
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w800,
                                                     fontSize: 16))
                                       ],
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                   ],
                                 ),
                               ),
@@ -343,12 +350,12 @@ class _CommandState extends State<Command> {
                         );
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     // Text("Pagination en cours de création,"),
                     // Text("Masquer pour démonstration"),
                     // Le numéro de page actuelle reste le même sur En attente, En cours et Terminées.
                     // Créer 3 variables qui seront modifiées selon la catégorie affichée
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       for (int i = 1;
                           i < (((snapshot.data! as QuerySnapshot).docs.length + 1) / 3).ceil() + 1;
@@ -356,11 +363,11 @@ class _CommandState extends State<Command> {
                         Container(
                             height: 30,
                             width: 30,
-                            margin: EdgeInsets.only(left: 10, right: 10),
+                            margin: const EdgeInsets.only(left: 10, right: 10),
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
-                                fixedSize: Size(10, 10),
+                                fixedSize: const Size(10, 10),
                               ),
                               child: Text((i).toString(),
                                   style: TextStyle(
@@ -375,26 +382,24 @@ class _CommandState extends State<Command> {
                               },
                             ))
                     ]),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 );
         } else {
           return Shimmer.fromColors(
-            child: Container(
-              child: Stack(
-                children: [
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,

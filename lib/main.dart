@@ -22,6 +22,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
+  // ignore: avoid_print
   print("Handling a background message: ${message.messageId}");
 }
 
@@ -37,20 +38,19 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => InfoWindowsModel(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   bool checkEmailVerification = false;
 
   // Future _future = DatabaseMethods().getCart();
@@ -73,19 +73,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> _getFCMToken() async {
     // here you write the codes to input the data into firestore
     if (Platform.isIOS) {
-      NotificationSettings settings =
-          await _firebaseMessaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-
-      print(
-          "L'utilisateur a accepté les notifications : ${settings.authorizationStatus}");
     }
   }
 
@@ -102,7 +89,7 @@ class _MyAppState extends State<MyApp> {
         //     primaryColor: buyandbyeAppTheme.black_electrik,
         //     scaffoldBackgroundColor: Colors.white),
         theme: ThemeData(
-          pageTransitionsTheme: PageTransitionsTheme(builders: {
+          pageTransitionsTheme: const PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
           }),
@@ -110,14 +97,14 @@ class _MyAppState extends State<MyApp> {
           // primaryColor: Colors.red,
         ),
         darkTheme: ThemeData(
-          pageTransitionsTheme: PageTransitionsTheme(builders: {
+          pageTransitionsTheme: const PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
           }),
           brightness: Brightness.light,
           // additional settings go here
         ),
-        home: MainScreen());
+        home: const MainScreen());
   }
 }
 
@@ -140,6 +127,9 @@ class _MyAppState extends State<MyApp> {
 // }
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({Key? key}) : super(key: key);
+
+  @override
   _MainScreenState createState() => _MainScreenState();
 }
 
@@ -155,6 +145,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // return const PageBienvenue();
     return FutureBuilder(
         future: AuthMethods().getCurrentUser(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
@@ -175,9 +166,9 @@ class _MainScreenState extends State<MainScreen> {
                     if (user!['emailVerified'] == false) {
                       return PageLogin();
                     } else if (user['firstConnection'] == true) {
-                      return PageFirstConnection();
+                      return const PageFirstConnection();
                     } else {
-                      return Accueil();
+                      return const Accueil();
                     }
                   } else {
                     return PageLogin();
@@ -206,7 +197,7 @@ class _MainScreenState extends State<MainScreen> {
             }
             // Si l'utilisateur n'existe pas ou que son uid est nul
           } else {
-            return PageBienvenue();
+            return const PageBienvenue();
           }
         });
   }

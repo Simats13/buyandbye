@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:io';
 
 import 'package:buyandbye/templates/pages/pageBienvenue.dart';
@@ -16,6 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'editProfileCommercant.dart';
 
 class CompteCommercant extends StatefulWidget {
+  const CompteCommercant({Key? key}) : super(key: key);
+
+  @override
   _CompteCommercantState createState() => _CompteCommercantState();
 }
 
@@ -36,6 +41,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
     setState(() {});
   }
 
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<dynamic>(
         stream: DatabaseMethods().getSellerInfo(userid),
@@ -49,10 +55,10 @@ class _CompteCommercantState extends State<CompteCommercant> {
           }
           return Column(
             children: <Widget>[
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Container(
-                margin: EdgeInsets.only(top: 30),
-                child: Container(
+                margin: const EdgeInsets.only(top: 30),
+                child: SizedBox(
                   height: 150,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
@@ -61,23 +67,23 @@ class _CompteCommercantState extends State<CompteCommercant> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               myFirstName == null
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : Column(
                       children: [
                         Text(
                           myFirstName! + " " + myLastName!,
                           style: kTitleTextStyle,
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           email ?? "",
                           style: kCaption2TextStyle,
                         ),
                       ],
                     ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
                 height: 40,
                 width: 100,
@@ -89,12 +95,12 @@ class _CompteCommercantState extends State<CompteCommercant> {
                 child: Center(
                   child: MaterialButton(
                     child: premium == false
-                        ? Text(
+                        ? const Text(
                             'GRATUIT',
                             style: TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.bold),
                           )
-                        : Text(
+                        : const Text(
                             'PREMIUM',
                             style: TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.bold),
@@ -113,24 +119,24 @@ class _CompteCommercantState extends State<CompteCommercant> {
               //
               // Deuxième partie du code
               //
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.height,
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Flexible(
                     child: ListView(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         children: <Widget>[
                           Container(
                             height: 55,
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                               horizontal: 40,
                             ).copyWith(
                               bottom: 20,
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                             ),
                             decoration: BoxDecoration(
@@ -150,19 +156,19 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               },
                               child: Row(
                                 children: <Widget>[
-                                  Icon(
+                                  const Icon(
                                     LineAwesomeIcons.address_card,
                                     size: 25,
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Text(
                                     'Mon Compte',
                                     style: kTitleTextStyle.copyWith(
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  Spacer(),
-                                  Icon(
+                                  const Spacer(),
+                                  const Icon(
                                     LineAwesomeIcons.angle_right,
                                     size: 25,
                                   ),
@@ -170,15 +176,15 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           Container(
                             height: 55,
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                               horizontal: 40,
                             ).copyWith(
                               bottom: 20,
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                             ),
                             decoration: BoxDecoration(
@@ -197,19 +203,19 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               },
                               child: Row(
                                 children: <Widget>[
-                                  Icon(
+                                  const Icon(
                                     LineAwesomeIcons.question_circle,
                                     size: 25,
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Text(
                                     'Aide / Support',
                                     style: kTitleTextStyle.copyWith(
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  Spacer(),
-                                  Icon(
+                                  const Spacer(),
+                                  const Icon(
                                     LineAwesomeIcons.angle_right,
                                     size: 25,
                                   ),
@@ -217,16 +223,16 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           // Bouton de déconnexion
                           Container(
                             height: 55,
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                               horizontal: 40,
                             ).copyWith(
                               bottom: 20,
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                             ),
                             decoration: BoxDecoration(
@@ -240,17 +246,17 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                   return showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title: Text("Deconnexion"),
-                                      content: Text(
+                                      title: const Text("Deconnexion"),
+                                      content: const Text(
                                           "Souhaitez-vous réellement vous déconnecter ?"),
                                       actions: <Widget>[
                                         TextButton(
-                                          child: Text("Annuler"),
+                                          child: const Text("Annuler"),
                                           onPressed: () =>
                                               Navigator.of(context).pop(false),
                                         ),
                                         TextButton(
-                                          child: Text("Déconnexion"),
+                                          child: const Text("Déconnexion"),
                                           onPressed: () async {
                                             SharedPreferences preferences =
                                                 await SharedPreferences
@@ -263,7 +269,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                                 .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PageBienvenue()),
+                                                            const PageBienvenue()),
                                                     (Route<dynamic> route) =>
                                                         false);
                                           },
@@ -276,18 +282,18 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                       context: context,
                                       builder: (context) =>
                                           CupertinoAlertDialog(
-                                            title: Text("Déconnexion"),
-                                            content: Text(
+                                            title: const Text("Déconnexion"),
+                                            content: const Text(
                                                 "Souhaitez-vous réellement vous déconnecter ?"),
                                             actions: [
                                               // Close the dialog
                                               CupertinoButton(
-                                                  child: Text('Annuler'),
+                                                  child: const Text('Annuler'),
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   }),
                                               CupertinoButton(
-                                                child: Text('Déconnexion'),
+                                                child: const Text('Déconnexion'),
                                                 onPressed: () async {
                                                   SharedPreferences
                                                       preferences =
@@ -303,7 +309,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                                       .pushAndRemoveUntil(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PageBienvenue()),
+                                                                  const PageBienvenue()),
                                                           (Route<dynamic>
                                                                   route) =>
                                                               false);
@@ -315,19 +321,19 @@ class _CompteCommercantState extends State<CompteCommercant> {
                               },
                               child: Row(
                                 children: <Widget>[
-                                  Icon(
+                                  const Icon(
                                     LineAwesomeIcons.alternate_sign_out,
                                     size: 25,
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Text(
                                     'Se déconnecter',
                                     style: kTitleTextStyle.copyWith(
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  Spacer(),
-                                  Icon(
+                                  const Spacer(),
+                                  const Icon(
                                     LineAwesomeIcons.angle_right,
                                     size: 25,
                                   ),

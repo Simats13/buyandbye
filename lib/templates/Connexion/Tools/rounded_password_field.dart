@@ -22,6 +22,7 @@ class RoundedPasswordField extends StatelessWidget {
           if (input!.isEmpty) {
             return "Veuillez rentrer une adresse mail";
           }
+          return null;
         },
         decoration: InputDecoration(
           hintText: "Votre mot de passe",

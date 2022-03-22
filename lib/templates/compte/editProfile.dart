@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:buyandbye/templates/Compte/pageCBEdit.dart';
-import 'package:flutter/services.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
 import 'package:buyandbye/templates/Pages/address_search.dart';
 import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';

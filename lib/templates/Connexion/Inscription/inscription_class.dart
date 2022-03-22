@@ -279,6 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               if (input!.isEmpty) {
                                 return 'Veuillez rentrer votre nom';
                               }
+                              return null;
                             },
                             autocorrect: false,
                             decoration: InputDecoration(
@@ -296,6 +297,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               if (input!.isEmpty) {
                                 return 'Veuillez rentrer votre prénom';
                               }
+                              return null;
                             },
                             autocorrect: false,
                             decoration: InputDecoration(
@@ -318,6 +320,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               if (!regex.hasMatch(input)) {
                                 return 'L\'adresse mail n\'est pas valide';
                               }
+                              return null;
                             },
                             autocorrect: false,
                             decoration: InputDecoration(
@@ -340,6 +343,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               if (input!.length < 6) {
                                 return 'Veuillez rentrer un mot de passe de plus \nde 6 caractères';
                               }
+                              return null;
                             },
                             autocorrect: false,
                             decoration: InputDecoration(

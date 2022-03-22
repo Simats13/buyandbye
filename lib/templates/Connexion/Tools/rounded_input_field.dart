@@ -25,6 +25,7 @@ class RoundedInputField extends StatelessWidget {
           if (input!.isEmpty) {
             return "Veuillez rentrer une adresse mail";
           }
+          return null;
         },
         onChanged: onChanged,
         onSaved: (input) => email = input,

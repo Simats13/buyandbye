@@ -1,7 +1,6 @@
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:qr_flutter/qr_flutter.dart';

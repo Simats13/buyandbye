@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, file_names
+
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +22,9 @@ List categoriesInDb(snapshot) {
 }
 
 class AccueilCommercant extends StatefulWidget {
+  const AccueilCommercant({Key? key}) : super(key: key);
+
+  @override
   _AccueilCommercantState createState() => _AccueilCommercantState();
 }
 
@@ -53,6 +58,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
   }
 
   // Cette première classe affiche l'image et le nom du commerçant
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     // Si l'image de profil n'est pas chargée
@@ -61,17 +67,17 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               // Affiche un message de chargement
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: CircularProgressIndicator(),
+                child: const CircularProgressIndicator(),
               ),
-              SizedBox(height: 20),
-              Text("Chargement",
+              const SizedBox(height: 20),
+              const Text("Chargement",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-              SizedBox(height: 30),
-              Divider(thickness: 0.5, color: Colors.black),
+              const SizedBox(height: 30),
+              const Divider(thickness: 0.5, color: Colors.black),
             ],
           ),
         ),
@@ -84,12 +90,12 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   width: size.width / 1.05,
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.grey,
                             blurRadius: 4,
@@ -98,7 +104,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      SizedBox(
                         height: MediaQuery.of(context).size.height / 8,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100),
@@ -107,27 +113,27 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                           ),
                         ),
                       ),
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.fromLTRB(20, 40, 0, 0),
                         child: Text('Bienvenue',
                             style: TextStyle(
                                 fontSize: 20, color: BuyandByeAppTheme.orange)),
                       ),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                               child: Text(myFirstName + " " + myLastName,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w700,
                                   )),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                               child: Image.asset(
                                 'assets/icons/main.png',
                                 width: 36,
@@ -141,13 +147,13 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                     ],
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Container(
                     width: size.width / 1.05,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                               color: Colors.grey,
                               blurRadius: 4,
@@ -155,8 +161,8 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                         ]),
                     child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20, bottom: 30),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 20, bottom: 30),
                           child: Text('Ma boutique',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w700)),
@@ -165,7 +171,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Column(
-                                children: [
+                                children: const [
                                   Text('380.16 €',
                                       style: TextStyle(
                                           fontSize: 25,
@@ -176,7 +182,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                                 ],
                               ),
                               Column(
-                                children: [
+                                children: const [
                                   Text('1527.161 €',
                                       style: TextStyle(
                                           fontSize: 25,
@@ -187,13 +193,13 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                                 ],
                               )
                             ]),
-                        SizedBox(height: 20),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     )),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 myPremium == true
-                    ? Container(
+                    ? SizedBox(
                         width: size.width / 1.05,
                         child: Stack(
                           children: [
@@ -202,7 +208,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
+                                  boxShadow: const [
                                     BoxShadow(
                                         color: Colors.grey,
                                         blurRadius: 4,
@@ -210,32 +216,29 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
                                   ]),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
                                     child: Text('Vos Statistiques',
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w700)),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5,
                                   ),
-                                  Container(
-                                    child:
-                                        Image.asset('assets/images/charts.png'),
-                                  ),
+                                  Image.asset('assets/images/charts.png'),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       )
-                    : new Container(),
-                SizedBox(height: 20),
+                    : Container(),
+                const SizedBox(height: 20),
               ],
             ),
           ),

@@ -224,6 +224,7 @@ class _PageLoginState extends State<PageLogin> {
                               });
                               return 'Veuillez entrer une adresse email';
                             }
+                            return null;
                           },
                           autocorrect: false,
                           decoration: InputDecoration(
@@ -258,6 +259,7 @@ class _PageLoginState extends State<PageLogin> {
                               });
                               return 'Veuillez entrer un mot de passe';
                             }
+                            return null;
                           },
                           autocorrect: false,
                           decoration: InputDecoration(

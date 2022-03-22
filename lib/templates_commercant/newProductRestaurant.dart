@@ -1,5 +1,4 @@
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 

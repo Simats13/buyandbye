@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:buyandbye/theme/styles.dart';
@@ -5,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -41,6 +42,7 @@ class PageDetail extends StatefulWidget {
   final String? colorStore;
   final bool? livraison;
   final bool? clickAndCollect;
+  @override
   _PageDetail createState() => _PageDetail();
 }
 
@@ -171,7 +173,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
         .collection("produits")
         .get();
 
-    if (querySnapshot.docs.length != 0) {
+    if (querySnapshot.docs.isNotEmpty) {
       // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
       // pas déjà dans la liste
       for (var i = 0; i <= querySnapshot.docs.length - 1; i++) {
@@ -207,7 +209,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
               await launch(Uri.encodeFull(
                   "https://www.google.com/maps/search/?api=1&query=$adresseGoogleUrl"));
             }),
-        SizedBox(
+        const SizedBox(
           width: 30,
         ),
         ElevatedButton(
@@ -1132,8 +1134,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   Widget produits(selectedCategorie) {
     return StreamBuilder<dynamic>(
-        stream: DatabaseMethods().getVisibleProducts(
-            widget.sellerID, selectedCategorie),
+        stream: DatabaseMethods()
+            .getVisibleProducts(widget.sellerID, selectedCategorie),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           if (snapshot.data.docs.length == 0)

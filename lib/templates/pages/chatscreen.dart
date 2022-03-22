@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/fb_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
