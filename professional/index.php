@@ -180,7 +180,7 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
 }
 
 /* PARTIE RESERVEE A LA PAGE PRODUCTS
- *  Fonction permettant de modifier l'état d'une commande
+ *  Fonctions permettant d'ajouter un produit, de le modifier et de le supprimer'
  */
 
  if(isset($_POST['add_product'])) {
@@ -194,6 +194,10 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
     $reference = htmlspecialchars(trim($_POST['reference']));
     $visibilite = isset($_POST['visibilite']) ? true : false;
     $uuid = guidv4();
+
+    settype($prix, "double");
+    settype($quantite, "integer");
+    settype($reference, "integer");
 
     $data = [
         'categorie' => $category,
@@ -217,6 +221,7 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
  }
 
  // Modification d'un produit
+
  if(isset($_POST['edit_product'])) {
     $uid = htmlspecialchars(trim($_POST['uid']));
     $docId = htmlspecialchars(trim($_POST['docId']));
@@ -224,10 +229,14 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
     $name = htmlspecialchars(trim($_POST['productName']));
     $category = htmlspecialchars(trim($_POST['category']));
     $description = htmlspecialchars(trim($_POST['description']));
-    $prix= htmlspecialchars(trim($_POST['prix']));
+    $prix = htmlspecialchars(trim($_POST['prix']));
     $quantite = htmlspecialchars(trim($_POST['quantite']));
     $reference = htmlspecialchars(trim($_POST['reference']));
     $visibilite = isset($_POST['visibilite']) ? true : false;
+
+    settype($prix, "float");
+    settype($quantite, "int");
+    settype($reference, "int");
 
     $firestore->collection('magasins')->document($uid)->collection('produits')->document($docId)->update([
         ['path' => 'nom', 'value' => $name],

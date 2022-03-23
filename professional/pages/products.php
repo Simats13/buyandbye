@@ -161,15 +161,15 @@ function selectCategory($professional, $edit, $product) {
                                 </div>
                                 <div class="form-group">
                                     <label for="prix">Prix</label>
-                                    <input type="text" name="prix" id="prix" class="form-control" required>
+                                    <input type="number" name="prix" id="prix" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="quantite">Quantité en stock</label>
-                                    <input type="text" name="quantite" id="quantite" class="form-control" required>
+                                    <input type="number" name="quantite" id="quantite" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="reference">Référence</label>
-                                    <input type="text" name="reference" id="reference" class="form-control" required>
+                                    <input type="number" name="reference" id="reference" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="visibilite">Faire apparaître le produit</label>
@@ -297,17 +297,17 @@ function selectCategory($professional, $edit, $product) {
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="prix">Prix</label>
-                                                    <input type="text" name="prix" id="prix" class="form-control"
+                                                    <input type="number" name="prix" id="prix" class="form-control"
                                                     value="<?=$product['prix']?>" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="quantite">Quantité en stock</label>
-                                                    <input type="text" name="quantite" id="quantite" class="form-control"
+                                                    <input type="number" name="quantite" id="quantite" class="form-control"
                                                     value="<?=$product['quantite']?>" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="reference">Référence</label>
-                                                    <input type="text" name="reference" id="reference" class="form-control"
+                                                    <input type="number" name="reference" id="reference" class="form-control"
                                                     value="<?=$product['reference']?>" required>
                                                 </div>
                                                 <div class="form-group">

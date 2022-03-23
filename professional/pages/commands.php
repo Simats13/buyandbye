@@ -88,11 +88,23 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
                                     echo nl2br("\n");
                                     echo 'Total : ' . $doc['prix'] . '€';
                                     echo nl2br("\n");
+                                    // Affiche le mode de livraison
+                                    // Vérifier les nombres par rapport à ce qui est rentré par l'app
+                                    // 0 = C&C en préparation - 1 = domicile en préparation - 2 = C&C disponible - 3 = domicile livré
+                                    if ($doc['livraison'] == 0 or $doc['livraison'] == 2) {
+                                        $livraison = "Click & Collect";
+                                    } else {
+                                        $livraison = "Livraison à domicile";
+                                    }
+                                    echo 'Mode de livraison : ' . $livraison;
+                                    echo nl2br("\n");
+                                    echo 'Adresse client : ' . $doc['adresse'];
+                                    echo nl2br("\n");
                                     # Récupère les produits de la commande
-                                    $products = $firestore->collection('commandes')->document($ids)->collection("commands")->document($doc['id'])->collection('products');
+                                    $products = $firestore->collection('commandes')->document($ids)->collection('commands')->document($doc['id'])->collection('products');
                                     $snapshot2 = $products->documents();
-
-                                    ?> <div class="grid">
+                                    ?> 
+                                    <div class="grid">
                                         <span>Image produit</span>
                                         <span>Nom</span>
                                         <span>Référence</span>
@@ -111,6 +123,8 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
                                             <span><?=$prod['quantite']?></span>
                                         <?php } ?> 
                                     </div>
+                                    <button type="button" id="contactButton" class="btn btn-primary">Contacter client</button>
+                                    <!-- ID client : $document['users'][1] -->
                                     <div class="modal-footer">
                                         <form method='POST'>
                                             <input type="hidden" name="ids" value="<?=$ids?>">
@@ -274,6 +288,11 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
 
     .notVisible {
         display: none;
+    }
+
+    #contactButton {
+        margin-top: 1vw;
+        margin-bottom: 1vw;
     }
 </style>
 
