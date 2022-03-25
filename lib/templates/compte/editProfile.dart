@@ -999,9 +999,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       'paymentMethods']['data']
                                                   [index]['billing_details']
                                               ['name'];
-
-                                          // print(paymentIntentData['paymentMethods']
-                                          //     ['data'][index]['id']);
                                           return paymentIntentData != null
                                               ? Column(
                                                   children: [
@@ -1023,11 +1020,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                               width: 50,
                                                               height: 50,
                                                             ),
-                                                      title: Text(
-                                                        nameCard == ''
-                                                            ? "Aucun nom"
-                                                            : nameCard
-                                                                as String,
+                                                      title: Text("Card Name",
+                                                        // Erreur : type 'Null' is not a subtype of 'String'
+                                                        // nameCard == ''
+                                                        //     ? "Aucun nom"
+                                                        //     : nameCard as String,
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,

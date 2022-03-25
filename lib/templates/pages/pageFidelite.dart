@@ -222,7 +222,7 @@ class _PageFideliteState extends State<PageFidelite> {
                           fontWeight: FontWeight.w500,
                         )),
                     SizedBox(
-                      width: 100,
+                      width: 50,
                     ),
                     Container(
                       child: Text("180 pts",

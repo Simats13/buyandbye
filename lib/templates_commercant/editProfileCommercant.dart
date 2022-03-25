@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/auth.dart';
+import 'package:shimmer/shimmer.dart';
 
 class EditProfileComPage extends StatefulWidget {
   @override
-  const EditProfileComPage(this.premium, {Key? key}) : super(key: key);
-  final bool? premium;
+  const EditProfileComPage({Key? key}) : super(key: key);
   @override
   _EditProfileComPageState createState() => _EditProfileComPageState();
 }
@@ -23,6 +23,8 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
       myEmail,
       myProfilePic,
       myPhone,
+      myAdresse,
+      premium,
       colorStore;
 
   @override
@@ -42,6 +44,8 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     myPhone = "${querySnapshot.docs[0]["phone"]}";
+    myAdresse = "${querySnapshot.docs[0]["adresse"]}";
+    premium = "${querySnapshot.docs[0]["premium"]}";
     colorStore = "${querySnapshot.docs[0]["colorStore"]}";
     setState(() {});
   }
@@ -75,8 +79,8 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                     isVisible = !isVisible;
                   });
                 },
-                child:
-                    const Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+                child: const Icon(Icons.edit_rounded,
+                    color: BuyandByeAppTheme.orange),
               ))
         ],
       ),
@@ -95,12 +99,29 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                     // Affiche l'image de profil
                     Center(
                       child: ClipRRect(
-                          child: Image.network(
-                        // S'il n'y a pas d'image on affiche celle par défaut
-                        myProfilePic ??
-                            "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                        height: MediaQuery.of(context).size.height,
-                      )),
+                        borderRadius: BorderRadius.circular(100),
+                        child: myProfilePic == null
+                            ? Shimmer.fromColors(
+                                child: Container(
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                              )
+                            : Image.network(myProfilePic as String),
+                      ),
                     ),
                     // Boutons de changement d'image quand on est en mode modification
                     isVisible
@@ -165,13 +186,21 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                               ? const CircularProgressIndicator()
                               : Text(myPhone!),
                           const SizedBox(height: 20),
-                          widget.premium == true
+                          const Text("Adresse :",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 20),
+                          myAdresse == null
+                              ? const CircularProgressIndicator()
+                              : Text(myAdresse!),
+                          const SizedBox(height: 20),
+                          premium == "true"
                               ? const Text("Couleur de mon magasin :",
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700))
                               : Container(),
-                          widget.premium == true
+                          premium == "true"
                               ? Row(children: [
                                   DropdownButton<String>(
                                     value: dropdownValue,
@@ -204,12 +233,6 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
                                   ),
                                 ])
                               : Container(),
-                          const SizedBox(height: 10),
-                          const Divider(thickness: 0.5, color: Colors.black),
-                          const Text("Mes adresses"),
-                          const Divider(thickness: 0.5, color: Colors.black),
-                          const Text("Mes moyens de paiement"),
-                          const Divider(thickness: 0.5, color: Colors.black),
                         ]),
                   )),
               // Affiche les champs de texte pour modifier les informations
@@ -229,7 +252,9 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
 
 class ModifyProfile extends StatefulWidget {
   const ModifyProfile(
-      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myID, {Key? key}) : super(key: key);
+      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myID,
+      {Key? key})
+      : super(key: key);
   final String? myFirstName, myLastName, myEmail, myPhone, myID;
   @override
   _ModifyProfileState createState() => _ModifyProfileState();
@@ -298,8 +323,8 @@ class _ModifyProfileState extends State<ModifyProfile> {
                       var phone = phoneField.text == ""
                           ? widget.myPhone
                           : phoneField.text;
-                      DatabaseMethods()
-                          .updateSellerInfo(widget.myID, fName, lName, email, phone);
+                      DatabaseMethods().updateSellerInfo(
+                          widget.myID, fName, lName, email, phone);
                       Navigator.pop(context);
                     },
                     child: const Text("Confirmer"),

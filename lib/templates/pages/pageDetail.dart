@@ -1132,7 +1132,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     );
   }
 
-  Widget produits(selectedCategorie) {
+  Widget produits(String? selectedCategorie) {
     return StreamBuilder<dynamic>(
         stream: DatabaseMethods()
             .getVisibleProducts(widget.sellerID, selectedCategorie),

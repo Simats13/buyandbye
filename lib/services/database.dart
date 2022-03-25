@@ -269,7 +269,7 @@ class DatabaseMethods {
   //   return query;
   // }
 
-  Stream getVisibleProducts(String? sellerId, String selectedCategorie) {
+  Stream getVisibleProducts(String? sellerId, String? selectedCategorie) {
     Stream query = FirebaseFirestore.instance
         .collection("magasins")
         .doc(sellerId)

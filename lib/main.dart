@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
@@ -64,30 +63,20 @@ class _MyAppState extends State<MyApp> {
     NotificationController.instance.takeFCMTokenWhenAppLaunch();
     NotificationController.instance.initLocalNotification();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    _getFCMToken();
     super.initState();
 
     AuthMethods.instance.checkEmailVerification();
-  }
-
-  Future<void> _getFCMToken() async {
-    // here you write the codes to input the data into firestore
-    if (Platform.isIOS) {
-    }
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        routes: <String, WidgetBuilder> {
+        routes: <String, WidgetBuilder>{
           '/Accueil': (BuildContext context) => PageAccueil()
         },
         title: "Buy&Bye",
         debugShowCheckedModeBanner: false,
-        // theme: ThemeData(
-        //     primaryColor: buyandbyeAppTheme.black_electrik,
-        //     scaffoldBackgroundColor: Colors.white),
         theme: ThemeData(
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -176,7 +165,7 @@ class _MainScreenState extends State<MainScreen> {
                 },
               );
               //Recherche de l'id dans la table magasins
-            } else  {
+            } else {
               return StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("magasins")

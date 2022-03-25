@@ -10,7 +10,9 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 class DetailCommande extends StatefulWidget {
   const DetailCommande(this.ref, this.statut, this.date, this.total,
-      this.livraisonNb, this.sellerId, this.clientId, this.commandId, {Key? key}) : super(key: key);
+      this.livraisonNb, this.sellerId, this.clientId, this.commandId,
+      {Key? key})
+      : super(key: key);
   final String? date, sellerId, clientId, commandId;
   final int? ref, statut, livraisonNb;
   final double total;
@@ -192,8 +194,10 @@ class _DetailCommandeState extends State<DetailCommande> {
                         // pour chaque produit dans la commande
                         return Detail(
                             widget.sellerId,
-                            (snapshot.data! as QuerySnapshot).docs[index]["produit"],
-                            (snapshot.data! as QuerySnapshot).docs[index]["quantite"]);
+                            (snapshot.data! as QuerySnapshot).docs[index]
+                                ["produit"],
+                            (snapshot.data! as QuerySnapshot).docs[index]
+                                ["quantite"]);
                       },
                     ),
                     const SizedBox(height: 20),
@@ -219,7 +223,8 @@ class _DetailCommandeState extends State<DetailCommande> {
 
 // Affiche le détail de chaque produit commandé
 class Detail extends StatefulWidget {
-  const Detail(this.sellerId, this.productId, this.quantite, {Key? key}) : super(key: key);
+  const Detail(this.sellerId, this.productId, this.quantite, {Key? key})
+      : super(key: key);
   final String? sellerId, productId;
   final int? quantite;
   @override
@@ -244,7 +249,9 @@ class _DetailState extends State<Detail> {
                     // ignore: prefer_const_literals_to_create_immutables
                     boxShadow: [
                       const BoxShadow(
-                          color: Colors.grey, blurRadius: 4, offset: Offset(4, 4))
+                          color: Colors.grey,
+                          blurRadius: 4,
+                          offset: Offset(4, 4))
                     ]),
                 child: Column(
                   children: [
@@ -254,7 +261,7 @@ class _DetailState extends State<Detail> {
                       SizedBox(
                         height: 50,
                         width: 50,
-                        child: Image.network(snapshot.data!()["images"][0]),
+                        child: Image.network(snapshot.data["images"][0]),
                       ),
                       const SizedBox(width: 50),
                       SizedBox(
@@ -263,12 +270,12 @@ class _DetailState extends State<Detail> {
                           // Affiche en colonne le nom et la référence du produit commandé
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(snapshot.data!()["nom"],
+                            Text(snapshot.data["nom"],
                                 style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 30),
-                            Text(
-                                "Réf : " + snapshot.data!()["reference"].toString()),
+                            Text("Réf : " +
+                                snapshot.data["reference"].toString()),
                           ],
                         ),
                       ),
@@ -277,7 +284,7 @@ class _DetailState extends State<Detail> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(snapshot.data!()["prix"].toStringAsFixed(2) + "€"),
+                          Text(snapshot.data["prix"].toStringAsFixed(2) + "€"),
                           const SizedBox(height: 30),
                           Text("Quantité : " + widget.quantite.toString())
                         ],
@@ -298,7 +305,9 @@ class _DetailState extends State<Detail> {
 // Affiche les informations de l'acheteur
 class UserInfo extends StatefulWidget {
   const UserInfo(this.clientId, this.livraisonNb, this.statut, this.commId,
-      this.documentId, this.sellerId, {Key? key}) : super(key: key);
+      this.documentId, this.sellerId,
+      {Key? key})
+      : super(key: key);
   final String? clientId, commId, documentId, sellerId;
   final int? livraisonNb, statut;
 
@@ -307,11 +316,10 @@ class UserInfo extends StatefulWidget {
 }
 
 class _UserInfoState extends State<UserInfo> {
-  late String myUserName, myProfilePic;
+  String? myUserName, myProfilePic;
   getSellerName() async {
     final User user = await AuthMethods().getCurrentUser();
-    final clientId = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(clientId);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(user.uid);
     myUserName = "${querySnapshot.docs[0]["name"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
   }
@@ -349,9 +357,11 @@ class _UserInfoState extends State<UserInfo> {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            Text((snapshot.data! as QuerySnapshot).docs[0]["fname"] +
+                            Text((snapshot.data! as QuerySnapshot).docs[0]
+                                    ["fname"] +
                                 " " +
-                                (snapshot.data! as QuerySnapshot).docs[0]["lname"]),
+                                (snapshot.data! as QuerySnapshot).docs[0]
+                                    ["lname"]),
                             const SizedBox(width: 25),
                             // Bouton pour ouvrir le chat avec le client
                             IconButton(
@@ -362,12 +372,16 @@ class _UserInfoState extends State<UserInfo> {
                                         builder: (context) => ChatRoom(
                                             widget.sellerId!,
                                             myUserName,
-                                            (snapshot.data! as QuerySnapshot).docs[0]["FCMToken"],
+                                            (snapshot.data! as QuerySnapshot)
+                                                .docs[0]["FCMToken"],
                                             widget.clientId!,
                                             widget.sellerId! + widget.clientId!,
-                                            (snapshot.data! as QuerySnapshot).docs[0]["fname"],
-                                            (snapshot.data! as QuerySnapshot).docs[0]["lname"],
-                                            (snapshot.data! as QuerySnapshot).docs[0]["imgUrl"],
+                                            (snapshot.data! as QuerySnapshot)
+                                                .docs[0]["fname"],
+                                            (snapshot.data! as QuerySnapshot)
+                                                .docs[0]["lname"],
+                                            (snapshot.data! as QuerySnapshot)
+                                                .docs[0]["imgUrl"],
                                             myProfilePic,
                                             "client")));
                               },
@@ -376,9 +390,11 @@ class _UserInfoState extends State<UserInfo> {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        Text((snapshot.data! as QuerySnapshot).docs[0]["phone"]),
+                        Text(
+                            (snapshot.data! as QuerySnapshot).docs[0]["phone"]),
                         const SizedBox(height: 20),
-                        Text((snapshot.data! as QuerySnapshot).docs[0]["email"]),
+                        Text(
+                            (snapshot.data! as QuerySnapshot).docs[0]["email"]),
                         const SizedBox(height: 10),
                       ],
                     ),

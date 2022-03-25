@@ -150,7 +150,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        EditProfileComPage(premium),
+                                        EditProfileComPage(),
                                   ),
                                 );
                               },

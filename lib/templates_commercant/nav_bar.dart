@@ -76,7 +76,7 @@ class _NavBarState extends State<NavBar> {
                           haptic: true,
                           iconSize: 28,
                           padding: EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 12),
+                              horizontal: 12, vertical: 12),
                           duration: Duration(milliseconds: 400),
                           tabs: [
                             GButton(

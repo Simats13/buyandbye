@@ -89,341 +89,343 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: BackgroundInscription(
-          child: Stack(
-        children: [
-          SizedBox(width: size.width),
-          SafeArea(
-              child: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black, size: 28),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "INSCRIPTION",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: size.height * 0.02),
-              Image.asset(
-                "assets/icons/signup.png",
-                height: size.height * 0.20,
-              ),
-              SizedBox(height: 20),
-              // Sélection du type d'utilisateur
-              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                ToggleButtons(
-                  color: Colors.black.withOpacity(0.60),
-                  selectedColor: Color(0xFF6200EE),
-                  selectedBorderColor: Color(0xFF6200EE),
-                  fillColor: Color(0xFF6200EE).withOpacity(0.08),
-                  splashColor: Color(0xFF6200EE).withOpacity(0.12),
-                  hoverColor: Color(0xFF6200EE).withOpacity(0.04),
-                  borderRadius: BorderRadius.circular(4.0),
-                  constraints: BoxConstraints(minHeight: 36.0),
-                  isSelected: userType,
-                  onPressed: (index) {
-                    // Respond to button selection
-                    setState(() {
-                      for (int buttonIndex = 0;
-                          buttonIndex < userType.length;
-                          buttonIndex++) {
-                        if (buttonIndex == index) {
-                          userType[buttonIndex] = true;
-                        } else {
-                          userType[buttonIndex] = false;
-                        }
-                      }
-                    });
-                  },
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text('Client'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text('Commerçant'),
-                    ),
-                  ],
-                )
-              ]),
-              // Partie inscription
-              // Masquée si aucun des types d'utilisateur n'est sélectionné
-              Visibility(
-                visible: !(!userType[0] && !userType[1]),
-                child: Column(children: [
-                  SizedBox(height: size.height * 0.02),
-                  // Affiche l'inscription par Apple, Facebook et Google seulement seulement pour les clients
-                  Visibility(
-                    visible: userType[0],
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Platform.isIOS
-                                ? SignInButton.mini(
-                                    buttonType: ButtonType.apple,
-                                    onPressed: () async {
-                                      dynamic user = await AuthMethods.instance
-                                          .signInWithApple(context);
-                                      if (user != null) {
-                                        Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        Accueil()),
-                                            (Route<dynamic> route) => false);
-                                      }
-                                    })
-                                : Container(),
-                            SignInButton.mini(
-                                buttonType: ButtonType.facebook,
-                                onPressed: () async {
-                                  try {
-                                    await AuthMethods.instance
-                                        .signInWithFacebook(context);
-
-                                    bool checkEmail = await (AuthMethods
-                                            .instance
-                                            .checkEmailVerification()
-                                        as FutureOr<bool>);
-
-                                    if (checkEmail == false) {
-                                      showMessage("Vérification du mail",
-                                          "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
-                                      isCreated = true;
-                                      await _preferences.setBool(
-                                          _keyCreatedUser, isCreated!);
-                                      SharedPreferenceHelper()
-                                          .saveUserCreated(isCreated!);
-                                    } else {
-                                      isCreated = false;
-                                      await _preferences.setBool(
-                                          _keyCreatedUser, isCreated!);
-                                      SharedPreferenceHelper()
-                                          .saveUserCreated(isCreated!);
-                                    }
-                                  } catch (e) {
-                                    if (e is FirebaseAuthException) {
-                                      print(e);
-                                      if (e.code ==
-                                          'account-exists-with-different-credential') {
-                                        String erreur =
-                                            "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
-                                        showMessage(
-                                            "Adresse mail déjà existante",
-                                            erreur);
-                                      }
-                                    }
-                                  }
-                                }),
-                            SignInButton.mini(
-                                buttonType: ButtonType.google,
-                                onPressed: () async {
-                                  try {
-                                    //Si la variable isCreated est égale à true, dans ce cas un message d'erreur s'affiche pour l'utilisateur
-                                    if (isCreated == true) {
-                                      showMessage("Adresse mail non validé",
-                                          "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
-                                    } else {
-                                      bool googleCheck = await AuthMethods
-                                          .instance
-                                          .signInwithGoogle();
-
-                                      if (googleCheck == true) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => MyApp(),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  } catch (e) {
-                                    if (e is FirebaseAuthException) {
-                                      print(e);
-                                      if (e.code ==
-                                          'account-exists-with-different-credential') {
-                                        String erreur =
-                                            "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
-                                        showMessage(
-                                            "Adresse mail déjà existante",
-                                            erreur);
-                                      }
-                                    }
-                                  }
-                                }),
-                          ],
-                        ),
-                        OrDivider(),
-                      ],
-                    ),
+      body: SingleChildScrollView(
+        child: BackgroundInscription(
+            child: Stack(
+          children: [
+            SizedBox(width: size.width),
+            SafeArea(
+                child: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.black, size: 28),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "INSCRIPTION",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                  TextFieldContainer(
-                    child: Form(
-                      key: _formKey,
+                ),
+                SizedBox(height: size.height * 0.02),
+                Image.asset(
+                  "assets/icons/signup.png",
+                  height: size.height * 0.20,
+                ),
+                SizedBox(height: 20),
+                // Sélection du type d'utilisateur
+                Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                  ToggleButtons(
+                    color: Colors.black.withOpacity(0.60),
+                    selectedColor: Color(0xFF6200EE),
+                    selectedBorderColor: Color(0xFF6200EE),
+                    fillColor: Color(0xFF6200EE).withOpacity(0.08),
+                    splashColor: Color(0xFF6200EE).withOpacity(0.12),
+                    hoverColor: Color(0xFF6200EE).withOpacity(0.04),
+                    borderRadius: BorderRadius.circular(4.0),
+                    constraints: BoxConstraints(minHeight: 36.0),
+                    isSelected: userType,
+                    onPressed: (index) {
+                      // Respond to button selection
+                      setState(() {
+                        for (int buttonIndex = 0;
+                            buttonIndex < userType.length;
+                            buttonIndex++) {
+                          if (buttonIndex == index) {
+                            userType[buttonIndex] = true;
+                          } else {
+                            userType[buttonIndex] = false;
+                          }
+                        }
+                      });
+                    },
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Client'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text('Commerçant'),
+                      ),
+                    ],
+                  )
+                ]),
+                // Partie inscription
+                // Masquée si aucun des types d'utilisateur n'est sélectionné
+                Visibility(
+                  visible: !(!userType[0] && !userType[1]),
+                  child: Column(children: [
+                    SizedBox(height: size.height * 0.02),
+                    // Affiche l'inscription par Apple, Facebook et Google seulement seulement pour les clients
+                    Visibility(
+                      visible: userType[0],
                       child: Column(
                         children: [
-                          // Champ NOM
-                          TextFormField(
-                            // ignore: missing_return
-                            validator: (input) {
-                              if (input!.isEmpty) {
-                                return 'Veuillez rentrer votre nom';
-                              }
-                              return null;
-                            },
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                                labelText: 'Votre nom',
-                                icon: Icon(
-                                  Icons.person,
-                                  color: BuyandByeAppTheme.kLightPrimaryColor,
-                                )),
-                            onSaved: (input) => _lname = input,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Platform.isIOS
+                                  ? SignInButton.mini(
+                                      buttonType: ButtonType.apple,
+                                      onPressed: () async {
+                                        dynamic user = await AuthMethods.instance
+                                            .signInWithApple(context);
+                                        if (user != null) {
+                                          Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          Accueil()),
+                                              (Route<dynamic> route) => false);
+                                        }
+                                      })
+                                  : Container(),
+                              SignInButton.mini(
+                                  buttonType: ButtonType.facebook,
+                                  onPressed: () async {
+                                    try {
+                                      await AuthMethods.instance
+                                          .signInWithFacebook(context);
+      
+                                      bool checkEmail = await (AuthMethods
+                                              .instance
+                                              .checkEmailVerification()
+                                          as FutureOr<bool>);
+      
+                                      if (checkEmail == false) {
+                                        showMessage("Vérification du mail",
+                                            "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
+                                        isCreated = true;
+                                        await _preferences.setBool(
+                                            _keyCreatedUser, isCreated!);
+                                        SharedPreferenceHelper()
+                                            .saveUserCreated(isCreated!);
+                                      } else {
+                                        isCreated = false;
+                                        await _preferences.setBool(
+                                            _keyCreatedUser, isCreated!);
+                                        SharedPreferenceHelper()
+                                            .saveUserCreated(isCreated!);
+                                      }
+                                    } catch (e) {
+                                      if (e is FirebaseAuthException) {
+                                        print(e);
+                                        if (e.code ==
+                                            'account-exists-with-different-credential') {
+                                          String erreur =
+                                              "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
+                                          showMessage(
+                                              "Adresse mail déjà existante",
+                                              erreur);
+                                        }
+                                      }
+                                    }
+                                  }),
+                              SignInButton.mini(
+                                  buttonType: ButtonType.google,
+                                  onPressed: () async {
+                                    try {
+                                      //Si la variable isCreated est égale à true, dans ce cas un message d'erreur s'affiche pour l'utilisateur
+                                      if (isCreated == true) {
+                                        showMessage("Adresse mail non validé",
+                                            "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
+                                      } else {
+                                        bool googleCheck = await AuthMethods
+                                            .instance
+                                            .signInwithGoogle();
+      
+                                        if (googleCheck == true) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => MyApp(),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    } catch (e) {
+                                      if (e is FirebaseAuthException) {
+                                        print(e);
+                                        if (e.code ==
+                                            'account-exists-with-different-credential') {
+                                          String erreur =
+                                              "Un compte existe déjà avec cette adresse mail, veuillez le lier à votre compte depuis les paramètres du compte.";
+                                          showMessage(
+                                              "Adresse mail déjà existante",
+                                              erreur);
+                                        }
+                                      }
+                                    }
+                                  }),
+                            ],
                           ),
-                          // Champ PRENOM
-                          TextFormField(
-                            // ignore: missing_return
-                            validator: (input) {
-                              if (input!.isEmpty) {
-                                return 'Veuillez rentrer votre prénom';
-                              }
-                              return null;
-                            },
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                                labelText: 'Votre prénom',
-                                icon: Icon(
-                                  Icons.person,
-                                  color: BuyandByeAppTheme.kLightPrimaryColor,
-                                )),
-                            onSaved: (input) => _fname = input,
-                          ),
-                          // Champ EMAIL
-                          TextFormField(
-                            // ignore: missing_return
-                            validator: (input) {
-                              if (input!.isEmpty) {
-                                return 'Veuillez rentrer une adresse mail';
-                              }
-                              final regex = RegExp(
-                                  r"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-                              if (!regex.hasMatch(input)) {
-                                return 'L\'adresse mail n\'est pas valide';
-                              }
-                              return null;
-                            },
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                                labelText: 'Votre adresse email',
-                                icon: Text(
-                                  "@",
-                                  style: TextStyle(
-                                      color:
-                                          BuyandByeAppTheme.kLightPrimaryColor,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700),
-                                )),
-                            onSaved: (input) => _email = input,
-                          ),
-                          // Champ MOT DE PASSE
-
-                          TextFormField(
-                            // ignore: missing_return
-                            validator: (input) {
-                              if (input!.length < 6) {
-                                return 'Veuillez rentrer un mot de passe de plus \nde 6 caractères';
-                              }
-                              return null;
-                            },
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              hintText: "Votre mot de passe",
-                              icon: Icon(
-                                Icons.lock,
-                                color: BuyandByeAppTheme.kLightPrimaryColor,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  obscureText
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
-                                color: BuyandByeAppTheme.kLightPrimaryColor,
-                                onPressed: () {
-                                  setState(() {
-                                    obscureText = !obscureText;
-                                  });
-                                },
-                              ),
-                              border: InputBorder.none,
-                            ),
-                            onSaved: (input) => _password = input,
-                            obscureText: obscureText,
-                          ),
+                          OrDivider(),
                         ],
                       ),
                     ),
-                  ),
-                  SizedBox(height: size.height * 0.03),
-                  Container(
-                    height: size.height / 25,
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: BuyandByeAppTheme.orange,
+                    TextFieldContainer(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            // Champ NOM
+                            TextFormField(
+                              // ignore: missing_return
+                              validator: (input) {
+                                if (input!.isEmpty) {
+                                  return 'Veuillez rentrer votre nom';
+                                }
+                                return null;
+                              },
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                  labelText: 'Votre nom',
+                                  icon: Icon(
+                                    Icons.person,
+                                    color: BuyandByeAppTheme.kLightPrimaryColor,
+                                  )),
+                              onSaved: (input) => _lname = input,
+                            ),
+                            // Champ PRENOM
+                            TextFormField(
+                              // ignore: missing_return
+                              validator: (input) {
+                                if (input!.isEmpty) {
+                                  return 'Veuillez rentrer votre prénom';
+                                }
+                                return null;
+                              },
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                  labelText: 'Votre prénom',
+                                  icon: Icon(
+                                    Icons.person,
+                                    color: BuyandByeAppTheme.kLightPrimaryColor,
+                                  )),
+                              onSaved: (input) => _fname = input,
+                            ),
+                            // Champ EMAIL
+                            TextFormField(
+                              // ignore: missing_return
+                              validator: (input) {
+                                if (input!.isEmpty) {
+                                  return 'Veuillez rentrer une adresse mail';
+                                }
+                                final regex = RegExp(
+                                    r"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+                                if (!regex.hasMatch(input)) {
+                                  return 'L\'adresse mail n\'est pas valide';
+                                }
+                                return null;
+                              },
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                  labelText: 'Votre adresse email',
+                                  icon: Text(
+                                    "@",
+                                    style: TextStyle(
+                                        color:
+                                            BuyandByeAppTheme.kLightPrimaryColor,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700),
+                                  )),
+                              onSaved: (input) => _email = input,
+                            ),
+                            // Champ MOT DE PASSE
+      
+                            TextFormField(
+                              // ignore: missing_return
+                              validator: (input) {
+                                if (input!.length < 6) {
+                                  return 'Veuillez rentrer un mot de passe de plus \nde 6 caractères';
+                                }
+                                return null;
+                              },
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                hintText: "Votre mot de passe",
+                                icon: Icon(
+                                  Icons.lock,
+                                  color: BuyandByeAppTheme.kLightPrimaryColor,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    obscureText
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                  color: BuyandByeAppTheme.kLightPrimaryColor,
+                                  onPressed: () {
+                                    setState(() {
+                                      obscureText = !obscureText;
+                                    });
+                                  },
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              onSaved: (input) => _password = input,
+                              obscureText: obscureText,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: MaterialButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          if (userType[0]) {
-                            try {
-                              AuthMethods().signUpWithMail(
-                                  _email!, _password!, _fname, _lname);
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          Accueil()),
-                                  (Route<dynamic> route) => false);
-                            } catch (e) {
-                              print(e);
-                            }
-                          } else {
-                            try {
-                              AuthMethods().signUpWithMailSeller(
-                                  _email!, _password!, _fname, _lname);
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          AccueilCommercant()),
-                                  (Route<dynamic> route) => false);
-                            } catch (e) {
-                              print(e);
+                    SizedBox(height: size.height * 0.03),
+                    Container(
+                      height: size.height / 25,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: BuyandByeAppTheme.orange,
+                      ),
+                      child: MaterialButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            if (userType[0]) {
+                              try {
+                                AuthMethods().signUpWithMail(
+                                    _email!, _password!, _fname, _lname);
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            Accueil()),
+                                    (Route<dynamic> route) => false);
+                              } catch (e) {
+                                print(e);
+                              }
+                            } else {
+                              try {
+                                AuthMethods().signUpWithMailSeller(
+                                    _email!, _password!, _fname, _lname);
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            AccueilCommercant()),
+                                    (Route<dynamic> route) => false);
+                              } catch (e) {
+                                print(e);
+                              }
                             }
                           }
-                        }
-                      },
-                      child: Text('INSCRIPTION'),
+                        },
+                        child: Text('INSCRIPTION'),
+                      ),
                     ),
-                  ),
-                ]),
-              )
-            ],
-          ),
-        ],
-      )),
+                  ]),
+                )
+              ],
+            ),
+          ],
+        )),
+      ),
     );
   }
 }

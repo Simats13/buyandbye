@@ -256,13 +256,18 @@ class _CategorieState extends State<Categorie> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                            widget.snapshot.data.docs[index2]
-                                                ["nom"],
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700)),
-                                        // SizedBox(height: 30),
+                                        Container(
+                                          width: 150,
+                                          height: 35,
+                                          padding: EdgeInsets.only(right: 5),
+                                          child: Text(
+                                              widget.snapshot.data.docs[index2]
+                                                  ["nom"],
+                                              overflow: TextOverflow.fade,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700)),
+                                        ),
                                         SizedBox(height: 10),
                                         // Affiche un logo lorsque le produit est masqué pour les utilisateurs
                                         widget.snapshot.data.docs[index2]
