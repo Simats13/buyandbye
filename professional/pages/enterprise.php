@@ -641,6 +641,21 @@ $document = $docRef->snapshot();
                         les modifications</button>
                 </div>
             </div>
+        </div>
+        <div class="form-group">
+            <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
+            <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>" id="old_image" name="old_image">
+            <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>"><br>
+            <img name="new_banniere" id="new_banniere" src="#"  class="img-thumbnail img-fluid" hidden >
+            <input type="file" name="banniere" id="banniere" onchange="readURL(this);">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+            <button type="submit" value="<?=$document->id()?>" name="edit_enterprise"
+                class="btn btn-primary">Enregistrer
+                les modifications</button>
+        </div>
+     </div>
 
 
 
@@ -655,20 +670,20 @@ $document = $docRef->snapshot();
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
-            reader.onload = function (e) {
-                $('#imagePreview')
-                    .attr('src', e.target.result)
-                    .removeAttr('hidden')
-                    .height(200);
-                $('#old_banniere').prop('hidden', 'hidden');
-
-            };
-
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    };
-</script>
+          reader.onload = function (e) {
+              $('#new_banniere')
+                  .attr('src', e.target.result)
+                  .removeAttr('hidden')
+                  .height(200);
+                  $('#old_banniere').prop('hidden', 'hidden');
+                  $('#old_image').prop('hidden', 'hidden');
+          
+          };
+         
+         
+          reader.readAsDataURL(input.files[0]);
+      }
+  };</script>
 
 <script>
     google.maps.event.addDomListener(window, 'load', initialize);
