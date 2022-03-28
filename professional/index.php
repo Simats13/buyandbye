@@ -255,7 +255,7 @@ if(isset($_POST['refuse']) or isset($_POST['cancel'])) {
 <?php include('includes/header.php'); ?>
 <?php include('includes/navbar.php'); ?>
 
-<?php include('pages/'.$page.'.php');?>
+<?php include('pages/'.$page.'.php'); ?>
 <?php include('includes/footer.php'); ?>
 
 
