@@ -1,66 +1,9 @@
 <!-- Script permettant la gestion des catégories -->
-<script>
-$(function(){
-	$(".chosen-select").chosen({
-		max_selected_options: 3,
-		width: '100%'
-	}); 
-});
-$(document).ready(function () {
-	$(".category1").addClass("d-none");
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-	
-});
 
-$(".companyType").on('change', function() {
+  
+<link rel="stylesheet" href="../css/chosen.css">
+<link rel="stylesheet" href="../fonts/icomoon/style.css">
 
-if ($(this).val() == 'Magasin'){
-	$(".category1").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-} else if ($(this).val() == 'Service'){
-	$(".category2").removeClass("d-none");
-
-	$(".category1").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-
-}else if ($(this).val() == 'Restaurant'){
-	$(".category3").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category1").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category5").addClass("d-none");
-
-}else if ($(this).val() == 'Santé'){
-	$(".category4").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category1").addClass("d-none");
-	$(".category5").addClass("d-none");
-
-}else if ($(this).val() == 'Culture & Loisirs'){
-	$(".category5").removeClass("d-none");
-
-	$(".category2").addClass("d-none");
-	$(".category3").addClass("d-none");
-	$(".category4").addClass("d-none");
-	$(".category1").addClass("d-none");
-
-}
-});
-</script>   
-<link rel="stylesheet" href="css/chosen.css">
-<link rel="stylesheet" href="fonts/icomoon/style.css">
 
 <style>
   .chosen-container-multi {
@@ -230,7 +173,7 @@ if ($(this).val() == 'Magasin'){
                       
 	                </section>
 	                
-					<!-- SECTION 2 -->
+					        <!-- SECTION 2 -->
 	                <h4></h4>
 	                <section>
                     <div class="form-row">
@@ -248,7 +191,7 @@ if ($(this).val() == 'Magasin'){
                       value="<?php echo isset($_POST["enterprisePhone"]) ? $_POST["enterprisePhone"] : ''; ?>" required>
                     </div>
                     <div class="form-row">
-                    <label for="isphonevisible">Numéro de téléphone visible ? <a data-toggle="tooltip" data-bs-placement="right" title="Permet d'afficher aux clients le numéro de téléphone sur l'application">ⓘ</a></label>
+                    <label for="isphoneVisible">Numéro de téléphone visible ? <a data-toggle="tooltip" data-bs-placement="right" title="Permet d'afficher aux clients le numéro de téléphone sur l'application">ⓘ</a></label>
                       <div class="form-group">
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox" name="isPhoneVisible" id="isphonevisible" <?php echo isset($_POST["livraison"]) ? "checked" : ''; ?>>
@@ -288,155 +231,181 @@ if ($(this).val() == 'Magasin'){
 	                <!-- SECTION 3 -->
 	                <h4></h4>
 	                <section>
-                    
-					<div class="category1">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Magasin" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Electroménager</option>
-                      <option>Jeux-Vidéos</option>
-                      <option>High-Tech</option>
-                      <option>Alimentation</option>
-                      <option>Vêtements</option>
-                      <option>Films & Séries</option>
-                      <option>Chaussures</option>
-                      <option>Bricolage</option>
-                      <option>Montres & Bijoux</option>
-                      <option>Téléphonie</option>
-                      <option>Restaurant</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="category2">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Service" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Menuiserie</option>
-                      <option>Plomberie</option>
-                      <option>Piscine</option>
-                      <option>Meubles</option>
-                      <option>Vêtements</option>
-                      <option>Gestion de patrimoine</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="category3">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Restaurant" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Français</option>
-                      <option>Local</option>
-                      <option>Italien</option>
-                      <option>Fast-Food</option>
-                      <option>Asiatique</option>
-                      <option>Pizzeria</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="category4">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Santé" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Pharmacie</option>
-                      <option>Aide à la personne</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="category5">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Culture et loisirs" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Parc d'attraction</option>
-                      <option>Musée</option>
-                      <option>Tourisme</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-			  <div class="category1">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Magasin" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Electroménager</option>
-                      <option>Jeux-Vidéos</option>
-                      <option>High-Tech</option>
-                      <option>Alimentation</option>
-                      <option>Vêtements</option>
-                      <option>Films & Séries</option>
-                      <option>Chaussures</option>
-                      <option>Bricolage</option>
-                      <option>Montres & Bijoux</option>
-                      <option>Téléphonie</option>
-                      <option>Restaurant</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="category2">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Service" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Menuiserie</option>
-                      <option>Plomberie</option>
-                      <option>Piscine</option>
-                      <option>Meubles</option>
-                      <option>Vêtements</option>
-                      <option>Gestion de patrimoine</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="category3">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Restaurant" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Français</option>
-                      <option>Local</option>
-                      <option>Italien</option>
-                      <option>Fast-Food</option>
-                      <option>Asiatique</option>
-                      <option>Pizzeria</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="category4">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Santé" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Pharmacie</option>
-                      <option>Aide à la personne</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="category5">
-                <div class="form-group">
-                  <div class="color-2">
-                    <select data-placeholder="Tags Culture et loisirs" name="select[]" multiple class="chosen-select" tabindex="8">
-                      <option>Parc d'attraction</option>
-                      <option>Musée</option>
-                      <option>Tourisme</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+                    <script>  
+                        $(function(){
+                        $(".chosen-select").chosen({
+                          max_selected_options: 3,
+                          width: '100%'
+                        }); 
+                      });
+                    </script>
+                    <div class="category1 d-none">                 
+                      <div class="form-row">
+                        <label class="mr-sm-2" for="companyType">Tags Entreprise <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout de tags permet de mieux vous référencer au sein de l'application et auprès des clients !">ⓘ</a></label>
+                          <div class="color-2">
+                            <select data-placeholder="Tags Magasin" name="select[]" multiple class="chosen-select" tabindex="8">
+                              <option>Electroménager</option>
+                              <option>Jeux-Vidéos</option>
+                              <option>High-Tech</option>
+                              <option>Alimentation</option>
+                              <option>Vêtements</option>
+                              <option>Films & Séries</option>
+                              <option>Chaussures</option>
+                              <option>Bricolage</option>
+                              <option>Montres & Bijoux</option>
+                              <option>Téléphonie</option>
+                            </select>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="category2 d-none">
+                      <div class="form-row">
+                      <label class="mr-sm-2" for="companyType">Tags Entreprise <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout de tags permet de mieux vous référencer au sein de l'application et auprès des clients !">ⓘ</a></label>
+                        <div class="color-2">
+                          <select data-placeholder="Tags Service" name="select[]" multiple class="chosen-select" tabindex="8">
+                            <option>Menuiserie</option>
+                            <option>Plomberie</option>
+                            <option>Piscine</option>
+                            <option>Meubles</option>
+                            <option>Vêtements</option>
+                            <option>Gestion de patrimoine</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="category3 d-none">
+                      <div class="form-row">
+                      <label class="mr-sm-2" for="companyType">Tags Entreprise <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout de tags permet de mieux vous référencer au sein de l'application et auprès des clients !">ⓘ</a></label>
+                        <div class="color-2">
+                          <select data-placeholder="Tags Restaurant" name="select[]" multiple class="chosen-select" tabindex="8">
+                            <option>Français</option>
+                            <option>Local</option>
+                            <option>Italien</option>
+                            <option>Fast-Food</option>
+                            <option>Asiatique</option>
+                            <option>Pizzeria</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="category4 d-none">
+                      <div class="form-row">
+                      <label class="mr-sm-2" for="companyType">Tags Entreprise <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout de tags permet de mieux vous référencer au sein de l'application et auprès des clients !">ⓘ</a></label>
+                        <div class="color-2">
+                          <select data-placeholder="Tags Santé" name="select[]" multiple class="chosen-select" tabindex="8">
+                            <option>Pharmacie</option>
+                            <option>Aide à la personne</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="category5 d-none">
+                      <div class="form-row">
+                      <label class="mr-sm-2" for="companyType">Tags Entreprise <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout de tags permet de mieux vous référencer au sein de l'application et auprès des clients !">ⓘ</a></label>
+                        <div class="color-2">
+                          <select data-placeholder="Tags Culture et loisirs" name="select[]" multiple class="chosen-select" tabindex="8">
+                            <option>Parc d'attraction</option>
+                            <option>Musée</option>
+                            <option>Tourisme</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="menu d-none">
+                    <div class=" form-row">
+                        <label for="exampleColorInput" class="form-label">Ajouter un menu <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout d'un menu sur l'application permet à vos clients de connaître la composition de votre carte directement depuis l'application">ⓘ</a></label><br>                     
+                        <img id="imagePreview_menu" src="#" hidden />
+                        <input type="file" name="menu" id="menu" onchange="readURL(this);"><br><br>
+                    </div>
+                    </div>                   -->
+                    <div class=" form-row">
+                        <label for="exampleColorInput" class="form-label">Ajouter une bannière <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout d'une bannière permet de faire ressortir la page de votre entreprise et ainsi de vous démarquer !">ⓘ</a></label><br>                     
+                        <img id="imagePreview" src="#" hidden />
+                        <input type="file" name="banniere" id="banniere" onchange="readURL(this);"><br><br>
+                    </div>
+                    <div class="form-row ">
+                      <label for="color" class="form-label">Couleur de l'interface <a data-toggle="tooltip" data-bs-placement="right" title="Faites ressortir votre page en la mettant au couleur de votre entreprise !">ⓘ</a></label>
+                      <div class="col-sm-2">                    
+                        <input type="color" class="form-control-color" name="color" id="exampleColorInput" title="Choissisez une couleur">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <label for="exampleFormControlTextarea1">Description <a data-toggle="tooltip" data-bs-placement="right" title="Une courte description permet de mettre en avant votre entreprise auprès des utilisateurs">ⓘ</a></label>
+                      <textarea class="form-control" name="description" id="description"
+                        rows="2" placeholder="Voici la description de mon entreprise" required><?php echo isset($_POST["description"]) ? $_POST["description"] : ''; ?></textarea>
+                    </div>
+                    <div class="form-row">
+                      <label for="exampleFormControlTextarea1">Horaires d'ouverture <a data-toggle="tooltip" data-bs-placement="right" title="Les horaires d'ouverture permettent de mieux renseigner vos futurs clients">ⓘ</a></label>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Jours de la semaine</th>
+                            <th scope="col">Première Ouverture</th>
+                            <th scope="col">Première Fermeture</th>
+                            <th scope="col">Deuxième Ouverture</th>
+                            <th scope="col">Dexième Fermeture</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">Lundi</th>
+                            <td><input type="time" id="lundi_first_open" name="lundi_first_open"></td>
+                            <td><input type="time" id="lundi_first_close" name="lundi_first_close"></td>
+                            <td><input type="time" id="lundi_second_open" name="lundi_second_open"></td>
+                            <td><input type="time" id="lundi_second_close" name="lundi_second_close"></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Mardi</th>
+                            <td><input type="time" id="mardi_first_open" name="mardi_first_open"></td>
+                            <td><input type="time" id="mardi_first_close" name="mardi_first_close"></td>
+                            <td><input type="time" id="mardi_second_open" name="mardi_second_open"></td>
+                            <td><input type="time" id="mardi_second_close" name="mardi_second_close"></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Mercredi</th>
+                            <td><input type="time" id="mercredi_first_open" name="mercredi_first_open"></td>
+                            <td><input type="time" id="mercredi_first_close" name="mercredi_first_close"></td>
+                            <td><input type="time" id="mercredi_second_open" name="mercredi_second_open"></td>
+                            <td><input type="time" id="mercredi_second_open" name="mercredi_second_close"></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Jeudi</th>
+                            <td><input type="time" id="jeudi_first_open" name="jeudi_first_open"></td>
+                            <td><input type="time" id="jeudi_first_close" name="jeudi_first_close"></td>
+                            <td><input type="time" id="jeudi_second_open" name="jeudi_second_open"></td>
+                            <td><input type="time" id="jeudi_second_open" name="jeudi_second_close"></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Vendredi</th>
+                            <td><input type="time" id="vendredi_first_open" name="vendredi_first_open"></td>
+                            <td><input type="time" id="vendredi_first_close" name="vendredi_first_close"></td>
+                            <td><input type="time" id="vendredi_second_open" name="vendredi_second_open"></td>
+                            <td><input type="time" id="vendredi_second_close" name="vendredi_second_close"></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Samedi</th>
+                            <td><input type="time" id="samedi_first_open" name="samedi_first_open"></td>
+                            <td><input type="time" id="samedi_first_close" name="samedi_first_close"></td>
+                            <td><input type="time" id="samedi_second_open" name="samedi_second_open"></td>
+                            <td><input type="time" id="samedi_second_close" name="samedi_second_close"></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Dimanche</th>
+                            <td><input type="time" id="dimanche_first_open" name="dimanche_first_open"></td>
+                            <td><input type="time" id="dimanche_first_close" name="dimanche_first_close"></td>
+                            <td><input type="time" id="dimanche_second_open" name="dimanche_second_open"></td>
+                            <td><input type="time" id="dimanche_second_close" name="dimanche_second_close"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                     </div>
 	                </section>
 
 	                <!-- SECTION 4 -->
 	                <h4></h4>
 	                <section>
-	                    <div class="checkbox-circle">
+                    FAIRE UNE PAGE TYPE PAIEMENT FORMULE
+	                    <!-- <div class="checkbox-circle">
 							<label class="active">
 								<input type="radio" name="billing method" value="Direct bank transfer" checked>Direct bank transfer>
 								<span class="checkmark"></span>
@@ -458,21 +427,40 @@ if ($(this).val() == 'Magasin'){
 									Pay with cash upon delivery.
 								</div>
 							</label>
-						</div>
+						</div> -->
 	                </section>
 					<!-- SECTION 5 -->
 	                <h4></h4>
 	                <section>
-	                    <div class="checkbox-circle">
-							
-							<label>
-								<input type="radio" name="billing method" value="Cash on delivery">hello
-								<span class="checkmark"></span>
-								<div class="tooltip">
-									Pay with cash upon delivery.
-								</div>
-							</label>
-						</div>
+	                    <h4>Informations Personnelles</h4>
+                      <div class="form-row form-group">
+	                    <div class="form-holder">
+                        <label for="resume_lastname">Nom </label>
+                        <input type="text" name="resume_lastname" id="resume_lastname" class="form-control" value="" disabled>
+	                    </div>
+	                    <div class="form-holder">
+								        <label for="resume_firstname">Prénom </label>
+                				<input type="text" name="resume_firstname" id="resume_firstname" class="form-control" value="" disabled>
+	                    </div>
+	                  </div>
+
+                    <!-- Adresse Email -->
+	                  <div class="form-row">
+                        <label for="mail">Adresse E-Mail </label>
+                        <input type="text" name="resume_email" id="resume_email" class="form-control" value="" disabled>
+                    </div>
+
+
+                    <!-- Numéro de téléphone -->
+                    <div class="form-row">
+                      <label for="personnalphone">Numéro de téléphone</label>
+                      <div class="form-holder">
+                        <input type="tel" id="resume_personnalphone" class="form-control" name="resume_personnalphone"  value="" disabled>
+                      </div>	
+                    </div>
+                      <h4>Informations sur l'entreprise</h4>
+                      <h4>Personnalisation</h4>
+                      <h4>Information Bancaires</h4>
 	                </section>
             	</div>
             
@@ -480,4 +468,70 @@ if ($(this).val() == 'Magasin'){
 </form>
 
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<script>
+$(document).on('change','.companyType',function() {
+
+if ($(this).val() == 'Magasin'){
+  
+	$(".category1").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+} else if ($(this).val() == 'Service'){
+	$(".category2").removeClass("d-none");
+
+	$(".category1").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Restaurant'){
+  $(".menu").removeClass("d-none");
+	$(".category3").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category1").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Santé'){
+	$(".category4").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category1").addClass("d-none");
+	$(".category5").addClass("d-none");
+
+}else if ($(this).val() == 'Culture & Loisirs'){
+	$(".category5").removeClass("d-none");
+
+	$(".category2").addClass("d-none");
+	$(".category3").addClass("d-none");
+	$(".category4").addClass("d-none");
+	$(".category1").addClass("d-none");
+
+}
+});</script>
+
+<script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#imagePreview')
+                    .attr('src', e.target.result)
+                    .removeAttr('hidden')
+                    .height(200);
+
+            };
+
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+</script>

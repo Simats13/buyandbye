@@ -2,7 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="js/chosen.jquery.min.js"></script>
 
         <!--===============================================================================================-->
 	<!-- <script src="vendor/jquery/jquery-3.2.1.min.js"></script> -->
@@ -33,6 +33,7 @@ $(document).ready(function() {
 <script
   src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete"
   type="text/javascript"></script>
+
 
 <script>
   $(document).ready(function () {
@@ -88,4 +89,66 @@ $(document).ready(function() {
 
   });
 
+</script>
+
+<script>$(function(){
+	$("#wizard").steps({
+        headerTag: "h4",
+        bodyTag: "section",
+        transitionEffect: "fade",
+        enableAllSteps: true,
+        transitionEffectSpeed: 500,
+        onStepChanging: function (event, currentIndex, newIndex) { 
+            if ( newIndex === 1 ) {
+                $('.steps ul').addClass('step-2');
+            } else {
+                $('.steps ul').removeClass('step-2');
+            }
+            if ( newIndex === 2 ) {
+                $('.steps ul').addClass('step-3');
+            } else {
+                $('.steps ul').removeClass('step-3');
+            }
+
+            if ( newIndex === 3 ) {
+                $('.steps ul').addClass('step-4');
+                $('.actions ul').addClass('step-last');
+            } else {
+                $('.steps ul').removeClass('step-4');
+                $('.actions ul').removeClass('step-last');
+            }
+			if ( newIndex === 4 ) {
+                $('.steps ul').addClass('step-5');
+                $('.actions ul').addClass('step-last');
+            } else {
+                $('.steps ul').removeClass('step-5');
+                $('.actions ul').removeClass('step-last');
+            }
+            return true; 
+        },
+        labels: {
+            finish: "Finaliser",
+            next: "Suivant",
+            previous: "Retour"
+        }
+    });
+    // Custom Steps Jquery Steps
+    $('.wizard > .steps li a').click(function(){
+    	$(this).parent().addClass('checked');
+		$(this).parent().prevAll().addClass('checked');
+		$(this).parent().nextAll().removeClass('checked');
+    });
+    // Custom Button Jquery Steps
+    $('.forward').click(function(){
+    	$("#wizard").steps('next');
+    })
+    $('.backward').click(function(){
+        $("#wizard").steps('previous');
+    })
+    // Checkbox
+    $('.checkbox-circle label').click(function(){
+        $('.checkbox-circle label').removeClass('active');
+        $(this).addClass('active');
+    })
+});
 </script>
