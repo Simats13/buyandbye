@@ -324,10 +324,10 @@ $document = $docRef->snapshot();
         </div>
         <div class="form-group">
             <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
-            <img  id="old_banniere" src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>"
-                style="max-width:600px; width:100%">
-                <img id="imagePreview" src="#" hidden />
-                <input type="file" name="banniere" id="banniere" onchange="readURL(this);"><br><br>
+            <img src="<?=$document['imgUrl']?>" class="img-thumbnail img-fluid" alt="<?=$document['imgUrl']?>" id="old_image" name="old_image">
+            <input type="hidden" name="old_banniere" id="old_banniere" value="<?=$document['imgUrl']?>"><br>
+            <img name="new_banniere" id="new_banniere" src="#"  class="img-thumbnail img-fluid" hidden >
+            <input type="file" name="banniere" id="banniere" onchange="readURL(this);">
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
@@ -350,11 +350,12 @@ $document = $docRef->snapshot();
           var reader = new FileReader();
 
           reader.onload = function (e) {
-              $('#imagePreview')
+              $('#new_banniere')
                   .attr('src', e.target.result)
                   .removeAttr('hidden')
                   .height(200);
                   $('#old_banniere').prop('hidden', 'hidden');
+                  $('#old_image').prop('hidden', 'hidden');
           
           };
          

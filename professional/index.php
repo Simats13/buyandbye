@@ -67,15 +67,15 @@ function checkImageParameters($storage, $id) {
         $_SESSION['status'] = "Désolé votre image n'a pas été téléchargée, veuilez réessayer";
         // if everything is ok, try to upload file
         } else {
-            $anotherBucket = $storage->getBucket('la-petite-camargue.appspot.com');
+            $anotherBucket = $storage->getBucket('oficium-11bf9.appspot.com');
             $anotherBucket->upload(
                 file_get_contents($_FILES['banniere']['tmp_name']),
                 [
-                    'name' => "$id/banniere.".$imageFileType
+                    'name' => "profile/$id/banniere.".$imageFileType
                 ]
             );
             
-            $image_url = "https://firebasestorage.googleapis.com/v0/b/la-petite-camargue.appspot.com/o/$id%2Fbanniere.$imageFileType?alt=media";      
+            $image_url = "https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/profile%2F$id%2Fbanniere.$imageFileType?alt=media";      
         }
     }
     return $image_url;
