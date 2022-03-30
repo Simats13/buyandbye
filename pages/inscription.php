@@ -238,6 +238,7 @@
                           width: '100%'
                         }); 
                       });
+                      
                     </script>
                     <div class="category1 d-none">                 
                       <div class="form-row">
@@ -469,7 +470,7 @@
 
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js" integrity="sha512-FbnNPigZZCDhMM22ezvan3xN2/E/oBd9GxqtpiBcK1VZuzBAt0V1EmTtteoYuYxWrqwqBA6zb1OTB887QSjAsw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 $(document).on('change','.companyType',function() {
 
