@@ -320,7 +320,7 @@
                     </div>
                     </div>                   -->
                     <div class=" form-row">
-                        <label for="exampleColorInput" class="form-label">Ajouter une bannière <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout d'une bannière permet de faire ressortir la page de votre entreprise et ainsi de vous démarquer !">ⓘ</a></label><br>                     
+                        <label for="banniere" class="form-label">Ajouter une bannière <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout d'une bannière permet de faire ressortir la page de votre entreprise et ainsi de vous démarquer !">ⓘ</a></label><br>                     
                         <img id="imagePreview" src="#" hidden />
                         <input type="file" name="banniere" id="banniere" onchange="readURL(this);"><br><br>
                     </div>
@@ -470,7 +470,6 @@
 
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.4.5/jquery.mobile.min.js" integrity="sha512-FbnNPigZZCDhMM22ezvan3xN2/E/oBd9GxqtpiBcK1VZuzBAt0V1EmTtteoYuYxWrqwqBA6zb1OTB887QSjAsw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 $(document).on('change','.companyType',function() {
 
