@@ -96,7 +96,9 @@ $(document).ready(function() {
         headerTag: "h4",
         bodyTag: "section",
         transitionEffect: "fade",
-        enableAllSteps: true,
+        enableAllSteps: false,
+        saveState: true,
+        autoFocus: true,
         transitionEffectSpeed: 500,
         onStepChanging: function (event, currentIndex, newIndex) { 
             if ( newIndex === 1 ) {

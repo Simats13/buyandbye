@@ -360,10 +360,8 @@ if(isset($_POST['resetConfirm'])){
   
 	<div class="Container">
 		<div class="Content">
-			<div class="Wrapper">
-				<div class="RightContent">
-					<?php include('pages/'.$page.'.php');?>
-				</div>
+			<div class="RightContent">
+				<?php include('pages/'.$page.'.php');?>
 			</div>
 		</div>
 	</div>
