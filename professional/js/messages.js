@@ -2,13 +2,6 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import {
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-} from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import {
   getFirestore,
   collection,
   addDoc,
@@ -21,20 +14,10 @@ import {
   doc,
   serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js';
-import {
-  getMessaging,
-  getToken,
-  onMessage
-} from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js'; 
-import { getPerformance } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-performance.js';
 
 import { getFirebaseConfig } from './firebase-config.js';
+
+import { loadDiscussions } from './discussions.js';
 
 // Executé quand le bouton d'envoi d'un message est pressé
 function onMessageFormSubmit(e) {
@@ -64,8 +47,9 @@ async function saveMessage(messageText) {
 }
 
 // Charge les messages et écoute de nouveaux messages
-function loadMessages() {
-  const recentMessagesQuery = query(collection(getFirestore(), 'messages'), orderBy('timestamp', 'desc'), limit(12));
+function loadMessages(clientID) {
+  const recentMessagesQuery = query(collection(getFirestore(), "messages", clientID, "messages"), orderBy('timestamp', 'desc'), limit(12));
+  console.log();
   
   // Requête d'écoute
   onSnapshot(recentMessagesQuery, function(snapshot) {
@@ -74,23 +58,16 @@ function loadMessages() {
         deleteMessage(change.doc.id);
       } else {
         var message = change.doc.data();
-        displayMessage(change.doc.id, message.timestamp, message.name,
-          message.text, message.profilePicUrl, message.imageUrl);
+        displayMessage(change.doc.id, message.timestamp, message.message, message.imageUrl);
       }
     });
   });
 }
 
-// Affiche le message sur la page
-function displayMessage(id, timestamp, name, text, picUrl, imageUrl) {
+// Affiche le message dans la popup
+function displayMessage(id, timestamp, text, imageUrl) {
   var div = document.getElementById(id) || createAndInsertMessage(id, timestamp);
 
-  // profile picture
-  if (picUrl) {
-    div.querySelector('.pic').style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(picUrl) + ')';
-  }
-
-  div.querySelector('.name').textContent = name;
   var messageElement = div.querySelector('.message');
 
   if (text) { // Si le message est du texte
@@ -105,6 +82,7 @@ function displayMessage(id, timestamp, name, text, picUrl, imageUrl) {
     messageElement.innerHTML = '';
     messageElement.appendChild(image);
   }
+
   // Fait défiler jusqu'au nouveau message
   setTimeout(function() {div.classList.add('visible')}, 1);
   messageListElement.scrollTop = messageListElement.scrollHeight;
@@ -176,9 +154,8 @@ function toggleButton() {
 // Template de message
 var MESSAGE_TEMPLATE =
 '<div class="message-container">' +
-  '<div class="spacing"><div class="pic"></div></div>' +
   '<div class="message"></div>' +
-  '<div class="name"></div>' +
+  '<div class="timestamp"></div>' +
 '</div>';
 
 // Variables de récupération des éléments HTML
@@ -195,4 +172,11 @@ messageInputElement.addEventListener('change', toggleButton);
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
 
 const firebaseApp = initializeApp(getFirebaseConfig());
-loadMessages();
+loadMessages("D8Sj8ggWF90yid1azab8");
+loadDiscussions();
+
+/*
+La div "discussions" contient toutes les différentes conversations entre un professionnel et un client
+Chaque div enfant a pour id celui de la conversation (à terme idPro + idClient)
+Il faut arriver à faire passer cet ID à la fonction loadMessages pour faire appel au bon document
+*/
