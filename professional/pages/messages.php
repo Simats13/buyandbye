@@ -43,6 +43,5 @@
             </div>
         </div>
     </div>
-    
 </div>
 <script type='module' src='/professional/js/messages.js'></script>
