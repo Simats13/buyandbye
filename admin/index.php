@@ -21,6 +21,27 @@ if(isset($_GET['page']) && !empty($_GET['page'])){
     $page = "dashboard";
 }
 
+if(isset($_SESSION['cookie'])){
+	$_SESSION['status'] = "Vous êtes déjà connecté";
+	enterpriseOrAdmin($auth);
+}else{
+	if(isset($_SESSION['verified_user_id']))
+	{
+		$_SESSION['status'] = "Vous êtes déjà connecté";
+		enterpriseOrAdmin($auth);
+	}
+}
+
+function enterpriseOrAdmin($auth) {
+	$uid = $_SESSION['verified_user_id'];
+	$claims = $auth->getUser($uid)->customClaims;
+	if(isset($claims['shop'])){
+		header('Location: /professional/index.php');
+	} else {
+		header('Location: /admin/index.php');
+	}
+}
+
 
 function randomPassword() {
     $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
