@@ -24,7 +24,8 @@ function onMessageFormSubmit(e) {
   e.preventDefault();
   // Vérifie qu'un message est écrit
   if (messageInputElement.value) {
-    saveMessage(messageInputElement.value).then(function() {
+    const conversationId = document.getElementById('submit').getAttribute('class');
+    saveMessage(messageInputElement.value, conversationId).then(function() {
       // Vide le champ texte et désactive le bouton d'envoi
       resetMaterialTextfield(messageInputElement);
       toggleButton();
@@ -33,11 +34,16 @@ function onMessageFormSubmit(e) {
 }
 
 // Enregistre le message dans Firestore
-async function saveMessage(messageText) {
+async function saveMessage(messageText, docID) {
   try {
-    await addDoc(collection(getFirestore(), 'messages'), {
-      name: 'Clément',
-      text: messageText,
+    await addDoc(collection(getFirestore(), "commonData", docID, "messages"), {
+      isread: false,
+      message: messageText,
+      timestamp: serverTimestamp()
+    });
+
+    await updateDoc(doc(getFirestore(), "commonData", docID), {
+      lastMessage: messageText,
       timestamp: serverTimestamp()
     });
   }
@@ -47,8 +53,8 @@ async function saveMessage(messageText) {
 }
 
 // Charge les messages et écoute de nouveaux messages
-function loadMessages(clientID) {
-  const recentMessagesQuery = query(collection(getFirestore(), "messages", clientID, "messages"), orderBy('timestamp', 'desc'), limit(12));
+export function loadMessages(docID) {
+  const recentMessagesQuery = query(collection(getFirestore(), "commonData", docID, "messages"), orderBy('timestamp', 'desc'), limit(12));
   console.log();
   
   // Requête d'écoute
@@ -172,11 +178,4 @@ messageInputElement.addEventListener('change', toggleButton);
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
 
 const firebaseApp = initializeApp(getFirebaseConfig());
-loadMessages("D8Sj8ggWF90yid1azab8");
 loadDiscussions();
-
-/*
-La div "discussions" contient toutes les différentes conversations entre un professionnel et un client
-Chaque div enfant a pour id celui de la conversation (à terme idPro + idClient)
-Il faut arriver à faire passer cet ID à la fonction loadMessages pour faire appel au bon document
-*/

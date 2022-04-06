@@ -12,11 +12,16 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
+  where
 } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+
+import { loadMessages } from './messages.js';
 
 // Charge les discussions et écoute de nouvelles discussions
 export function loadDiscussions() {
-  const recentDiscussionsQuery = query(collection(getFirestore(), 'messages'), orderBy('timestamp', 'desc'), limit(12));
+  const recentDiscussionsQuery = query(collection(getFirestore(), 'commonData'), where("users", "array-contains", "dnGbdRAWrPMZYcLK98a5fowRLHJ2"), orderBy('timestamp'), limit(12));
+
+  console.log(recentDiscussionsQuery);
     
   // Requête d'écoute
   onSnapshot(recentDiscussionsQuery, function(snapshot) {
@@ -40,10 +45,20 @@ function deleteDiscussion(id) {
 }
 
 // Affiche la discussion sur la page
-function displayDiscussion(id, timestamp, message, ids) {
+function displayDiscussion(id, timestamp, message, userIds) {
   var div = document.getElementById(id) || createAndInsertDiscussion(id, timestamp);
 
-  div.querySelector('.discussionName').textContent = ids[1];
+  div.querySelector('.discussionName').textContent = userIds[1];
+
+  const button = div.querySelector('.discuss');
+  button.addEventListener('click', function test() {
+    const oldMessages = document.getElementById('messages');
+    oldMessages.innerHTML= '';
+    loadMessages(id);
+
+    const sendButton = document.getElementById('submit');
+    sendButton.setAttribute('class', id);
+  });
 
   var messageElement = div.querySelector('.lastMessage');
   messageElement.textContent = message;
@@ -106,5 +121,5 @@ var DISCUSSION_TEMPLATE =
   '<div class="discussionSpacing"><div class="discussionPic"></div></div>' +
   '<div class="lastMessage"></div>' +
   '<div class="DiscussionName"></div>' +
-  '<button class="btn btn-outline-danger" data-toggle="modal" data-target="#showDiscussion">Ouvrir la discussion</button>' +
+  '<button class="btn btn-outline-danger discuss" data-toggle="modal" data-target="#showDiscussion">Ouvrir la discussion</button>' +
 '</div>';
