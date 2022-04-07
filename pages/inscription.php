@@ -4,13 +4,15 @@
 <link rel="stylesheet" href="../css/chosen.css">
 <link rel="stylesheet" href="../fonts/icomoon/style.css">
 
-
 <style>
+.pac-container {
+    z-index: 1100 !important;
+}
   .error {
   color: #F00;
   background-color: #FFF;
 }
-  .chosen-container-multi {
+.chosen-container-multi {
     border: none;
   }
 
@@ -60,7 +62,7 @@
   }
 
   .color-2 .chosen-container-multi .chosen-choices li.search-choice {
-    background-color: #c7f0db;
+    background-color: #000;
   }
 
   .color-3 .chosen-container-multi .chosen-choices li.search-choice {
@@ -236,7 +238,8 @@
 	                <!-- SECTION 3 -->
 	                <h4></h4>
 	                <section>
-                 
+
+
                     <div class="category1 d-none">                 
                       <div class="form-row">
                         <label class="mr-sm-2" for="companyType">Tags Entreprise <a data-toggle="tooltip" data-bs-placement="right" title="L'ajout de tags permet de mieux vous référencer au sein de l'application et auprès des clients !">ⓘ</a></label>
@@ -330,131 +333,98 @@
                     <div class="form-row">
                       <label for="exampleFormControlTextarea1">Description <a data-toggle="tooltip" data-bs-placement="right" title="Une courte description permet de mettre en avant votre entreprise auprès des utilisateurs">ⓘ</a></label>
                       <textarea class="form-control" name="description" id="description"
-                        rows="2" placeholder="Voici la description de mon entreprise" required><?php echo isset($_POST["description"]) ? $_POST["description"] : ''; ?></textarea>
+                        rows="10" style="height:100%;" placeholder="Voici la description de mon entreprise" required><?php echo isset($_POST["description"]) ? $_POST["description"] : ''; ?></textarea>
                     </div>
                     <div class="form-row">
-                    <label for="exampleFormControlTextarea1">Horaires d'ouverture <a data-toggle="tooltip" data-bs-placement="right" title="Les horaires d'ouverture permettent de mieux renseigner vos futurs clients">ⓘ</a></label>
-                      <button type="button" id="modal_button" class="btn btn-dark"  role="button"  data-bs-toggle="modal" data-bs-target="#exampleModal">Dark</button>
-                      <a href="#exampleModal" role="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">Launch demo modal</a>
-
-                    </div>
-                    
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="exampleModal"  aria-labelledby="exampleModalLabel" aria-hidden="true"  data-backdrop="false">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                          <div class="form-row">
-                            
-                            <table class="table">
-                              <thead>
-                                <tr>
-                                  <th scope="col">Jours de la semaine</th>
-                                  <th scope="col">Première Ouverture</th>
-                                  <th scope="col">Première Fermeture</th>
-                                  <th scope="col">Deuxième Ouverture</th>
-                                  <th scope="col">Dexième Fermeture</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <th scope="row">Lundi</th>
-                                  <td><input type="time" id="lundi_first_open" name="lundi_first_open"></td>
-                                  <td><input type="time" id="lundi_first_close" name="lundi_first_close"></td>
-                                  <td><input type="time" id="lundi_second_open" name="lundi_second_open"></td>
-                                  <td><input type="time" id="lundi_second_close" name="lundi_second_close"></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">Mardi</th>
-                                  <td><input type="time" id="mardi_first_open" name="mardi_first_open"></td>
-                                  <td><input type="time" id="mardi_first_close" name="mardi_first_close"></td>
-                                  <td><input type="time" id="mardi_second_open" name="mardi_second_open"></td>
-                                  <td><input type="time" id="mardi_second_close" name="mardi_second_close"></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">Mercredi</th>
-                                  <td><input type="time" id="mercredi_first_open" name="mercredi_first_open"></td>
-                                  <td><input type="time" id="mercredi_first_close" name="mercredi_first_close"></td>
-                                  <td><input type="time" id="mercredi_second_open" name="mercredi_second_open"></td>
-                                  <td><input type="time" id="mercredi_second_close" name="mercredi_second_close"></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">Jeudi</th>
-                                  <td><input type="time" id="jeudi_first_open" name="jeudi_first_open"></td>
-                                  <td><input type="time" id="jeudi_first_close" name="jeudi_first_close"></td>
-                                  <td><input type="time" id="jeudi_second_open" name="jeudi_second_open"></td>
-                                  <td><input type="time" id="jeudi_second_close" name="jeudi_second_close"></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">Vendredi</th>
-                                  <td><input type="time" id="vendredi_first_open" name="vendredi_first_open"></td>
-                                  <td><input type="time" id="vendredi_first_close" name="vendredi_first_close"></td>
-                                  <td><input type="time" id="vendredi_second_open" name="vendredi_second_open"></td>
-                                  <td><input type="time" id="vendredi_second_close" name="vendredi_second_close"></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">Samedi</th>
-                                  <td><input type="time" id="samedi_first_open" name="samedi_first_open"></td>
-                                  <td><input type="time" id="samedi_first_close" name="samedi_first_close"></td>
-                                  <td><input type="time" id="samedi_second_open" name="samedi_second_open"></td>
-                                  <td><input type="time" id="samedi_second_close" name="samedi_second_close"></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">Dimanche</th>
-                                  <td><input type="time" id="dimanche_first_open" name="dimanche_first_open"></td>
-                                  <td><input type="time" id="dimanche_first_close" name="dimanche_first_close"></td>
-                                  <td><input type="time" id="dimanche_second_open" name="dimanche_second_open"></td>
-                                  <td><input type="time" id="dimanche_second_close" name="dimanche_second_close"></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                          </div>
-                        </div>
+                    <label for="openAndClose">Horaires d'ouverture <a data-toggle="tooltip" data-bs-placement="right" title="Les horaires d'ouverture permettent de mieux renseigner vos futurs clients">ⓘ</a></label>
+                    <div class="form-row">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Jours de la semaine</th>
+                              <th scope="col">Première Ouverture</th>
+                              <th scope="col">Première Fermeture</th>
+                              <th scope="col">Deuxième Ouverture</th>
+                              <th scope="col">Dexième Fermeture</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <th scope="row">Lundi</th>
+                              <td><input type="time" id="lundi_first_open" name="lundi_first_open"></td>
+                              <td><input type="time" id="lundi_first_close" name="lundi_first_close"></td>
+                              <td><input type="time" id="lundi_second_open" name="lundi_second_open"></td>
+                              <td><input type="time" id="lundi_second_close" name="lundi_second_close"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Mardi</th>
+                              <td><input type="time" id="mardi_first_open" name="mardi_first_open"></td>
+                              <td><input type="time" id="mardi_first_close" name="mardi_first_close"></td>
+                              <td><input type="time" id="mardi_second_open" name="mardi_second_open"></td>
+                              <td><input type="time" id="mardi_second_close" name="mardi_second_close"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Mercredi</th>
+                              <td><input type="time" id="mercredi_first_open" name="mercredi_first_open"></td>
+                              <td><input type="time" id="mercredi_first_close" name="mercredi_first_close"></td>
+                              <td><input type="time" id="mercredi_second_open" name="mercredi_second_open"></td>
+                              <td><input type="time" id="mercredi_second_close" name="mercredi_second_close"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Jeudi</th>
+                              <td><input type="time" id="jeudi_first_open" name="jeudi_first_open"></td>
+                              <td><input type="time" id="jeudi_first_close" name="jeudi_first_close"></td>
+                              <td><input type="time" id="jeudi_second_open" name="jeudi_second_open"></td>
+                              <td><input type="time" id="jeudi_second_close" name="jeudi_second_close"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Vendredi</th>
+                              <td><input type="time" id="vendredi_first_open" name="vendredi_first_open"></td>
+                              <td><input type="time" id="vendredi_first_close" name="vendredi_first_close"></td>
+                              <td><input type="time" id="vendredi_second_open" name="vendredi_second_open"></td>
+                              <td><input type="time" id="vendredi_second_close" name="vendredi_second_close"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Samedi</th>
+                              <td><input type="time" id="samedi_first_open" name="samedi_first_open"></td>
+                              <td><input type="time" id="samedi_first_close" name="samedi_first_close"></td>
+                              <td><input type="time" id="samedi_second_open" name="samedi_second_open"></td>
+                              <td><input type="time" id="samedi_second_close" name="samedi_second_close"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Dimanche</th>
+                              <td><input type="time" id="dimanche_first_open" name="dimanche_first_open"></td>
+                              <td><input type="time" id="dimanche_first_close" name="dimanche_first_close"></td>
+                              <td><input type="time" id="dimanche_second_open" name="dimanche_second_open"></td>
+                              <td><input type="time" id="dimanche_second_close" name="dimanche_second_close"></td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-
-
-                    
-                    
 	                </section>
 
 	                <!-- SECTION 4 -->
 	                <h4></h4>
 	                <section>
-                    FAIRE UNE PAGE TYPE PAIEMENT FORMULE
-	                    <!-- <div class="checkbox-circle">
+                    
+                    
+	          <div class="checkbox-circle">
 							<label class="active">
-								<input type="radio" name="billing method" value="Direct bank transfer" checked>Direct bank transfer>
+								<input type="radio" name="billing method" value="test 2"checked>Site Vitrine
 								<span class="checkmark"></span>
 								<div class="tooltip">
-									Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
+								  <p>Simple vitrine de votre entreprise, il s'agit d'une interface simple permettant d'exposer votre activité sur le net ! Limité en termes de fonctionnalités vous ne pouvez pas exemple pas commercer ou bien mettre entièrement vos produits.</p>	
 								</div>
 							</label>
 							<label>
-								<input type="radio" name="billing method" value="Check payments">Check payments
+								<input type="radio" name="billing method" value="test" >Marketplace
 								<span class="checkmark"></span>
 								<div class="tooltip">
-									Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.
+                  <p>Vous souhaitez montrer l'entièreté de vos activités, commercer avec des gens autour de vous facilement et simplement. Cette offre est faite pour vous !</p>
 								</div>
 							</label>
-							<label>
-								<input type="radio" name="billing method" value="Cash on delivery">Cash on delivery
-								<span class="checkmark"></span>
-								<div class="tooltip">
-									Pay with cash upon delivery.
-								</div>
-							</label>
-						</div> -->
+						</div>
 	                </section>
 					<!-- SECTION 5 -->
 	                <h4></h4>
@@ -495,15 +465,7 @@
 </form>
 
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
 
-$(".modal_button").click( function()
-   {
-     alert('button clicked');
-   }
-);
-</script>
 <script>
 $(document).on('change','.companyType',function() {
 

@@ -2,6 +2,9 @@
   .padding {
     padding: 0 10%;
   }
+  .steps {
+  pointer-events: none;
+}
 
   /* Bouton importer manuellement */
   .button-3 {

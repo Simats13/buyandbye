@@ -37,9 +37,7 @@ function enterpriseOrAdmin($auth) {
 	$claims = $auth->getUser($uid)->customClaims;
 	if(isset($claims['shop'])){
 		header('Location: /professional/index.php');
-	} else {
-		header('Location: /admin/index.php');
-	}
+	} 
 }
 
 

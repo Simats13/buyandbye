@@ -1,27 +1,7 @@
-<!-- <script type="text/javascript" src="js/mdb.min.js"></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script src="js/chosen.jquery.min.js"></script>
-
-        <!--===============================================================================================-->
-	<!-- <script src="vendor/jquery/jquery-3.2.1.min.js"></script> -->
-	<!--===============================================================================================-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
-<!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
-	
-<!-- <script src="vendor/select2/select2.min.js"></script> -->
-	<!--===============================================================================================-->
-<!-- <script src="vendor/daterangepicker/moment.min.js"></script>
-<script src="vendor/daterangepicker/daterangepicker.js"></script> -->
-	<!--===============================================================================================-->
-<!-- <script src="vendor/countdowntime/countdowntime.js"></script> -->
-	<!--===============================================================================================-->
-<script src="js/main.js"></script>
-
-		<!-- JQUERY STEP -->
 <script src="js/jquery.steps.js"></script>
     
 <script>
@@ -32,12 +12,14 @@ $(document).ready(function() {
 </script>
 
 <script
-  src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr&callback=initAutocomplete"
+  src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places,geometry&region=fr"
   type="text/javascript">
+  
 </script>
 
 
 
+<!-- Initialize the plugin: -->
 
 <script>
   $(document).ready(function () {
@@ -56,6 +38,8 @@ $(document).ready(function() {
         });
       });
   google.maps.event.addDomListener(window, 'load', initialize);
+  
+
 
   function initialize() {
     var input = document.getElementById('autocomplete');
@@ -178,54 +162,28 @@ $(document).ready(function() {
 
         onStepChanging: function (event, currentIndex, newIndex) {
 
-          $('.wizard > .steps li a').click(function(){
-              var $validator = $("#registerPage").valid();
-              if(!$validator) return;
-              if(newIndex > currentIndex) {
-                $(this).parent().addClass('checked');
-                $(this).parent().prevAll().addClass('checked');
-              }else{
-                
-                $(this).parent().nextAll().removeClass('checked');
-              };
-              
-              
-              
-          });
+          
           
           if (newIndex < currentIndex) {
 
             if(newIndex === 0){
               $('.steps ul').removeClass('step-2');
+              $('.steps ul').addClass('step');
             }
-            
-              // if ( newIndex === 0 ) {
-              //     $('.steps ul').removeClass('step-2');
-              // } else {
-              //     $('.steps ul').addClass('step-2');
-              // }
-              // if ( newIndex === 1 ) {
-              //     $('.steps ul').removeClass('step-3');
-              // } else {
-              //     $('.steps ul').addClass('step-3');
-              // }
+            if(newIndex === 1){
+              $('.steps ul').removeClass('step-3');
+              $('.steps ul').addClass('step-2');
+            }
 
-              // if ( newIndex === 2 ) {
-              //     $('.steps ul').removeClass('step-4');
-              //     $('.actions ul').removeClass('step-last');
-           
-              // } else {
-              //     $('.steps ul').addClass('step-4');
-              //     $('.actions ul').addClass('step-last');
-              
-              // }
-              // if ( newIndex === 4 ) {
-              //     $('.steps ul').addClass('step-5');
-              //     $('.actions ul').addClass('step-last');
-              // } else {
-              //     $('.steps ul').removeClass('step-5');
-              //     $('.actions ul').removeClass('step-last');
-              // }  
+            if(newIndex === 2){
+              $('.steps ul').removeClass('step-4');
+              $('.steps ul').addClass('step-3');
+            }
+
+            if(newIndex === 3){
+              $('.steps ul').removeClass('step-5');
+              $('.steps ul').addClass('step-4');
+            }
                 return true;
             }
           var $validator = $("#registerPage").valid();
@@ -243,10 +201,10 @@ $(document).ready(function() {
 
             if ( newIndex === 3 ) {
                 $('.steps ul').addClass('step-4');
-                $('.actions ul').addClass('step-last');
+                // $('.actions ul').addClass('step-last');
             } else {
                 $('.steps ul').removeClass('step-4');
-                $('.actions ul').removeClass('step-last');
+                // $('.actions ul').removeClass('step-last');
             }
 			      if ( newIndex === 4 ) {
                 $('.steps ul').addClass('step-5');
@@ -276,16 +234,35 @@ $(document).ready(function() {
         
     });
 
+    $('.wizard > .steps li a').click(function(){
+      // if(newIndex < currentIndex) {
+      //           $(this).parent().addClass('checked');
+      //           $(this).parent().prevAll().addClass('checked');
+		  //           $(this).parent().nextAll().removeClass('checked');
+      //           // return true;
+      //         };
+              // var $validator = $("#registerPage").valid();
+              // if(!$validator) return;
+                
+                $(this).parent().addClass('checked');
+                $(this).parent().prevAll().addClass('checked');
+		            $(this).parent().nextAll().removeClass('checked');
+                
+              
 
+              
+              
+              
+              
+              
+          });
     
     // Custom Button Jquery Steps
     $('.forward').click(function(){
-      // var $validator = $("#registerPage").valid();
-      // if(!$validator) return;
     	$("#wizard").steps('next');
     });
     $('.backward').click(function(){
-        $("#wizard").steps('previous');
+      $("#wizard").steps('previous');
         
     });
     // Checkbox
@@ -295,7 +272,9 @@ $(document).ready(function() {
     });
     
 });
-$(document).ready(function(){
-    $('.tooltipped').tooltip();
-  });
+// $(document).ready(function(){
+//     $('.tooltipped').tooltip();
+//   });
 </script>
+
+

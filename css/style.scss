@@ -111,7 +111,7 @@ body {
 			}
 		}
 		&:before {
-			content: "Billing Details";
+			content: "Création de compte";
 			font-size: 22px;
 			font-family: "Poppins-SemiBold";
 			color: #333;
@@ -120,17 +120,22 @@ body {
 		}
 		&.step-2 {
 			&:before {
-				content: "Additional Information";
+				content: "Information Entreprise";
 			}
 		}
 		&.step-3 {
 			&:before {
-				content: "Your Order";
+				content: "Personnalisation";
 			}
 		}
 		&.step-4 {
 			&:before {
-				content: "Billing Method";
+				content: "Méthode de paiement";
+			}
+		}
+		&.step-5 {
+			&:before {
+				content: "Récapitulatif";
 			}
 		}
 	}
@@ -360,14 +365,14 @@ textarea.form-control {
 			width: 6px;
 			height: 6px;
 			border-radius: 50%;
-			background: #666666;
+			background: #000000;
 			position: absolute;
 			display: none;
 		}
 	}
 	.tooltip {
 		padding: 9px 22px;
-		background: #f2f2f2;
+		background: #000000;
 		line-height: 1.8;
 		position: relative;
 		margin-top: 16px;
@@ -375,7 +380,7 @@ textarea.form-control {
 		display: none;
 		&:before {
 			content: "";
-			border-bottom: 10px solid #f2f2f2; 
+			border-bottom: 10px solid #000000; 
 			border-right: 9px solid transparent;
 			border-left: 9px solid transparent;
 			position: absolute;

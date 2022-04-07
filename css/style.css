@@ -108,7 +108,7 @@ body {
     .steps ul.step-3:before {
       content: "Personnalisation"; }
     .steps ul.step-4:before {
-      content: "Billing Method"; }
+      content: "Méthode de paiement"; }
     .steps ul.step-5:before {
         content: "Récapitulatif"; }
 
@@ -300,7 +300,7 @@ textarea.form-control {
       display: none; }
   .checkbox-circle .tooltip {
     padding: 9px 22px;
-    background: #f2f2f2;
+    background: #000000;
     line-height: 1.8;
     position: relative;
     margin-top: 16px;
