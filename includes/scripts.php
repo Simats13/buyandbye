@@ -95,40 +95,7 @@ $(document).ready(function() {
 
 </script>
 
-<!-- <script>var form = $("#registerPage");
 
-form.validate({
-    errorPlacement: function errorPlacement(error, element) {
-        element.before(error);
-    },
-    rules: {
-        confirm: {
-            equalTo: "#password"
-        },
-		specialNumber: {
-			pattern: /^(6|8|10|12)$/
-		}
-    }
-});
-
-form.children("#wizard").steps({
-    headerTag: "h4",
-    bodyTag: "section",
-    transitionEffect: "fade",
-    onStepChanging: function(event, currentIndex, newIndex) {
-        form.validate().settings.ignore = ":disabled,:hidden";
-        
-        return form.valid();
-    },
-    onFinishing: function(event, currentIndex) {
-        form.validate().settings.ignore = ":disabled";
-        return form.valid();
-    },
-    onFinished: function(event, currentIndex) {
-        alert("Submitted!");
-    }
-});
-</script> -->
 
 <script>$(function(){
   $("#registerPage").validate({
@@ -210,12 +177,59 @@ form.children("#wizard").steps({
         transitionEffectSpeed: 500,
 
         onStepChanging: function (event, currentIndex, newIndex) {
+
+          $('.wizard > .steps li a').click(function(){
+              var $validator = $("#registerPage").valid();
+              if(!$validator) return;
+              if(newIndex > currentIndex) {
+                $(this).parent().addClass('checked');
+                $(this).parent().prevAll().addClass('checked');
+              }else{
+                
+                $(this).parent().nextAll().removeClass('checked');
+              };
+              
+              
+              
+          });
           
           if (newIndex < currentIndex) {
+
+            if(newIndex === 0){
+              $('.steps ul').removeClass('step-2');
+            }
+            
+              // if ( newIndex === 0 ) {
+              //     $('.steps ul').removeClass('step-2');
+              // } else {
+              //     $('.steps ul').addClass('step-2');
+              // }
+              // if ( newIndex === 1 ) {
+              //     $('.steps ul').removeClass('step-3');
+              // } else {
+              //     $('.steps ul').addClass('step-3');
+              // }
+
+              // if ( newIndex === 2 ) {
+              //     $('.steps ul').removeClass('step-4');
+              //     $('.actions ul').removeClass('step-last');
+           
+              // } else {
+              //     $('.steps ul').addClass('step-4');
+              //     $('.actions ul').addClass('step-last');
+              
+              // }
+              // if ( newIndex === 4 ) {
+              //     $('.steps ul').addClass('step-5');
+              //     $('.actions ul').addClass('step-last');
+              // } else {
+              //     $('.steps ul').removeClass('step-5');
+              //     $('.actions ul').removeClass('step-last');
+              // }  
                 return true;
             }
-
-        if($("#registerPage").valid()){
+          var $validator = $("#registerPage").valid();
+          if(!$validator) return;
           if ( newIndex === 1 ) {
                 $('.steps ul').addClass('step-2');
             } else {
@@ -241,7 +255,7 @@ form.children("#wizard").steps({
                 $('.steps ul').removeClass('step-5');
                 $('.actions ul').removeClass('step-last');
             }  
-        }
+        
         return $("#registerPage").valid();
 
            
@@ -261,16 +275,13 @@ form.children("#wizard").steps({
         }
         
     });
-    // Custom Steps Jquery Steps
-    // if(){}
-    if($("#registerPage").valid()){
-    $('.wizard > .steps li a').click(function(){
-                $(this).parent().addClass('checked');
-              $(this).parent().prevAll().addClass('checked');
-              $(this).parent().nextAll().removeClass('checked');
-              });}
+
+
+    
     // Custom Button Jquery Steps
     $('.forward').click(function(){
+      // var $validator = $("#registerPage").valid();
+      // if(!$validator) return;
     	$("#wizard").steps('next');
     });
     $('.backward').click(function(){
@@ -284,4 +295,7 @@ form.children("#wizard").steps({
     });
     
 });
+$(document).ready(function(){
+    $('.tooltipped').tooltip();
+  });
 </script>

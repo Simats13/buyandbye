@@ -1,7 +1,7 @@
 <!-- Script permettant la gestion des catégories -->
 
   
-<link rel="stylesheet" href="css/chosen.css">
+<link rel="stylesheet" href="../css/chosen.css">
 <link rel="stylesheet" href="../fonts/icomoon/style.css">
 
 
@@ -131,18 +131,19 @@
 	                  <div class="form-row form-group">
 	                    <div class="form-holder">
                         <label for="lastname">Nom *</label>
-                        <input type="text" name="ownerLastName" id="lastname" class="form-control required" placeholder="ex: Dupont" value="<?php echo isset($_POST["ownerLastName"]) ? $_POST["ownerLastName"] : ''; ?>" required>
-	                    </div>
+                        <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont" value="<?php echo isset($_POST["ownerLastName"]) ? $_POST["ownerLastName"] : ''; ?>" required>
+	                    
+                      </div>
 	                    <div class="form-holder">
 								        <label for="firstname">Prénom *</label>
-                				<input type="text" name="ownerFirstName" id="firstname" class="form-control required" placeholder="ex: Frédéric" value="<?php echo isset($_POST["ownerFirstName"]) ? $_POST["ownerFirstName"] : ''; ?>" required>
+                				<input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric" value="<?php echo isset($_POST["ownerFirstName"]) ? $_POST["ownerFirstName"] : ''; ?>" required>
 	                    </div>
 	                  </div>
 
                     <!-- Adresse Email -->
 	                  <div class="form-row">
                         <label for="mail">Adresse E-Mail *</label>
-                        <input type="text" name="email" id="mail" class="form-control required" placeholder="ex: email@email.com" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" required>
+                        <input type="email" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" required>
                     </div>
 
 
