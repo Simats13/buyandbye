@@ -47,7 +47,10 @@ textarea {
   resize: none; }
 
 select {
-  cursor: pointer; }
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  border: none; }
   select option[value=""][disabled] {
     display: none; }
 
@@ -76,7 +79,7 @@ body {
 #wizard {
   min-height: 834px;
   background: #fff;
-
+  margin-right: 60px;
   padding: 107px 75px 65px; }
 
 .steps {
@@ -94,7 +97,7 @@ body {
         background: #e6e6e6;
         border-radius: 3.5px; }
       .steps ul li.first a, .steps ul li.checked a {
-        background: #000;
+        background: #f3d4b7;
         transition: all 0.5s ease; }
     .steps ul:before {
       content: "Création du compte";
@@ -104,13 +107,11 @@ body {
       top: -38px;
       position: absolute; }
     .steps ul.step-2:before {
-      content: "Information Entreprise"; }
+      content: "Information sur l'entreprise"; }
     .steps ul.step-3:before {
-      content: "Personnalisation"; }
+      content: "Your Order"; }
     .steps ul.step-4:before {
       content: "Billing Method"; }
-    .steps ul.step-5:before {
-        content: "Récapitulatif"; }
 
 h3 {
   font-family: "Poppins-SemiBold"; }
@@ -180,11 +181,11 @@ textarea.form-control {
   height: 51px;
   width: 155px;
   align-items: center;
-  background: #000;
+  background: #f3d4b7;
   cursor: pointer;
   position: relative;
   padding-left: 41px;
-  color: rgb(255, 255, 255);
+  color: #333;
   -webkit-transform: perspective(1px) translateZ(0);
   transform: perspective(1px) translateZ(0);
   -webkit-transition-duration: 0.3s;
@@ -193,13 +194,13 @@ textarea.form-control {
   .actions li a:before {
     content: '\f2ee';
     position: absolute;
-    top: 15px;
+    top: 19px;
     right: 41px;
     font-family: Material-Design-Iconic-Font;
     -webkit-transform: translateZ(0);
     transform: translateZ(0); }
   .actions li a:hover {
-    background: #363636; }
+    background: #d9bda3; }
     .actions li a:hover:before {
       -webkit-animation-name: hvr-icon-wobble-horizontal;
       animation-name: hvr-icon-wobble-horizontal;
@@ -212,13 +213,13 @@ textarea.form-control {
 .actions li[aria-disabled="true"] a {
   display: none; }
 .actions li:first-child a {
-  background: #565454;
+  background: #e6e6e6;
   padding-left: 48px; }
   .actions li:first-child a:before {
     content: '\f2ea';
     left: 26px; }
   .actions li:first-child a:hover {
-    background: rgb(94, 94, 94); }
+    background: #ccc; }
 .actions li:last-child a {
   padding-left: 29px;
   width: 167px;

@@ -6,6 +6,10 @@
 
 
 <style>
+  .error {
+  color: #F00;
+  background-color: #FFF;
+}
   .chosen-container-multi {
     border: none;
   }
@@ -114,7 +118,7 @@
 				<img src="../images/3883063.png" alt="">
 			</div>
 
-<form method="post">
+<form id="registerPage" method="post">
 
             	<div id="wizard">
                 
@@ -128,7 +132,8 @@
 	                    <div class="form-holder">
                         <label for="lastname">Nom *</label>
                         <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont" value="<?php echo isset($_POST["ownerLastName"]) ? $_POST["ownerLastName"] : ''; ?>" required>
-	                    </div>
+	                    
+                      </div>
 	                    <div class="form-holder">
 								        <label for="firstname">Prénom *</label>
                 				<input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric" value="<?php echo isset($_POST["ownerFirstName"]) ? $_POST["ownerFirstName"] : ''; ?>" required>
@@ -138,7 +143,7 @@
                     <!-- Adresse Email -->
 	                  <div class="form-row">
                         <label for="mail">Adresse E-Mail *</label>
-                        <input type="text" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" required>
+                        <input type="email" name="email" id="mail" class="form-control" placeholder="ex: email@email.com" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" required>
                     </div>
 
 
@@ -157,7 +162,7 @@
 	                    		Mot de passe *
 	                    	</label>
 	                    	<div class="form-holder">
-                          <input type="password" class="form-control" id="Password1" placeholder="Mot de passe">
+                          <input type="password" class="form-control" id="Password1" name="password1" placeholder="Mot de passe">
                           <i class="bi bi-eye-slash" id="togglePassword"></i>
                         </div>
                       </div>
@@ -166,7 +171,7 @@
 	                    		Répéter le mot de passe *
 	                    	</label>
 	                    	<div class="form-holder">
-                          <input type="password" class="form-control" id="Password2" placeholder="Répéter le Mot de passe">
+                          <input type="password" class="form-control" id="Password2" name="password2" placeholder="Répéter le Mot de passe">
                           <i class="bi bi-eye-slash" id="togglePassword"></i>
                         </div>
                       </div>
