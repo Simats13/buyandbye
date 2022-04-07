@@ -51,10 +51,9 @@ textarea {
 	resize: none;
 }
 select {
-	-moz-appearance: none;
-    -webkit-appearance: none;
+
     cursor: pointer;
-    border: none;
+
     option[value=""][disabled] {
  		display: none;
  	}
@@ -86,7 +85,6 @@ body {
 #wizard {
 	min-height: 834px;
 	background: #fff;
-	margin-right: 60px;
 	padding: 107px 75px 65px;
 }
 .steps {
@@ -233,7 +231,7 @@ textarea.form-control {
 			&:before {
 				content: '\f2ee';
 				position: absolute;
-				top: 19px;
+				top: 15px;
 				right: 41px;
 				font-family: Material-Design-Iconic-Font;
 				-webkit-transform: translateZ(0);
@@ -260,14 +258,14 @@ textarea.form-control {
 		}
 		&:first-child {
 			a {
-				background: #e6e6e6;
+				background: #565454;
 				padding-left: 48px;
 				&:before {
 					content: '\f2ea';
 					left: 26px;
 				}
 				&:hover {
-					background: #ccc;
+					background: rgb(94, 94, 94);
 				}
 			}
 		}
