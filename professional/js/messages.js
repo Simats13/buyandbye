@@ -38,6 +38,7 @@ async function saveMessage(messageText, docID) {
   try {
     await addDoc(collection(getFirestore(), "commonData", docID, "messages"), {
       isread: false,
+      sentByClient: false,
       message: messageText,
       timestamp: serverTimestamp()
     });
@@ -64,15 +65,26 @@ export function loadMessages(docID) {
         deleteMessage(change.doc.id);
       } else {
         var message = change.doc.data();
-        displayMessage(change.doc.id, message.timestamp, message.message, message.imageUrl);
+        displayMessage(change.doc.id, message.timestamp, message.message, message.sentByClient, message.imageUrl);
       }
     });
   });
 }
 
 // Affiche le message dans la popup
-function displayMessage(id, timestamp, text, imageUrl) {
+function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
   var div = document.getElementById(id) || createAndInsertMessage(id, timestamp);
+
+  if(!sentByClient) {
+    div.removeAttribute('class');
+    div.setAttribute('class', 'pro-message-container');
+  }
+
+  var timestampElement = div.querySelector('.timestamp')
+  timestampElement.textContent = formatedTimestamp(timestamp);
+
+  //div.querySelector('.discussionPic').style.backgroundImage = 'url(https://devshift.biz/wp-content/uploads/2017/04/profile-icon-png-898.png)';
+  div.querySelector('.discussionPic').setAttribute('src', 'https://devshift.biz/wp-content/uploads/2017/04/profile-icon-png-898.png')
 
   var messageElement = div.querySelector('.message');
 
@@ -93,6 +105,16 @@ function displayMessage(id, timestamp, text, imageUrl) {
   setTimeout(function() {div.classList.add('visible')}, 1);
   messageListElement.scrollTop = messageListElement.scrollHeight;
   messageInputElement.focus();
+}
+
+// Récupère le timestamp Firestore et l'affiche au format DD/MM/YYYY HH:mm:ss
+// De base les nombres inférieurs à 10 n'ont pas de 0 au début (ex : 5/1/2000)
+// On ajoute donc un 0 devant chaque nombre et on ne conserve que les 2 derniers
+function formatedTimestamp(timestamp) {
+  var convertedTimestamp = timestamp.toDate();
+  var dateToDisplay = 'Le ' + ('0' + convertedTimestamp.getDate()).slice(-2) + '/' + ('0' + convertedTimestamp.getMonth()).slice(-2) + '/' + convertedTimestamp.getFullYear() + ' à ' +
+    ('0' + convertedTimestamp.getHours()).slice(-2) + ':' + ('0' + convertedTimestamp.getMinutes()).slice(-2) + ':' + ('0' + convertedTimestamp.getSeconds()).slice(-2);
+  return dateToDisplay;
 }
 
 // Supprime l'affichage du message
@@ -159,9 +181,12 @@ function toggleButton() {
 
 // Template de message
 var MESSAGE_TEMPLATE =
-'<div class="message-container">' +
-  '<div class="message"></div>' +
-  '<div class="timestamp"></div>' +
+'<div class="client-message-container">' +
+  '<div class="discussionSpacing"><img class="discussionPic"></div>' +
+  '<div class="content">' +
+    '<div class="message"></div>' +
+    '<div class="timestamp"></div>' +
+  '</div>' +
 '</div>';
 
 // Variables de récupération des éléments HTML
@@ -179,3 +204,7 @@ messageFormElement.addEventListener('submit', onMessageFormSubmit);
 
 const firebaseApp = initializeApp(getFirebaseConfig());
 loadDiscussions();
+
+/*
+Différencier les messages envoyés par le client et ceux par le pro (BDD et page messagerie)
+*/
