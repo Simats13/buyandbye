@@ -3,8 +3,37 @@
         padding: 0 5%;
     }
 
-    .message-container {
-        border: 1px solid black;
+    #message-form {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .client-message-container, .pro-message-container {
+        display: flex;
+        margin-top: 15px;
+    }
+
+    .pro-message-container {
+        flex-direction: row-reverse;
+        text-align: right;
+    }
+
+    .message {
+        background-color: #00BFFF;
+        border: 1px solid #00BFFF;
+        border-radius: 0.75rem;
+        color: black;
+        display: inline-block;
+        padding: 2px 10px;
+    }
+
+    .timestamp {
+        font-size: .75em;
+    }
+
+    img {
+        width: 2em;
+        height: 2em;
     }
 
     .discussion-container {
