@@ -121,10 +121,7 @@
 			</div>
 
 <form id="registerPage" method="post">
-
             	<div id="wizard">
-                
-                
             		<!-- SECTION 1 -->
 	                <h4></h4>
 	                <section>
@@ -337,8 +334,8 @@
                     </div>
                     <div class="form-row">
                     <label for="openAndClose">Horaires d'ouverture <a data-toggle="tooltip" data-bs-placement="right" title="Les horaires d'ouverture permettent de mieux renseigner vos futurs clients">ⓘ</a></label>
-                    <div class="form-row">
-                        <table class="table">
+                 
+                        <!-- <table class="table">
                           <thead>
                             <tr>
                               <th scope="col">Jours de la semaine</th>
@@ -399,8 +396,8 @@
                               <td><input type="time" id="dimanche_second_close" name="dimanche_second_close"></td>
                             </tr>
                           </tbody>
-                        </table>
-                      </div>
+                        </table> -->
+                      
                     </div>
 	                </section>
 
