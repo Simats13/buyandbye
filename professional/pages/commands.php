@@ -297,7 +297,6 @@ function getCommands($snapshot, $firestore, $statut, $uid) {
 </style>
 
 <div id="page">
-    <h1>Voir mes commandes</h1>
     <div id="buttons">
         <button class="shadowButtons" id="button1" onclick="button1()" style="background-color: #359738">En attente</button>
         <button class="shadowButtons" id="button2" onclick="button2()">En cours</button>

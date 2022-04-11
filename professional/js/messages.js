@@ -9,7 +9,6 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  setDoc,
   updateDoc,
   doc,
   serverTimestamp,
@@ -53,10 +52,21 @@ async function saveMessage(messageText, docID) {
   }
 }
 
+/*
+  const button = div.querySelector('.discuss');
+  button.addEventListener('click', function test() {
+    const oldMessages = document.getElementById('messages');
+    oldMessages.innerHTML= '';
+    loadMessages(id);
+
+    const sendButton = document.getElementById('submit');
+    sendButton.setAttribute('class', id);
+  });
+*/
+
 // Charge les messages et écoute de nouveaux messages
-export function loadMessages(docID) {
+function loadMessages(docID) {
   const recentMessagesQuery = query(collection(getFirestore(), "commonData", docID, "messages"), orderBy('timestamp', 'desc'), limit(12));
-  console.log();
   
   // Requête d'écoute
   onSnapshot(recentMessagesQuery, function(snapshot) {
@@ -68,6 +78,18 @@ export function loadMessages(docID) {
         displayMessage(change.doc.id, message.timestamp, message.message, message.sentByClient, message.imageUrl);
       }
     });
+  });
+}
+
+function showMessages() {
+  $(document).on('click', ".discussion-container", function() {
+    var id = $(this).attr("id");
+    const oldMessages = document.getElementById('messages');
+    oldMessages.innerHTML= '';
+    loadMessages(id);
+
+    const sendButton = document.getElementById('submit');
+    sendButton.setAttribute('class', id);
   });
 }
 
@@ -83,7 +105,6 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
   var timestampElement = div.querySelector('.timestamp')
   timestampElement.textContent = formatedTimestamp(timestamp);
 
-  //div.querySelector('.discussionPic').style.backgroundImage = 'url(https://devshift.biz/wp-content/uploads/2017/04/profile-icon-png-898.png)';
   div.querySelector('.discussionPic').setAttribute('src', 'https://devshift.biz/wp-content/uploads/2017/04/profile-icon-png-898.png')
 
   var messageElement = div.querySelector('.message');
@@ -103,7 +124,7 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
 
   // Fait défiler jusqu'au nouveau message
   setTimeout(function() {div.classList.add('visible')}, 1);
-  messageListElement.scrollTop = messageListElement.scrollHeight;
+  messagesZone.scrollTop = messagesZone.scrollHeight;
   messageInputElement.focus();
 }
 
@@ -192,6 +213,7 @@ var MESSAGE_TEMPLATE =
 // Variables de récupération des éléments HTML
 var messageListElement = document.getElementById('messages');
 var messageFormElement = document.getElementById('message-form');
+var messagesZone = document.getElementById('messagesZone')
 var messageInputElement = document.getElementById('message');
 var submitButtonElement = document.getElementById('submit');
 
@@ -202,9 +224,6 @@ messageInputElement.addEventListener('change', toggleButton);
 // Enregistre le message envoyé
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
 
-const firebaseApp = initializeApp(getFirebaseConfig());
+initializeApp(getFirebaseConfig());
 loadDiscussions();
-
-/*
-Différencier les messages envoyés par le client et ceux par le pro (BDD et page messagerie)
-*/
+showMessages();

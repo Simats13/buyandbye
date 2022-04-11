@@ -3,19 +3,14 @@
 import {
   getFirestore,
   collection,
-  addDoc,
   query,
   orderBy,
   limit,
-  onSnapshot,
-  setDoc,
-  updateDoc,
   doc,
-  serverTimestamp,
+  getDoc,
+  onSnapshot,
   where
 } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
-
-import { loadMessages } from './messages.js';
 
 // Charge les discussions et écoute de nouvelles discussions
 export function loadDiscussions() {
@@ -46,20 +41,14 @@ function deleteDiscussion(id) {
 function displayDiscussion(id, timestamp, message, userIds) {
   var div = document.getElementById(id) || createAndInsertDiscussion(id, timestamp);
 
-  div.querySelector('.discussionName').textContent = userIds[1];
+  var userInfo = getClientInfos(userIds[1]);
+  userInfo.then(function(result) {
+    div.querySelector('.discussionName').textContent = result.lname + ' ' + result.fname;
+    div.querySelector('.discussionPic').setAttribute('src', result.imgUrl);
+  })
 
   var timestampElement = div.querySelector('.timestamp')
   timestampElement.textContent = formatedTimestamp(timestamp);
-
-  const button = div.querySelector('.discuss');
-  button.addEventListener('click', function test() {
-    const oldMessages = document.getElementById('messages');
-    oldMessages.innerHTML= '';
-    loadMessages(id);
-
-    const sendButton = document.getElementById('submit');
-    sendButton.setAttribute('class', id);
-  });
 
   var messageElement = div.querySelector('.lastMessage');
   messageElement.textContent = message;
@@ -69,6 +58,13 @@ function displayDiscussion(id, timestamp, message, userIds) {
   setTimeout(function() {div.classList.add('visible')}, 1);
   discussionListElement.scrollTop = discussionListElement.scrollHeight;
   page.focus();
+}
+
+// Récupère les infos du client
+async function getClientInfos(userId) {
+    const clientInfos = query(doc(getFirestore(), 'users', userId));
+    const docSnap = await getDoc(clientInfos);
+    return docSnap.data();
 }
 
 // Récupère le timestamp Firestore et l'affiche au format DD/MM/YYYY HH:mm:ss
@@ -127,9 +123,16 @@ var page = document.getElementById('page');
 // Template de discussion
 var DISCUSSION_TEMPLATE =
 '<div class="discussion-container">' +
-  '<div class="discussionSpacing"><div class="discussionPic"></div></div>' +
-  '<div class="lastMessage"></div>' +
-  '<div class="discussionName"></div>' +
-  '<div class="timestamp"></div>' +
-  '<button class="btn btn-outline-danger discuss" data-toggle="modal" data-target="#showDiscussion">Ouvrir la discussion</button>' +
+  '<div>' +
+    '<div class="DiscussPicName">' +
+      '<div class="discussionSpacing"><img class="discussionPic"></div>' +
+      '<div class="discussionName"></div>' +
+    '</div>' +
+    '<div class="lastMessage"></div>' +
+    '<div class="timestamp"></div>' +
+  '</div>' +
 '</div>';
+
+/*
+  '<div><button class="btn btn-outline-danger" data-toggle="modal" data-target="#showDiscussion">Ouvrir la discussion</button></div>' +
+*/

@@ -126,8 +126,6 @@ function selectCategory($professional, $edit, $product) {
 </style>
 
 <div id="page">
-    <h1>Gérer mes produits</h1>
-
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Mes produits</h6>
