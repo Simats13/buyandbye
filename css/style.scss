@@ -336,7 +336,7 @@ textarea.form-control {
 		margin-bottom: 15px;
 		position: relative;
 		&.active {
-			.tooltip {
+			.tooltips {
 				display: block;
 			}
 		}
@@ -370,7 +370,7 @@ textarea.form-control {
 			display: none;
 		}
 	}
-	.tooltip {
+	.tooltips {
 		padding: 9px 22px;
 		background: #000000;
 		line-height: 1.8;

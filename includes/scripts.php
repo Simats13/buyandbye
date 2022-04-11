@@ -1,9 +1,14 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="js/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<!--===============================================================================================-->
+<script src="js/bootstrap.bundle.min.js"></script>
+<!--===============================================================================================-->
+<script src="js/jquery.validate.min.js"></script>
+<!--===============================================================================================-->
 <script src="js/chosen.jquery.min.js"></script>
+<!--===============================================================================================-->
 <script src="js/jquery.steps.js"></script>
-    
+<!--===============================================================================================-->
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places,geometry&region=fr" type="text/javascript"></script>
 <script>
 
 $(document).ready(function() {
@@ -11,11 +16,7 @@ $(document).ready(function() {
 });
 </script>
 
-<script
-  src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places,geometry&region=fr"
-  type="text/javascript">
-  
-</script>
+
 
 
 
@@ -235,15 +236,6 @@ $(document).ready(function() {
     });
 
     $('.wizard > .steps li a').click(function(){
-      // if(newIndex < currentIndex) {
-      //           $(this).parent().addClass('checked');
-      //           $(this).parent().prevAll().addClass('checked');
-		  //           $(this).parent().nextAll().removeClass('checked');
-      //           // return true;
-      //         };
-              // var $validator = $("#registerPage").valid();
-              // if(!$validator) return;
-                
                 $(this).parent().addClass('checked');
                 $(this).parent().prevAll().addClass('checked');
 		            $(this).parent().nextAll().removeClass('checked');

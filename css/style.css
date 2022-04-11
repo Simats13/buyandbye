@@ -30,7 +30,7 @@ textarea {
 input, textarea, select, button {
   font-family: "Poppins-Regular";
   font-size: 15px;
-  color: #666; }
+  color: rgb(0, 0, 0); }
 
 p, h1, h2, h3, h4, h5, h6, ul {
   margin: 0; }
@@ -271,7 +271,7 @@ textarea.form-control {
     display: block;
     margin-bottom: 15px;
     position: relative; }
-    .checkbox-circle label.active .tooltip {
+    .checkbox-circle label.active .tooltips {
       display: block; }
   .checkbox-circle input {
     position: absolute;
@@ -298,7 +298,7 @@ textarea.form-control {
       background: #666666;
       position: absolute;
       display: none; }
-  .checkbox-circle .tooltip {
+  .checkbox-circle .tooltips {
     padding: 9px 22px;
     background: #000000;
     line-height: 1.8;
@@ -306,9 +306,9 @@ textarea.form-control {
     margin-top: 16px;
     margin-bottom: 28px;
     display: none; }
-    .checkbox-circle .tooltip:before {
+    .checkbox-circle .tooltips:before {
       content: "";
-      border-bottom: 10px solid #f2f2f2;
+      border-bottom: 10px solid #000000;
       border-right: 9px solid transparent;
       border-left: 9px solid transparent;
       position: absolute;

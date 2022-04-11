@@ -284,17 +284,20 @@ if(isset($_POST['resetConfirm'])){
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
 	<!--===============================================================================================-->
 	<link rel="stylesheet" href="fonts/material-design-iconic-font/css/material-design-iconic-font.css">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	
+	<!--===============================================================================================--> 
+	<link href="css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/fontawesome.min.css">
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<!--===============================================================================================-->
 	<link rel="stylesheet" href="fonts/material-design-iconic-font/css/material-design-iconic-font.css">
-		<!-- STYLE CSS -->
-	<link rel="stylesheet" href="css/style.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<!--===============================================================================================-->
+	<script src="js/jquery.min.js"></script>
 	<!--===============================================================================================-->
 </head>
 

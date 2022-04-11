@@ -1,7 +1,7 @@
 <!-- Script permettant la gestion des catégories -->
 
   
-<link rel="stylesheet" href="../css/chosen.css">
+<link rel="newest stylesheet" href="../css/chosen.css">
 <link rel="stylesheet" href="../fonts/icomoon/style.css">
 
 <style>
@@ -121,10 +121,7 @@
 			</div>
 
 <form id="registerPage" method="post">
-
             	<div id="wizard">
-                
-                
             		<!-- SECTION 1 -->
 	                <h4></h4>
 	                <section>
@@ -412,16 +409,16 @@
 	          <div class="checkbox-circle">
 							<label class="active">
 								<input type="radio" name="billing method" value="test 2"checked>Site Vitrine
-								<span class="checkmark"></span>
-								<div class="tooltip">
-								  <p>Simple vitrine de votre entreprise, il s'agit d'une interface simple permettant d'exposer votre activité sur le net ! Limité en termes de fonctionnalités vous ne pouvez pas exemple pas commercer ou bien mettre entièrement vos produits.</p>	
+								<span class="checkmark" style="color:black"></span>
+								<div class="tooltips">
+								  <p style="color:white">Simple vitrine de votre entreprise, il s'agit d'une interface simple permettant d'exposer votre activité sur le net ! Limité en termes de fonctionnalités vous ne pouvez pas exemple pas commercer ou bien mettre entièrement vos produits.</p>	
 								</div>
 							</label>
 							<label>
 								<input type="radio" name="billing method" value="test" >Marketplace
-								<span class="checkmark"></span>
-								<div class="tooltip">
-                  <p>Vous souhaitez montrer l'entièreté de vos activités, commercer avec des gens autour de vous facilement et simplement. Cette offre est faite pour vous !</p>
+								<span class="checkmark" style="color:black"></span>
+								<div class="tooltips">
+                  <p style="color:white">Vous souhaitez montrer l'entièreté de vos activités, commercer avec des gens autour de vous facilement et simplement. Cette offre est faite pour vous !</p>
 								</div>
 							</label>
 						</div>
