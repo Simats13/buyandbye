@@ -45,24 +45,38 @@
         }
     }
 
+    #discussions {
+        overflow: auto;
+        width: 40%;
+        background-color: #F8F8F8;
+        border-radius: 0.5rem;
+        padding: 1%;
+    }
+
     #messagesZone {
         overflow: auto;
-        width: 50vw;
-        margin-left: 20px;
+        width: 100%;
+        padding: 0 4%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     #message-form {
         margin-top: 20px;
+        text-align: center;
+        display: none;
+    }
+
+    #choose {
+        display: block;
         text-align: center;
     }
 
     .client-message-container, .pro-message-container {
         display: flex;
         margin-top: 15px;
-    }
-
-    .DiscussPicName {
-        display: flex;
     }
 
     .pro-message-container {
@@ -85,25 +99,30 @@
         word-wrap: break-word
     }
 
+    .nameAndMessage {
+        width: 50%;
+    }
+
     .timestamp {
-        font-size: .75em;
+        font-size: .8em;
+        text-align: right;
     }
 
     .discussionSpacing img {
-        width: 3em;
-        height: 3em;
+        width: 4em;
+        height: 4em;
         margin-right: 20px;
+        border-radius: 0.3rem;
     }
 
     .discussion-container {
         display: flex;
-        border: 1px solid grey;
-        border-radius: 0.5rem;
         padding: 10px;
-        width: 15em;
-        justify-content: space-between;
-        margin-bottom: 1em;
         cursor: pointer;
+        background-color: white;
+        border-radius: 0.3rem;
+        margin-bottom: 0.5vw;
+        box-shadow: 5px 5px 5px #F0F0F0, -5px -5px 5px #F0F0F0, -5px 5px 5px #F0F0F0, 5px -5px 5px #F0F0F0;
     }
 
     .form-group {
@@ -138,6 +157,29 @@
         color: lightgrey;
         font-size: medium;
     }
+
+    /* Scrollbar */
+    /* width */
+    ::-webkit-scrollbar {
+    width: 8px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+    background: #C0C0C0; 
+    border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+    background: #A9A9A9; 
+    }
 </style>
 
 <div id="page">
@@ -152,40 +194,16 @@
             <!-- Affiche les messages et la zone de texte en colonne -->
             <div id="messagesZone">
                 <div id="messages"></div>
-                <form id="message-form" action="#">
-                    <div class="form-group">
-                        <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
-                        <button id="submit" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </form>
+                    <form id="message-form" action="#">
+                        <div class="form-group">
+                            <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
+                            <button id="submit" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </form>
+                    <p id="choose">Choisissez une conversation sur votre gauche<br>pour lancer une discussion</p>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Fenêtre modale de discussion 
-    <div class="modal fade" id="showDiscussion" tabindex="-1" role="dialog"
-    aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Discussion</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="messages"></div>
-                        <form id="message-form" action="#">
-                            <div class="form-group">
-                                <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
-                                <button id="submit" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>-->
 </div>
 <script type='module' src='/professional/js/messages.js'></script>

@@ -14,7 +14,7 @@ import {
 
 // Charge les discussions et écoute de nouvelles discussions
 export function loadDiscussions() {
-  const recentDiscussionsQuery = query(collection(getFirestore(), 'commonData'), where("users", "array-contains", "dnGbdRAWrPMZYcLK98a5fowRLHJ2"), orderBy('timestamp'), limit(12));
+  const recentDiscussionsQuery = query(collection(getFirestore(), 'commonData'), where("users", "array-contains", "dnGbdRAWrPMZYcLK98a5fowRLHJ2"), orderBy('timestamp', 'desc'));
 
   // Requête d'écoute
   onSnapshot(recentDiscussionsQuery, function(snapshot) {
@@ -45,10 +45,24 @@ function displayDiscussion(id, timestamp, message, userIds) {
   userInfo.then(function(result) {
     div.querySelector('.discussionName').textContent = result.lname + ' ' + result.fname;
     div.querySelector('.discussionPic').setAttribute('src', result.imgUrl);
+    //document.querySelector('.discussionpic.client').setAttribute('src', result.imgUrl);
   })
 
   var timestampElement = div.querySelector('.timestamp')
-  timestampElement.textContent = formatedTimestamp(timestamp);
+  const timeToDisplay = formatedTimestamp(timestamp)
+
+  // Compare la date du jour et celle du message
+  // Si le message a été envoyé le jour actuel, on affiche l'heure du message,
+  // Sinon on affiche la date
+  const actualDate = new Date();
+  const formatedActualDate = actualDate.getDate() + '/' + actualDate.getMonth() + '/' + actualDate.getFullYear();
+  const formatedMessageDate = timestamp.toDate().getDate() + '/' + timestamp.toDate().getMonth() + '/' + timestamp.toDate().getFullYear();
+
+  if (formatedActualDate == formatedMessageDate) {
+    timestampElement.textContent = timeToDisplay[1];
+  } else {
+    timestampElement.textContent = timeToDisplay[0];
+  }
 
   var messageElement = div.querySelector('.lastMessage');
   messageElement.textContent = message;
@@ -56,7 +70,6 @@ function displayDiscussion(id, timestamp, message, userIds) {
 
   // Fait défiler jusqu'à la nouvelle discussion
   setTimeout(function() {div.classList.add('visible')}, 1);
-  discussionListElement.scrollTop = discussionListElement.scrollHeight;
   page.focus();
 }
 
@@ -72,9 +85,9 @@ async function getClientInfos(userId) {
 // On ajoute donc un 0 devant chaque nombre et on ne conserve que les 2 derniers
 function formatedTimestamp(timestamp) {
   var convertedTimestamp = timestamp.toDate();
-  var dateToDisplay = 'Le ' + ('0' + convertedTimestamp.getDate()).slice(-2) + '/' + ('0' + convertedTimestamp.getMonth()).slice(-2) + '/' + convertedTimestamp.getFullYear() + ' à ' +
-    ('0' + convertedTimestamp.getHours()).slice(-2) + ':' + ('0' + convertedTimestamp.getMinutes()).slice(-2) + ':' + ('0' + convertedTimestamp.getSeconds()).slice(-2);
-  return dateToDisplay;
+  var dateToDisplay = ('0' + convertedTimestamp.getDate()).slice(-2) + '/' + ('0' + convertedTimestamp.getMonth()).slice(-2) + '/' + convertedTimestamp.getFullYear();
+  var hourToDisplay = ('0' + convertedTimestamp.getHours()).slice(-2) + ':' + ('0' + convertedTimestamp.getMinutes()).slice(-2) + ':' + ('0' + convertedTimestamp.getSeconds()).slice(-2);
+  return [dateToDisplay, hourToDisplay];
 }
 
 function createAndInsertDiscussion(id, timestamp) {
@@ -104,7 +117,7 @@ function createAndInsertDiscussion(id, timestamp) {
         );
       }
 
-      if (discussionListNodeTime > timestamp) {
+      if (discussionListNodeTime < timestamp) {
         break;
       }
 
@@ -123,14 +136,12 @@ var page = document.getElementById('page');
 // Template de discussion
 var DISCUSSION_TEMPLATE =
 '<div class="discussion-container">' +
-  '<div>' +
-    '<div class="DiscussPicName">' +
-      '<div class="discussionSpacing"><img class="discussionPic"></div>' +
+    '<div class="discussionSpacing"><img class="discussionPic"></div>' +
+    '<div class="nameAndMessage">' +
       '<div class="discussionName"></div>' +
+      '<div class="lastMessage"></div>' +
     '</div>' +
-    '<div class="lastMessage"></div>' +
     '<div class="timestamp"></div>' +
-  '</div>' +
 '</div>';
 
 /*

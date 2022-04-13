@@ -52,18 +52,6 @@ async function saveMessage(messageText, docID) {
   }
 }
 
-/*
-  const button = div.querySelector('.discuss');
-  button.addEventListener('click', function test() {
-    const oldMessages = document.getElementById('messages');
-    oldMessages.innerHTML= '';
-    loadMessages(id);
-
-    const sendButton = document.getElementById('submit');
-    sendButton.setAttribute('class', id);
-  });
-*/
-
 // Charge les messages et écoute de nouveaux messages
 function loadMessages(docID) {
   const recentMessagesQuery = query(collection(getFirestore(), "commonData", docID, "messages"), orderBy('timestamp', 'desc'), limit(12));
@@ -83,6 +71,9 @@ function loadMessages(docID) {
 
 function showMessages() {
   $(document).on('click', ".discussion-container", function() {
+    document.getElementById("messagesZone").style.display = "block";
+    document.getElementById("choose").style.display = "none";
+    document.getElementById("message-form").style.display = "block";
     var id = $(this).attr("id");
     const oldMessages = document.getElementById('messages');
     oldMessages.innerHTML= '';
@@ -100,10 +91,14 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
   if(!sentByClient) {
     div.removeAttribute('class');
     div.setAttribute('class', 'pro-message-container');
+  } else {
+    const image = div.querySelector('.discussionPic');
+    image.setAttribute('class', 'discussionPic client');
   }
 
   var timestampElement = div.querySelector('.timestamp')
   timestampElement.textContent = formatedTimestamp(timestamp);
+
 
   div.querySelector('.discussionPic').setAttribute('src', 'https://devshift.biz/wp-content/uploads/2017/04/profile-icon-png-898.png')
 
