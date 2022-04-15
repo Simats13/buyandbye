@@ -45,7 +45,6 @@ function displayDiscussion(id, timestamp, message, userIds) {
   userInfo.then(function(result) {
     div.querySelector('.discussionName').textContent = result.lname + ' ' + result.fname;
     div.querySelector('.discussionPic').setAttribute('src', result.imgUrl);
-    //document.querySelector('.discussionpic.client').setAttribute('src', result.imgUrl);
   })
 
   var timestampElement = div.querySelector('.timestamp')
@@ -69,7 +68,6 @@ function displayDiscussion(id, timestamp, message, userIds) {
   messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
 
   // Fait défiler jusqu'à la nouvelle discussion
-  setTimeout(function() {div.classList.add('visible')}, 1);
   page.focus();
 }
 

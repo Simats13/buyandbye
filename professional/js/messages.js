@@ -54,7 +54,7 @@ async function saveMessage(messageText, docID) {
 
 // Charge les messages et écoute de nouveaux messages
 function loadMessages(docID) {
-  const recentMessagesQuery = query(collection(getFirestore(), "commonData", docID, "messages"), orderBy('timestamp', 'desc'), limit(12));
+  const recentMessagesQuery = query(collection(getFirestore(), "commonData", docID, "messages"), orderBy('timestamp', 'desc'));
   
   // Requête d'écoute
   onSnapshot(recentMessagesQuery, function(snapshot) {
@@ -69,20 +69,27 @@ function loadMessages(docID) {
   });
 }
 
-function showMessages() {
-  $(document).on('click', ".discussion-container", function() {
-    document.getElementById("messagesZone").style.display = "block";
-    document.getElementById("choose").style.display = "none";
-    document.getElementById("message-form").style.display = "block";
-    var id = $(this).attr("id");
-    const oldMessages = document.getElementById('messages');
-    oldMessages.innerHTML= '';
-    loadMessages(id);
-
-    const sendButton = document.getElementById('submit');
-    sendButton.setAttribute('class', id);
-  });
-}
+var clientImgUrl;
+$(document).on('click', ".discussion-container", function() {
+  // Récupère la photo de profil du client quand on sélectionne une discussion
+  clientImgUrl = $(this).find(".discussionSpacing").find(".discussionPic").attr("src");
+  // Masque le message de base et affiche la discussion souhaitée
+  document.getElementById("choose").style.display = "none";
+  document.getElementById("messagesZone").style.display = "block";
+  document.getElementById("message-form").style.display = "block";
+  document.getElementById("discussionHeader").style.display = "block";
+  // Récupère l'id de la discussion sélectionnée, supprime l'ancienne discussion et affiche la nouvelle
+  var id = $(this).attr("id");
+  const oldMessages = document.getElementById('messages');
+  oldMessages.innerHTML= '';
+  loadMessages(id);
+  // Donne l'id de la conversation au bouton d'envoi
+  const sendButton = document.getElementById('submit');
+  sendButton.setAttribute('class', id);
+  // Récupère le nom du client et l'affiche en haut de la discussion
+  const clientName = $(this).find(".nameAndMessage").find(".discussionName").text();
+  document.getElementById('discussionHeader').textContent = clientName;
+});
 
 // Affiche le message dans la popup
 function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
@@ -91,17 +98,17 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
   if(!sentByClient) {
     div.removeAttribute('class');
     div.setAttribute('class', 'pro-message-container');
-  } else {
-    const image = div.querySelector('.discussionPic');
-    image.setAttribute('class', 'discussionPic client');
   }
 
   var timestampElement = div.querySelector('.timestamp')
   timestampElement.textContent = formatedTimestamp(timestamp);
 
-
-  div.querySelector('.discussionPic').setAttribute('src', 'https://devshift.biz/wp-content/uploads/2017/04/profile-icon-png-898.png')
-
+  if (div.classList[0] == "pro-message-container") {
+    const proImgUrl = document.querySelector('.img-profile').getAttribute('src');
+    div.querySelector('.discussionSpacing').querySelector('img').setAttribute('src', proImgUrl);
+  } else {
+    div.querySelector('.discussionSpacing').querySelector('img').setAttribute('src', clientImgUrl);
+  }
   var messageElement = div.querySelector('.message');
 
   if (text) { // Si le message est du texte
@@ -118,7 +125,6 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
   }
 
   // Fait défiler jusqu'au nouveau message
-  setTimeout(function() {div.classList.add('visible')}, 1);
   messagesZone.scrollTop = messagesZone.scrollHeight;
   messageInputElement.focus();
 }
@@ -198,7 +204,7 @@ function toggleButton() {
 // Template de message
 var MESSAGE_TEMPLATE =
 '<div class="client-message-container">' +
-  '<div class="discussionSpacing"><img class="discussionPic"></div>' +
+  '<div class="discussionSpacing"><img class="messagePic"></div>' +
   '<div class="content">' +
     '<div class="message"></div>' +
     '<div class="timestamp"></div>' +
@@ -221,4 +227,3 @@ messageFormElement.addEventListener('submit', onMessageFormSubmit);
 
 initializeApp(getFirebaseConfig());
 loadDiscussions();
-showMessages();
