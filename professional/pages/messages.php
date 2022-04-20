@@ -12,8 +12,13 @@
         #discussions {
             width: 45%;
         }
+
+        .message, .message img {
+            max-width: 34vw;
+        }
     }
 
+    /* Ecran de l'ordi portable DELL */
     @media screen and (min-height: 700px) and (max-height: 850px) {
         .card-body {
             display: flex;
@@ -22,6 +27,10 @@
 
         #discussions {
             width: 45%;
+        }
+
+        .message, .message img {
+            max-width: 39vw;
         }
     }
 
@@ -34,6 +43,10 @@
         #discussions {
             width: 35%;
         }
+
+        .message, .message img {
+            max-width: 44vw;
+        }
     }
 
     @media screen and (min-height: 1000px) and (max-height: 1200px) {
@@ -45,8 +58,13 @@
         #discussions {
             width: 35%;
         }
+
+        .message, .message img {
+            max-width: 49vw;
+        }
     }
 
+    /* Ecran 4K*/
     @media screen and (min-height: 1200px) and (max-height: 1400px) {
         .card-body {
             display: flex;
@@ -55,6 +73,10 @@
 
         #discussions {
             width: 25%;
+        }
+
+        .message, .message img {
+            max-width: 54vw;
         }
     }
 
@@ -66,6 +88,10 @@
 
         #discussions {
             width: 25%;
+        }
+
+        .message, .message img {
+            max-width: 59vw;
         }
     }
 
@@ -87,8 +113,7 @@
     }
 
     #messages {
-        overflow: auto;
-        padding-bottom: 2%;
+        padding-bottom: 4%;
     }
 
     #discussionHeader {
@@ -138,14 +163,20 @@
 
     .message {
         font-size: 1.1em;
-        text-align: left;
         background-color: #00BFFF;
         border-radius: 0.75rem;
         color: black;
         display: inline-block;
         padding: 3px 14px;
-        max-width: 25em;
-        word-wrap: break-word
+        word-wrap: break-word;
+        width: fit-content;
+        height: fit-content;
+    }
+
+    .message img {
+        width: 100%;
+        height: 100%;
+        padding: .5vw 0;
     }
 
     .nameAndMessage {
@@ -206,7 +237,7 @@
     .form-control {
         border-radius: 12px;
         border: 1px solid #F0F0F0;
-        font-size: small;
+        font-size: medium;
     }
 
     .form-control:focus {
@@ -214,7 +245,7 @@
     }
 
     .form-control::placeholder {
-        font-size: small;
+        font-size: medium;
         color: #C4C4C4
     }
 
@@ -230,6 +261,17 @@
     #submit:disabled {
         color: lightgrey;
         font-size: medium;
+    }
+
+    #mediaCapture {
+        display: none;
+    }
+
+    #submitImage {
+        border: none;
+        background-color: white;
+        color: #00BFFF;
+        font-size: xx-large;
     }
 
     /* Scrollbar */
@@ -263,7 +305,9 @@
         </div>
 
         <div class="card-body">
-            <div class="topShadow"></div><div id="discussions"></div><div class="topShadow"></div>
+            <div class="topShadow"></div>
+            <div id="discussions"></div>
+            <div class="topShadow"></div>
             <!-- Affiche les messages et la zone de texte en colonne -->
             <div id="messagesZone">
                 <div id="discussionHeader"></div>
@@ -271,7 +315,11 @@
                 <form id="message-form" action="#">
                     <div class="form-group">
                         <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
-                        <button id="submit" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
+                        <button id="submit" title="Envoyer le message" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
+                        <!-- input sert à afficher la fenêtre de choix du fichier à envoyer mais n'est pas joli
+                        Il est donc masqué et est appelé en JS lorsque le bouton stylisé est sélectionné -->
+                        <input id="mediaCapture" type="file" accept="image/*" capture="camera">
+                        <button id="submitImage" title="ajouter une image"><i class="fas fa-image"></i></button>
                     </div>
                 </form>
                 <p id="choose">Choisissez une conversation sur votre gauche<br>pour lancer une discussion</p>

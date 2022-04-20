@@ -2,6 +2,12 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import {
+  ref,
+  getStorage,
+  uploadBytesResumable,
+  getDownloadURL,
+} from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js';
+import {
   getFirestore,
   collection,
   addDoc,
@@ -116,9 +122,9 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
     messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
   } else if (imageUrl) { // Si le message est une image
     var image = document.createElement('img');
-    image.addEventListener('load', function() {
-      messageListElement.scrollTop = messageListElement.scrollHeight;
-    });
+    image.onload = function() {
+      messagesZone.scrollTop = messagesZone.scrollHeight;
+    }
     image.src = imageUrl + '&' + new Date().getTime();
     messageElement.innerHTML = '';
     messageElement.appendChild(image);
@@ -192,12 +198,67 @@ function resetMaterialTextfield(element) {
   element.value = '';
 }
 
-// Change l'état du bouton
+// Change l'état du bouton d'envoi de message
 function toggleButton() {
   if (messageInputElement.value) {
     submitButtonElement.removeAttribute('disabled');
   } else {
     submitButtonElement.setAttribute('disabled', 'true');
+  }
+}
+
+// Appelé lorsqu'un fichier est ajouté à la conversation
+function onMediaFileSelected(event) {
+  event.preventDefault();
+  var file = event.target.files[0];
+
+  // Efface le fichier sélectionné dans le champ de sélection de fichier
+  messageFormElement.reset();
+
+  // Vérifie que le fichier est une image
+  if (!file.type.match('image.*')) {
+    alert('Veuillez sélectionner une image');
+    return;
+  }
+  
+  saveImageMessage(file);
+}
+
+ // Enregistre dans Firebase le message contenant l'image
+ // Enregistre d'abord l'image dans Storage
+ async function saveImageMessage(file) {
+  try {
+    // 1 - On ajoute le message avec un icône de chargement et on le changera avec l'url de l'image
+    const conversationId = document.getElementById('submit').getAttribute('class');
+    const uploadTimestamp = serverTimestamp();
+    const messageRef = await addDoc(collection(getFirestore(), 'commonData', conversationId, 'messages'), {
+      isread: false,
+      sentByClient: false,
+      imageUrl: 'https://www.google.com/images/spin-32.gif?a',
+      timestamp: uploadTimestamp
+    });
+
+    // 2 - Upload l'image image dans Cloud Storage.
+    const filePath = `chatrooms/${conversationId}/${messageRef.id}/${file.name}`;
+    const newImageRef = ref(getStorage(), filePath);
+    const fileSnapshot = await uploadBytesResumable(newImageRef, file);
+    
+    // 3 - Génère l'url publique du fichier
+    const publicImageUrl = await getDownloadURL(newImageRef);
+
+    // 4 - Met à jour le message avec les infos de l'image
+    await updateDoc(messageRef,{
+      imageUrl: publicImageUrl,
+      storageUri: fileSnapshot.metadata.fullPath
+    });
+
+    // 5 - Met à jour le contenu et le timestamp du dernier message
+    await updateDoc(doc(getFirestore(), "commonData", conversationId), {
+      lastMessage: 'Image',
+      timestamp: uploadTimestamp
+    });
+  } catch (error) {
+    console.error('There was an error uploading a file to Cloud Storage:', error);
   }
 }
 
@@ -217,6 +278,8 @@ var messageFormElement = document.getElementById('message-form');
 var messagesZone = document.getElementById('messagesZone')
 var messageInputElement = document.getElementById('message');
 var submitButtonElement = document.getElementById('submit');
+var mediaCaptureElement = document.getElementById('mediaCapture');
+var imageButtonElement = document.getElementById('submitImage');
 
 // Etat du bouton d'envoi
 messageInputElement.addEventListener('keyup', toggleButton);
@@ -224,6 +287,13 @@ messageInputElement.addEventListener('change', toggleButton);
 
 // Enregistre le message envoyé
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
+
+// Ouvre la fenêtre de sélection de fichier lorsqu'on clique sur l'icone d'image
+imageButtonElement.addEventListener('click', function(e) {
+  e.preventDefault();
+  mediaCaptureElement.click();
+});
+mediaCaptureElement.addEventListener('change', onMediaFileSelected);
 
 initializeApp(getFirebaseConfig());
 loadDiscussions();
