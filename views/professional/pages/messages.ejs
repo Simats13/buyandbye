@@ -1,0 +1,636 @@
+<%- include('../includes/scripts.ejs'); %>
+<%- include('../includes/head.ejs'); %>
+<%- include('../includes/navbar.ejs'); %>
+<style>
+    #page {
+        padding: 0 2%;
+    }
+
+    @media screen and (min-height: 550px) and (max-height: 700px) {
+        .card-body {
+            display: flex;
+            height: 55vh;
+        }
+
+        #discussions {
+            width: 45%;
+        }
+
+        .message, .message img {
+            max-width: 34vw;
+        }
+    }
+
+    /* Ecran de l'ordi portable DELL */
+    @media screen and (min-height: 700px) and (max-height: 850px) {
+        .card-body {
+            display: flex;
+            height: 65vh;
+        }
+
+        #discussions {
+            width: 45%;
+        }
+
+        .message, .message img {
+            max-width: 39vw;
+        }
+    }
+
+    @media screen and (min-height: 850px) and (max-height: 1000px) {
+        .card-body {
+            display: flex;
+            height: 70vh;
+        }
+
+        #discussions {
+            width: 35%;
+        }
+
+        .message, .message img {
+            max-width: 44vw;
+        }
+    }
+
+    @media screen and (min-height: 1000px) and (max-height: 1200px) {
+        .card-body {
+            display: flex;
+            height: 75vh;
+        }
+
+        #discussions {
+            width: 35%;
+        }
+
+        .message, .message img {
+            max-width: 49vw;
+        }
+    }
+
+    /* Ecran 4K*/
+    @media screen and (min-height: 1200px) and (max-height: 1400px) {
+        .card-body {
+            display: flex;
+            height: 78vh;
+        }
+
+        #discussions {
+            width: 25%;
+        }
+
+        .message, .message img {
+            max-width: 54vw;
+        }
+    }
+
+    @media screen and (min-height: 1400px) {
+        .card-body {
+            display: flex;
+            height: 80vh;
+        }
+
+        #discussions {
+            width: 25%;
+        }
+
+        .message, .message img {
+            max-width: 59vw;
+        }
+    }
+
+    #discussions {
+        overflow: auto;
+        background-color: #F8F8F8;
+        border-radius: 0.5rem;
+        padding: 1%;
+    }
+
+    #messagesZone {
+        overflow: auto;
+        width: 100%;
+        padding: 0 4%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #messages {
+        padding-bottom: 4%;
+    }
+
+    #discussionHeader {
+        font-size: 1.5em;
+        color: black;
+        font-weight: bold;
+        padding: 1%;
+        background-color: white;
+        position: sticky;
+        top: 0px;
+        display: none;
+        box-shadow: 5px 5px 20px white, -5px -5px 20px white, -5px 5px 20px white, 5px -5px 20px white;
+    }
+
+    #message-form {
+        margin: 0px;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding-top: 1%;
+        background-color: white;
+        text-align: center;
+        display: none;
+        position: sticky;
+        bottom: 0px;
+        box-shadow: 5px 5px 20px white, -5px -5px 20px white, -5px 5px 20px white, 5px -5px 20px white;
+    }
+
+    #choose {
+        font-size: 1.5em;
+        display: block;
+        text-align: center;
+    }
+
+    .client-message-container, .pro-message-container {
+        display: flex;
+        margin-top: 15px;
+    }
+
+    .pro-message-container {
+        flex-direction: row-reverse;
+        text-align: right;
+    }
+
+    .client-message-container .message {
+        background-color: #eee;
+    }
+
+    .message {
+        font-size: 1.1em;
+        background-color: #00BFFF;
+        border-radius: 0.75rem;
+        color: black;
+        display: inline-block;
+        padding: 3px 14px;
+        word-wrap: break-word;
+        width: fit-content;
+        height: fit-content;
+    }
+
+    .message img {
+        width: 100%;
+        height: 100%;
+        padding: .5vw 0;
+    }
+
+    .nameAndMessage {
+        width: 50%;
+    }
+
+    .discussionname {
+        width : 80%;
+        overflow:hidden;
+        display:inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .timestamp {
+        font-size: .8em;
+        text-align: right;
+        /*padding-left: 2%;*/
+    }
+
+    .client-message-container .timestamp {
+        text-align: left;
+    }
+
+    .discussionPic {
+        width: 4em;
+        height: 4em;
+        margin-right: 20px;
+        margin-left: 20px;
+        border-radius: 0.3rem;
+    }
+
+    .messagePic {
+        width: 3em;
+        height: 3em;
+        margin-right: 20px;
+        margin-left: 20px;
+        border-radius: 0.3rem;
+    }
+
+    .discussion-container {
+        font-size: 0.9em;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px;
+        cursor: pointer;
+        background-color: white;
+        border-radius: 0.3rem;
+        margin-bottom: 0.5vw;
+        box-shadow: 5px 5px 5px #F0F0F0, -5px -5px 5px #F0F0F0, -5px 5px 5px #F0F0F0, 5px -5px 5px #F0F0F0;
+    }
+
+    .form-group {
+        display: flex;
+        vertical-align: bottom;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        border: 1px solid #F0F0F0;
+        font-size: medium;
+    }
+
+    .form-control:focus {
+        box-shadow: none
+    }
+
+    .form-control::placeholder {
+        font-size: medium;
+        color: #C4C4C4
+    }
+
+    #submit {
+        border: none;
+        background-color: white;
+        color: #00BFFF;
+        font-size: x-large;
+        transition-property: font-size color;
+        transition-duration: 1s;
+    }
+
+    #submit:disabled {
+        color: lightgrey;
+        font-size: medium;
+    }
+
+    #mediaCapture {
+        display: none;
+    }
+
+    #submitImage {
+        border: none;
+        background-color: white;
+        color: #00BFFF;
+        font-size: xx-large;
+    }
+
+    /* Scrollbar */
+    /* width */
+    ::-webkit-scrollbar {
+    width: 8px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+    background: #C0C0C0; 
+    border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+    background: #A9A9A9; 
+    }
+</style>
+<!-- A faire : Laisser la barre de texte en bas de la page et qu'elle ne soit pas scrollable -->
+<div id="page">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Discussions en cours</h6>
+        </div>
+
+        <div class="card-body">
+            <div class="topShadow"></div>
+            <div id="discussions"></div>
+            <div class="topShadow"></div>
+            <!-- Affiche les messages et la zone de texte en colonne -->
+            <div id="messagesZone">
+                <div id="discussionHeader"></div>
+                <div id="messages"></div>
+                <form id="message-form" action="#">
+                    <div class="form-group">
+                        <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
+                        <button id="submit" title="Envoyer le message" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
+                        <!-- input sert à afficher la fenêtre de choix du fichier à envoyer mais n'est pas joli
+                        Il est donc masqué et est appelé en JS lorsque le bouton stylisé est sélectionné -->
+                        <input id="mediaCapture" type="file" accept="image/*" capture="camera">
+                        <button id="submitImage" title="ajouter une image"><i class="fas fa-image"></i></button>
+                    </div>
+                </form>
+                <p id="choose">Choisissez une conversation sur votre gauche<br>pour lancer une discussion</p>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../includes/footer.ejs'); %>
+<script type='module'>
+
+
+'use strict';
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import {
+  ref,
+  getStorage,
+  uploadBytesResumable,
+  getDownloadURL,
+} from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  updateDoc,
+  doc,
+  serverTimestamp,
+} from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+
+import { getFirebaseConfig } from '/js/firebase-config.js';
+
+import { loadDiscussions } from '/js/discussions.js';
+
+// Executé quand le bouton d'envoi d'un message est pressé
+function onMessageFormSubmit(e) {
+  e.preventDefault();
+  // Vérifie qu'un message est écrit
+  if (messageInputElement.value) {
+    const conversationId = document.getElementById('submit').getAttribute('class');
+    saveMessage(messageInputElement.value, conversationId).then(function() {
+      // Vide le champ texte et désactive le bouton d'envoi
+      resetMaterialTextfield(messageInputElement);
+      toggleButton();
+    });
+  }
+}
+
+// Enregistre le message dans Firestore
+async function saveMessage(messageText, docID) {
+  try {
+    await addDoc(collection(getFirestore(), "commonData", docID, "messages"), {
+      isread: false,
+      sentByClient: false,
+      message: messageText,
+      timestamp: serverTimestamp()
+    });
+
+    await updateDoc(doc(getFirestore(), "commonData", docID), {
+      lastMessage: messageText,
+      timestamp: serverTimestamp()
+    });
+  }
+  catch(error) {
+    console.error('Error writing new message to Firebase Database', error);
+  }
+}
+
+// Charge les messages et écoute de nouveaux messages
+function loadMessages(docID) {
+  const recentMessagesQuery = query(collection(getFirestore(), "commonData", docID, "messages"), orderBy('timestamp', 'desc'));
+  
+  // Requête d'écoute
+  onSnapshot(recentMessagesQuery, function(snapshot) {
+    snapshot.docChanges().forEach(function(change) {
+      if (change.type === 'removed') {
+        deleteMessage(change.doc.id);
+      } else {
+        var message = change.doc.data();
+        displayMessage(change.doc.id, message.timestamp, message.message, message.sentByClient, message.imageUrl);
+      }
+    });
+  });
+}
+
+var clientImgUrl;
+$(document).on('click', ".discussion-container", function() {
+  // Récupère la photo de profil du client quand on sélectionne une discussion
+  clientImgUrl = $(this).find(".discussionSpacing").find(".discussionPic").attr("src");
+  // Masque le message de base et affiche la discussion souhaitée
+  document.getElementById("choose").style.display = "none";
+  document.getElementById("messagesZone").style.display = "block";
+  document.getElementById("message-form").style.display = "block";
+  document.getElementById("discussionHeader").style.display = "block";
+  // Récupère l'id de la discussion sélectionnée, supprime l'ancienne discussion et affiche la nouvelle
+  var id = $(this).attr("id");
+  const oldMessages = document.getElementById('messages');
+  oldMessages.innerHTML= '';
+  loadMessages(id);
+  // Donne l'id de la conversation au bouton d'envoi
+  const sendButton = document.getElementById('submit');
+  sendButton.setAttribute('class', id);
+  // Récupère le nom du client et l'affiche en haut de la discussion
+  const clientName = $(this).find(".nameAndMessage").find(".discussionName").text();
+  document.getElementById('discussionHeader').textContent = clientName;
+});
+
+// Affiche le message dans la popup
+function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
+  var div = document.getElementById(id) || createAndInsertMessage(id, timestamp);
+
+  if(!sentByClient) {
+    div.removeAttribute('class');
+    div.setAttribute('class', 'pro-message-container');
+  }
+
+  var timestampElement = div.querySelector('.timestamp')
+  timestampElement.textContent = formatedTimestamp(timestamp);
+
+  if (div.classList[0] == "pro-message-container") {
+    const proImgUrl = document.querySelector('.img-profile').getAttribute('src');
+    div.querySelector('.discussionSpacing').querySelector('img').setAttribute('src', proImgUrl);
+  } else {
+    div.querySelector('.discussionSpacing').querySelector('img').setAttribute('src', clientImgUrl);
+  }
+  var messageElement = div.querySelector('.message');
+
+  if (text) { // Si le message est du texte
+    messageElement.textContent = text;
+    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
+  } else if (imageUrl) { // Si le message est une image
+    var image = document.createElement('img');
+    image.onload = function() {
+      messagesZone.scrollTop = messagesZone.scrollHeight;
+    }
+    image.src = imageUrl + '&' + new Date().getTime();
+    messageElement.innerHTML = '';
+    messageElement.appendChild(image);
+  }
+
+  // Fait défiler jusqu'au nouveau message
+  messagesZone.scrollTop = messagesZone.scrollHeight;
+  messageInputElement.focus();
+}
+
+// Récupère le timestamp Firestore et l'affiche au format DD/MM/YYYY HH:mm:ss
+// De base les nombres inférieurs à 10 n'ont pas de 0 au début (ex : 5/1/2000)
+// On ajoute donc un 0 devant chaque nombre et on ne conserve que les 2 derniers
+function formatedTimestamp(timestamp) {
+  var convertedTimestamp = timestamp.toDate();
+  var dateToDisplay = 'Le ' + ('0' + convertedTimestamp.getDate()).slice(-2) + '/' + ('0' + convertedTimestamp.getMonth()).slice(-2) + '/' + convertedTimestamp.getFullYear() + ' à ' +
+    ('0' + convertedTimestamp.getHours()).slice(-2) + ':' + ('0' + convertedTimestamp.getMinutes()).slice(-2) + ':' + ('0' + convertedTimestamp.getSeconds()).slice(-2);
+  return dateToDisplay;
+}
+
+// Supprime l'affichage du message
+function deleteMessage(id) {
+  var div = document.getElementById(id);
+  if (div) {
+    div.parentNode.removeChild(div);
+  }
+}
+
+function createAndInsertMessage(id, timestamp) {
+  const container = document.createElement('div');
+  container.innerHTML = MESSAGE_TEMPLATE;
+  const div = container.firstChild;
+  div.setAttribute('id', id);
+
+  // Si le timestamp est nul, on suppose qu'il y a un nouveau message
+  // https://stackoverflow.com/a/47781432/4816918
+  timestamp = timestamp ? timestamp.toMillis() : Date.now();
+  div.setAttribute('timestamp', timestamp);
+
+  // Cherche où insérer le nouveau message
+  const existingMessages = messageListElement.children;
+  if (existingMessages.length === 0) {
+    messageListElement.appendChild(div);
+  } else {
+    let messageListNode = existingMessages[0];
+
+    while (messageListNode) {
+      const messageListNodeTime = messageListNode.getAttribute('timestamp');
+
+      if (!messageListNodeTime) {
+        throw new Error(
+          `Child ${messageListNode.id} has no 'timestamp' attribute`
+        );
+      }
+
+      if (messageListNodeTime > timestamp) {
+        break;
+      }
+
+      messageListNode = messageListNode.nextSibling;
+    }
+
+    messageListElement.insertBefore(div, messageListNode);
+  }
+
+  return div;
+}
+
+// Vide le champ texte
+function resetMaterialTextfield(element) {
+  element.value = ''; 
+} 
+
+// Change l'état du bouton d'envoi de message
+function toggleButton() {
+  if (messageInputElement.value) {
+    submitButtonElement.removeAttribute('disabled');
+  } else {
+    submitButtonElement.setAttribute('disabled', 'true');
+  }
+}
+
+// Appelé lorsqu'un fichier est ajouté à la conversation
+function onMediaFileSelected(event) {
+  event.preventDefault();
+  var file = event.target.files[0];
+
+  // Efface le fichier sélectionné dans le champ de sélection de fichier
+  messageFormElement.reset();
+
+  // Vérifie que le fichier est une image
+  if (!file.type.match('image.*')) {
+    alert('Veuillez sélectionner une image');
+    return;
+  }
+  
+  saveImageMessage(file);
+}
+
+ // Enregistre dans Firebase le message contenant l'image
+ // Enregistre d'abord l'image dans Storage
+ async function saveImageMessage(file) {
+  try {
+    // 1 - On ajoute le message avec un icône de chargement et on le changera avec l'url de l'image
+    const conversationId = document.getElementById('submit').getAttribute('class');
+    const uploadTimestamp = serverTimestamp();
+    const messageRef = await addDoc(collection(getFirestore(), 'commonData', conversationId, 'messages'), {
+      isread: false,
+      sentByClient: false,
+      imageUrl: 'https://www.google.com/images/spin-32.gif?a',
+      timestamp: uploadTimestamp
+    });
+
+    // 2 - Upload l'image image dans Cloud Storage.
+    const filePath = `chatrooms/${conversationId}/${messageRef.id}/${file.name}`;
+    const newImageRef = ref(getStorage(), filePath);
+    const fileSnapshot = await uploadBytesResumable(newImageRef, file);
+    
+    // 3 - Génère l'url publique du fichier
+    const publicImageUrl = await getDownloadURL(newImageRef);
+
+    // 4 - Met à jour le message avec les infos de l'image
+    await updateDoc(messageRef,{
+      imageUrl: publicImageUrl,
+      storageUri: fileSnapshot.metadata.fullPath
+    });
+
+    // 5 - Met à jour le contenu et le timestamp du dernier message
+    await updateDoc(doc(getFirestore(), "commonData", conversationId), {
+      lastMessage: 'Image',
+      timestamp: uploadTimestamp
+    });
+  } catch (error) {
+    console.error('There was an error uploading a file to Cloud Storage:', error);
+  }
+}
+
+// Template de message
+var MESSAGE_TEMPLATE =
+'<div class="client-message-container">' +
+  '<div class="discussionSpacing"><img class="messagePic"></div>' +
+  '<div class="content">' +
+    '<div class="message"></div>' +
+    '<div class="timestamp"></div>' +
+  '</div>' +
+'</div>';
+
+// Variables de récupération des éléments HTML
+var messageListElement = document.getElementById('messages');
+var messageFormElement = document.getElementById('message-form');
+var messagesZone = document.getElementById('messagesZone')
+var messageInputElement = document.getElementById('message');
+var submitButtonElement = document.getElementById('submit');
+var mediaCaptureElement = document.getElementById('mediaCapture');
+var imageButtonElement = document.getElementById('submitImage');
+
+// Etat du bouton d'envoi
+messageInputElement.addEventListener('keyup', toggleButton);
+messageInputElement.addEventListener('change', toggleButton);
+
+// Enregistre le message envoyé
+messageFormElement.addEventListener('submit', onMessageFormSubmit);
+
+// Ouvre la fenêtre de sélection de fichier lorsqu'on clique sur l'icone d'image
+imageButtonElement.addEventListener('click', function(e) {
+  e.preventDefault();
+  mediaCaptureElement.click();
+});
+mediaCaptureElement.addEventListener('change', onMediaFileSelected);
+
+initializeApp(getFirebaseConfig()); 
+loadDiscussions('<%=id%>'); 
+</script>

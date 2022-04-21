@@ -1,0 +1,113 @@
+<%- include('../includes/head.ejs'); %>
+                    <div class="wrapper">
+                        <div class="image-holder">
+                            <img src="../images/logo.png" alt="">
+                        </div>
+                        <!-- <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe> -->
+
+                        <form class="login100-form validate-form" id="formLogin" style="width: 100%;">
+                            <span class="login100-form-title p-b-43">
+                                Connexion Espace Buy&Bye
+                            </span>
+
+                            <span class="login100-form-title p-b-43">
+                            </span>
+
+
+                            <div class="wrap-input100 validate-input"
+                                data-validate="Veuillez entrer une adresse e-mail valide : ex@abc.xyz">
+                                <input class="input100" type="email" id="email" name="email">
+                                <span class="focus-input100"></span>
+                                <span class="label-input100">Email</span>
+                            </div>
+
+
+                            <div class="wrap-input100 validate-input" data-validate="Veuillez entrer un mot de passe">
+                                <input class="input100" type="password" id="password" name="password">
+                                <span class="focus-input100"></span>
+                                <span class="label-input100">Mot de passe</span>
+                            </div>
+
+                            <div class="flex-sb-m w-full p-t-3 p-b-32">
+                                <div class="form-check">
+                                    <input class="form-check-input" id="ckb1" name="remember-me" type="checkbox" value=""
+                                        id="flexCheckDefault">
+                                    <label class="form-check-label" for="ckb1">
+                                        Se souvenir de moi
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <a href="/reset" class="txt1">
+                                        Mot de passe oublié ?
+                                    </a>
+                                </div>
+                            </div>
+
+
+                            <div class="container-login100-form-btn">
+                                <button class="login100-form-btn" id="login" name="login">
+                                    Connexion
+                                </button>
+                            </div>
+                            <br>
+                            <div>
+                                <a href="/inscription" class="txt1">
+                                    <h6>Pas de compte ? Créez-en un !</h6>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <%- include('../includes/scripts.ejs'); %>
+</html>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyAv2iTNQFg0osczdG_1qaF5pRJmKpyuiw8",
+        authDomain: "oficium-11bf9.firebaseapp.com",
+        databaseURL: "https://oficium-11bf9-default-rtdb.firebaseio.com",
+        projectId: "oficium-11bf9",
+        storageBucket: "oficium-11bf9.appspot.com",
+        messagingSenderId: "731468105971",
+        appId: "1:731468105971:web:5aaf6dc9ba39f0c7034f86",
+      };
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+      document
+        .getElementById("formLogin")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          const email = event.target.email.value;
+          const password = event.target.password.value;
+          firebase 
+            .auth()
+            .signInWithEmailAndPassword(email, password) 
+            .then(({ user }) => {
+              return user.getIdToken().then((idToken) => {
+                return fetch("/sessionLogin", {
+                  method: "POST",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                  },
+                  body: JSON.stringify({ idToken }),
+                });
+              });
+            })
+            .then(() => {
+              return firebase.auth().signOut();
+            })
+            .then(() => {
+              window.location.assign("/dashboard");
+            });
+          return false;
+        });
+    });
+  </script>
+
