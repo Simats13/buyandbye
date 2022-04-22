@@ -53,8 +53,8 @@ router.get('/produits', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get("http://localhost:8080/api/shops/" + uid);
-    var products = await axios.get("http://localhost:8080/api/shops/" + uid+ "/products");         
+    var shopInfos = await axios.get("/api/shops/" + uid);
+    var products = await axios.get("/api/shops/" + uid+ "/products");         
     res.render("professional/pages/products",{products:products.data, shopInfos:shopInfos.data});   
   }).catch((error)=>{res.redirect("/")}) 
 });
@@ -63,8 +63,8 @@ router.get('/commandes', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get("http://localhost:8080/api/shops/" + uid);
-    var products = await axios.get("http://localhost:8080/api/shops/" + uid+ "/products");         
+    var shopInfos = await axios.get("/api/shops/" + uid);
+    var products = await axios.get("/api/shops/" + uid+ "/products");         
     res.render("professional/pages/commands",{products:products.data, shopInfos:shopInfos.data});   
   }).catch((error)=>{res.redirect("/")}) 
 }); 
