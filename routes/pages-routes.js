@@ -40,9 +40,10 @@ router.get('/dashboard', function (req, res) {
 
 router.get('/entreprise', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
+  console.log(sessionCookie);
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
-    var data = await axios.get("http://localhost:8080/api/shops/" + uid);
+    var data = await axios.get("/api/shops/" + uid);
     res.render("professional/pages/entreprise",{data:data.data});   
   }).catch((error)=>{res.redirect("/")})
 }); 
