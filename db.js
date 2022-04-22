@@ -1,5 +1,5 @@
 const firebase = require('firebase-admin');
-const config = require('./config');
+
 // import serviceAccount from '../serviceKey.json';
 const serviceAccount = require( './serviceKey.json');
 const db = firebase.initializeApp({
