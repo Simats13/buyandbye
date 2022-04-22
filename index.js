@@ -5,7 +5,12 @@ const config = require('./config');
 const userRoutes = require('./routes/user-routes');
 const shopRoutes = require('./routes/shop-routes');
 const authRoutes = require('./routes/auth-routes');
+const fs = require('fs');
+const https = require('https');
+const privateKey  = fs.readFileSync('./certs/privateKey.pem', 'utf8');
+const certificate = fs.readFileSync('./certs/certs.pem', 'utf8');
 
+const credentials = {key: privateKey, cert: certificate};
 const app = express();
 
 
@@ -33,6 +38,8 @@ app.use('/api', authRoutes.routes);
 
 
 app.use(cors());
+var httpsServer = https.createServer(credentials, app);
 
+httpsServer.listen(443);
 app.listen(config.port, () => console.log('App is listening on url http://localhost:' + config.port));
  
