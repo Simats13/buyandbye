@@ -40,7 +40,6 @@ router.get('/dashboard', function (req, res) {
 
 router.get('/entreprise', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
-  console.log(sessionCookie);
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
     var data = await axios.get("/api/shops/" + uid);
