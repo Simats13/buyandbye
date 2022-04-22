@@ -36,7 +36,7 @@ const sessionLoginView = (req, res) => {
       .createSessionCookie(idToken, { expiresIn })
       .then(
         (sessionCookie) => {
-          const options = { maxAge: expiresIn, httpOnly: true, secure: true };
+          const options = { maxAge: expiresIn, httpOnly: true, };
           res.cookie('session', sessionCookie, options);
           res.end(JSON.stringify({ status: 'success' }));
         },
