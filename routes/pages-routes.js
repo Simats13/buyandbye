@@ -69,7 +69,7 @@ router.get('/commandes', csrfProtection, function (req, res) {
 }); 
     
 
-router.get('/messages', function (req, res) {
+router.get('/messages', function (req, res) { 
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then((decodedToken) => {
     const uid = decodedToken.uid;    
@@ -83,7 +83,7 @@ router.post('/edit',function(req,res){
 router.get('/logout', (req, res) => {
     res.clearCookie('session');
     res.redirect('/');
-  });
-
-router.post('/sessionLogin', sessionLoginView )
+  });    
+                  
+router.post('/sessionLogin', sessionLoginView ) 
 module.exports = router;

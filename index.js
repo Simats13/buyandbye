@@ -22,9 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(express.json()); //this line activates the bodyparser middleware
 // app.use(express.urlencoded({ extended: true }));
 
-
+ 
 app.use('/' ,require('./routes/pages-routes'));
-
+       
 // app.use(express.json())
 // app.use('/api', userRoutes.routes);
 app.use('/api', shopRoutes.routes);

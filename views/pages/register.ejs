@@ -1,5 +1,6 @@
 <!-- Script permettant la gestion des catégories -->
 <%- include('../includes/head.ejs'); %>
+
 <%- include('../includes/scripts.ejs'); %>
 <link rel="newest stylesheet" href="../css/chosen.css">
 <link rel="stylesheet" href="../fonts/icomoon/style.css">
@@ -115,17 +116,48 @@
   }
   
 </style>
+
 <div class="wrapper">
 			<div class="image-holder">
 				<img src="../images/3883063.png" alt="">
 			</div>
 
                         <form id="registerPage" method="post">
+                            
+        
                             <div id="wizard">
+                                
                                 <!-- SECTION 1 -->
                                 <h4></h4>
                                 <section>
+                                    <a  name="modalTest" 
+                                    data-bs-toggle="modal" data-bs-target="#modalTest>">Test Modal</a>
 
+                                                                 <!-- Fenêtre modale de suppression d'un produit -->
+                            <div class="modal fade" name="modalTest" id="modalTest" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Vous êtes sur le point de supprimer le produit 
+                                               </h5>
+                                                <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">Cette action est définitive, si vous souhaitez le supprimer veuillez cliquer
+                                                sur le bouton "Supprimer" ci-dessous. </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Annuler</button>
+    
+                                                    
+                                                    <button type="submit" value="" name="modalTest" 
+                                                        class="btn btn-danger">Supprimer</button>
+                                          
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             <!-- Nom Prénom -->
                                 <div class="form-row form-group">
                                     <div class="form-holder">
