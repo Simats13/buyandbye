@@ -1,6 +1,8 @@
 'use strict';
 
 const firebase = require('../db');
+const fieldValue = firebase.firestore.FieldValue; 
+
 const Shop = require('../models/shop');
 const Products = require('../models/products');
 const firestore = firebase.firestore();
@@ -152,18 +154,19 @@ const deleteShop = async (req, res, next) => {
 
 const addProduct = async (req, res, next) => {
     try {
-        console.log(req.body);
         const id = req.params.id;    
         const productName = req.body.productName;
         const description = req.body.description;
-        const price =  req.body.price;
+        const price =  parseFloat(req.body.price);
         const quantity = req.body.quantity;
         const reference = req.body.reference;
         const category = req.body.category;
         const visibility = req.body.visibility;
-       
+        const docRef =  await firestore.collection('magasins').doc(id).collection("produits").doc();
+        const idProduct = docRef.id;
 
-        await firestore.collection('magasins').doc(id).collection("produits").doc().set({
+        var data = {
+            id: idProduct,
             nom: productName,
             prix: price,
             description: description,
@@ -172,6 +175,12 @@ const addProduct = async (req, res, next) => {
             images:"", 
             reference: reference,
             visible: visibility,
+        };
+
+        await docRef.set(data);
+
+        await firestore.collection('magasins').doc(id).set({
+            produits: fieldValue.arrayUnion(productName),
         });
         res.send('Le produit a bien été ajouté');
     } catch (error) {
@@ -186,7 +195,7 @@ const updateProduct = async (req, res, next) => {
         const idProduct = req.params.idProduct;
         const productName = req.body.productName;
         const description = req.body.description;
-        const price =  req.body.price;
+        const price =  parseFloat(req.body.price);
         const quantity = req.body.quantity;
         const reference = req.body.reference;
         const category = req.body.category;
@@ -200,6 +209,16 @@ const updateProduct = async (req, res, next) => {
             quantite: quantity,
             reference: reference,
             visible: visibility,
+        });
+
+        console.log("test")
+        var arrayData = [{
+            nom: productName,
+            id:idProduct,
+        }];
+        await firestore.collection('magasins').doc(id).update({
+            
+            produits: fieldValue.arrayUnion(productName),
         });
         res.send("Le magasin a été  mis à jour");        
     } catch (error) {
