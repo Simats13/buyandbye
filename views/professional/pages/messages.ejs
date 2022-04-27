@@ -301,34 +301,35 @@
     }
 </style>
 <!-- A faire : Laisser la barre de texte en bas de la page et qu'elle ne soit pas scrollable -->
-<div id="page">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Discussions en cours</h6>
-        </div>
+  <div id="page">
+      <div class="card shadow mb-4">
+          <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Discussions en cours</h6>
+          </div>
 
-        <div class="card-body">
-            <div class="topShadow"></div>
-            <div id="discussions"></div>
-            <div class="topShadow"></div>
-            <!-- Affiche les messages et la zone de texte en colonne -->
-            <div id="messagesZone">
-                <div id="discussionHeader"></div>
-                <div id="messages"></div>
-                <form id="message-form" action="#">
-                    <div class="form-group">
-                        <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
-                        <button id="submit" title="Envoyer le message" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
-                        <!-- input sert à afficher la fenêtre de choix du fichier à envoyer mais n'est pas joli
-                        Il est donc masqué et est appelé en JS lorsque le bouton stylisé est sélectionné -->
-                        <input id="mediaCapture" type="file" accept="image/*" capture="camera">
-                        <button id="submitImage" title="ajouter une image"><i class="fas fa-image"></i></button>
-                    </div>
-                </form>
-                <p id="choose">Choisissez une conversation sur votre gauche<br>pour lancer une discussion</p>
-            </div>
-        </div>
-    </div>
+          <div class="card-body">
+              <div class="topShadow"></div>
+              <div id="discussions"></div>
+              <div class="topShadow"></div>
+              <!-- Affiche les messages et la zone de texte en colonne -->
+              <div id="messagesZone">
+                  <div id="discussionHeader"></div>
+                  <div id="messages"></div>
+                  <form id="message-form" action="#">
+                      <div class="form-group">
+                          <textarea class="form-control" id="message" rows="2" placeholder="Votre message"></textarea>
+                          <button id="submit" title="Envoyer le message" disabled type="submit"><i class="fas fa-paper-plane"></i></button>
+                          <!-- input sert à afficher la fenêtre de choix du fichier à envoyer mais n'est pas joli
+                          Il est donc masqué et est appelé en JS lorsque le bouton stylisé est sélectionné -->
+                          <input id="mediaCapture" type="file" accept="image/*" capture="camera">
+                          <button id="submitImage" title="ajouter une image"><i class="fas fa-image"></i></button>
+                      </div>
+                  </form>
+                  <p id="choose">Choisissez une conversation sur votre gauche<br>pour lancer une discussion</p>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
 <%- include('../includes/footer.ejs'); %>
 <script type='module'>

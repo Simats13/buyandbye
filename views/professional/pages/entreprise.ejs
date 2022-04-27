@@ -88,12 +88,12 @@
                         <div class="col">
                             <label for="lastname">Nom</label>
                             <input type="text" name="ownerLastName" id="lastname" class="form-control" placeholder="ex: Dupont"
-                                size="40" value="<%= data.lname %>" required>
+                                size="40" value="<%= shopInfos.Lname %>" required>
                         </div>
                         <div class="col">
                             <label for="firstname">Prénom</label>
                             <input type="text" name="ownerFirstName" id="firstname" class="form-control" placeholder="ex: Frédéric"
-                                size="40" value="<%= data.fname %>" required>
+                                size="40" value="<%= shopInfos.Fname %>" required>
                         </div>
                     </div>
 
@@ -107,16 +107,16 @@
                         <div class="col">
                             <label for="exampleFormControlInput1">Nom de l'entreprise</label>
                             <input type="text" name="companyName" class="form-control" id="exampleFormControlInput1" size="40"
-                                placeholder="Dupont SAS" value="<%= data.name %>" required>
+                                placeholder="Dupont SAS" value="<%= shopInfos.name %>" required>
                         </div>
                         <div class="col">
                             <label for="autocomplete"> Adresse de l'entreprise </label>
                             <input type="text" name="autocomplete" id="autocomplete" class="form-control"
-                                size="40" placeholder="Avenue des Champs-Elysée, Paris" value="<%= data.adresse %>" required>
+                                size="40" placeholder="Avenue des Champs-Elysée, Paris" value="<%= shopInfos.adresse %>" required>
                             <input type="hidden" name="latitude" id="latitude" class="form-control"
-                                value="<%= data.position.latitude %>">
+                                value="<%= shopInfos.position.latitude %>">
                             <input type="hidden" name="longitude" id="longitude" class="form-control"
-                                value="<%= data.position.longitude %>">
+                                value="<%= shopInfos.position.longitude %>">
                         </div>
                     </div>
 
@@ -124,12 +124,16 @@
                         <div class="col">
                             <label for="siretnumber">Numéro de SIRET</label>
                             <input type="text" name="siretNumber" class="form-control" id="siretnumber"
-                                placeholder="ex: 123 456 789 00012" value="<%= data.siretNumber %>" required>
+                                placeholder="ex: 123 456 789 00012" value="<%= shopInfos.siretNumber %>" required>
                         </div>
                         <div class="col">
-                            <label for="tvanumber">Numéro de TVA</label>
-                            <input type="text" name="tvaNumber" class="form-control" id="tvanumber"
-                                placeholder="ex: FR 00 123456789" value="<%= data.tvaNumber %>" required>
+                            <div class="form-holder">
+                                <label for="tvanumberLabel">Numéro de TVA</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">FR</span>
+                                    <input type="text" class="form-control" id="tvaNumber"  value="<%= shopInfos.tvaNumber %>" required placeholder="00 123456789">
+                                </div>		
+                            </div>
                         </div>
                     </div>
 
@@ -137,7 +141,7 @@
                         <div class="col">
                             <label for="exampleFormControlTextarea1">Description</label>
                             <textarea class="form-control" name="description" id="exampleFormControlTextarea1" rows="3"
-                                required><%= data.description %> </textarea>
+                                required><%= shopInfos.description %> </textarea>
                         </div>
                     </div>
 
@@ -146,131 +150,117 @@
                         <div class="col">
                             <label for="exampleFormControlInput1">Adresse E-Mail</label>
                             <input type="text" name="email" class="form-control" id="exampleFormControlInput1" size="40"
-                                placeholder="email@email.com" value="<%= data.email %>" required>
+                                placeholder="email@email.com" value="<%= shopInfos.email %>" required>
                         </div>
                         <div class="col">
                             <label for="exampleFormControlInput1">Numéro de téléphone</label>
-                            <input type="tel" id="phone" class="form-control" name="phone" size="40" value="<%= data.phone %>"
+                            <input type="tel" id="phone" class="form-control" name="phone" size="40" value="<%= shopInfos.phone %>"
                                 pattern="[0-9]{10}" required>
                         </div>
                     </div>
 
                     <div class="form-group form-row">
                         <label class="mr-sm-2" for="companyType">Type d'entreprise</label>
-                        <select value="" class="custom-select mr-sm-2 companyType" id="companyType" name="companyType" disabled>
-                            <option value="Magasin" <%- data.type == 'Magasin' ? 'selected' : '' %> >Magasin
-                            </option>
-                            <option value="Service"<%- data.type == 'Service' ? 'selected' : '' %> >Service
-                            </option>
-                            <option value="Restaurant"<%- data.type == 'Restaurant' ? 'selected' : '' %> >
-                                Restaurant</option>
-                            <option value="Santé"<%- data.type == 'Santé' ? 'selected' : '' %> >
-                                Santé
-                            </option>
-                            <option value="Culture & Loisirs" <%- data.type == 'Culture & Loisirs' ? 'selected' : '' %>>
-                                Culture & Loisirs
-                            </option>
-                        </select>
+                        <span><%= shopInfos.type%></span>
                     </div>
                    
 
                     <label for="exampleFormControlInput1">Tags Entreprise</label>
-
-                    <div class="form-group category1">
-
-                 
+                    <% if(shopInfos.type == "Magasin"){ %>
+                    <div class="form-group ">
                         <div class="color-2">
                             <select data-placeholder="Tags Magasin" name="select[]" id="select1" multiple class="chosen-select" tabindex="8">
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Electroménager'){%> selected<% } } %> >Electroménager</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Jeux-Vidéos'){%> selected<% } } %> >Jeux-Vidéos</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'High-Tech'){%> selected<% } } %> >High-Tech</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Alimentation'){%> selected<% } } %> >Alimentation</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Vêtements'){%> selected<% } } %> >Vêtements</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Films & Séries'){%> selected<% } } %> >Films & Séries</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Chaussures'){%> selected<% } } %> >Chaussures</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Bricolage'){%> selected<% } } %> >Bricolage</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Montres & Bijoux'){%> selected<% } } %>>Montres & Bijoux</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Téléphonie'){%> selected<% } } %> >Téléphonie</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Restaurant'){%> selected<% } } %> >Restaurant</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Electroménager'){%> selected<% } } %> >Electroménager</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Jeux-Vidéos'){%> selected<% } } %> >Jeux-Vidéos</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'High-Tech'){%> selected<% } } %> >High-Tech</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Alimentation'){%> selected<% } } %> >Alimentation</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Vêtements'){%> selected<% } } %> >Vêtements</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Films & Séries'){%> selected<% } } %> >Films & Séries</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Chaussures'){%> selected<% } } %> >Chaussures</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Bricolage'){%> selected<% } } %> >Bricolage</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Montres & Bijoux'){%> selected<% } } %>>Montres & Bijoux</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Téléphonie'){%> selected<% } } %> >Téléphonie</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Restaurant'){%> selected<% } } %> >Restaurant</option>
                             </select>
                         </div>
                     </div>
+                <% } if(shopInfos.type == "Service"){ %>
 
 
-
-                    <div class="form-group form-row category2">
+                    <div class="form-group  ">
                         <div class="color-2">
+                            
                             <select data-placeholder="Tags Service" name="select[]" id="select2" multiple class="chosen-select"
                                 tabindex="8">
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Menuiserie'){%> selected<% } } %>>Menuiserie</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Plomberie'){%> selected<% } } %>>Plomberie</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Piscine'){%> selected<% } } %>>Piscine</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Meubles'){%> selected<% } } %>>Meubles</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Vêtements'){%> selected<% } } %>>Vêtements</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Gestion de patrimoine'){%> selected<% } } %>>Gestion de patrimoine</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Menuiserie'){%> selected<% } } %>>Menuiserie</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Plomberie'){%> selected<% } } %>>Plomberie</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Piscine'){%> selected<% } } %>>Piscine</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Meubles'){%> selected<% } } %>>Meubles</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Vêtements'){%> selected<% } } %>>Vêtements</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Gestion de patrimoine'){%> selected<% } } %>>Gestion de patrimoine</option>
                             </select>
                         </div>
                     </div>
 
+                    <% } if(shopInfos.type == "Restaurant"){ %>
 
-
-                    <div class="form-group form-row category3">
+                    <div class="form-group  ">
                         <div class="color-2">
                             <select data-placeholder="Tags Restaurant" name="select[]" id="select3" multiple class="chosen-select"
                                 tabindex="8">
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Français'){%> selected<% } } %>>Français</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Local'){%> selected<% } } %>>Local</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Italien'){%> selected<% } } %>>Italien</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Fast-Food'){%> selected<% } } %>>Fast-Food</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Asiatique'){%> selected<% } } %>Asiatique</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Pizzeria'){%> selected<% } } %>>Pizzeria</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Français'){%> selected<% } } %>>Français</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Local'){%> selected<% } } %>>Local</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Italien'){%> selected<% } } %>>Italien</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Fast-Food'){%> selected<% } } %>>Fast-Food</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Asiatique'){%> selected<% } } %>Asiatique</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Pizzeria'){%> selected<% } } %>>Pizzeria</option>
                             </select>
                         </div>
                     </div>
 
+                    <% } if(shopInfos.type == "Santé"){ %>
 
-
-                    <div class="form-group form-row category4">
+                    <div class="form-group ">
                         <div class="color-2">
                             <select data-placeholder="Tags Santé" name="select[]" id="select4" multiple class="chosen-select"
                                 tabindex="8">
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Pharmacie'){%> selected<% } } %>>Pharmacie</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Aide à la personne'){%> selected<% } } %>>Aide à la personne</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Pharmacie'){%> selected<% } } %>>Pharmacie</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Aide à la personne'){%> selected<% } } %>>Aide à la personne</option>
                             </select>
                         </div>
                     </div>
 
-
-
-                    <div class="form-group form-row category5">
+                    <% } if(shopInfos.type == "Culture et loisirs"){ %>
+                    <div class="form-group">
                         <div class="color-2">
                             <select data-placeholder="Tags Culture et loisirs" name="select[]" id="select5" multiple
                                 class="chosen-select" tabindex="8">
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === "Parc d'attraction"){%> selected<% } } %>>Parc d'attraction</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Musée'){%> selected<% } } %>>Musée</option>
-                                <option <% for(var i = 0 ; i < data.mainCategorie.length ; i++) { if(data.mainCategorie[i] === 'Tourisme'){%> selected<% } } %>>Tourisme</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === "Parc d'attraction"){%> selected<% } } %>>Parc d'attraction</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Musée'){%> selected<% } } %>>Musée</option>
+                                <option <% for(var i = 0 ; i < shopInfos.mainCategorie.length ; i++) { if(shopInfos.mainCategorie[i] === 'Tourisme'){%> selected<% } } %>>Tourisme</option>
                             </select>
                         </div>
                     </div>
-          
+
+                    <% } %>
                      <div class="form-group form-row ">
                         <div class="form-group col">   
                             <div class="form-group ">
                                 <label for="exampleColorInput" class="form-label">Couleur de l'interface</label>
                                 <input type="color" class="form-control form-control-color" name="colorStore" id="colorStore"
-                                    style="width:50px; height:50px" value='#<%= data.colorStore %>'
+                                    style="width:50px; height:50px" value='#<%= shopInfos.colorStore %>'
                                     title="Choissisez une couleur">
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" name="clickandcollect" type="checkbox" value="" id="defaultCheck1" <%- data.ClickAndCollect == true ? 'checked' : '' %>>
+                                <input class="form-check-input" name="clickandcollect" type="checkbox" value="" id="defaultCheck1" <%- shopInfos.ClickAndCollect == true ? 'checked' : '' %>>
                                 <label class="form-check-label" name="clickandcollect" for="defaultCheck1"> Click & Collect </label>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" name="livraison" type="checkbox" value="" id="defaultCheck1" <%- data.livraison == true ? 'checked' : '' %>>
+                                <input class="form-check-input" name="livraison" type="checkbox" value="" id="defaultCheck1" <%- shopInfos.livraison == true ? 'checked' : '' %>>
                                 <label class="form-check-label" name="livraison" for="defaultCheck1"> Livraison à domicile</label>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="isPhoneVisible" id="isphonevisible" <%- data.isPhoneVisible == true ? 'checked' : '' %> >
+                                <input class="form-check-input" type="checkbox" name="isPhoneVisible" id="isphonevisible" <%- shopInfos.isPhoneVisible == true ? 'checked' : '' %> >
                                 <label class="form-check-label" for="isPhoneVisible">Afficher le numéro de téléphone aux clients <a
                                         data-toggle="tooltip" data-bs-placement="right"
                                         title="Permet d'afficher aux clients le numéro de téléphone sur l'application">ⓘ</a></label>
@@ -279,7 +269,7 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
-                        <img src="<%= data.imgUrl %>" class="img-thumbnail img-fluid" alt="old_banniere" id="old_image" name="old_image">
+                        <img src="<%= shopInfos.imgUrl %>" width="100px" height="100px" class="img-thumbnail img-fluid" alt="old_banniere" id="old_image" name="old_image">
                         <input type="hidden" name="old_banniere" id="old_banniere" value="old_banniere"><br>
                         <img name="new_banniere" id="new_banniere" src="#"  class="img-thumbnail img-fluid" hidden >
                         <input type="file" name="banniere" id="banniere" onchange="readURL(this);">
@@ -298,7 +288,7 @@
                       </div>
                     <div class="modal-footer">
                         
-                        <button type="submit" value="<%= data.id %>" name="edit_enterprise" id="edit_enterprise" class="btn btn-primary">Enregistrer les modifications</button>
+                        <button type="submit" value="<%= shopInfos.id %>" name="edit_enterprise" id="edit_enterprise" class="btn btn-primary">Enregistrer les modifications</button>
                     </div>
                 </div>
             </form>
@@ -362,18 +352,17 @@
           var tagsCompany = $('.chosen-select').val();
           const email = event.target.email.value;
           const phone = event.target.phone.value;
-          const companyType = event.target.companyType.value;
           const colorStore = $('#colorStore').val();
           const clickandcollect = event.target.clickandcollect.checked;
           const livraison = event.target.livraison.checked;
           const isPhoneVisible = event.target.isPhoneVisible.checked;
-          return fetch("/api/shops/<%=data.id%>", {
+          return fetch("/api/shops/<%=shopInfos.id%>", {
                   method: "POST",
                   headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({fname, lname, companyName, autocomplete, latitude,tagsCompany, longitude, siretNumber,tvaNumber, description, email, phone, companyType, colorStore, clickandcollect, livraison, isPhoneVisible }),
+                  body: JSON.stringify({fname, lname, companyName, autocomplete, latitude,tagsCompany, longitude, siretNumber,tvaNumber, description, email, phone, colorStore, clickandcollect, livraison, isPhoneVisible }),
                 }).then(() => {
                     $('#finishModal').modal('show').then(
                         setTimeout(function () {
@@ -397,66 +386,5 @@
             width: '100%'
         });
     });
-    $(document).ready(function () {
-        $(".category1").addClass("d-none");
-        $(".category2").addClass("d-none");
-        $(".category3").addClass("d-none");
-        $(".category4").addClass("d-none");
-        $(".category5").addClass("d-none");
-
-        if ($(".companyType").val() == "Magasin") {
-            $(".category1").removeClass("d-none");
-        } else if ($(".companyType").val() == "Service") {
-            $(".category2").removeClass("d-none");
-        } else if ($(".companyType").val() == "Restaurant") {
-            $(".category3").removeClass("d-none");
-        } else if ($(".companyType").val() == "Santé") {
-            $(".category4").removeClass("d-none");
-        } else if ($(".companyType").val() == "Culture & Loisirs") {
-            $(".category5").removeClass("d-none");
-        }
-
-    });
-
-    $(".companyType").on('change', function () {
-
-        if ($(this).val() == 'Magasin') {
-            $(".category1").removeClass("d-none");
-            $(".category2").addClass("d-none");
-            $(".category3").addClass("d-none");
-            $(".category4").addClass("d-none");
-            $(".category5").addClass("d-none");
-        } else if ($(this).val() == 'Service') {
-            $(".category2").removeClass("d-none");
-
-            $(".category1").addClass("d-none");
-            $(".category3").addClass("d-none");
-            $(".category4").addClass("d-none");
-            $(".category5").addClass("d-none");
-
-        } else if ($(this).val() == 'Restaurant') {
-            $(".category3").removeClass("d-none");
-            $(".category2").addClass("d-none");
-            $(".category1").addClass("d-none");
-            $(".category4").addClass("d-none");
-            $(".category5").addClass("d-none");
-
-        } else if ($(this).val() == 'Santé') {
-            $(".category4").removeClass("d-none");
-
-            $(".category2").addClass("d-none");
-            $(".category3").addClass("d-none");
-            $(".category1").addClass("d-none");
-            $(".category5").addClass("d-none");
-
-        } else if ($(this).val() == 'Culture & Loisirs') {
-            $(".category5").removeClass("d-none");
-
-            $(".category2").addClass("d-none");
-            $(".category3").addClass("d-none");
-            $(".category4").addClass("d-none");
-            $(".category1").addClass("d-none");
-
-        }
-    });
+    
 </script>

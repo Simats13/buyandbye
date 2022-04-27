@@ -26,7 +26,7 @@ router.use(cookieParser());
 
 router.get('/', function (req, res) {  
     const sessionCookie = req.cookies.session || "";
-    firebase.auth().verifySessionCookie(sessionCookie, true).then(() => {res.render("professional/pages/dashboard")}).catch((error)=>res.render("pages/login"))
+    firebase.auth().verifySessionCookie(sessionCookie, true).then(() => {res.render("professional/pages/dashboard")}).ch((error)=>res.render("pages/login"))
   });
 router.get('/inscription', registerView);
 router.get('/connexion', loginView);
@@ -34,16 +34,20 @@ router.get('/home', homeView);
 
 router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
-  firebase.auth().verifySessionCookie(sessionCookie, true).then(() => {res.render("professional/pages/dashboard")}).catch((error)=>{res.redirect("/")})
+  firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
+    const uid = decodedToken.uid;
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
+  }).catch((error)=>{res.redirect("/")})
 });
-
+ 
 
 router.get('/entreprise', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
-    var data = await axios.get("/api/shops/" + uid);
-    res.render("professional/pages/entreprise",{data:data.data});   
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    res.render("professional/pages/entreprise",{shopInfos:shopInfos.data});   
   }).catch((error)=>{res.redirect("/")})
 }); 
 
@@ -52,34 +56,37 @@ router.get('/produits', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get("/api/shops/" + uid);
-    var products = await axios.get("/api/shops/" + uid+ "/products");         
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var products = await axios.get(req.protocol + '://' + req.get('host')  +"/api/shops/" + uid+ "/products");         
     res.render("professional/pages/products",{products:products.data, shopInfos:shopInfos.data});   
   }).catch((error)=>{res.redirect("/")}) 
 });
-    
+       
 router.get('/commandes', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then( async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get("/api/shops/" + uid);
-    var products = await axios.get("/api/shops/" + uid+ "/products");         
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var products = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid+ "/products");         
     res.render("professional/pages/commands",{products:products.data, shopInfos:shopInfos.data});   
-  }).catch((error)=>{res.redirect("/")}) 
+  }).catch((error)=>{
+    console.log(req.hostname);
+    res.redirect("/")}) 
 }); 
     
 
 router.get('/messages', function (req, res) { 
   const sessionCookie = req.cookies.session || "";
-  firebase.auth().verifySessionCookie(sessionCookie, true).then((decodedToken) => {
+  firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;    
-    res.render("professional/pages/messages",{id:uid}) 
-  }).catch((error)=>{res.redirect("/")})  
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    res.render("professional/pages/messages",{id:uid,shopInfos:shopInfos.data});
+  }).catch((error)=>{res.redirect("/")});   
 });
 router.post('/edit',function(req,res){
   res.redirect('/dashboard'); 
 });
-
+   
 router.get('/logout', (req, res) => {
     res.clearCookie('session');
     res.redirect('/');

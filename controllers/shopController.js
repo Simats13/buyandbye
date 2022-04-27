@@ -2,7 +2,7 @@
 
 const firebase = require('../db');
 const fieldValue = firebase.firestore.FieldValue; 
-
+const testFirebase = require('firebase-admin');
 const Shop = require('../models/shop');
 const Products = require('../models/products');
 const firestore = firebase.firestore();
@@ -123,7 +123,6 @@ const updateShop = async (req, res, next) => {
             email: req.body.email,
             phone: req.body.phone,
             description: req.body.description,
-            type: req.body.companyType,
             ClickAndCollect: req.body.clickandcollect,
             livraison: req.body.livraison,
             isPhoneVisible: req.body.isPhoneVisible,
@@ -217,8 +216,10 @@ const updateProduct = async (req, res, next) => {
             id:idProduct,
         }];
         await firestore.collection('magasins').doc(id).update({
-            
-            produits: fieldValue.arrayUnion(productName),
+            produits: testFirebase.firestore.FieldValue.arrayUnion({
+                nom: productName,
+                id:idProduct,
+            }),
         });
         res.send("Le magasin a été  mis à jour");        
     } catch (error) {
