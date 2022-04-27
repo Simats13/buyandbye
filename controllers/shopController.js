@@ -116,8 +116,8 @@ const updateShop = async (req, res, next) => {
         const colorStore = req.body.colorStore.substring(1); 
         const shop =  await firestore.collection('magasins').doc(id);
         await shop.update({
-            fname: req.body.fname,
-            lname: req.body.lname,
+            Fname: req.body.fname,
+            Lname: req.body.lname,
             name: req.body.companyName,
             adresse: req.body.autocomplete,
             email: req.body.email,
