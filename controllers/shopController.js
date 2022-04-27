@@ -179,7 +179,10 @@ const addProduct = async (req, res, next) => {
         await docRef.set(data);
 
         await firestore.collection('magasins').doc(id).update({
-            produits: fieldValue.arrayUnion(productName),
+            produits: fieldValue.arrayUnion({
+                id: idProduct,
+                nom: productName,
+            }),
         });
         res.send('Le produit a bien été ajouté');
     } catch (error) {
@@ -211,15 +214,25 @@ const updateProduct = async (req, res, next) => {
         });
 
         console.log("test")
-        var arrayData = [{
-            nom: productName,
-            id:idProduct,
-        }];
+       
+
+        var array = [];
+        var request = await firestore.collection('magasins').doc(id).get();
+      
+        request.data().produits.forEach(function(item) {
+            array.push(item);
+        });
+
+        var found = array.find(product => product.id === idProduct);
+        // console.log(found)
+
         await firestore.collection('magasins').doc(id).update({
-            produits: testFirebase.firestore.FieldValue.arrayUnion({
-                nom: productName,
-                id:idProduct,
-            }),
+            produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+        });
+        found.nom = productName;
+
+        await firestore.collection('magasins').doc(id).update({
+            produits: testFirebase.firestore.FieldValue.arrayUnion(found),
         });
         res.send("Le magasin a été  mis à jour");        
     } catch (error) {
