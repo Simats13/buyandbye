@@ -178,7 +178,7 @@ const addProduct = async (req, res, next) => {
 
         await docRef.set(data);
 
-        await firestore.collection('magasins').doc(id).set({
+        await firestore.collection('magasins').doc(id).update({
             produits: fieldValue.arrayUnion(productName),
         });
         res.send('Le produit a bien été ajouté');
