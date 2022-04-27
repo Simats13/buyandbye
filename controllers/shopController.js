@@ -245,10 +245,20 @@ const deleteProduct = async (req, res, next) => {
     try {
         const id = req.params.id;
         const idProduct = req.body.idProduct;
-        console.log(idProduct);
-        console.log(id);
-        console.log(req.body);
         await firestore.collection('magasins').doc(id).collection('produits').doc(idProduct).delete();
+        var array = [];
+        var request = await firestore.collection('magasins').doc(id).get();
+      
+        request.data().produits.forEach(function(item) {
+            array.push(item);
+        });
+
+        var found = array.find(product => product.id === idProduct);
+        
+
+        await firestore.collection('magasins').doc(id).update({
+            produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+        });
         res.send("Le produit a bien été supprimé");
     } catch (error) {
         res.status(400).send(error.message);
