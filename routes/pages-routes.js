@@ -26,7 +26,9 @@ router.get('/', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid, { agent: httpsAgent });
+    var instance = axios.create({ agent: agent });
+    var shopInfos = instance.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+   
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.render("pages/login");})
 });
@@ -39,7 +41,8 @@ router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid, { agent: httpsAgent });
+    var instance = axios.create({ agent: agent });
+    var shopInfos = instance.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.redirect("/")})
 });
