@@ -26,7 +26,7 @@ router.use(cookieParser());
 
 router.get('/', function (req, res) {  
     const sessionCookie = req.cookies.session || "";
-    firebase.auth().verifySessionCookie(sessionCookie, true).then(() => {res.render("professional/pages/dashboard")}).ch((error)=>res.render("pages/login"))
+    firebase.auth().verifySessionCookie(sessionCookie, true).then(() => {res.render("professional/pages/dashboard")}).then((error)=>res.render("pages/login"))
   });
 router.get('/inscription', registerView);
 router.get('/connexion', loginView);
