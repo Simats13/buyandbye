@@ -5,7 +5,7 @@ const csrf = require('csurf');
 const axios = require('axios');
 
 const firebase = require('../db');
-const {registerView, loginView, homeView, resetView, sessionLoginView } = require('../controllers/pagesController');
+const {registerView, loginView, homeView, dashboardView, entrepriseView, sessionLoginView } = require('../controllers/pagesController');
 
 const router = express.Router();
 const csrfProtection = csrf({
@@ -22,21 +22,26 @@ router.use(cookieParser());
 //   });
  
  
- 
+
 
 router.get('/', function (req, res) {  
     const sessionCookie = req.cookies.session || "";
-    firebase.auth().verifySessionCookie(sessionCookie, true).then(() => {res.render("professional/pages/dashboard")}).then((error)=>res.render("pages/login"))
+    firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
+      const uid = decodedToken.uid;
+      var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+      res.render("professional/pages/dashboard",{shopInfos:shopInfos.data});
+    }).catch((error)=>{console.log(error);res.render("pages/login")})
   });
 router.get('/inscription', registerView);
 router.get('/connexion', loginView);
-router.get('/reset', resetView);
+// router.get('/home', homeView);   
 
 router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
     var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    console.log(shopInfos);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{res.redirect("/")})
 });
