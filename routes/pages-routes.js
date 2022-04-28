@@ -41,7 +41,6 @@ router.get('/dashboard', function (req, res) {
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
     var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
-    console.log(shopInfos);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{res.redirect("/")})
 });
