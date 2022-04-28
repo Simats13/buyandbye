@@ -15,10 +15,11 @@ const csrfProtection = csrf({
 
 router.use(cookieParser());
 
-const httpsAgent = new https.Agent({
+var httpsAgent = new https.Agent({
   rejectUnauthorized: false, // (NOTE: this will disable client verification)
   cert: fs.readFileSync("./certs/certs.pem"),
   key: fs.readFileSync("./certs/privateKey.pem"),
+  ca: fs.readFileSync("./certs/ca.pem"),
 })
  
 
@@ -27,7 +28,7 @@ router.get('/', function (req, res) {
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
     var instance = axios.create({ agent: agent });
-    var shopInfos = instance.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var shopInfos = instance.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid,{ agent: httpsAgent });
    
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.render("pages/login");})
@@ -42,7 +43,7 @@ router.get('/dashboard', function (req, res) {
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
     var instance = axios.create({ agent: agent });
-    var shopInfos = instance.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var shopInfos = instance.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid,{ agent: httpsAgent });
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.redirect("/")})
 });
