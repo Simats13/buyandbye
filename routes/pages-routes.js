@@ -27,7 +27,7 @@ router.get('/', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid,{ agent: httpsAgent });
+    var shopInfos = axios.get("http" + '://' + req.get('host') +":8080" + "/api/shops/" + uid);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.render("pages/login");})
 });
@@ -40,7 +40,7 @@ router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid,{ agent: httpsAgent });
+    var shopInfos = axios.get("http" + '://' + req.get('host')+":8080"  + "/api/shops/" + uid);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.redirect("/")})
 });
