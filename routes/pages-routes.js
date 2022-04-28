@@ -29,7 +29,7 @@ router.get('/', function (req, res) {
     const uid = decodedToken.uid;
     var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
-  }).catch((error)=>res.render("pages/login"))
+  }).catch((error)=>{console.log(error);res.render("pages/login");})
 });
 
 router.get('/inscription', registerView);
@@ -42,7 +42,7 @@ router.get('/dashboard', function (req, res) {
     const uid = decodedToken.uid;
     var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
-  }).catch((error)=>{res.redirect("/")})
+  }).catch((error)=>{console.log(error);res.redirect("/")})
 });
  
 
