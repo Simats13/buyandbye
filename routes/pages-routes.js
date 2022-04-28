@@ -3,7 +3,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const axios = require('axios');
-
+const https = require('https');
+const fs = require('fs');
 const firebase = require('../db');
 const {registerView, loginView, homeView, dashboardView, entrepriseView, sessionLoginView } = require('../controllers/pagesController');
 
@@ -13,21 +14,19 @@ const csrfProtection = csrf({
 });
 
 router.use(cookieParser());
-// router.use(csrfMiddleware);
 
- 
-// router.all('*', (req, res, next) => {
-//     res.cookie('XSRF-TOKEN', req.csrfToken());
-//     next();
-//   });
- 
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false, // (NOTE: this will disable client verification)
+  cert: fs.readFileSync("./certs/certs.pem"),
+  key: fs.readFileSync("./certs/privateKey.pem"),
+})
  
 
 router.get('/', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid, { agent: httpsAgent });
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.render("pages/login");})
 });
@@ -40,7 +39,7 @@ router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid, { agent: httpsAgent });
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.redirect("/")})
 });
@@ -83,7 +82,7 @@ router.get('/messages', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;    
-    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid, { agent: httpsAgent });
     res.render("professional/pages/messages",{id:uid,shopInfos:shopInfos.data});
   }).catch((error)=>{res.redirect("/")});   
 });
