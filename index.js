@@ -41,5 +41,5 @@ app.use(cors());
 var httpsServer = https.createServer(credentials, app);
 
 httpsServer.listen(443);
-app.listen(config.port, () => console.log('App is listening on url http://localhost:' + config.port));
+app.listen(443, () => console.log('App is listening on url http://localhost:' + 443));
  
