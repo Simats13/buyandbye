@@ -16,9 +16,9 @@ const loginView = (req, res) => {
     } );
 }
 
-const homeView = (req, res) => {
+const resetView = (req, res) => {
 
-    res.render("pages/home", {
+    res.render("pages/reset", {
     } );
 }
 
@@ -84,7 +84,7 @@ const entrepriseView =  (req, res) => {
 module.exports =  {
     registerView,
     loginView,
-    homeView,
+    resetView,
     dashboardView,
     entrepriseView,
     sessionLoginView

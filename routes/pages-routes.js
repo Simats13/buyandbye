@@ -5,7 +5,7 @@ const csrf = require('csurf');
 const axios = require('axios');
 
 const firebase = require('../db');
-const {registerView, loginView, homeView, dashboardView, entrepriseView, sessionLoginView } = require('../controllers/pagesController');
+const {registerView, loginView, homeView, resetView, sessionLoginView } = require('../controllers/pagesController');
 
 const router = express.Router();
 const csrfProtection = csrf({
@@ -22,7 +22,7 @@ router.use(cookieParser());
 //   });
  
  
-
+ 
 
 router.get('/', function (req, res) {  
     const sessionCookie = req.cookies.session || "";
@@ -30,7 +30,7 @@ router.get('/', function (req, res) {
   });
 router.get('/inscription', registerView);
 router.get('/connexion', loginView);
-router.get('/home', homeView);   
+router.get('/reset', resetView);
 
 router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
