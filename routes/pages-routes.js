@@ -13,7 +13,7 @@ const csrfProtection = csrf({
   cookie: true,
 });
 
-var sslRootCAs = require('ssl-root-cas/latest')
+var sslRootCAs = require('ssl-root-cas')
 sslRootCAs.inject()
 
 router.use(cookieParser());
