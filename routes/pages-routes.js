@@ -13,6 +13,9 @@ const csrfProtection = csrf({
   cookie: true,
 });
 
+var sslRootCAs = require('ssl-root-cas/latest')
+sslRootCAs.inject()
+
 router.use(cookieParser());
 
 var httpsAgent = new https.Agent({
