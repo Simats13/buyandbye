@@ -16,10 +16,10 @@ const csrfProtection = csrf({
 router.use(cookieParser());
 
 var httpsAgent = new https.Agent({
-  rejectUnauthorized: false, // (NOTE: this will disable client verification)
-  cert: fs.readFileSync("./certs/certs.pem"),
-  key: fs.readFileSync("./certs/privateKey.pem"),
-  ca: fs.readFileSync("./certs/ca.pem"),
+  rejectUnauthorized: true, // (NOTE: this will disable client verification)
+  cert: fs.readFileSync("./certs/certs.pem", 'utf8'),
+  key: fs.readFileSync("./certs/privateKey.pem", 'utf8'),
+  ca: fs.readFileSync("./certs/ca.pem", 'utf8'),
 })
  
 
@@ -27,8 +27,9 @@ router.get('/', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid,{ agent: httpsAgent });
-    res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
+    console.log(uid)
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+    res.render("professional/pages/dashboard",{shopInfos:shopInfos.data});
   }).catch((error)=>{console.log(error);res.render("pages/login");})
 });
 
@@ -40,7 +41,7 @@ router.get('/dashboard', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;
-    var shopInfos = axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid,{ agent: httpsAgent });
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.redirect("/")})
 });
