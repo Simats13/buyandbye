@@ -20,7 +20,7 @@ router.get('/', function (req, res) {
   if(sessionCookie){ 
     firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
       const uid = decodedToken.uid;
-      var shopInfos = axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
+      var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
       res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
     }).catch((error)=>{console.log(error);res.render("pages/login");})
   }else{
