@@ -9,8 +9,8 @@ const fs = require('fs');
 const https = require('https');
 const privateKey  = fs.readFileSync('./certs/privateKey.pem', 'utf8');
 const certificate = fs.readFileSync('./certs/certs.pem', 'utf8');
-const ca = fs.readFileSync('./certs/ca.pem', 'utf8');
-const credentials = {key: privateKey, cert: certificate,ca: ca};
+
+const credentials = {key: privateKey, cert: certificate};
 const app = express();
 
 
@@ -29,9 +29,6 @@ app.use('/' ,require('./routes/pages-routes'));
 // app.use('/api', userRoutes.routes);
 app.use('/api', shopRoutes.routes);
 app.use('/api', authRoutes.routes);
-
-
-
 
 
 

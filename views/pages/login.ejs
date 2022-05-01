@@ -105,6 +105,9 @@
             })
             .then(() => {
               window.location.assign("/dashboard");
+            }).catch((error) => {
+              console.log(error);
+              // alert(error.message);
             });
           return false;
         });
