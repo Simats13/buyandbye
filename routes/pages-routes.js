@@ -40,7 +40,7 @@ router.get('/dashboard', function (req, res) {
     res.render("professional/pages/dashboard",{shopInfos:shopInfos.data})
   }).catch((error)=>{console.log(error);res.redirect("/")})
 });
-  
+   
 
 router.get('/entreprise', csrfProtection, function (req, res) {
   const sessionCookie = req.cookies.session || "";
