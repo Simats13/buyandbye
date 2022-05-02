@@ -14,7 +14,11 @@ const {
 } = require('../controllers/shopController');
 
 const router = express.Router();
+const multer = require('multer');
 
+const upload = multer({
+    storage: multer.memoryStorage()
+})
 
 
 
@@ -25,7 +29,7 @@ router.post('/shops/:id', updateShop);
 router.delete('/shops/:id', deleteShop);
   
 router.get('/shops/:id/products', getAllProducts);
-router.post('/shops/:id/products/:idProduct/edit',updateProduct);
+router.post('/shops/:id/products/:idProduct/edit',upload.single('file'),updateProduct);
 router.post('/shops/:id/products/:idProduct/delete',deleteProduct);
 router.post('/shops/:id/products/add',addProduct); 
 

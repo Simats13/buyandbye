@@ -6,7 +6,12 @@ const testFirebase = require('firebase-admin');
 const Shop = require('../models/shop');
 const Products = require('../models/products');
 const firestore = firebase.firestore();
+const multer = require('multer')
 
+
+const upload = multer({
+    storage: multer.memoryStorage()
+});
 
 const addShop = async (req, res, next) => {
     try {
@@ -115,6 +120,7 @@ const updateShop = async (req, res, next) => {
         const id = req.params.id;    
         const colorStore = req.body.colorStore.substring(1); 
         const shop =  await firestore.collection('magasins').doc(id);
+        console.log(req);
         await shop.update({
             Fname: req.body.fname,
             Lname: req.body.lname,
@@ -132,7 +138,29 @@ const updateShop = async (req, res, next) => {
             colorStore: colorStore, 
             'position.latitude': req.body.latitude,
             'position.longitude': req.body.longitude,
-        });    
+        });
+        if(!req.file) {
+            console.log('no file');
+            res.status(400).send("Error: No files found")
+        } else {
+            const blob = firebase.storage().bucket().file(`profile/${id}/banniere`);
+            
+            const blobWriter = blob.createWriteStream({
+                metadata: {
+                    contentType: req.file.mimetype
+                }
+            })
+            
+            blobWriter.on('error', (err) => {
+                console.log(err)
+            })
+            
+            // blobWriter.on('finish', () => {
+            //     res.redirect('/entreprise/');
+            // })
+            
+            blobWriter.end(req.file.buffer)
+        }
         res.send("Le magasin a été  mis à jour");        
     } catch (error) {
         console.log(error) 
