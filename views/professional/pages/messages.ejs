@@ -579,6 +579,7 @@ function onMediaFileSelected(event) {
       idTo: idTo,
       isread: false,
       sentByClient: false,
+      message: 'https://www.google.com/images/spin-32.gif?a',
       imageUrl: 'https://www.google.com/images/spin-32.gif?a',
       timestamp: uploadTimestamp,
       type:"image"
@@ -595,6 +596,7 @@ function onMediaFileSelected(event) {
     // 4 - Met à jour le message avec les infos de l'image
     await updateDoc(messageRef,{
       imageUrl: publicImageUrl,
+      message:publicImageUrl,
       storageUri: fileSnapshot.metadata.fullPath
     });
 
