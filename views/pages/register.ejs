@@ -123,7 +123,6 @@
 			</div>
                         <form id="registerPage" method="post">
                             <div id="wizard">
-                                
                                 <!-- SECTION 1 -->
                                 <h4></h4>
                                 <section>
@@ -403,7 +402,7 @@
         <!-- Fenêtre modale de suppression d'un produit -->
         <div class="modal fade" name="horairesOuvertureModal" id="horairesOuvertureModal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Horaires D'ouverture
@@ -414,7 +413,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-row">
-                            <label for="openAndClose">Horaires d'ouverture </label>
+                            <label for="openAndClose">Veuillez choisir des horaires</label>
                             <div class="form-row">
                                 <table class="table">
                                 <thead>
@@ -427,63 +426,105 @@
                                     <th scope="col">Ouverture Continue</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">Lundi</th>
-                                        <td><input type="time" id="lundi_first_open" name="lundi_first_open"></td>
-                                        <td><input type="time" id="lundi_first_close" name="lundi_first_close"></td>
-                                        <td><input type="time" id="lundi_second_open" name="lundi_second_open"></td>
-                                        <td><input type="time" id="lundi_second_close" name="lundi_second_close"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Mardi</th>
-                                        <td><input type="time" id="mardi_first_open" name="mardi_first_open"></td>
-                                        <td><input type="time" id="mardi_first_close" name="mardi_first_close"></td>
-                                        <td><input type="time" id="mardi_second_open" name="mardi_second_open"></td>
-                                        <td><input type="time" id="mardi_second_close" name="mardi_second_close"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Mercredi</th>
-                                        <td><input type="time" id="mercredi_first_open" name="mercredi_first_open"></td>
-                                        <td><input type="time" id="mercredi_first_close" name="mercredi_first_close"></td>
-                                        <td><input type="time" id="mercredi_second_open" name="mercredi_second_open"></td>
-                                        <td><input type="time" id="mercredi_second_close" name="mercredi_second_close"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Jeudi</th>
-                                        <td><input type="time" id="jeudi_first_open" name="jeudi_first_open"></td>
-                                        <td><input type="time" id="jeudi_first_close" name="jeudi_first_close"></td>
-                                        <td><input type="time" id="jeudi_second_open" name="jeudi_second_open"></td>
-                                        <td><input type="time" id="jeudi_second_close" name="jeudi_second_close"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Vendredi</th>
-                                        <td><input type="time" id="vendredi_first_open" name="vendredi_first_open"></td>
-                                        <td><input type="time" id="vendredi_first_close" name="vendredi_first_close"></td>
-                                        <td><input type="time" id="vendredi_second_open" name="vendredi_second_open"></td>
-                                        <td><input type="time" id="vendredi_second_close" name="vendredi_second_close"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Samedi</th>
-                                        <td><input type="time" id="samedi_first_open" name="samedi_first_open"></td>
-                                        <td><input type="time" id="samedi_first_close" name="samedi_first_close"></td>
-                                        <td><input type="time" id="samedi_second_open" name="samedi_second_open"></td>
-                                        <td><input type="time" id="samedi_second_close" name="samedi_second_close"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Dimanche</th>
-                                        <td><input type="time" id="dimanche_first_open" name="dimanche_first_open"></td>
-                                        <td><input type="time" id="dimanche_first_close" name="dimanche_first_close"></td>
-                                        <td><input type="time" id="dimanche_second_open" name="dimanche_second_open"></td>
-                                        <td><input type="time" id="dimanche_second_close" name="dimanche_second_close"></td>
-                                    </tr>
-                                </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">Lundi</th>
+                                            <td><input type="time" id="lundi_first_open" name="lundi_first_open"></td>
+                                            <td><input type="time" id="lundi_first_close" name="lundi_first_close"></td>
+                                            <td><input type="time" id="lundi_second_open" name="lundi_second_open"></td>
+                                            <td><input type="time" id="lundi_second_close" name="lundi_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="lundi_open_continue" type="checkbox" value="" id="lundi_open_continue" >
+                                                    <label class="form-check-label" name="lundi_open_continueLabel" for="lundi_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Mardi</th>
+                                            <td><input type="time" id="mardi_first_open" name="mardi_first_open"></td>
+                                            <td><input type="time" id="mardi_first_close" name="mardi_first_close"></td>
+                                            <td><input type="time" id="mardi_second_open" name="mardi_second_open"></td>
+                                            <td><input type="time" id="mardi_second_close" name="mardi_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="mardi_open_continue" type="checkbox" value="" id="mardi_open_continue" >
+                                                    <label class="form-check-label" name="mardi_open_continueLabel" for="mardi_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Mercredi</th>
+                                            <td><input type="time" id="mercredi_first_open" name="mercredi_first_open"></td>
+                                            <td><input type="time" id="mercredi_first_close" name="mercredi_first_close"></td>
+                                            <td><input type="time" id="mercredi_second_open" name="mercredi_second_open"></td>
+                                            <td><input type="time" id="mercredi_second_close" name="mercredi_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="mercredi_open_continue" type="checkbox" value="" id="mercredi_open_continue" >
+                                                    <label class="form-check-label" name="mercredi_open_continueLabel" for="mercredi_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Jeudi</th>
+                                            <td><input type="time" id="jeudi_first_open" name="jeudi_first_open"></td>
+                                            <td><input type="time" id="jeudi_first_close" name="jeudi_first_close"></td>
+                                            <td><input type="time" id="jeudi_second_open" name="jeudi_second_open"></td>
+                                            <td><input type="time" id="jeudi_second_close" name="jeudi_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="jeudi_open_continue" type="checkbox" value="" id="jeudi_open_continue" >
+                                                    <label class="form-check-label" name="jeudi_open_continueLabel" for="jeudi_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Vendredi</th>
+                                            <td><input type="time" id="vendredi_first_open" name="vendredi_first_open"></td>
+                                            <td><input type="time" id="vendredi_first_close" name="vendredi_first_close"></td>
+                                            <td><input type="time" id="vendredi_second_open" name="vendredi_second_open"></td>
+                                            <td><input type="time" id="vendredi_second_close" name="vendredi_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="vendredi_open_continue" type="checkbox" value="" id="vendredi_open_continue" >
+                                                    <label class="form-check-label" name="vendredi_open_continueLabel" for="vendredi_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Samedi</th>
+                                            <td><input type="time" id="samedi_first_open" name="samedi_first_open"></td>
+                                            <td><input type="time" id="samedi_first_close" name="samedi_first_close"></td>
+                                            <td><input type="time" id="samedi_second_open" name="samedi_second_open"></td>
+                                            <td><input type="time" id="samedi_second_close" name="samedi_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="samedi_open_continue" type="checkbox" value="" id="samedi_open_continue" >
+                                                    <label class="form-check-label" name="samedi_open_continueLabel" for="samedi_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Dimanche</th>
+                                            <td><input type="time" id="dimanche_first_open" name="dimanche_first_open"></td>
+                                            <td><input type="time" id="dimanche_first_close" name="dimanche_first_close"></td>
+                                            <td><input type="time" id="dimanche_second_open" name="dimanche_second_open"></td>
+                                            <td><input type="time" id="dimanche_second_close" name="dimanche_second_close"></td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" name="dimanche_open_continue" type="checkbox" value="" id="dimanche_open_continue" >
+                                                    <label class="form-check-label" name="dimanche_open_continueLabel" for="dimanche_open_continue"> </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                      </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" name="modalTest" type="button" data-bs-dismiss="modal">Enregistrer</button>
+                        <button class="btn btn-secondary" name="horairesOuvertureModal" type="button" data-bs-dismiss="modal">Enregistrer</button>
                     </div>
                 </div>
             </div>
