@@ -79,7 +79,7 @@ router.get('/messages', function (req, res) {
   const sessionCookie = req.cookies.session || "";
   firebase.auth().verifySessionCookie(sessionCookie, true).then(async (decodedToken) => {
     const uid = decodedToken.uid;    
-    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid, { agent: httpsAgent });
+    var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + uid);
     res.render("professional/pages/messages",{id:uid,shopInfos:shopInfos.data});
   }).catch((error)=>{res.redirect("/")});   
 });

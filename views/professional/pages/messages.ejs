@@ -322,7 +322,7 @@
                           <!-- input sert à afficher la fenêtre de choix du fichier à envoyer mais n'est pas joli
                           Il est donc masqué et est appelé en JS lorsque le bouton stylisé est sélectionné -->
                           <input id="mediaCapture" type="file" accept="image/*" capture="camera">
-                          <button id="submitImage" title="ajouter une image"><i class="fas fa-image"></i></button>
+                          <button id="submitImage" title="Ajouter une image"><i class="fas fa-image"></i></button>
                       </div>
                   </form>
                   <p id="choose">Choisissez une conversation sur votre gauche<br>pour lancer une discussion</p>
@@ -378,11 +378,16 @@ function onMessageFormSubmit(e) {
 // Enregistre le message dans Firestore
 async function saveMessage(messageText, docID) {
   try {
+    const idTo = docID.split("<%=id%>")[1];
+    console.log(idTo);
     await addDoc(collection(getFirestore(), "commonData", docID, "messages"), {
+      idFrom:"<%=id%>",
+      idTo:idTo,
       isread: false,
       sentByClient: false,
       message: messageText,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      type:"text",
     });
 
     await updateDoc(doc(getFirestore(), "commonData", docID), {
@@ -568,11 +573,15 @@ function onMediaFileSelected(event) {
     // 1 - On ajoute le message avec un icône de chargement et on le changera avec l'url de l'image
     const conversationId = document.getElementById('submit').getAttribute('class');
     const uploadTimestamp = serverTimestamp();
+    const idTo = conversationId.split("<%=id%>")[1];
     const messageRef = await addDoc(collection(getFirestore(), 'commonData', conversationId, 'messages'), {
+      idFrom: "<%=id%>",
+      idTo: idTo,
       isread: false,
       sentByClient: false,
       imageUrl: 'https://www.google.com/images/spin-32.gif?a',
-      timestamp: uploadTimestamp
+      timestamp: uploadTimestamp,
+      type:"image"
     });
 
     // 2 - Upload l'image image dans Cloud Storage.
