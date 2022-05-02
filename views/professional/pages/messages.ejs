@@ -459,10 +459,7 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
   }
   var messageElement = div.querySelector('.message');
 
-  if (text) { // Si le message est du texte
-    messageElement.textContent = text;
-    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
-  } else if (imageUrl) { // Si le message est une image
+  if (imageUrl) { // Si le message est une image
     var image = document.createElement('img');
     image.onload = function() {
       messagesZone.scrollTop = messagesZone.scrollHeight;
@@ -470,6 +467,10 @@ function displayMessage(id, timestamp, text, sentByClient, imageUrl) {
     image.src = imageUrl + '&' + new Date().getTime();
     messageElement.innerHTML = '';
     messageElement.appendChild(image);
+    
+  } else if (text) { // Si le message est du texte
+    messageElement.textContent = text;
+    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
   }
 
   // Fait défiler jusqu'au nouveau message
