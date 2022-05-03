@@ -1,6 +1,6 @@
-<%- include('../includes/scripts.ejs'); %>
-<%- include('../includes/head.ejs'); %>
-<%- include('../includes/navbar.ejs'); %>
+<%- include('../partials/scripts.ejs'); %>
+<%- include('../partials/head.ejs'); %>
+<%- include('../partials/navbar.ejs'); %>
 <link rel="stylesheet" href="professional/css/chosen.css">
 <link rel="stylesheet" href="professional/css/chosen.css">
 
@@ -69,7 +69,7 @@
 </style>
 
 <script
-    src="https://maps.google.com/maps/api/js?key=AIzaSyAEKsQP_j7i0BEjWX1my8_CFL_8sZMPvVk&libraries=places&region=fr"
+    src="https://maps.google.com/maps/api/js?key=AIzaSyDdnevI_6sCr0LvfpC4y9_wevsSequKsdk&libraries=places&region=fr"
     type="text/javascript">
 </script>
 
@@ -270,7 +270,7 @@
                     <div class="form-group">
                         <label for="exampleColorInput" class="form-label">Changer la bannière</label><br>
                         <img src="<%= shopInfos.imgUrl %>" width="100px" height="100px" class="img-thumbnail img-fluid" alt="old_banniere" id="old_image" name="old_image">
-                        <input type="hidden" name="old_banniere" id="old_banniere" value="old_banniere"><br>
+                        <input type="hidden" name="old_banniere" id="old_banniere" value="<%= shopInfos.imgUrl %>">
                         <img name="new_banniere" id="new_banniere" src="#"  class="img-thumbnail img-fluid" hidden >
                         <input type="file" name="banniere" id="banniere" onchange="readURL(this);">
                     </div>
@@ -286,7 +286,20 @@
                           </div>
                         </div> 
                       </div>
-                    <div class="modal-footer">
+                    
+                        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Erreur</h5>
+                                </div>
+                                <div class="modal-body">
+                                  <p id="errorText"></p>
+                                </div>
+                              </div>
+                            </div> 
+                          </div>
+                        <div class="modal-footer">
                         
                         <button type="submit" value="<%= shopInfos.id %>" name="edit_enterprise" id="edit_enterprise" class="btn btn-primary">Enregistrer les modifications</button>
                     </div>
@@ -295,7 +308,7 @@
         </div>
     </div>
 </div>
-<%- include('../includes/footer.ejs'); %>
+<%- include('../partials/footer.ejs'); %>
 <script>
     function readURL(input) {
         if (input.files && input.files[0]) {
@@ -356,23 +369,70 @@
           const clickandcollect = event.target.clickandcollect.checked;
           const livraison = event.target.livraison.checked;
           const isPhoneVisible = event.target.isPhoneVisible.checked;
+          const banniere = document.querySelector('#banniere') ;
+          const old_banniere = $('#old_banniere').val();
+
+          const formData = new FormData();
+          formData.append('banniere', banniere.files[0]);
+
+          const data = {
+            ownerLastName:lname,
+            ownerFirstName:fname,
+            companyName:companyName,
+            autocomplete:autocomplete,
+            latitude:latitude,
+            longitude:longitude,
+            siretNumber:siretNumber,
+            tvaNumber:tvaNumber,
+            description:description,
+            tagsCompany:tagsCompany,
+            email:email,
+            phone:phone,
+            colorStore:colorStore,
+            clickandcollect:clickandcollect,
+            livraison:livraison,
+            isPhoneVisible:isPhoneVisible,
+            old_banniere:old_banniere
+          };
+          
+          
+          formData.append('data', JSON.stringify(data));
+             
+
+        //   console.log(formData.getAll());
           return fetch("/api/shops/<%=shopInfos.id%>", {
+
                   method: "POST",
-                  headers: {
-                    Accept: "application/json",
-                    
-                    "Content-Type": "application/json",
-                    "Content-Type": "multipart/form-data",
-                  },
-                  body: JSON.stringify({fname, lname, companyName, autocomplete, latitude,tagsCompany, longitude, siretNumber,tvaNumber, description, email, phone, colorStore, clickandcollect, livraison, isPhoneVisible }),
-                }).then(() => {
-                    $('#finishModal').modal('show').then(
+                  body: formData,
+                  
+                }).then(async res => {
+                    const isJson = res.headers.get('content-type')?.includes('application/json');
+                    const data = isJson ? await res.json() : null;
+                    console.log(res.ok);
+                    if (!res.ok) {
+                        $( "#errorText" ).append(data.error);
+                        $('#errorModal').modal('show').then(
                         setTimeout(function () {
-                            $('#finishModal').modal('hide');
+                            $('#errorModal').modal('hide');
                             window.location.href = "/entreprise";
                         }, 2000)
                     );
-                //   window.location.href = "/entreprise";
+
+
+                    }else{
+                        $('#finishModal').modal('show').then(
+                        setTimeout(function () {
+                            $('#finishModal').modal('hide');
+                            window.location.href = "/entreprise";
+                            }, 2000)
+                            
+                        );
+                        
+                    }
+
+
+                   
+                //   
                 });
           return false;
         });

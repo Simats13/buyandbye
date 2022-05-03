@@ -118,50 +118,80 @@ const getShop = async (req, res, next) => {
 const updateShop = async (req, res, next) => {
     try {
         const id = req.params.id;    
-        const colorStore = req.body.colorStore.substring(1); 
-        const shop =  await firestore.collection('magasins').doc(id);
-        console.log(req);
-        await shop.update({
-            Fname: req.body.fname,
-            Lname: req.body.lname,
-            name: req.body.companyName,
-            adresse: req.body.autocomplete,
-            email: req.body.email,
-            phone: req.body.phone,
-            description: req.body.description,
-            ClickAndCollect: req.body.clickandcollect,
-            livraison: req.body.livraison,
-            isPhoneVisible: req.body.isPhoneVisible,
-            mainCategorie: req.body.tagsCompany,
-            siretNumber: req.body.siretNumber,
-            tvaNumber: req.body.tvaNumber,
-            colorStore: colorStore, 
-            'position.latitude': req.body.latitude,
-            'position.longitude': req.body.longitude,
-        });
+               
+            
+        
+        const shop =  firestore.collection('magasins').doc(id);
+        var data = JSON.parse(req.body.data);
+        console.log(data.companyName);
+        
         if(!req.file) {
-            console.log('no file');
-            res.status(400).send("Error: No files found")
+            await shop.update({
+                Fname: data.ownerFirstName,
+                Lname: data.ownerLastName,
+                name: data.companyName,
+                adresse: data.autocomplete,
+                email: data.email,
+                phone: data.phone,
+                description: data.description,
+                ClickAndCollect: data.clickandcollect,
+                livraison: data.livraison,
+                isPhoneVisible: data.isPhoneVisible,
+                mainCategorie: data.tagsCompany,
+                siretNumber: data.siretNumber,
+                tvaNumber: data.tvaNumber,
+                colorStore: data.colorStore.substring(1),
+                imgUrl:data.old_banniere, 
+                'position.latitude': data.latitude,
+                'position.longitude': data.longitude,
+            });
+           return res.status(200).json({success:"success"});
         } else {
-            const blob = firebase.storage().bucket().file(`profile/${id}/banniere`);
+
+            const blob = firebase.storage().bucket().file(`profile/${id}/banniere`); 
+   
+
+            const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/profile%2F${id}%2Fbanniere?alt=media`;
             
             const blobWriter = blob.createWriteStream({
                 metadata: {
-                    contentType: req.file.mimetype
+                    contentType: req.file.mimetype,
                 }
-            })
+            })  
             
             blobWriter.on('error', (err) => {
-                console.log(err)
+               
+                console.log(err);
+                return res.status(409).json({error:"Votre image n'a pas été envoyé"});
             })
             
-            // blobWriter.on('finish', () => {
-            //     res.redirect('/entreprise/');
-            // })
+            blobWriter.on('finish',async ()  => {
+                await shop.update({
+                    Fname: data.ownerFirstName,
+                    Lname: data.ownerLastName,
+                    name: data.companyName,
+                    adresse: data.autocomplete,
+                    email: data.email,
+                    phone: data.phone,
+                    description: data.description,
+                    ClickAndCollect: data.clickandcollect,
+                    livraison: data.livraison,
+                    isPhoneVisible: data.isPhoneVisible,
+                    mainCategorie: data.tagsCompany,
+                    siretNumber: data.siretNumber,
+                    tvaNumber: data.tvaNumber,
+                    colorStore: data.colorStore.substring(1),
+                    imgUrl: downloadUrl, 
+                    'position.latitude': data.latitude,
+                    'position.longitude': data.longitude,
+                });  
+               return res.status(200).json({success:"success"});
+                // res.redirect('/entreprise/'); 
+            })
             
-            blobWriter.end(req.file.buffer)
+            blobWriter.end(req.file.buffer);
         }
-        res.send("Le magasin a été  mis à jour");        
+        // res.send("Le magasin a été  mis à jour");        
     } catch (error) {
         console.log(error) 
         res.status(400).send(error.message);

@@ -19,13 +19,13 @@ const multer = require('multer');
 const upload = multer({
     storage: multer.memoryStorage()
 })
-
+    
 
 
 router.post('/shops', addShop);
 router.get('/shops', getAllShops);
 router.get('/shops/:id', getShop);
-router.post('/shops/:id', updateShop); 
+router.post('/shops/:id',upload.single('banniere'), updateShop); 
 router.delete('/shops/:id', deleteShop);
   
 router.get('/shops/:id/products', getAllProducts);

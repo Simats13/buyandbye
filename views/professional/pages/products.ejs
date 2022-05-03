@@ -1,6 +1,6 @@
-<%- include('../includes/scripts.ejs'); %>
-<%- include('../includes/head.ejs'); %>
-<%- include('../includes/navbar.ejs'); %>
+<%- include('../partials/scripts.ejs'); %>
+<%- include('../partials/head.ejs'); %>
+<%- include('../partials/navbar.ejs'); %>
 <% selectCategory = function(edit,products) {
     
     if(shopInfos.type === 'Magasin'){ %>
@@ -361,7 +361,7 @@
     </div> 
   </div>
 </div>
-<%- include('../includes/footer.ejs'); %>
+<%- include('../partials/footer.ejs'); %>
 <script>
     function readURL(input) {
         if (input.files && input.files[0]) {
