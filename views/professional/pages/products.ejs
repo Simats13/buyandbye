@@ -156,7 +156,7 @@
                                 <div class="form-group">
                                     <label for="image">Image</label>
                                     <br>
-                                    <input type="file" name="image" id="image">
+                                    <input type="file" name="add_image" id="add_image">
                                 </div>
                                 <!-- Boutons de validation et d'annulation -->
                                 <div class="modal-footer">
@@ -298,8 +298,8 @@
                                                 <div class="form-group ">
                                                     <label for="exampleColorInput" class="form-label">Image Actuelle</label><br>
                                                     <img src="<%= products[i].image[0] %>" class="img-thumbnail img-fluid" alt="currentImage" id="currentImage" name="currentImage">
-                                                    <input type="hidden" name="currentImageInput" id="currentImageInput" value="currentImageInput"><br>
-                                                    <img name="new_image" id="new_image" src="#"  class="img-thumbnail img-fluid" hidden >
+                                                    <input type="hidden" name="currentImageInput" id="currentImageInput" value="<%= products[i].image[0] %>"><br>
+                                                    <img name="new_image" id="new_imageImg" src="#"  class="img-thumbnail img-fluid" hidden >
                                                     <input type="file" name="new_image" id="new_image" onchange="readURL(this);">
                                                 </div>
                                             </div>
@@ -367,7 +367,7 @@
         if (input.files && input.files[0]) {
             var reader = new FileReader();
           reader.onload = function (e) {
-              $('#new_image')
+              $('#new_imageImg')
                   .attr('src', e.target.result)
                   .removeAttr('hidden')
                   .height(200);
@@ -393,22 +393,47 @@
           const reference = event.target.reference.value;
           const category = event.target.category.value;
           const visibility = event.target.visibilite.checked;
+          const productImage = document.querySelector('#add_image') ;
+        //   const currentImageInput = $('#currentImageInput').val();
+            const formData = new FormData();
+            const data = {
+                productName: productName,
+                description: description,
+                price: price,
+                quantity: quantity,
+                reference: reference,
+                category: category,
+                visibility: visibility,
+                // currentImageInput: currentImageInput,
+            };
+            formData.append('data', JSON.stringify(data));
+            formData.append('add_image', productImage.files[0]);
+
           return fetch("/api/shops/<%= shopInfos.id%>/products/add", {
                   method: "POST",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({productName, description, price, quantity, reference, category, visibility}),
-                }).then(() => {
-                    $('#add').modal('hide');
-                    $('#finishAddModal').modal('show').then(
+                  body: formData,
+                }).then(async res => {
+                    const isJson = res.headers.get('content-type')?.includes('application/json');
+                    const data = isJson ? await res.json() : null;
+                    console.log(res.ok);
+                    if (!res.ok) {
+                        $( "#errorText" ).append(data.error);
+                        $('#errorModal').modal('show').then(
                         setTimeout(function () {
-                            $('#finishAddModal').modal('hide');
-                            window.location.href = "/produits";
+                            $('#errorModal').modal('hide');
+                            window.location.href = "/products";
                         }, 2000)
                     );
-                //   window.location.href = "/entreprise";
+                    }else{
+                        $('#finishEditModal').modal('show').then(
+                        setTimeout(function () {
+                            $('#finishEditModal').modal('hide');
+                            window.location.href = "/produits";
+                            }, 2000)
+                            
+                        );
+                        
+                    }
                 });
           return false;
         });

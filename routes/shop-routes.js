@@ -31,7 +31,7 @@ router.delete('/shops/:id', deleteShop);
 router.get('/shops/:id/products', getAllProducts);
 router.post('/shops/:id/products/:idProduct/edit',upload.single('file'),updateProduct);
 router.post('/shops/:id/products/:idProduct/delete',deleteProduct);
-router.post('/shops/:id/products/add',addProduct); 
+router.post('/shops/:id/products/add',upload.single('add_image'),addProduct); 
 
 
 router.get('/shops/:id/commands',getAllCommands);

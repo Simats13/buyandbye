@@ -118,13 +118,9 @@ const getShop = async (req, res, next) => {
 const updateShop = async (req, res, next) => {
     try {
         const id = req.params.id;    
-               
-            
-        
         const shop =  firestore.collection('magasins').doc(id);
         var data = JSON.parse(req.body.data);
-        console.log(data.companyName);
-        
+          
         if(!req.file) {
             await shop.update({
                 Fname: data.ownerFirstName,
@@ -187,7 +183,7 @@ const updateShop = async (req, res, next) => {
                 });  
                return res.status(200).json({success:"success"});
                 // res.redirect('/entreprise/'); 
-            })
+            });
             
             blobWriter.end(req.file.buffer);
         }
@@ -211,38 +207,84 @@ const deleteShop = async (req, res, next) => {
 
 const addProduct = async (req, res, next) => {
     try {
-        const id = req.params.id;    
-        const productName = req.body.productName;
-        const description = req.body.description;
-        const price =  parseFloat(req.body.price);
-        const quantity = req.body.quantity;
-        const reference = req.body.reference;
-        const category = req.body.category;
-        const visibility = req.body.visibility;
-        const docRef =  await firestore.collection('magasins').doc(id).collection("produits").doc();
-        const idProduct = docRef.id;
+        const id = req.params.id;
+        console.log(id)    
+        const docRef = firestore.collection('magasins').doc(id).collection("produits").doc();
+        var data = JSON.parse(req.body.data);
 
-        var data = {
-            id: idProduct,
-            nom: productName,
-            prix: price,
-            description: description,
-            categorie: category,
-            quantite: quantity,
-            images:"", 
-            reference: reference,
-            visible: visibility,
-        };
+        var images = [];
+        images.push("https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/assets%2FNo_image_available.svg.png");
 
-        await docRef.set(data);
+        if(!req.file) {
+            await docRef.set({
+                id: docRef.id,
+                nom: data.productName,
+                prix: parseFloat(data.price),
+                description: data.description,
+                categorie: data.category,
+                quantite: data.quantity,
+                images:images, 
+                reference: data.reference,
+                visible: data.visibility,
+            });
+    
+            await firestore.collection('magasins').doc(id).update({
+                produits: testFirebase.firestore.FieldValue.arrayUnion({
+                    id: data.idProduct,
+                    nom: data.productName,
+                    categorie:data.category,
+                }),
+            });
+           return res.status(200).json({success:"success"});
+        } else {
+            console.log("Id Product : "+docRef.id)
 
-        await firestore.collection('magasins').doc(id).update({
-            produits: fieldValue.arrayUnion({
-                id: idProduct,
-                nom: productName,
-            }),
-        });
-        res.send('Le produit a bien été ajouté');
+            const blob = firebase.storage().bucket().file(`products/${id}/${docRef.id}/1`); 
+   
+
+            const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/products%2F${id}%2F${docRef.id}%2F1?alt=media`;
+            
+            const blobWriter = blob.createWriteStream({
+                metadata: {
+                    contentType: req.file.mimetype,
+                }
+            })  
+            
+            blobWriter.on('error', (err) => {
+                
+                console.log(err);
+                return res.status(409).json({error:"Votre image n'a pas été envoyé"});
+            })
+
+            var images = [];
+            images.push(downloadUrl);
+            
+            blobWriter.on('finish',async ()  => {
+                await docRef.set({
+                    id: docRef.id,
+                    nom: data.productName,
+                    prix: parseFloat(data.price),
+                    description: data.description,
+                    categorie: data.category,
+                    quantite: data.quantity,
+                    images: images, 
+                    reference: data.reference,
+                    visible: data.visibility,
+                });
+        
+                await firestore.collection('magasins').doc(id).update({
+                    produits: testFirebase.firestore.FieldValue.arrayUnion({
+                        id: docRef.id,
+                        nom: data.productName,
+                        categorie:data.category,
+                    }),
+                });
+               return res.status(200).json({success:"success"});
+            });
+            
+            blobWriter.end(req.file.buffer);
+        }
+
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -253,25 +295,17 @@ const updateProduct = async (req, res, next) => {
     try {
         const id = req.params.id;    
         const idProduct = req.params.idProduct;
-        const productName = req.body.productName;
-        const description = req.body.description;
-        const price =  parseFloat(req.body.price);
-        const quantity = req.body.quantity;
-        const reference = req.body.reference;
-        const category = req.body.category;
-        const visibility = req.body.visibility;
+        var data = JSON.parse(req.body.data);
 
         await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
-            nom: productName,
-            prix: price,
-            description: description,
-            categorie: category,
-            quantite: quantity,
-            reference: reference,
-            visible: visibility,
+            nom: data.productName,
+            prix: data.price,
+            description: data.description,
+            categorie: data.category,
+            quantite: data.quantity,
+            reference: data.reference,
+            visible: data.visibility,
         });
-
-        console.log("test")
        
 
         var array = [];
