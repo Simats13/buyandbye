@@ -297,9 +297,9 @@
                                                 
                                                 <div class="form-group ">
                                                     <label for="exampleColorInput" class="form-label">Image Actuelle</label><br>
-                                                    <img src="<%= products[i].image[0] %>" class="img-thumbnail img-fluid" alt="currentImage" id="currentImage" name="currentImage">
+                                                    <img src="<%= products[i].image[0] %>" class="img-thumbnail img-fluid" alt="currentImage" id="currentImage" name="currentImage_<%= i %>">
                                                     <input type="hidden" name="currentImageInput" id="currentImageInput" value="<%= products[i].image[0] %>"><br>
-                                                    <img name="new_image" id="new_imageImg" src="#"  class="img-thumbnail img-fluid" hidden >
+                                                    <img name="new_imageImg" id="new_imageImg" src="#"  class="img-thumbnail img-fluid" hidden >
                                                     <input type="file" name="new_image" id="new_image" onchange="readURL(this);">
                                                 </div>
                                             </div>
@@ -314,6 +314,22 @@
                                     </div>
                                 </div>
                             </div>
+                            <script>
+                                function readURL(input) {
+                                    if (input.files && input.files[0]) {
+                                        var reader = new FileReader();
+                                      reader.onload = function (e) {
+                                          $('#new_imageImg_<%= i %>')
+                                              .attr('src', e.target.result)
+                                              .removeAttr('hidden')
+                                              .height(200);
+                                              $('#currentImage_<%= i %>').prop('hidden', 'hidden');
+                                              $('#currentImageInput_<%= i %>').prop('hidden', 'hidden');       
+                                      };
+                                      reader.readAsDataURL(input.files[0]);
+                                  }
+                              };
+                            </script>
                         <% } %>
                     </tbody>
                 </table>
@@ -362,22 +378,7 @@
   </div>
 </div>
 <%- include('../partials/footer.ejs'); %>
-<script>
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-          reader.onload = function (e) {
-              $('#new_imageImg')
-                  .attr('src', e.target.result)
-                  .removeAttr('hidden')
-                  .height(200);
-                  $('#currentImage').prop('hidden', 'hidden');
-                  $('#currentImageInput').prop('hidden', 'hidden');       
-          };
-          reader.readAsDataURL(input.files[0]);
-      }
-  };
-</script>
+
 
 <script>
 
@@ -439,6 +440,7 @@
         });
     }
     function editProduct(idSeller,idProduct,idForm){
+        console.log(idform)
     document
         .getElementById("formEdit_"+idForm)
         .addEventListener("submit", (event) => {
@@ -450,13 +452,24 @@
           const reference = event.target.reference.value;
           const category = event.target.category.value;
           const visibility = event.target.visibilite.checked;
+          const productImage = document.querySelector('#new_imageImg_'+idForm);
+          const currentImageInput = $('#currentImageInput_'+idform).val();
+          const formData = new FormData();
+            const data = {
+                productName: productName,
+                description: description,
+                price: price,
+                quantity: quantity,
+                reference: reference,
+                category: category,
+                visibility: visibility,
+                currentImageInput: currentImageInput,
+            };
+            formData.append('data', JSON.stringify(data));
+            formData.append('add_image', productImage.files[0]);
           return fetch("/api/shops/"+idSeller+"/products/"+idProduct+"/edit", {
                   method: "POST",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({productName, description, price, quantity, reference, category, visibility}),
+                  body:formData,
                 }).then(() => {
                     $('#editProduct'+idForm).modal('hide');
                     $('#finishEditModal').modal('show').then(

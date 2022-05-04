@@ -120,7 +120,6 @@ const updateShop = async (req, res, next) => {
         const id = req.params.id;    
         const shop =  firestore.collection('magasins').doc(id);
         var data = JSON.parse(req.body.data);
-          
         if(!req.file) {
             await shop.update({
                 Fname: data.ownerFirstName,
@@ -143,7 +142,6 @@ const updateShop = async (req, res, next) => {
             });
            return res.status(200).json({success:"success"});
         } else {
-
             const blob = firebase.storage().bucket().file(`profile/${id}/banniere`); 
    
 
@@ -154,7 +152,6 @@ const updateShop = async (req, res, next) => {
                     contentType: req.file.mimetype,
                 }
             })  
-            
             blobWriter.on('error', (err) => {
                
                 console.log(err);
@@ -186,8 +183,7 @@ const updateShop = async (req, res, next) => {
             });
             
             blobWriter.end(req.file.buffer);
-        }
-        // res.send("Le magasin a été  mis à jour");        
+        }     
     } catch (error) {
         console.log(error) 
         res.status(400).send(error.message);
@@ -211,7 +207,6 @@ const addProduct = async (req, res, next) => {
         console.log(id)    
         const docRef = firestore.collection('magasins').doc(id).collection("produits").doc();
         var data = JSON.parse(req.body.data);
-
         var images = [];
         images.push("https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/assets%2FNo_image_available.svg.png");
 
@@ -227,7 +222,6 @@ const addProduct = async (req, res, next) => {
                 reference: data.reference,
                 visible: data.visibility,
             });
-    
             await firestore.collection('magasins').doc(id).update({
                 produits: testFirebase.firestore.FieldValue.arrayUnion({
                     id: data.idProduct,
@@ -238,27 +232,20 @@ const addProduct = async (req, res, next) => {
            return res.status(200).json({success:"success"});
         } else {
             console.log("Id Product : "+docRef.id)
-
             const blob = firebase.storage().bucket().file(`products/${id}/${docRef.id}/1`); 
-   
-
             const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/products%2F${id}%2F${docRef.id}%2F1?alt=media`;
-            
             const blobWriter = blob.createWriteStream({
                 metadata: {
                     contentType: req.file.mimetype,
                 }
             })  
-            
             blobWriter.on('error', (err) => {
-                
                 console.log(err);
                 return res.status(409).json({error:"Votre image n'a pas été envoyé"});
             })
 
             var images = [];
             images.push(downloadUrl);
-            
             blobWriter.on('finish',async ()  => {
                 await docRef.set({
                     id: docRef.id,
@@ -297,36 +284,38 @@ const updateProduct = async (req, res, next) => {
         const idProduct = req.params.idProduct;
         var data = JSON.parse(req.body.data);
 
-        await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
-            nom: data.productName,
-            prix: data.price,
-            description: data.description,
-            categorie: data.category,
-            quantite: data.quantity,
-            reference: data.reference,
-            visible: data.visibility,
-        });
+        console.log(data);
+
+        // await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
+        //     nom: data.productName,
+        //     prix: data.price,
+        //     description: data.description,
+        //     categorie: data.category,
+        //     quantite: data.quantity,
+        //     reference: data.reference,
+        //     visible: data.visibility,
+        // });
        
 
-        var array = [];
-        var request = await firestore.collection('magasins').doc(id).get();
+        // var array = [];
+        // var request = await firestore.collection('magasins').doc(id).get();
       
-        request.data().produits.forEach(function(item) {
-            array.push(item);
-        });
+        // request.data().produits.forEach(function(item) {
+        //     array.push(item);
+        // });
 
-        var found = array.find(product => product.id === idProduct);
-        // console.log(found)
+        // var found = array.find(product => product.id === idProduct);
+        // // console.log(found)
 
-        await firestore.collection('magasins').doc(id).update({
-            produits: testFirebase.firestore.FieldValue.arrayRemove(found),
-        });
-        found.nom = productName;
+        // await firestore.collection('magasins').doc(id).update({
+        //     produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+        // });
+        // found.nom = productName;
 
-        await firestore.collection('magasins').doc(id).update({
-            produits: testFirebase.firestore.FieldValue.arrayUnion(found),
-        });
-        res.send("Le magasin a été  mis à jour");        
+        // await firestore.collection('magasins').doc(id).update({
+        //     produits: testFirebase.firestore.FieldValue.arrayUnion(found),
+        // });
+        // res.send("Le magasin a été  mis à jour");        
     } catch (error) {
         console.log(error) 
         res.status(400).send(error.message);
