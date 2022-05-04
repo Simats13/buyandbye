@@ -7,7 +7,7 @@ const Shop = require('../models/shop');
 const Products = require('../models/products');
 const firestore = firebase.firestore();
 const multer = require('multer')
-
+const axios = require('axios');
 
 const upload = multer({
     storage: multer.memoryStorage()
@@ -277,7 +277,7 @@ const addProduct = async (req, res, next) => {
     }
 }
 
-
+ 
 const updateProduct = async (req, res, next) => {
     try {
         const id = req.params.id;    
@@ -286,36 +286,103 @@ const updateProduct = async (req, res, next) => {
 
         console.log(data);
 
-        // await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
-        //     nom: data.productName,
-        //     prix: data.price,
-        //     description: data.description,
-        //     categorie: data.category,
-        //     quantite: data.quantity,
-        //     reference: data.reference,
-        //     visible: data.visibility,
-        // });
+        var images = [];
+        images.push(data.currentImageInput);
+        
+
+        if(!req.file) {
+            await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
+                nom: data.productName,
+                prix: parseFloat(data.price),
+                description: data.description,
+                categorie: data.category,
+                quantite: data.quantity,
+                reference: data.reference,
+                visible: data.visibility,
+                images:images,
+            });
+           
+    
+            var array = [];
+            var request = await firestore.collection('magasins').doc(id).get();
+          
+            request.data().produits.forEach(function(item) {
+                array.push(item);
+            });
+    
+            var found = array.find(product => product.id === idProduct);
        
+    
+            await firestore.collection('magasins').doc(id).update({
+                produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+            });
+            found.nom = data.productName;
+            found.categorie = data.category;
+    
+            await firestore.collection('magasins').doc(id).update({
+                produits: testFirebase.firestore.FieldValue.arrayUnion(found),
+            });
 
-        // var array = [];
-        // var request = await firestore.collection('magasins').doc(id).get();
+            var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + id);
+            var products = await axios.get(req.protocol + '://' + req.get('host')  +"/api/shops/" + id+ "/products");         
+            return res.render("professional/pages/products",{products:products.data, shopInfos:shopInfos.data});   
+        //    return res.status(200).json({success:"success"});
+        } else {
+            const blob = firebase.storage().bucket().file(`products/${id}/${idProduct}/1`); 
+            const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/products%2F${id}%2F${idProduct}%2F1?alt=media`;
+            const blobWriter = blob.createWriteStream({
+                metadata: {
+                    contentType: req.file.mimetype,
+                }
+            })  
+            blobWriter.on('error', (err) => {
+                console.log(err);
+                return res.status(409).json({error:"Votre image n'a pas été envoyé"});
+            })
+
+            var images = [];
+            images.push(downloadUrl);
+            blobWriter.on('finish',async ()  => {
+                await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
+                    nom: data.productName,
+                    prix: parseFloat(data.price),
+                    description: data.description,
+                    categorie: data.category,
+                    quantite: data.quantity,
+                    reference: data.reference,
+                    visible: data.visibility,
+                    images:images,
+                });
+               
+        
+                var array = [];
+                var request = await firestore.collection('magasins').doc(id).get();
+              
+                request.data().produits.forEach(function(item) {
+                    array.push(item);
+                });
+        
+                var found = array.find(product => product.id === idProduct);
+                // console.log(found)
+        
+                await firestore.collection('magasins').doc(id).update({
+                    produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+                });
+                found.nom = data.productName;
+                found.categorie = data.category;
+        
+                await firestore.collection('magasins').doc(id).update({
+                    produits: testFirebase.firestore.FieldValue.arrayUnion(found),
+                });
+               return res.status(200).json({success:"success"});
+            });
+            
+            blobWriter.end(req.file.buffer);
+        }
+        
+
       
-        // request.data().produits.forEach(function(item) {
-        //     array.push(item);
-        // });
-
-        // var found = array.find(product => product.id === idProduct);
-        // // console.log(found)
-
-        // await firestore.collection('magasins').doc(id).update({
-        //     produits: testFirebase.firestore.FieldValue.arrayRemove(found),
-        // });
-        // found.nom = productName;
-
-        // await firestore.collection('magasins').doc(id).update({
-        //     produits: testFirebase.firestore.FieldValue.arrayUnion(found),
-        // });
-        // res.send("Le magasin a été  mis à jour");        
+            
     } catch (error) {
         console.log(error) 
         res.status(400).send(error.message);
@@ -327,6 +394,9 @@ const deleteProduct = async (req, res, next) => {
         const id = req.params.id;
         const idProduct = req.body.idProduct;
         await firestore.collection('magasins').doc(id).collection('produits').doc(idProduct).delete();
+         await firebase.storage().bucket().deleteFiles({
+             prefix: `products/${id}/${idProduct}/`
+         });
         var array = [];
         var request = await firestore.collection('magasins').doc(id).get();
       

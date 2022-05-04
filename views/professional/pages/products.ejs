@@ -137,8 +137,12 @@
                                     <textarea class="form-control" name="description" rows="3" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="prix">Prix</label>
-                                    <input type="number" step="0.01" name="prix" id="prix" class="form-control" required>
+                                    <label class="form-check-label" name="prixLabel" for="prix"> Prix </label>     
+                                    <div class="input-group">
+                                       
+                                        <input type="number" step="0.01" name="prix" id="prix" class="form-control" required>
+                                        <span class="input-group-text">€</span>
+                                    </div>	
                                 </div>
                                 <div class="form-group">
                                     <label for="quantite">Quantité en stock</label>
@@ -149,12 +153,15 @@
                                     <input type="number" name="reference" id="reference" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="visibilite">Faire apparaître le produit</label>
-                                    <br>
-                                    <input type="checkbox" name="visibilite" id="visibilite">
+                                    <div class="form-group col">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="visibilite" id="visibilite">
+                                            <label class="form-check-label" name="visibilite" for="visibilite"> Faire apparaître le produit </label>         
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="image">Image</label>
+                                    <label for="image">Image du produit</label>
                                     <br>
                                     <input type="file" name="add_image" id="add_image">
                                 </div>
@@ -240,7 +247,7 @@
                             </div>
 
                             <!-- Fenêtre modale de modification d'un produit -->
-                            <div class="modal fade" id="editProduct<%= i %>" tabindex="-1" role="dialog"
+                            <div class="modal fade" name="editProduct<%= i %>" id="editProduct<%= i %>" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg" role="document">
                                     <div class="modal-content">
@@ -268,6 +275,7 @@
                                                 </div>
                                                
                                                 <div class="form-group">
+                                                    <label class="form-check-label" name="prixLabel" for="prix"> Prix </label>     
                                                     <div class="input-group">
                                                         <input type="number" step="0.01" name="prix" id="prix" class="form-control"
                                                         value="<%= products[i].price %>" required>
@@ -297,10 +305,10 @@
                                                 
                                                 <div class="form-group ">
                                                     <label for="exampleColorInput" class="form-label">Image Actuelle</label><br>
-                                                    <img src="<%= products[i].image[0] %>" class="img-thumbnail img-fluid" alt="currentImage" id="currentImage" name="currentImage_<%= i %>">
-                                                    <input type="hidden" name="currentImageInput" id="currentImageInput" value="<%= products[i].image[0] %>"><br>
-                                                    <img name="new_imageImg" id="new_imageImg" src="#"  class="img-thumbnail img-fluid" hidden >
-                                                    <input type="file" name="new_image" id="new_image" onchange="readURL(this);">
+                                                    <img src="<%= products[i].image[0] %>" class="img-thumbnail img-fluid" alt="currentImage_<%= i %>" id="currentImage_<%= i %>" name="currentImage_<%= i %>">
+                                                    <input type="hidden" name="currentImageInput_<%= i %>" id="currentImageInput_<%= i %>" value="<%= products[i].image[0] %>"><br>
+                                                    <img name="new_imageImg_<%= i %>" id="new_imageImg_<%= i %>" src="#"  class="img-thumbnail img-fluid" hidden >
+                                                    <input type="file" name="new_image" id="new_image" onchange="readURL(this,'<%= i %>');">
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -314,22 +322,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <script>
-                                function readURL(input) {
-                                    if (input.files && input.files[0]) {
-                                        var reader = new FileReader();
-                                      reader.onload = function (e) {
-                                          $('#new_imageImg_<%= i %>')
-                                              .attr('src', e.target.result)
-                                              .removeAttr('hidden')
-                                              .height(200);
-                                              $('#currentImage_<%= i %>').prop('hidden', 'hidden');
-                                              $('#currentImageInput_<%= i %>').prop('hidden', 'hidden');       
-                                      };
-                                      reader.readAsDataURL(input.files[0]);
-                                  }
-                              };
-                            </script>
+                           
                         <% } %>
                     </tbody>
                 </table>
@@ -379,7 +372,22 @@
 </div>
 <%- include('../partials/footer.ejs'); %>
 
-
+<script>
+    function readURL(input,idForm) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+          reader.onload = function (e) {
+              $('#new_imageImg_'+idForm)
+                  .attr('src', e.target.result)
+                  .removeAttr('hidden')
+                  .height(200);
+                  $('#currentImage_'+idForm).prop('hidden', 'hidden');
+                  $('#currentImageInput_'+idForm).prop('hidden', 'hidden');       
+          };
+          reader.readAsDataURL(input.files[0]);
+      }
+  };
+</script>
 <script>
 
     function addProduct() {
@@ -417,6 +425,8 @@
                     const isJson = res.headers.get('content-type')?.includes('application/json');
                     const data = isJson ? await res.json() : null;
                     console.log(res.ok);
+                    $('#add').modal('hide');
+
                     if (!res.ok) {
                         $( "#errorText" ).append(data.error);
                         $('#errorModal').modal('show').then(
@@ -426,7 +436,7 @@
                         }, 2000)
                     );
                     }else{
-                        $('#finishEditModal').modal('show').then(
+                        $('#finishAddModal').modal('show').then(
                         setTimeout(function () {
                             $('#finishEditModal').modal('hide');
                             window.location.href = "/produits";
@@ -440,7 +450,7 @@
         });
     }
     function editProduct(idSeller,idProduct,idForm){
-        console.log(idform)
+        // console.log(idForm);
     document
         .getElementById("formEdit_"+idForm)
         .addEventListener("submit", (event) => {
@@ -452,8 +462,9 @@
           const reference = event.target.reference.value;
           const category = event.target.category.value;
           const visibility = event.target.visibilite.checked;
-          const productImage = document.querySelector('#new_imageImg_'+idForm);
-          const currentImageInput = $('#currentImageInput_'+idform).val();
+          const productImage = document.querySelector('#new_image');
+          const currentImageInput = $('#currentImageInput_'+idForm).val();
+        //   console.log(productImage);
           const formData = new FormData();
             const data = {
                 productName: productName,
@@ -465,20 +476,39 @@
                 visibility: visibility,
                 currentImageInput: currentImageInput,
             };
+            // console.log(data);
             formData.append('data', JSON.stringify(data));
-            formData.append('add_image', productImage.files[0]);
+
+            if (productImage.files && productImage.files[0]) {
+                formData.append('new_image', productImage.files[0]);
+            }
+           
           return fetch("/api/shops/"+idSeller+"/products/"+idProduct+"/edit", {
                   method: "POST",
                   body:formData,
-                }).then(() => {
+                }).then(async res => {
+                    const isJson = res.headers.get('content-type')?.includes('application/json');
+                    const data = isJson ? await res.json() : null;
+                    console.log(res.ok);
                     $('#editProduct'+idForm).modal('hide');
-                    $('#finishEditModal').modal('show').then(
+                    if (!res.ok) {
+                        $( "#errorText" ).append(data.error);
+                        $('#errorModal').modal('show').then(
                         setTimeout(function () {
-                            $('#finishEditModal').modal('hide');
+                            $('#errorModal').modal('hide');
                             window.location.href = "/produits";
                         }, 2000)
                     );
-                //   window.location.href = "/entreprise";
+                    }else{
+                        $('#finishEditModal').modal('show').then(
+                        setTimeout(function () {
+                            $('#finishEditModal').modal('hide');
+                            // window.location.href = "/produits";
+                            }, 2000)
+                            
+                        );
+                        
+                    }
                 });
           return false;
         });
