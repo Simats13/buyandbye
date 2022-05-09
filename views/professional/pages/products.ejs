@@ -192,21 +192,21 @@
                     </thead>
                     <tbody>
                         <% for(var i = 0 ; i < products.length ; i++) { %>
-                            <tr>
+                            <tr id="arrayLine_<%= i %>">
                                 <td style="width: 15%">
                                     <div class="truncate">
-                                            <div class="truncated"><%= products[i].name%></div>
+                                            <div class="truncated" id="productNameArray_<%= i %>"><%= products[i].name%></div>
                                         </div>
                                     </td>
-                                <td><%= products[i].category%></td>
+                                <td id="productCategoryArray_<%= i %>"><%= products[i].category%></td>
                                 <td style="width: 25%">
                                     <div class="truncate">
-                                        <div class="truncated"><%= products[i].description%></div>
+                                        <div class="truncated" id="productDescriptionArray_<%= i %>"><%= products[i].description%></div>
                                     </div>
                                 </td>
-                                <td><%= products[i].price%> € </td>
-                                <td><%= products[i].quantity%></td>
-                                <td><%= products[i].reference%></td>
+                                <td id="productPriceArray_<%= i %>"><%= products[i].price%> € </td>
+                                <td id="productQuatityArray_<%= i %>"><%= products[i].quantity%></td>
+                                <td id="productReferanceArray_<%= i %>"><%= products[i].reference%></td>
                                 <td>
                                     <button class="btn btn-outline-primary" value="<%= products[i].name%>" title="<%= products.nom%>"
                                         data-bs-toggle="modal" data-bs-target="#editProduct<%= i %>">
@@ -436,6 +436,7 @@
                         }, 2000)
                     );
                     }else{
+                    
                         $('#finishAddModal').modal('show').then(
                         setTimeout(function () {
                             $('#finishEditModal').modal('hide');
@@ -488,12 +489,39 @@
                   body:formData,
                 }
 
-            const post = await fetch("/api/shops/"+idSeller+"/products/"+idProduct+"/edit", options);
+            const post = await fetch("/api/shops/"+idSeller+"/products/"+idProduct+"/edit", options).then(async res => {
+                    const isJson = res.headers.get('content-type')?.includes('application/json');
+                    const data = isJson ? await res.json() : null;
+                    // console.log(res.ok);
+                    $('#editProduct'+idForm).modal('hide');
 
-            // console.log(await post.text());
-            var test = await post.text();
-            // console.log(test)
-            $('body').html(`${test}`);
+                    if (!res.ok) {
+                        $( "#errorText" ).append(data.error);
+                        $('#errorModal').modal('show').then(
+                        setTimeout(function () {
+                            $('#errorModal').modal('hide');
+                            // window.location.href = "/products";
+                        }, 2000)
+                    );
+                    }else{
+                        const productName = $('#productNameArray_'+idForm).text(data.nom);
+                        const description = $("#productDescriptionArray_"+idForm).text(data.description);
+                        const price = $("#productPriceArray_"+idForm).text(data.prix);
+                        const quantity = $("#productQuantityArray_"+idForm).text(data.quantite);
+                        const reference = $("#productReferenceArray_"+idForm).text(data.reference);
+                        const category = $("#productCategoryArray_"+idForm).text(data.categorie);
+                        // const visibility = $("#productVisibilityArray_"+idForm).val(data.visibility);
+                        const currentImageInput = $('#currentImageInput_'+idForm).val(data.images[0]);
+                        $('#finishEditModal').modal('show').then(
+                        setTimeout(function () {
+                            $('#finishEditModal').modal('hide');
+                            // window.location.href = "/produits";
+                            }, 2000)
+                            
+                        );
+                        
+                    }
+                });
           return false;
         });
     }

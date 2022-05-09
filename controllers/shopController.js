@@ -284,8 +284,6 @@ const updateProduct = async (req, res, next) => {
         const idProduct = req.params.idProduct;
         var data = JSON.parse(req.body.data);
 
-        console.log(data);
-
         var images = [];
         images.push(data.currentImageInput);
         
@@ -323,10 +321,17 @@ const updateProduct = async (req, res, next) => {
                 produits: testFirebase.firestore.FieldValue.arrayUnion(found),
             });
 
-            var shopInfos = await axios.get(req.protocol + '://' + req.get('host')  + "/api/shops/" + id);
-            var products = await axios.get(req.protocol + '://' + req.get('host')  +"/api/shops/" + id+ "/products");         
-            return res.render("professional/pages/products",{products:products.data, shopInfos:shopInfos.data});   
-        //    return res.status(200).json({success:"success"});
+  
+           return res.status(200).json({
+               nom: data.productName,
+               prix: parseFloat(data.price),
+               description: data.description,
+               categorie: data.category,
+               quantite: data.quantity,
+               reference: data.reference,
+               visible: data.visibility,
+               images:images,
+            });
         } else {
             const blob = firebase.storage().bucket().file(`products/${id}/${idProduct}/1`); 
             const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/products%2F${id}%2F${idProduct}%2F1?alt=media`;
@@ -374,7 +379,16 @@ const updateProduct = async (req, res, next) => {
                 await firestore.collection('magasins').doc(id).update({
                     produits: testFirebase.firestore.FieldValue.arrayUnion(found),
                 });
-               return res.status(200).json({success:"success"});
+                return res.status(200).json({
+                    nom: data.productName,
+                    prix: parseFloat(data.price),
+                    description: data.description,
+                    categorie: data.category,
+                    quantite: data.quantity,
+                    reference: data.reference,
+                    visible: data.visibility,
+                    images:images,
+                 });
             });
             
             blobWriter.end(req.file.buffer);
