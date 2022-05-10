@@ -177,8 +177,8 @@
             </div>
 
             <!-- Affichage des produits -->
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
+            <div class="table-responsive" id="tableWithProduct">
+                <table id="productTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Nom</th>
@@ -187,6 +187,7 @@
                             <th>Prix</th>
                             <th>Quantité</th>
                             <th>Référence</th>
+                            <th>Visibilité</th>
                             <th>Modification</th>
                         </tr>
                     </thead>
@@ -204,9 +205,10 @@
                                         <div class="truncated" id="productDescriptionArray_<%= i %>"><%= products[i].description%></div>
                                     </div>
                                 </td>
-                                <td id="productPriceArray_<%= i %>"><%= products[i].price%> € </td>
+                                <td id="productPriceArray_<%= i %>"><%= products[i].price%>  € </td>
                                 <td id="productQuatityArray_<%= i %>"><%= products[i].quantity%></td>
                                 <td id="productReferanceArray_<%= i %>"><%= products[i].reference%></td>
+                                <td id="productVisibilityArray_<%= i %>"><%- products[i].visibility == true ? '<i class="far fa-circle-check"></i>' : '<i class="far fa-circle-xmark"></i>'   %></td>
                                 <td>
                                     <button class="btn btn-outline-primary" value="<%= products[i].name%>" title="<%= products.nom%>"
                                         data-bs-toggle="modal" data-bs-target="#editProduct<%= i %>">
@@ -252,7 +254,7 @@
                                 <div class="modal-dialog modal-lg" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Informations sur <%= products[i].name %></h5>
+                                            <h5 class="modal-title" id="modalTitle_<%= i %>">Informations sur <%= products[i].name %></h5>
                                             <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">×</span>
                                             </button>
@@ -402,8 +404,7 @@
           const reference = event.target.reference.value;
           const category = event.target.category.value;
           const visibility = event.target.visibilite.checked;
-          const productImage = document.querySelector('#add_image') ;
-        //   const currentImageInput = $('#currentImageInput').val();
+          const productImage = document.querySelector('#add_image');
             const formData = new FormData();
             const data = {
                 productName: productName,
@@ -413,7 +414,6 @@
                 reference: reference,
                 category: category,
                 visibility: visibility,
-                // currentImageInput: currentImageInput,
             };
             formData.append('data', JSON.stringify(data));
             formData.append('add_image', productImage.files[0]);
@@ -424,7 +424,6 @@
                 }).then(async res => {
                     const isJson = res.headers.get('content-type')?.includes('application/json');
                     const data = isJson ? await res.json() : null;
-                    // console.log(res.ok);
                     $('#add').modal('hide');
 
                     if (!res.ok) {
@@ -432,15 +431,152 @@
                         $('#errorModal').modal('show').then(
                         setTimeout(function () {
                             $('#errorModal').modal('hide');
-                            window.location.href = "/products";
                         }, 2000)
                     );
                     }else{
-                    
+                        var rowCount = $('#productTable >tbody >tr').length;
+                        console.log(data);
+                        // console.log(rowCount+1)
+                        $('tbody').append(`
+                        <tr id="arrayLine_${rowCount+1}">
+                                <td style="width: 15%">
+                                    <div class="truncate">
+                                            <div class="truncated" id="productNameArray_${rowCount+1}">${data.nom}</div>
+                                        </div>
+                                    </td>
+                                <td id="productCategoryArray_${rowCount+1}">${data.categorie}</td>
+                                <td style="width: 25%">
+                                    <div class="truncate">
+                                        <div class="truncated" id="productDescriptionArray_${rowCount+1}">${data.description}</div>
+                                    </div>
+                                </td>
+                                <td id="productPriceArray_${rowCount+1}">${data.prix}  € </td>
+                                <td id="productQuatityArray_${rowCount+1}">${data.quantite}</td>
+                                <td id="productReferanceArray_${rowCount+1}">${data.reference}</td>
+                                <td id="productVisibilityArray_${rowCount+1}">${data.visible ? '<i class="far fa-circle-check"></i>' : '<i class="far fa-circle-xmark"></i>'} </td>
+                                <td>
+                                    <button class="btn btn-outline-primary" value="${data.nom}" title="${data.nom}"
+                                        data-bs-toggle="modal" data-bs-target="#editProduct${rowCount+1}">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" value="${data.nom}"
+                                        data-bs-toggle="modal" data-bs-target="#deleteProduct${rowCount+1}">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            
+                        `);
+
+                        $('#tableWithProduct').append(`<!-- Fenêtre modale de suppression d'un produit -->
+                            <div class="modal fade" id="deleteProduct${rowCount+1}" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Vous êtes sur le point de supprimer le produit 
+                                                ${data.nom}</h5>
+                                            <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">Cette action est définitive, si vous souhaitez le supprimer veuillez cliquer
+                                            sur le bouton "Supprimer" ci-dessous. </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Annuler</button>
+
+                                            <form id="formDelete_${rowCount+1}" enctype="multipart/form-data">
+                                                
+                                                <button type="submit" value="${data.idProduct}" name="delete_product" onclick="deleteProduct('${data.id}','${data.idProduct}','${rowCount+1}')"
+                                                    class="btn btn-danger">Supprimer</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fenêtre modale de modification d'un produit -->
+                            <div class="modal fade" name="editProduct${rowCount+1}" id="editProduct${rowCount+1}" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalTitle_${rowCount+1}">Informations sur ${data.nom}</h5>
+                                            <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <form id="formEdit_${rowCount+1}" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                
+                                                <input type="hidden" name="docId" value="${data.idProduct}">
+                                                
+                                                <div class="form-group form-row">
+                                                    <label for="productname">Nom du produit</label>
+                                                    <input type="text" name="productName" id="productname" class="form-control"
+                                                    value="${data.nom}" required>
+                                                </div>
+                                                ${data.categorieInput}
+                                                <div class="form-group">
+                                                    <label for="description">Description</label>
+                                                    <textarea class="form-control" name="description" rows="3" 
+                                                        required>${data.description}</textarea>
+                                                </div>
+                                               
+                                                <div class="form-group">
+                                                    <label class="form-check-label" name="prixLabel" for="prix"> Prix </label>     
+                                                    <div class="input-group">
+                                                        <input type="number" step="0.01" name="prix" id="prix" class="form-control"
+                                                        value="${data.prix}" required>
+                                                        <span class="input-group-text">€</span>
+                                                    </div>	
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="quantite">Quantité en stock</label>
+                                                    <input type="number" name="quantite" id="quantite" class="form-control"
+                                                    value="${data.quantite}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="reference">Référence</label>
+                                                    <input type="number" name="reference" id="reference" class="form-control"
+                                                    value="${data.reference}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="form-group col">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" name="visibilite" id="visibilite" ${data.visible  == true ? 'checked' : ''}
+
+                                                            <label class="form-check-label" name="visibilite" for="visibilite"> Faire apparaître le produit </label>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-group ">
+                                                    <label for="exampleColorInput" class="form-label">Image Actuelle</label><br>
+                                                    <img src="${data.images[0]}" class="img-thumbnail img-fluid" alt="currentImage_${rowCount+1}" id="currentImage_${rowCount+1}" name="currentImage_${rowCount+1}">
+                                                    <input type="hidden" name="currentImageInput_${rowCount+1}" id="currentImageInput_${rowCount+1}" value="${data.images[0]}"><br>
+                                                    <img name="new_imageImg_${rowCount+1}" id="new_imageImg_${rowCount+1}" src="#"  class="img-thumbnail img-fluid" hidden >
+                                                    <input type="file" name="new_image" id="new_image" onchange="readURL(this,'${rowCount+1}');">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <!-- Boutons de validation et d'annulation -->
+                                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Annuler</button>
+
+                                                <button type="submit" value="${data.idProduct}" name="edit_product" onclick="editProduct('${data.id}','${data.idProduct}','${rowCount+1}')"
+                                                    class="btn btn-primary">Modifier</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>`);
+
+
                         $('#finishAddModal').modal('show').then(
                         setTimeout(function () {
-                            $('#finishEditModal').modal('hide');
-                            window.location.href = "/produits";
+                            $('#finishAddModal').modal('hide');
                             }, 2000)
                             
                         );
@@ -451,23 +587,22 @@
         });
     }
     function editProduct(idSeller,idProduct,idForm){
-        // console.log(idForm);
     document
         .getElementById("formEdit_"+idForm)
         .addEventListener("submit", async (event) => {
           event.preventDefault();
-          const productName = event.target.productName.value;
-          const description = event.target.description.value;
-          const price = event.target.prix.value;
-          const quantity = event.target.quantite.value;
-          const reference = event.target.reference.value;
-          const category = event.target.category.value;
-          const visibility = event.target.visibilite.checked;
-          const productImage = document.querySelector('#new_image');
-          const currentImageInput = $('#currentImageInput_'+idForm).val();
-        //   console.log(productImage);
-          const formData = new FormData();
-            const data = {
+          var productName = event.target.productName.value;
+          var description = event.target.description.value;
+          var price = event.target.prix.value;
+          var quantity = event.target.quantite.value;
+          var reference = event.target.reference.value;
+          var category = event.target.category.value;
+          var visibility = event.target.visibilite.checked;
+          var productImage = document.querySelector('#new_image');
+          var currentImageInput = $('#currentImageInput_'+idForm).val();
+
+            var formData = new FormData();
+            var data = {
                 productName: productName,
                 description: description,
                 price: price,
@@ -477,7 +612,7 @@
                 visibility: visibility,
                 currentImageInput: currentImageInput,
             };
-            // console.log(data);
+
             formData.append('data', JSON.stringify(data));
 
             if (productImage.files && productImage.files[0]) {
@@ -490,8 +625,9 @@
                 }
 
             const post = await fetch("/api/shops/"+idSeller+"/products/"+idProduct+"/edit", options).then(async res => {
-                    const isJson = res.headers.get('content-type')?.includes('application/json');
-                    const data = isJson ? await res.json() : null;
+                var isJson = res.headers.get('content-type')?.includes('application/json');
+                var data = isJson ? await res.json() : null;
+                console.log(data);
                     // console.log(res.ok);
                     $('#editProduct'+idForm).modal('hide');
 
@@ -504,18 +640,19 @@
                         }, 2000)
                     );
                     }else{
-                        const productName = $('#productNameArray_'+idForm).text(data.nom);
-                        const description = $("#productDescriptionArray_"+idForm).text(data.description);
-                        const price = $("#productPriceArray_"+idForm).text(data.prix);
-                        const quantity = $("#productQuantityArray_"+idForm).text(data.quantite);
-                        const reference = $("#productReferenceArray_"+idForm).text(data.reference);
-                        const category = $("#productCategoryArray_"+idForm).text(data.categorie);
-                        // const visibility = $("#productVisibilityArray_"+idForm).val(data.visibility);
-                        const currentImageInput = $('#currentImageInput_'+idForm).val(data.images[0]);
+                        var productName = $('#productNameArray_'+idForm).text(data.nom);
+                        var description = $("#productDescriptionArray_"+idForm).text(data.description);
+                        var price = $("#productPriceArray_"+idForm).text(data.prix);
+                        var quantity = $("#productQuantityArray_"+idForm).text(data.quantite);
+                        var reference = $("#productReferenceArray_"+idForm).text(data.reference);
+                        var category = $("#productCategoryArray_"+idForm).text(data.categorie);
+                        var visibilityState = (data.visible === true) ? '<i class="far fa-circle-check"></i>' : '<i class="far fa-circle-xmark"></i>';
+                        var visibility = $("#productVisibilityArray_"+idForm).html(`${visibilityState}`);
+                        var currentImageInput = $('#currentImageInput_'+idForm).val(data.images[0]);
+                        var modalTitle = $('#modalTitle_'+idForm).text("Informations sur "+ data.nom);
                         $('#finishEditModal').modal('show').then(
                         setTimeout(function () {
                             $('#finishEditModal').modal('hide');
-                            // window.location.href = "/produits";
                             }, 2000)
                             
                         );
