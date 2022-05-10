@@ -1,12 +1,13 @@
 
 
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../common_widgets.dart';
 
-Widget mineListTile(BuildContext context, String? message, String time, bool isRead, String? type) {
+Widget mineListTile(BuildContext context, String? message, Timestamp time, bool isRead, String? type) {
   final size = MediaQuery.of(context).size;
   return Padding( padding: const EdgeInsets.only(top:2.0,right: 8),
     child: Row(
@@ -33,9 +34,10 @@ Widget mineListTile(BuildContext context, String? message, String time, bool isR
           // Text(isRead ? '' : '1',style: TextStyle(fontSize: 12,color: Colors.yellow[900]),),
 
         ),
+        // padding contenant le timestamp
         Padding(
           padding: const EdgeInsets.only(bottom:14.0, right: 4,left:8),
-          child: Text(time,style: TextStyle(fontSize: 12),),
+          child: Text("",style: TextStyle(fontSize: 12),),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,

@@ -58,13 +58,13 @@ class _AccueilState extends State<Accueil> {
             child: SafeArea(
                 child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 5.0, vertical: 8),
+                        horizontal: 5.0, vertical: 6),
                     child: GNav(
                       gap: 2,
                       haptic: true,
                       iconSize: 28,
                       padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                          EdgeInsets.symmetric(horizontal: 12.5, vertical: 10),
                       duration: Duration(milliseconds: 400),
                       tabs: [
                         GButton(

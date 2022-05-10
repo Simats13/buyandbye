@@ -669,6 +669,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
                       description: documents[index]["description"],
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
+                      horairesOuverture: documents[index]["horairesOuverture"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
                       mainCategorie: documents[index]["mainCategorie"],
@@ -799,6 +800,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
                       description: documents[index]["description"],
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
+                      horairesOuverture: documents[index]["horairesOuverture"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
                       mainCategorie: [],
@@ -929,6 +931,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
                       description: documents[index]["description"],
                       livraison: documents[index]["livraison"],
                       sellerID: documents[index]["id"],
+                      horairesOuverture: documents[index]["horairesOuverture"],
                       colorStore: documents[index]["colorStore"],
                       clickAndCollect: documents[index]["ClickAndCollect"],
                       mainCategorie: [],
@@ -1063,6 +1066,7 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                         description: documents[index]["description"],
                         livraison: documents[index]["livraison"],
                         sellerID: documents[index]["id"],
+                        horairesOuverture: documents[index]["horairesOuverture"],
                         colorStore: documents[index]["colorStore"],
                         clickAndCollect: documents[index]["ClickAndCollect"],
                         mainCategorie: documents[index]["mainCategorie"]),
@@ -1170,6 +1174,7 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                     ['ClickAndCollect'],
                                 livraison: documents[carouselItem]['livraison'],
                                 sellerID: documents[carouselItem]['id'],
+                                horairesOuverture: snapshot.data[carouselItem]['horairesOuverture'],
                               ),
                             ),
                           );
@@ -1429,6 +1434,7 @@ class _AllStoresState extends State<AllStores> {
                                         livraison: snapshot.data[index]
                                             ['livraison'],
                                         sellerID: snapshot.data[index]['id'],
+                                        horairesOuverture: snapshot.data[index]['horairesOuverture'],
                                       )));
                         },
                         child: Column(

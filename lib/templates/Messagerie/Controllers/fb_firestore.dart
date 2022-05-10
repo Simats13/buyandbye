@@ -24,7 +24,7 @@ class FBCloudStore {
           'intro': userIntro,
           'userImageUrl': downloadUrl,
           'userId': userId,
-          'createdAt': DateTime.now().millisecondsSinceEpoch,
+          'createdAt': DateTime.now(),
           'FCMToken': prefs.get('FCMToken') ?? 'NOToken',
         });
       } else {
@@ -35,7 +35,7 @@ class FBCloudStore {
           'name': userName,
           'intro': userIntro,
           'userImageUrl': downloadUrl,
-          'createdAt': DateTime.now().millisecondsSinceEpoch,
+          'createdAt': DateTime.now(),
           'FCMToken': prefs.get('FCMToken') ?? 'NOToken',
         });
       }
@@ -47,7 +47,7 @@ class FBCloudStore {
   }
 
   Future<void> updateMyChatListValues(
-       bool isInRoom, String? documentID, chatID, userType) async {
+      bool isInRoom, String? documentID, chatID, userType) async {
     var updateData =
         isInRoom ? {'inRoom': isInRoom, 'badgeCount': 0} : {'inRoom': isInRoom};
     final DocumentReference result = FirebaseFirestore.instance
@@ -75,7 +75,10 @@ class FBCloudStore {
         'FCMToken': token,
       });
     } else {
-      await FirebaseFirestore.instance.collection('magasins').doc(userID).update({
+      await FirebaseFirestore.instance
+          .collection('magasins')
+          .doc(userID)
+          .update({
         'FCMToken': token,
       });
     }
@@ -103,7 +106,7 @@ class FBCloudStore {
       for (QueryDocumentSnapshot snapshot in chatListDocuments) {
         unReadMSGCount = unReadMSGCount + snapshot['badgeCount'] as int;
       }
-      print('unread MSG count is $unReadMSGCount');
+      // print('unread MSG count is $unReadMSGCount');
       return unReadMSGCount;
     } catch (e) {
       print(e);
@@ -136,12 +139,9 @@ class FBCloudStore {
     }
 
     await FirebaseFirestore.instance
-        .collection('chatrooms')
+        .collection('commonData')
         .doc(chatID)
-        .update({
-      'lastMessage': lastMessage,
-      'timestamp': DateTime.now().millisecondsSinceEpoch
-    });
+        .update({'lastMessage': lastMessage, 'timestamp': DateTime.now()});
     await FirebaseFirestore.instance
         .collection('users')
         .doc(documentID)
@@ -154,24 +154,25 @@ class FBCloudStore {
       'lastChat': lastMessage,
       'badgeCount': isRoom ? 0 : userBadgeCount,
       'inRoom': isRoom,
-      'timestamp': DateTime.now().millisecondsSinceEpoch
+      'timestamp': DateTime.now()
     });
   }
 
   Future sendMessageToChatRoom(
       chatID, myID, selectedUserID, content, messageType) async {
     await FirebaseFirestore.instance
-        .collection('chatrooms')
+        .collection('commonData')
         .doc(chatID)
-        .collection(chatID)
-        .doc(DateTime.now().millisecondsSinceEpoch.toString())
+        .collection("messages")
+        .doc()
         .set({
-      'idFrom': myID,
-      'idTo': selectedUserID,
-      'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'content': content,
+      "idFrom": myID,
+      "idTo": selectedUserID,
+      'timestamp': DateTime.now(),
+      'message': content,
       'type': messageType,
       'isread': false,
+      'sentByClient': true
     });
   }
 }

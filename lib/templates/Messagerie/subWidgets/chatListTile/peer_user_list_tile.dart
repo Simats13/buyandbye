@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../common_widgets.dart';
 
 Widget peerUserListTile(BuildContext context, String name, String thumbnail,
-    String? message, String time, String? type) {
+    String? message, Timestamp time, String? type) {
   final size = MediaQuery.of(context).size;
   return Padding(
     padding: const EdgeInsets.only(top: 4.0),
@@ -69,10 +70,11 @@ Widget peerUserListTile(BuildContext context, String name, String thumbnail,
                           ),
                         ),
                       ),
+                      // padding contenant le timestamp
                       Padding(
                         padding: const EdgeInsets.only(bottom: 14.0, left: 4),
                         child: Text(
-                          time,
+                          "",
                           style: TextStyle(fontSize: 12),
                         ),
                       ),

@@ -1,11 +1,14 @@
 // ignore_for_file: file_names
 
+import 'package:buyandbye/templates/compte/constants.dart';
+import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/pages/chatscreen.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/theme/colors.dart';
@@ -13,6 +16,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/pageProduit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:number_ticker/number_ticker.dart';
 import 'package:status_alert/status_alert.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,17 +27,18 @@ import '../Messagerie/Controllers/fb_messaging.dart';
 import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class PageDetail extends StatefulWidget {
-  const PageDetail({
-    Key? key,
-    this.img,
-    this.name,
-    this.description,
-    this.adresse,
-    this.clickAndCollect,
-    this.livraison,
-    this.sellerID,
-    this.colorStore,
-  }) : super(key: key);
+  const PageDetail(
+      {Key? key,
+      this.img,
+      this.name,
+      this.description,
+      this.adresse,
+      this.clickAndCollect,
+      this.livraison,
+      this.sellerID,
+      this.colorStore,
+      this.horairesOuverture})
+      : super(key: key);
   final String? img;
   final String? name;
   final String? description;
@@ -42,6 +47,7 @@ class PageDetail extends StatefulWidget {
   final String? colorStore;
   final bool? livraison;
   final bool? clickAndCollect;
+  final Map? horairesOuverture;
   @override
   _PageDetail createState() => _PageDetail();
 }
@@ -72,17 +78,25 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       selectedUserToken,
       name1,
       message,
+      menuDropDownValue,
       dropdownValue;
   Stream? usersStream, chatRoomsStream;
   String? userid;
   String? adresseGoogleUrl;
   Stream<List<DocumentSnapshot>>? stream;
   List listOfCategories = [];
+  List listOfMenu = [
+    "Produits",
+    "Recommandations",
+    "Meilleures Ventes",
+  ];
 
   bool listCategorie = false;
   bool loved = true;
   bool isRestaurant = false;
   bool checkFavoriteShop = false;
+  bool horairesIsVisible = false;
+  bool disableListCategories = true;
   final List<ImageProvider> _imageProviders = [
     Image.network(
             "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD2.jpg")
@@ -111,6 +125,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     if (mounted) {
       checkLocalNotification(localNotificationAnimation, "");
     }
+    menuDropDownValue = listOfMenu[0];
   }
 
   getMyInfo() async {
@@ -124,6 +139,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     myEmail = "${querySnapshot.docs[0]["email"]}";
     loved = await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
     setState(() {});
+    print(myID);
   }
 
   getSellerInfo() async {
@@ -191,6 +207,46 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     }
   }
 
+  void reservationFunction() {
+    showGeneralDialog(
+      barrierLabel: "Réseration",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
+      context: context,
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            constraints: BoxConstraints(minHeight: 100, maxHeight: 600),
+            margin: EdgeInsets.only(top: 100, left: 12, right: 12),
+            child: ReservationPage(),
+          ),
+        );
+      },
+    );
+  }
+
+  void affichageCart() {
+    showGeneralDialog(
+      barrierLabel: "Panier",
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
+      context: context,
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            constraints: BoxConstraints(minHeight: 325, maxHeight: 900),
+            margin: EdgeInsets.only(top: 100, left: 12, right: 12),
+            child: CartPage(),
+          ),
+        );
+      },
+    );
+  }
+
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
     return Padding(
@@ -210,7 +266,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   "https://www.google.com/maps/search/?api=1&query=$adresseGoogleUrl"));
             }),
         const SizedBox(
-          width: 30,
+          width: 15,
         ),
         ElevatedButton(
             child: const Text("VOIR LE NUMÉRO"),
@@ -269,73 +325,98 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   widget.name!,
                   style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                 ),
-                trailing: loved
-                    ? IconButton(
-                        icon: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color(int.parse("0x$pimpMyStore"))
-                                .withOpacity(0.5),
-                            shape: BoxShape.circle,
+                trailing: Wrap(
+                  children: [
+                    loved
+                        ? IconButton(
+                            icon: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Color(int.parse("0x$pimpMyStore"))
+                                    .withOpacity(0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.favorite_border,
+                                  size: 20,
+                                  color: white,
+                                ),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await DatabaseMethods().addFavoriteShop(
+                                  myID!, widget.sellerID, true);
+                              setState(() {
+                                loved = !loved;
+                              });
+                              StatusAlert.show(
+                                context,
+                                duration: Duration(seconds: 2),
+                                title: 'Favoris',
+                                subtitle: 'Ajouté au favoris',
+                                configuration:
+                                    IconConfiguration(icon: Icons.favorite),
+                              );
+                            },
+                          )
+                        : IconButton(
+                            icon: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Color(int.parse("0x$pimpMyStore"))
+                                    .withOpacity(0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Icon(Icons.favorite,
+                                    size: 20, color: Colors.white),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await DatabaseMethods().addFavoriteShop(
+                                  myID, widget.sellerID, false);
+                              setState(() {
+                                loved = !loved;
+                              });
+                              StatusAlert.show(
+                                context,
+                                duration: Duration(seconds: 2),
+                                title: 'Favoris',
+                                subtitle: 'Enlevé des favoris',
+                                configuration: IconConfiguration(
+                                    icon: Icons.favorite_border),
+                              );
+                            },
                           ),
+                    IconButton(
+                      icon: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Color(int.parse("0x$pimpMyStore"))
+                              .withOpacity(0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Container(
                           child: Center(
                             child: Icon(
-                              Icons.favorite_border,
+                              Icons.shopping_cart_outlined,
+                              color: Colors.white,
                               size: 20,
-                              color: white,
+                              // size: 22,
                             ),
                           ),
                         ),
-                        onPressed: () async {
-                          await DatabaseMethods()
-                              .addFavoriteShop(myID!, widget.sellerID, true);
-                          setState(() {
-                            loved = !loved;
-                          });
-                          StatusAlert.show(
-                            context,
-                            duration: Duration(seconds: 2),
-                            title: 'Favoris',
-                            subtitle: 'Ajouté au favoris',
-                            configuration:
-                                IconConfiguration(icon: Icons.favorite),
-                          );
-                        },
-                      )
-                    : IconButton(
-                        icon: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color(int.parse("0x$pimpMyStore"))
-                                .withOpacity(0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.favorite,
-                              size: 20,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        onPressed: () async {
-                          await DatabaseMethods()
-                              .addFavoriteShop(myID, widget.sellerID, false);
-                          setState(() {
-                            loved = !loved;
-                          });
-                          StatusAlert.show(
-                            context,
-                            duration: Duration(seconds: 2),
-                            title: 'Favoris',
-                            subtitle: 'Enlevé des favoris',
-                            configuration:
-                                IconConfiguration(icon: Icons.favorite_border),
-                          );
-                        },
                       ),
+                      onPressed: () {
+                        affichageCart();
+                      },
+                    )
+                  ],
+                ),
                 largeTitle: Text(""),
               ),
             ),
@@ -452,7 +533,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           GestureDetector(
                             onTap: () {
                               Map<String, dynamic> chatRoomInfoMap = {
-                                "users": [myID, widget.sellerID],
+                                "users": [widget.sellerID, myID],
                               };
                               DatabaseMethods().createChatRoom(
                                   widget.sellerID! + myID!, chatRoomInfoMap);
@@ -651,7 +732,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         height: 15,
                       ),
                       Container(
-                        width: (size.width) * 0.8,
+                        width: (size.width) * 0.6,
                         child: Column(children: [
                           Row(
                             children: [
@@ -664,11 +745,65 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               SizedBox(
                                 width: 8,
                               ),
-                              Text(
-                                "Horaires d'ouverture",
-                                style: TextStyle(fontSize: 14),
+                              Container(
+                                child: Column(
+                                  children: [
+                                    InkWell(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Horaires d'ouverture",
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          Icon(
+                                            //Si la suite est affichée, la flèche pointe vers le bas
+                                            //Sinon elle pointe vers la gauche
+                                            horairesIsVisible
+                                                ? Icons.arrow_drop_down
+                                                : Icons.arrow_left,
+                                            size: 25,
+                                            color: Color(
+                                                    int.parse("0x$pimpMyStore"))
+                                                .withOpacity(0.8),
+                                          ),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          horairesIsVisible =
+                                              !horairesIsVisible;
+                                          print(disableListCategories);
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
                               )
                             ],
+                          ),
+                          Visibility(
+                            visible: horairesIsVisible,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                              SizedBox(height: 10),
+                              Text("Lundi:       ${widget.horairesOuverture!['Lundi']['Matin'][0]}h à ${widget.horairesOuverture!['Lundi']['Matin'][1]}h - ${widget.horairesOuverture!['Lundi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Lundi']['Après-midi'][1]}h"),
+                              SizedBox(height: 5),
+                              Text("Mardi:       ${widget.horairesOuverture!['Mardi']['Matin'][0]}h à ${widget.horairesOuverture!['Mardi']['Matin'][1]}h - ${widget.horairesOuverture!['Mardi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mardi']['Après-midi'][1]}h"),
+                              SizedBox(height: 5),
+                              Text("Mercredi:  ${widget.horairesOuverture!['Mercredi']['Matin'][0]}h à ${widget.horairesOuverture!['Mercredi']['Matin'][1]}h - ${widget.horairesOuverture!['Mercredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mercredi']['Après-midi'][1]}h"),
+                              SizedBox(height: 5),
+                              Text("Jeudi:        ${widget.horairesOuverture!['Jeudi']['Matin'][0]}h à ${widget.horairesOuverture!['Jeudi']['Matin'][1]}h - ${widget.horairesOuverture!['Jeudi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Jeudi']['Après-midi'][1]}h"),
+                              SizedBox(height: 5),                              
+                              Text("Vendredi:   ${widget.horairesOuverture!['Vendredi']['Matin'][0]}h à ${widget.horairesOuverture!['Vendredi']['Matin'][1]}h - ${widget.horairesOuverture!['Vendredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Vendredi']['Après-midi'][1]}h"),
+                              SizedBox(height: 5),                              
+                              Text("Samedi:          Fermé                  "),
+                              SizedBox(height: 5),                              
+                              Text("Dimanche:      Fermé                  "),
+                              SizedBox(height: 5),
+                            ]),
                           ),
                           // SizedBox(
                           //   height: 10,
@@ -686,101 +821,219 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           // ),
                         ]),
                       ),
+                      SizedBox(height: 15),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18)),
+                          primary: Color(
+                            int.parse("0x$pimpMyStore"),
+                          ).withOpacity(0.5),
+                          shadowColor: Color(
+                            int.parse("0x$pimpMyStore"),
+                          ).withOpacity(0.5),
+                        ),
+                        onPressed: () {
+                          reservationFunction();
+                        },
+                        child: Text(
+                          "Réserver",
+                        ),
+                      ),
                       SizedBox(
                         height: 15,
                       ),
+
+                      //menu affichage des produits (Meilleures Ventes / Recommandations / Produits)
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (String name in listOfMenu)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 15,
+                                ),
+                                child: Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Color(
+                                      int.parse("0x$pimpMyStore"),
+                                    ).withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Center(
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        primary: Color(
+                                          int.parse("0x$pimpMyStore"),
+                                        ).withOpacity(0.2),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          menuDropDownValue = name;
+                                        });
+                                        if (menuDropDownValue ==
+                                                listOfMenu[1] ||
+                                            menuDropDownValue ==
+                                                listOfMenu[2]) {
+                                          setState(() {
+                                            disableListCategories = false;
+                                          });
+                                        }
+                                        if (menuDropDownValue ==
+                                            listOfMenu[0]) {
+                                          setState(() {
+                                            disableListCategories = true;
+                                          });
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        child: Text(
+                                          name,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: menuDropDownValue == name
+                                                ? Color(
+                                                    int.parse("0x$pimpMyStore"),
+                                                  ).withOpacity(1)
+                                                : Color(
+                                                    int.parse("0x$pimpMyStore"),
+                                                  ).withOpacity(0.8),
+                                            fontWeight:
+                                                menuDropDownValue == name
+                                                    ? FontWeight.bold
+                                                    : FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+
                       isRestaurant
                           ? SizedBox.shrink()
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                  listCategorie
-                                      ? Text(
-                                          "Catégories",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      : Container(),
+                                  Visibility(
+                                      visible: disableListCategories,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          listCategorie
+                                              ? Text(
+                                                  "Catégories",
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                )
+                                              : Container(),
+                                        ],
+                                      )),
                                   SizedBox(
                                     height: 10,
                                   ),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: [
-                                        for (String name in listOfCategories)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: 15,
-                                            ),
-                                            child: Container(
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                color: Color(
-                                                  int.parse("0x$pimpMyStore"),
-                                                ).withOpacity(0.2),
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: Center(
-                                                child: TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    shape:
-                                                        RoundedRectangleBorder(
+
+                                  //menu affichage des produits à partir d'une catégorie
+                                  Visibility(
+                                      visible: disableListCategories,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: [
+                                            for (String name
+                                                in listOfCategories)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  right: 15,
+                                                ),
+                                                child: Container(
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                    color: Color(
+                                                      int.parse(
+                                                          "0x$pimpMyStore"),
+                                                    ).withOpacity(0.2),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30),
+                                                  ),
+                                                  child: Center(
+                                                    child: TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                                         30)),
-                                                    primary: Color(
-                                                      int.parse(
-                                                          "0x$pimpMyStore"),
-                                                    ).withOpacity(0.2),
-                                                  ),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      dropdownValue = name;
-                                                    });
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 15,
-                                                            right: 15),
-                                                    child: Text(
-                                                      name,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: dropdownValue ==
-                                                                name
-                                                            ? Color(
-                                                                int.parse(
-                                                                    "0x$pimpMyStore"),
-                                                              ).withOpacity(1)
-                                                            : Color(
-                                                                int.parse(
-                                                                    "0x$pimpMyStore"),
-                                                              ).withOpacity(
-                                                                0.8),
-                                                        fontWeight:
-                                                            dropdownValue == name
-                                                                ? FontWeight
-                                                                    .bold
-                                                                : FontWeight
-                                                                    .w500,
+                                                        primary: Color(
+                                                          int.parse(
+                                                              "0x$pimpMyStore"),
+                                                        ).withOpacity(0.2),
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          dropdownValue = name;
+                                                        });
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 15,
+                                                                right: 15),
+                                                        child: Text(
+                                                          name,
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: dropdownValue ==
+                                                                    name
+                                                                ? Color(
+                                                                    int.parse(
+                                                                        "0x$pimpMyStore"),
+                                                                  ).withOpacity(
+                                                                    1)
+                                                                : Color(
+                                                                    int.parse(
+                                                                        "0x$pimpMyStore"),
+                                                                  ).withOpacity(
+                                                                    0.8),
+                                                            fontWeight:
+                                                                dropdownValue == name
+                                                                    ? FontWeight
+                                                                        .bold
+                                                                    : FontWeight
+                                                                        .w500,
+                                                          ),
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          )
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 15,
-                                  ),
+                                              )
+                                          ],
+                                        ),
+                                      )),
+
+                                  Visibility(
+                                      visible: disableListCategories,
+                                      child: SizedBox(
+                                        height: 15,
+                                      )),
                                 ]),
                       // Container(
                       //   width: size.width,
@@ -860,217 +1113,17 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   ],
                                 )
                               : SizedBox.shrink(),
-                          Text(
-                            "Recommandations du commerçant",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 25),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 25),
-                          Text(
-                            "Meilleures ventes",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
 
-                          SizedBox(height: 30),
-                          // StreamBuilder(
-                          //   stream: DatabaseMethods()
-                          //       .getBestSeller(widget.sellerID),
-                          //   builder: (context, snapshot) {
-                          //     print(snapshot.data);
+                          menuDropDownValue == listOfMenu[0]
+                              ? affichageMenuProduits()
+                              : Container(),
+                          menuDropDownValue == listOfMenu[1]
+                              ? affichageMenuRecommandation()
+                              : Container(),
+                          menuDropDownValue == listOfMenu[2]
+                              ? affichageMenuMeilleuresVentes()
+                              : Container(),
 
-                          //     if (!snapshot.hasData)
-                          //       return CircularProgressIndicator();
-                          //     return GridView.builder(
-                          //       padding: EdgeInsets.zero,
-                          //       shrinkWrap: true,
-                          //       physics: NeverScrollableScrollPhysics(),
-                          //       gridDelegate:
-                          //           SliverGridDelegateWithMaxCrossAxisExtent(
-                          //               maxCrossAxisExtent: 200,
-                          //               childAspectRatio: 1,
-                          //               mainAxisSpacing: 20,
-                          //               crossAxisSpacing: 20),
-                          //       itemCount: snapshot.data.docs.length,
-                          //       itemBuilder: (context, index) {
-                          //         // print(snapshot.data.docs[index]);
-                          //         var money = snapshot.data.docs[index]['prix'];
-                          //         return GestureDetector(
-                          //           onTap: () {
-                          //             Navigator.push(
-                          //                 context,
-                          //                 MaterialPageRoute(
-                          //                     builder: (context) => PageProduit(
-                          //                           userid: userid,
-                          //                           imagesList: snapshot.data
-                          //                               .docs[index]['images'],
-                          //                           nomProduit: snapshot.data
-                          //                               .docs[index]['nom'],
-                          //                           descriptionProduit: snapshot
-                          //                                   .data.docs[index]
-                          //                               ['description'],
-                          //                           prixProduit: snapshot.data
-                          //                               .docs[index]['prix'],
-                          //                           img: widget.img,
-                          //                           name: widget.name,
-                          //                           description:
-                          //                               widget.description,
-                          //                           adresse: widget.adresse,
-                          //                           clickAndCollect:
-                          //                               widget.clickAndCollect,
-                          //                           livraison: widget.livraison,
-                          //                           idCommercant:
-                          //                               widget.sellerID,
-                          //                           idProduit: snapshot
-                          //                               .data.docs[index]['id'],
-                          //                         )));
-                          //           },
-                          //           child: Container(
-                          //             // margin: EdgeInsets.all(10),
-                          //             decoration: BoxDecoration(
-                          //                 color: BuyandByeAppTheme.white_grey,
-                          //                 borderRadius:
-                          //                     BorderRadius.circular(10)),
-                          //             child: Column(
-                          //               mainAxisAlignment:
-                          //                   MainAxisAlignment.center,
-                          //               children: <Widget>[
-                          //                 Image.network(
-                          //                   snapshot.data.docs[index]["images"]
-                          //                       [0],
-                          //                   width: MediaQuery.of(context)
-                          //                       .size
-                          //                       .width,
-                          //                   height: 100,
-                          //                 ),
-                          //                 SizedBox(height: 5),
-                          //                 Text(snapshot.data.docs[index]['nom'],
-                          //                     style: TextStyle(
-                          //                         fontSize: 16,
-                          //                         color:
-                          //                             BuyandByeAppTheme.grey)),
-                          //                 SizedBox(height: 5),
-                          //                 Text(
-                          //                   "$money€",
-                          //                   style: TextStyle(
-                          //                     fontSize: 16,
-                          //                     fontWeight: FontWeight.w500,
-                          //                   ),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //           ),
-                          //         );
-                          //       },
-                          //     );
-                          //   },
-                          // ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 25),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 160,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: BuyandByeAppTheme.white_grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text("Design uniquement")),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 30),
-                          Text(
-                            "Produits disponibles",
-                            style: TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-
-                          produits(dropdownValue),
                           SizedBox(height: 30),
                           // Row(
                           //     mainAxisAlignment: MainAxisAlignment.center,
@@ -1149,11 +1202,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   childAspectRatio: 1,
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 20),
-              itemCount: (snapshot.data! as QuerySnapshot).docs.length,
+              itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index) {
-                var money = (snapshot.data! as QuerySnapshot)
-                    .docs[index]['prix']
-                    .toStringAsFixed(2);
+                var money = snapshot.data.docs[index]['prix'];
                 return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -1176,8 +1227,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                     clickAndCollect: widget.clickAndCollect,
                                     livraison: widget.livraison,
                                     idCommercant: widget.sellerID,
-                                    idProduit: (snapshot.data! as QuerySnapshot)
-                                        .docs[index]['id'],
+                                    idProduit: snapshot.data.docs[index]['id'],
                                   )));
                     },
                     child: Container(
@@ -1209,6 +1259,142 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         )));
               });
         });
+  }
+
+  Widget affichageMenuRecommandation() {
+    return Column(children: [
+      Text(
+        "Recommandations du commerçant",
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      SizedBox(
+        height: 15,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+          SizedBox(width: 15),
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+        ],
+      ),
+      SizedBox(height: 25),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+          SizedBox(width: 15),
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+        ],
+      ),
+    ]);
+  }
+
+  Widget affichageMenuMeilleuresVentes() {
+    return Column(children: [
+      Text(
+        "Meilleures ventes",
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      SizedBox(
+        height: 15,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+          SizedBox(width: 15),
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+        ],
+      ),
+      SizedBox(height: 25),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+          SizedBox(width: 15),
+          Container(
+            height: 160,
+            width: 160,
+            decoration: BoxDecoration(
+                color: BuyandByeAppTheme.white_grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text("Design uniquement")),
+          ),
+        ],
+      ),
+    ]);
+  }
+
+  Widget affichageMenuProduits() {
+    return Column(
+      children: [
+        Text(
+          "Produits disponibles",
+          style: TextStyle(
+            fontSize: 21,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 20),
+        produits(dropdownValue),
+      ],
+    );
   }
 
   // Widget bestSeller(categorie) {
@@ -1287,4 +1473,178 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   //     },
   //   );
   // }
+}
+
+class ReservationPage extends StatefulWidget {
+  @override
+  _ReservationPageState createState() => _ReservationPageState();
+}
+
+class _ReservationPageState extends State<ReservationPage> {
+  late String horairesDropDownValue;
+  List listOfHoraires = ["11h30", "12h00", "12h30", "13h00", "13h30"];
+  final controller1 = NumberTickerController();
+
+  @override
+  void initState() {
+    super.initState();
+    horairesDropDownValue = listOfHoraires[0];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 60),
+            child: Column(children: <Widget>[
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                "Ma réservation",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 21,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    for (String name in listOfHoraires)
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 15,
+                            ),
+                            child: Container(
+                              height: 40,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 108, 112, 109)
+                                    .withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Center(
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    primary: Color.fromARGB(255, 108, 112, 109)
+                                        .withOpacity(0.2),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      horairesDropDownValue = name;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 15, right: 15),
+                                    child: Text(
+                                      name,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: horairesDropDownValue == name
+                                            ? Color.fromARGB(255, 45, 46, 45)
+                                                .withOpacity(1)
+                                            : Color.fromARGB(255, 89, 92, 90)
+                                                .withOpacity(0.9),
+                                        fontWeight:
+                                            horairesDropDownValue == name
+                                                ? FontWeight.bold
+                                                : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      )
+                  ],
+                ),
+              ),
+              ListView(
+                shrinkWrap: true,
+                children: [
+                  Center(
+                      child: Text("Pour combien ?",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18))),
+                  SizedBox(height: 15),
+                  NumberTicker(
+                    controller: controller1,
+                    initialNumber: 1,
+                    textStyle: const TextStyle(fontSize: 17),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Color.fromARGB(255, 108, 112, 109))),
+                        onPressed: () {
+                          controller1.number = controller1.number - 1;
+                        },
+                        child: const Text('-'),
+                      ),
+                      SizedBox(width: 10),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Color.fromARGB(255, 108, 112, 109))),
+                        onPressed: () {
+                          controller1.number = controller1.number + 1;
+                        },
+                        child: const Text('+'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Color.fromARGB(255, 244, 67, 54)),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ))),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Annuler'),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Color.fromARGB(255, 25, 144, 55)),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ))),
+                    onPressed: () {},
+                    child: const Text('Réserver'),
+                  ),
+                ],
+              ),
+            ])));
+  }
 }

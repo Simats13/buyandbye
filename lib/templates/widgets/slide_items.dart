@@ -11,6 +11,7 @@ class SlideItem extends StatefulWidget {
   final bool clickAndCollect;
   final bool livraison;
   final String sellerID;
+  final Map horairesOuverture;
 
   SlideItem({
     Key? key,
@@ -23,6 +24,7 @@ class SlideItem extends StatefulWidget {
     required this.clickAndCollect,
     required this.livraison,
     required this.sellerID,
+    required this.horairesOuverture,
   }) : super(key: key);
 
   @override
@@ -62,6 +64,7 @@ class _SlideItemState extends State<SlideItem> {
                       clickAndCollect: widget.clickAndCollect,
                       livraison: widget.livraison,
                       sellerID: widget.sellerID,
+                      horairesOuverture: widget.horairesOuverture,
                     ),
                   ),
                 );

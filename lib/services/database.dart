@@ -150,7 +150,7 @@ class DatabaseMethods {
 
   createChatRoom(String chatRoomId, Map chatRoomInfoMap) async {
     final snapShot = await FirebaseFirestore.instance
-        .collection("chatrooms")
+        .collection("commonData")
         .doc(chatRoomId)
         .get();
 
@@ -160,7 +160,7 @@ class DatabaseMethods {
     } else {
       //chatroom does not exists
       return FirebaseFirestore.instance
-          .collection("chatrooms")
+          .collection("commonData")
           .doc(chatRoomId)
           .set(chatRoomInfoMap as Map<String, dynamic>);
     }
@@ -168,17 +168,17 @@ class DatabaseMethods {
 
   Future<Stream<QuerySnapshot>> getChatRoomMessages(chatRoomId) async {
     return FirebaseFirestore.instance
-        .collection("chatrooms")
+        .collection("commonData")
         .doc(chatRoomId)
-        .collection("chats")
-        .orderBy("ts", descending: true)
+        .collection("messages")
+        .orderBy("timestamp", descending: true)
         .snapshots();
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
     String? myUserName = await SharedPreferenceHelper().getUserName();
     return FirebaseFirestore.instance
-        .collection("chatrooms")
+        .collection("commonData")
         .where("users", arrayContains: myUserName)
         .snapshots();
   }
@@ -209,7 +209,7 @@ class DatabaseMethods {
 
   Future<Stream<QuerySnapshot>> getInfoConv(String myID) async {
     return FirebaseFirestore.instance
-        .collection('chatrooms')
+        .collection('commonData')
         .where("username", arrayContains: myID)
         .snapshots();
   }
@@ -857,7 +857,7 @@ class DatabaseMethods {
         .set({
       'badgeCount': isRoom ? 0 : userBadgeCount,
       'inRoom': isRoom,
-      'timestamp': DateTime.now().millisecondsSinceEpoch
+      'timestamp': Timestamp.now()
     });
   }
 

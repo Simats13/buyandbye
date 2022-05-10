@@ -194,7 +194,7 @@ class _CartPageState extends State<CartPage> {
                               text: TextSpan(
                                 text: 'CHOISIR LE MODE DE LIVRAISON',
                                 style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 14.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 children: [
@@ -205,7 +205,7 @@ class _CartPageState extends State<CartPage> {
                                       child: Icon(
                                         Icons.local_shipping,
                                         color: BuyandByeAppTheme.white,
-                                        size: 25,
+                                        size: 20,
                                       ),
                                     ),
                                   ),

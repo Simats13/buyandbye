@@ -58,16 +58,16 @@ class _ChatRoomState extends State<ChatRoom>
     setState(() {
       switch (state) {
         case AppLifecycleState.resumed:
-          FBCloudStore.instance
-              .updateMyChatListValues(true, widget.myID, widget.chatID, widget.userType);
+          FBCloudStore.instance.updateMyChatListValues(
+              true, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.inactive:
-          FBCloudStore.instance
-              .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
+          FBCloudStore.instance.updateMyChatListValues(
+              false, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.paused:
-          FBCloudStore.instance
-              .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
+          FBCloudStore.instance.updateMyChatListValues(
+              false, widget.myID, widget.chatID, widget.userType);
           break;
         case AppLifecycleState.detached:
           break;
@@ -82,8 +82,8 @@ class _ChatRoomState extends State<ChatRoom>
     // print(widget.selectedUserToken);
     // print(widget.selectedUserID);
     WidgetsBinding.instance!.addObserver(this);
-    FBCloudStore.instance
-        .updateMyChatListValues(true, widget.myID, widget.chatID, widget.userType);
+    FBCloudStore.instance.updateMyChatListValues(
+        true, widget.myID, widget.chatID, widget.userType);
 
     if (mounted) {
       isShowLocalNotification = true;
@@ -112,8 +112,8 @@ class _ChatRoomState extends State<ChatRoom>
   @override
   void dispose() {
     isShowLocalNotification = false;
-    FBCloudStore.instance
-        .updateMyChatListValues(false, widget.myID, widget.chatID, widget.userType);
+    FBCloudStore.instance.updateMyChatListValues(
+        false, widget.myID, widget.chatID, widget.userType);
     _savedChatId("");
     WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
@@ -135,8 +135,9 @@ class _ChatRoomState extends State<ChatRoom>
                   // style: Theme.of(context).textTheme.bodyText2,
                   children: [
                     TextSpan(
-                        text:
-                            widget.selectedUserFname! + " " + widget.selectedUserLname!,
+                        text: widget.selectedUserFname! +
+                            " " +
+                            widget.selectedUserLname!,
                         style: TextStyle(
                           fontSize: 20,
                           color: BuyandByeAppTheme.orangeMiFonce,
@@ -171,9 +172,9 @@ class _ChatRoomState extends State<ChatRoom>
             ),
             body: StreamBuilder<dynamic>(
                 stream: FirebaseFirestore.instance
-                    .collection('chatrooms')
+                    .collection('commonData')
                     .doc(widget.chatID)
-                    .collection(widget.chatID!)
+                    .collection("messages")
                     .orderBy('timestamp', descending: false)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -189,10 +190,10 @@ class _ChatRoomState extends State<ChatRoom>
                                 reverse: true,
                                 shrinkWrap: true,
                                 controller: _chatListController,
-                                children: addInstructionInSnapshot(
-                                        snapshot.data.docs)
-                                    .map(_returnChatWidget)
-                                    .toList()),
+                                children:
+                                    addInstructionInSnapshot(snapshot.data.docs)
+                                        .map(_returnChatWidget)
+                                        .toList()),
                           ),
                           _buildTextComposer(),
                         ],
@@ -210,6 +211,7 @@ class _ChatRoomState extends State<ChatRoom>
     Widget returnWidget = Container();
 
     if (data is QueryDocumentSnapshot) {
+      // print(data['timestamp']);
       if (data['idTo'] == widget.myID && data['isread'] == false) {
         FirebaseFirestore.instance
             .runTransaction((Transaction myTransaction) async {
@@ -222,14 +224,15 @@ class _ChatRoomState extends State<ChatRoom>
               context,
               widget.selectedUserFname! + " " + widget.selectedUserLname!,
               widget.selectedUserThumbnail!,
-              data['content'],
-              returnTimeStamp(data['timestamp']),
+              data['message'],
+              data['timestamp'],
               data['type'])
-          : mineListTile(context, data['content'],
-              returnTimeStamp(data['timestamp']), data['isread'], data['type']);
+          : mineListTile(context, data['message'], data['timestamp'],
+              data['isread'], data['type']);
     } else if (data is String) {
       returnWidget = stringListTile(data);
     }
+    // print(returnWidget);
     return returnWidget;
   }
 
@@ -281,7 +284,11 @@ class _ChatRoomState extends State<ChatRoom>
             Container(
               //margin:  EdgeInsets.symmetric(horizontal: 2.0),
               child: IconButton(
-                icon: Icon(Icons.send,color:celafonctionne ? BuyandByeAppTheme.orangeMiFonce : null,),
+                icon: Icon(
+                  Icons.send,
+                  color:
+                      celafonctionne ? BuyandByeAppTheme.orangeMiFonce : null,
+                ),
                 onPressed: celafonctionne
                     ? () {
                         setState(() {

@@ -9,41 +9,41 @@ import 'package:intl/date_symbol_data_local.dart';
 
 // For Chat List Functions
 
-String readTimestamp(int timestamp) {
-  initializeDateFormatting('fr_FR');
-  var now = DateTime.now();
-  var date = DateTime.fromMillisecondsSinceEpoch(timestamp);
-  var diff = now.difference(date);
-  var time = '';
+// String readTimestamp(int timestamp) {
+//   initializeDateFormatting('fr_FR');
+//   var now = DateTime.now();
+//   var date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+//   var diff = now.difference(date);
+//   var time = '';
 
-  if (diff.inSeconds <= 0 ||
-      diff.inSeconds > 0 && diff.inMinutes == 0 ||
-      diff.inMinutes > 0 && diff.inHours == 0 ||
-      diff.inHours > 0 && diff.inDays == 0) {
-    if (diff.inHours > 0) {
-      time = 'Il y a ' + diff.inHours.toString() + ' h';
-    } else if (diff.inMinutes > 0) {
-      time = 'Il y a ' + diff.inMinutes.toString() + ' min';
-    } else if (diff.inSeconds > 0) {
-      time = 'Maintenant';
-    } else if (diff.inMilliseconds > 0) {
-      time = 'Maintenant';
-    } else if (diff.inMicroseconds > 0) {
-      time = 'Maintenant';
-    } else {
-      time = 'Maintenant';
-    }
-  } else if (diff.inDays > 0 && diff.inDays < 7) {
-    time = 'Il y a ' + diff.inDays.toString() + ' jour';
-  } else if (diff.inDays > 6) {
-    time = 'Il y a ' + (diff.inDays / 7).floor().toString() + ' sec';
-  } else if (diff.inDays > 29) {
-    time = 'Il y a ' + (diff.inDays / 30).floor().toString() + ' min';
-  } else if (diff.inDays > 365) {
-    time = '${date.day}-${date.month}-${date.year}';
-  }
-  return time;
-}
+//   if (diff.inSeconds <= 0 ||
+//       diff.inSeconds > 0 && diff.inMinutes == 0 ||
+//       diff.inMinutes > 0 && diff.inHours == 0 ||
+//       diff.inHours > 0 && diff.inDays == 0) {
+//     if (diff.inHours > 0) {
+//       time = 'Il y a ' + diff.inHours.toString() + ' h';
+//     } else if (diff.inMinutes > 0) {
+//       time = 'Il y a ' + diff.inMinutes.toString() + ' min';
+//     } else if (diff.inSeconds > 0) {
+//       time = 'Maintenant';
+//     } else if (diff.inMilliseconds > 0) {
+//       time = 'Maintenant';
+//     } else if (diff.inMicroseconds > 0) {
+//       time = 'Maintenant';
+//     } else {
+//       time = 'Maintenant';
+//     }
+//   } else if (diff.inDays > 0 && diff.inDays < 7) {
+//     time = 'Il y a ' + diff.inDays.toString() + ' jour';
+//   } else if (diff.inDays > 6) {
+//     time = 'Il y a ' + (diff.inDays / 7).floor().toString() + ' sec';
+//   } else if (diff.inDays > 29) {
+//     time = 'Il y a ' + (diff.inDays / 30).floor().toString() + ' min';
+//   } else if (diff.inDays > 365) {
+//     time = '${date.day}-${date.month}-${date.year}';
+//   }
+//   return time;
+// }
 
 String makeChatId(myID, selectedUserID) {
   String chatID;
@@ -67,15 +67,6 @@ int countChatListUsers(myUserName, AsyncSnapshot<QuerySnapshot> snapshot) {
 
 // For ChatRoom Functions
 
-String returnTimeStamp(int messageTimeStamp) {
-  initializeDateFormatting('fr_FR');
-  String resultString = '';
-  var format = DateFormat.Hm();
-  var date = DateTime.fromMillisecondsSinceEpoch(messageTimeStamp);
-  resultString = format.format(date);
-  return resultString;
-}
-
 void setCurrentChatRoomID(value) async {
   // To know where I am in chat room. Avoid local notification.
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -87,26 +78,27 @@ List<dynamic> addInstructionInSnapshot(List<QueryDocumentSnapshot> snapshot) {
   List<dynamic> _newData = addChatDateInSnapshot(snapshot);
   _returnList = List<dynamic>.from(_newData.reversed);
   _returnList.add(chatInstruction);
+  // print(_returnList);
   return _returnList;
 }
 
 List<dynamic> addChatDateInSnapshot(List<QueryDocumentSnapshot> snapshot) {
   List<dynamic> _returnList = [];
-  String? _currentDate;
+  Timestamp? _currentDate;
 
   for (QueryDocumentSnapshot snapshot in snapshot) {
-    var format = DateFormat.yMMMMd('fr_FR');
-    var date = DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp']);
+    var date = snapshot['timestamp'];
+    // print(date);
 
     if (_currentDate == null) {
-      _currentDate = format.format(date);
+      _currentDate = date;
       _returnList.add(_currentDate);
     }
 
-    if (_currentDate == format.format(date)) {
+    if (_currentDate == date) {
       _returnList.add(snapshot);
     } else {
-      _currentDate = format.format(date);
+      _currentDate = date;
       _returnList.add(_currentDate);
       _returnList.add(snapshot);
     }

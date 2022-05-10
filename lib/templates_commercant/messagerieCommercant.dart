@@ -200,14 +200,14 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                       height: 50,
                       child: Column(
                         children: [
-                          Text(
-                            (chatListSnapshot.hasData &&
-                                    chatListSnapshot.data!.docs.length > 0)
-                                ? readTimestamp(chatListSnapshot
-                                    .data!.docs[widget.index]['timestamp'])
-                                : '',
-                            style: TextStyle(fontSize: size.width * 0.03),
-                          ),
+                          // Text(
+                          //   (chatListSnapshot.hasData &&
+                          //           chatListSnapshot.data!.docs.length > 0)
+                          //       ? readTimestamp(chatListSnapshot
+                          //           .data!.docs[widget.index]['timestamp'])
+                          //       : '',
+                          //   style: TextStyle(fontSize: size.width * 0.03),
+                          // ),
                           // Ecran rouge pendant 1 seconde
                           // Padding(
                           //   padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),

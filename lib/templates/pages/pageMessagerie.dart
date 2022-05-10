@@ -76,7 +76,7 @@ class _PageMessagerieState extends State<PageMessagerie>
       ),
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
-              .collection('chatrooms')
+              .collection('commonData')
               .where("users", arrayContains: myID)
               .orderBy("timestamp", descending: true)
               .snapshots(),
@@ -90,6 +90,7 @@ class _PageMessagerieState extends State<PageMessagerie>
               );
               //METTRE UN SHIMMER
             }
+            print(myID);
             if (!userSnapshot.hasData) return ColorLoader3();
             return countChatListUsers(myUserName,
                         userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) >
@@ -122,7 +123,7 @@ class _PageMessagerieState extends State<PageMessagerie>
                             // The child of the Slidable is what the user sees when the
                             // component is not dragged.
                             child: ChatRoomListTile(ds["lastMessage"], ds.id,
-                                myUserName, ds["users"][1], index),
+                                myUserName, ds["users"][0], index),
                           );
                         },
                       ),
@@ -166,7 +167,7 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String? profilePicUrl, name, token, userid, myThumbnail;
+  String? profilePicUrl, name, token, userid, myThumbnail, chatRoomId;
 
   getThisUserInfo() async {
     final User user = await AuthMethods().getCurrentUser();
@@ -205,9 +206,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       final size = MediaQuery.of(context).size;
       return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(userid)
-            .collection('chatlist')
+            .collection('commonData')
+            .doc(chatRoomId)
+            .collection('messages')
             .orderBy("timestamp", descending: true)
             .snapshots(),
         builder: (context, chatListSnapshot) {
@@ -220,12 +221,12 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             );
           }
 
-          if (chatListSnapshot.data!.docs[widget.index].get('badgeCount') !=
-              0) {
-            isActive = true;
-          } else {
-            isActive = false;
-          }
+          // if (chatListSnapshot.data!.docs[widget.index].get('badgeCount') !=
+          //     0) {
+          //   isActive = true;
+          // } else {
+          //   isActive = false;
+          // }
 
           return ListTile(
             leading: ClipRRect(
@@ -248,14 +249,14 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                       height: 50,
                       child: Column(
                         children: [
-                          Text(
-                            (chatListSnapshot.hasData &&
-                                    chatListSnapshot.data!.docs.length > 0)
-                                ? readTimestamp(chatListSnapshot
-                                    .data!.docs[widget.index]['timestamp'])
-                                : '',
-                            style: TextStyle(fontSize: size.width * 0.03),
-                          ),
+                          // Text(
+                          //   (chatListSnapshot.hasData &&
+                          //           chatListSnapshot.data!.docs.length > 0)
+                          //       ? readTimestamp(chatListSnapshot
+                          //           .data!.docs[widget.index]['timestamp'])
+                          //       : '',
+                          //   style: TextStyle(fontSize: size.width * 0.03),
+                          // ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                             child: CircleAvatar(
@@ -294,16 +295,16 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ChatRoom(
-                          userid!, //ID DE L'UTILISATEUR
-                          widget.myUsername!, // NOM DE L'UTILISATEUR
-                          token!,
-                          widget.sellerID!, // ID DU CORRESPONDANT
-                          widget.chatRoomId!, //ID DE LA CONV
-                          name!, // PRENOM DU CORRESPONDANT
-                          "", // NOM DU CORRESPONDANT
-                          profilePicUrl!, // IMAGE DU CORRESPONDANT
-                          myThumbnail!, // IMAGE DE L'UTILISATEUR
-                          "users" // TYPE D'UTILISATEUR
+                        userid!, //ID DE L'UTILISATEUR
+                        widget.myUsername!, // NOM DE L'UTILISATEUR
+                        token!,
+                        widget.sellerID!, // ID DU CORRESPONDANT
+                        widget.chatRoomId!, //ID DE LA CONV
+                        name!, // PRENOM DU CORRESPONDANT
+                        "", // NOM DU CORRESPONDANT
+                        profilePicUrl!, // IMAGE DU CORRESPONDANT
+                        myThumbnail!, // IMAGE DE L'UTILISATEUR
+                        "users" // TYPE D'UTILISATEUR
                         ))),
           );
         },
