@@ -92,11 +92,11 @@ const MobileSection = () => {
                                             }
                                         }}
                                     >
-                                        <Toolbar sx={{ pt: 2.75, pb: 2.75 }}>
+                                        {/* <Toolbar sx={{ pt: 2.75, pb: 2.75 }}>
                                             <Grid container justifyContent={matchMobile ? 'space-between' : 'flex-end'} alignItems="center">
                                                 <LocalizationSection />
                                             </Grid>
-                                        </Toolbar>
+                                        </Toolbar> */}
                                     </AppBar>
                                 )}
                             </Paper>

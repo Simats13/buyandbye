@@ -50,11 +50,10 @@ const Enterprise = () => {
     const [data, setData] = React.useState([]);
     const { user } = useAuth();
     const getData = async () => {
-        const res = await axios.get(`http://localhost:81/api/shops/${user.id}`).then((res, err) => {
+        const res = await axios.get(`/api/shops/${user.id}`).then((res, err) => {
             if (!res || err) {
                 dispatch(openSnackbar('error', 'Error while fetching data'));
             }
-            // console.log(res.data);
             return res;
         });
 

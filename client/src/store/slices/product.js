@@ -6,6 +6,7 @@ import axios from 'utils/axios';
 import { dispatch } from '../index';
 
 import useAuth from 'hooks/useAuth';
+import { openSnackbar } from './snackbar';
 
 // ----------------------------------------------------------------------
 
@@ -78,7 +79,13 @@ export function getProducts() {
     return async () => {
         try {
             const { user } = useAuth();
-            const response = await axios.get(`http://localhost:81/api/shops/${user.id}/products`);
+            const response = await axios.get(`/api/shops/${user.id}/products`).then((res, err) => {
+                if (!res || err) {
+                    dispatch(openSnackbar('error', 'Error while fetching data'));
+                }
+                return res;
+            });
+            console.log(response);
             dispatch(slice.actions.getProductsSuccess(response.data));
             console.log(response.data);
         } catch (error) {

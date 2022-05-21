@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
             
-app.use('/' ,require('./routes/pages-routes'));
+// app.use('/' ,require('./routes/pages-routes'));
        
 // app.use(express.json())
 // app.use('/api', userRoutes.routes);
