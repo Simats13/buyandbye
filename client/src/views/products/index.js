@@ -45,6 +45,11 @@ import FileCopyIcon from '@mui/icons-material/FileCopyTwoTone';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import { openSnackbar } from 'store/slices/snackbar';
+import axios from 'utils/axios';
+import useAuth from 'hooks/useAuth';
+import ProductAdd from './ProductAdd';
+import ProductEdit from './Edit';
 
 const prodImage = require.context('assets/images/e-commerce', true);
 
@@ -83,31 +88,25 @@ const headCells = [
     {
         id: 'name',
         numeric: false,
-        label: 'Product Name',
+        label: 'Nom du Produit',
         align: 'left'
     },
     {
-        id: 'created',
+        id: 'quantity',
         numeric: false,
-        label: 'Created',
+        label: 'Quantité',
         align: 'left'
     },
     {
         id: 'price',
         numeric: true,
-        label: 'Price',
-        align: 'right'
-    },
-    {
-        id: 'sale-price',
-        numeric: true,
-        label: 'Sale Price',
+        label: 'Prix',
         align: 'right'
     },
     {
         id: 'status',
         numeric: true,
-        label: 'Status',
+        label: 'Statut',
         align: 'center'
     }
 ];
@@ -235,6 +234,17 @@ const Product = () => {
     const [search, setSearch] = React.useState('');
     const [rows, setRows] = React.useState([]);
     const { products } = useSelector((state) => state.product);
+    const { user } = useAuth();
+    const getData = async () => {
+        const res = await axios.get(`/api/shops/${user.id}/products`).then((res, err) => {
+            if (!res || err) {
+                dispatch(openSnackbar('error', 'Error while fetching data'));
+            }
+            return res;
+        });
+
+        return res.data;
+    };
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -247,13 +257,11 @@ const Product = () => {
     };
 
     React.useEffect(() => {
-        setRows(products);
-    }, [products]);
-
-    React.useEffect(() => {
-        dispatch(getProducts());
+        getData().then((res) => setRows(res));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    console.log(rows);
 
     const handleSearch = (event) => {
         const newString = event?.target.value;
@@ -263,7 +271,7 @@ const Product = () => {
             const newRows = rows?.filter((row) => {
                 let matches = true;
 
-                const properties = ['name', 'description', 'rating', 'salePrice', 'offerPrice', 'gender'];
+                const properties = ['name', 'visibility'];
                 let containsQuery = false;
 
                 properties.forEach((property) => {
@@ -281,6 +289,23 @@ const Product = () => {
         } else {
             getProducts();
         }
+    };
+
+    // show a right sidebar when clicked on new product
+    const [openAdd, setOpenAdd] = React.useState(false);
+    const [openEdit, setOpenEdit] = React.useState(false);
+    const handleClickOpenDialogAdd = () => {
+        setOpenAdd(true);
+    };
+    const handleCloseDialogAdd = () => {
+        setOpenAdd(false);
+    };
+
+    const handleClickOpenDialogEdit = () => {
+        setOpenEdit(true);
+    };
+    const handleCloseDialogEdit = () => {
+        setOpenEdit(false);
     };
 
     const handleRequestSort = (event, property) => {
@@ -341,7 +366,7 @@ const Product = () => {
                                 )
                             }}
                             onChange={handleSearch}
-                            placeholder="Search Product"
+                            placeholder="Chercher un produit"
                             value={search}
                             size="small"
                         />
@@ -363,12 +388,17 @@ const Product = () => {
                             </IconButton>
                         </Tooltip>
 
-                        {/* product add & dialog */}
-                        <Tooltip title="Add Product">
-                            <Fab color="primary" size="small" sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}>
+                        <Tooltip title="Ajouter un Produit">
+                            <Fab
+                                color="primary"
+                                size="small"
+                                onClick={handleClickOpenDialogAdd}
+                                sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
+                            >
                                 <AddIcon fontSize="small" />
                             </Fab>
                         </Tooltip>
+                        <ProductAdd open={openAdd} handleCloseDialog={handleCloseDialogAdd} />
                     </Grid>
                 </Grid>
             </CardContent>
@@ -390,11 +420,9 @@ const Product = () => {
                         {stableSort(rows, getComparator(order, orderBy))
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
-                                console.log(index);
                                 if (typeof row === 'number') return null;
                                 const isItemSelected = isSelected(row.name);
                                 const labelId = `enhanced-table-checkbox-${index}`;
-
                                 return (
                                     <TableRow
                                         hover
@@ -421,7 +449,7 @@ const Product = () => {
                                             onClick={(event) => handleClick(event, row.name)}
                                             sx={{ cursor: 'pointer' }}
                                         >
-                                            <Avatar src={row.image && prodImage(`./${row.image}`).default} size="md" variant="rounded" />
+                                            <Avatar src={row.image} size="md" variant="rounded" />
                                         </TableCell>
                                         <TableCell component="th" id={labelId} scope="row" sx={{ cursor: 'pointer' }}>
                                             <Typography
@@ -436,14 +464,14 @@ const Product = () => {
                                                 {row.name}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>{format(new Date(row.created), 'E, MMM d yyyy')}</TableCell>
-                                        <TableCell align="right">${row.offerPrice}</TableCell>
-                                        <TableCell align="right">${row.salePrice}</TableCell>
+                                        <TableCell align="left">{row.quantity}</TableCell>
+                                        <TableCell align="right">{row.price} €</TableCell>
+                                        {/* <TableCell align="right">${row.salePrice}</TableCell> */}
                                         <TableCell align="center">
                                             <Chip
                                                 size="small"
-                                                label={row.isStock ? 'In Stock' : 'Out of Stock'}
-                                                chipcolor={row.isStock ? 'success' : 'error'}
+                                                label={row.visibility ? 'Visible' : 'Masqué'}
+                                                chipcolor={row.visibility ? 'success' : 'error'}
                                                 sx={{ borderRadius: '4px', textTransform: 'capitalize' }}
                                             />
                                         </TableCell>
@@ -477,8 +505,11 @@ const Product = () => {
                                                     }
                                                 }}
                                             >
-                                                <MenuItem onClick={handleClose}> Edit</MenuItem>
-                                                <MenuItem onClick={handleClose}> Delete</MenuItem>
+                                                <MenuItem onClick={handleClickOpenDialogEdit} value={row.id}>
+                                                    Editer
+                                                </MenuItem>
+                                                <ProductEdit open={openEdit} handleCloseDialog={handleCloseDialogEdit} />
+                                                <MenuItem onClick={handleClose}> Supprimer</MenuItem>
                                             </Menu>
                                         </TableCell>
                                     </TableRow>

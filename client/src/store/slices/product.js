@@ -79,15 +79,8 @@ export function getProducts() {
     return async () => {
         try {
             const { user } = useAuth();
-            const response = await axios.get(`/api/shops/${user.id}/products`).then((res, err) => {
-                if (!res || err) {
-                    dispatch(openSnackbar('error', 'Error while fetching data'));
-                }
-                return res;
-            });
-            console.log(response);
+            const response = await axios.get(`/api/shops/${user.id}/products`);
             dispatch(slice.actions.getProductsSuccess(response.data));
-            console.log(response.data);
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }

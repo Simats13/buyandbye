@@ -4,12 +4,13 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
+import Dashboard from 'views/dashboard/';
 
 // sample page routing
-const SamplePage = Loadable(lazy(() => import('views/sample-page')));
+// const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const Enterprise = Loadable(lazy(() => import('views/enterprise')));
 const Products = Loadable(lazy(() => import('views/products')));
-const Commands = Loadable(lazy(() => import('views/commands')));
+const Commands = Loadable(lazy(() => import('views/orders')));
 const Chat = Loadable(lazy(() => import('views/chat')));
 const Users = Loadable(lazy(() => import('views/users')));
 
@@ -25,11 +26,11 @@ const MainRoutes = {
     children: [
         {
             path: '/',
-            element: <SamplePage />
+            element: <Dashboard />
         },
         {
-            path: '/sample-page',
-            element: <SamplePage />
+            path: '/Dashboard',
+            element: <Dashboard />
         },
         {
             path: '/entreprise',
