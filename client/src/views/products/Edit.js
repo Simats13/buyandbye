@@ -98,7 +98,7 @@ function getStyles(name, personName, theme) {
 
 // ==============================|| PRODUCT ADD DIALOG ||============================== //
 
-const ProductEdit = ({ open, handleCloseDialog, id }) => {
+const ProductEdit = ({ open, handleCloseDialog, data }) => {
     const theme = useTheme();
     // handle category change dropdown
     const [currency, setCurrency] = useState('2');
@@ -159,36 +159,43 @@ const ProductEdit = ({ open, handleCloseDialog, id }) => {
                     <DialogContent>
                         <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
                             <Grid item xs={12}>
-                                <TextField id="outlined-basic1" fullWidth label="Nom du Produit*" value={id} />
+                                <TextField id="outlined-basic1" fullWidth label="Nom du Produit*" defaultValue={data.name} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField id="outlined-basic2" fullWidth multiline rows={3} label="Description" />
+                                <TextField
+                                    id="outlined-basic2"
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    label="Description"
+                                    defaultValue={data.description}
+                                />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     id="standard-select-currency"
                                     select
                                     label="Categorie du Produit*"
-                                    value={currency}
+                                    defaultValue=""
                                     fullWidth
                                     onChange={handleSelectChange}
                                     helperText="Veuillez choisir une categorie"
                                 >
                                     {categories.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
+                                        <MenuItem key={option.value} defaultValue={option.value}>
                                             {option.label}
                                         </MenuItem>
                                     ))}
                                 </TextField>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField id="outlined-basic3" fullWidth label="Reférence*" value="" />
+                                <TextField id="outlined-basic3" fullWidth label="Reférence*" defaultValue="" />
                             </Grid>
                             <Grid item md={6} xs={12}>
                                 <TextField
                                     label="Prix*"
                                     id="filled-start-adornment1"
-                                    value=""
+                                    defaultValue={data.price}
                                     InputProps={{ startAdornment: <InputAdornment position="start">€</InputAdornment> }}
                                 />
                             </Grid>
@@ -196,29 +203,19 @@ const ProductEdit = ({ open, handleCloseDialog, id }) => {
                                 <TextField
                                     label="Réduction"
                                     id="filled-start-adornment2"
-                                    value=""
+                                    defaultValue={data.discount}
                                     InputProps={{ startAdornment: <InputAdornment position="start">%</InputAdornment> }}
                                 />
                             </Grid>
                             <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Quantité*"
-                                    id="quantity"
-                                    value=""
-                                    InputProps={{ startAdornment: <InputAdornment position="start">0</InputAdornment> }}
-                                />
+                                <TextField label="Quantité*" id="quantity" defaultValue={data.quantity} placeholder="0" />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                                <TextField label="Marque*" id="brand" defaultValue={data.brand} placeholder="Ex : Apple" />
                             </Grid>
                             <Grid item md={6} xs={12}>
                                 <TextField
-                                    label="Marque*"
-                                    id="brand"
-                                    value=""
-                                    InputProps={{ startAdornment: <InputAdornment position="start">Ex : Apple</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    value=""
+                                    defaultValue={data.weight}
                                     label="Poids"
                                     InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
                                 />
@@ -268,10 +265,10 @@ const ProductEdit = ({ open, handleCloseDialog, id }) => {
                                                 id="demo-multiple-chip"
                                                 multiple
                                                 fullWidth
-                                                value={personName}
+                                                defaultValue={personName}
                                                 onChange={handleTagSelectChange}
                                                 input={<Input id="select-multiple-chip" />}
-                                                renderValue={(selected) => (
+                                                renderdefaultValue={(selected) => (
                                                     <div>
                                                         {typeof selected !== 'string' &&
                                                             selected.map((value) => <Chip key={value} label={value} />)}
@@ -280,7 +277,7 @@ const ProductEdit = ({ open, handleCloseDialog, id }) => {
                                                 MenuProps={MenuProps}
                                             >
                                                 {tagNames.map((name) => (
-                                                    <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                                                    <MenuItem key={name} defaultValue={name} style={getStyles(name, personName, theme)}>
                                                         {name}
                                                     </MenuItem>
                                                 ))}

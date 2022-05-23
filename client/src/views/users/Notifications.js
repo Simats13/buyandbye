@@ -35,11 +35,11 @@ const Notifications = () => {
             <Grid item xs={12} sm={6} md={8}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item>
-                        <SubCard title="Subscription Preference Center">
+                        <SubCard title="Préférences">
                             <Grid container spacing={gridSpacing}>
                                 <Grid item xs={12}>
                                     <Typography variant="subtitle1" align="left">
-                                        I would like to receive:
+                                        J&apos;aimerai recevoir :
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -55,7 +55,7 @@ const Notifications = () => {
                                                             color="primary"
                                                         />
                                                     }
-                                                    label="Product Announcements and Updates"
+                                                    label="Nouvelles annonces et mises à jour"
                                                 />
                                             </Grid>
                                             <Grid item xs={12}>
@@ -68,7 +68,7 @@ const Notifications = () => {
                                                             color="primary"
                                                         />
                                                     }
-                                                    label="Events and Meetups"
+                                                    label="Evenements et promotions"
                                                 />
                                             </Grid>
                                             <Grid item xs={12}>
@@ -81,20 +81,7 @@ const Notifications = () => {
                                                             color="primary"
                                                         />
                                                     }
-                                                    label="User Research Surveys"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            checked={state1.checkedD}
-                                                            onChange={handleChangeState1}
-                                                            name="checkedD"
-                                                            color="primary"
-                                                        />
-                                                    }
-                                                    label="Hatch Startup Program"
+                                                    label="Statistiques mensuelles"
                                                 />
                                             </Grid>
                                         </Grid>
@@ -106,7 +93,7 @@ const Notifications = () => {
                 </Grid>
             </Grid>
             <Grid item sm={6} md={4}>
-                <SubCard title="Opt me out instead">
+                <SubCard title="Ne recevoir aucune notitification">
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <FormGroup>
@@ -114,7 +101,7 @@ const Notifications = () => {
                                     <Grid item xs={12}>
                                         <FormControlLabel
                                             control={<Checkbox onChange={handleChangeState3} name="checkedA" color="primary" />}
-                                            label="Unsubscribe me from all of the above"
+                                            label="Se desabonner de toutes les notifications"
                                         />
                                     </Grid>
                                 </Grid>
@@ -124,7 +111,7 @@ const Notifications = () => {
                             <Stack direction="row">
                                 <AnimateButton>
                                     <Button variant="contained" size="small">
-                                        Update my preferences
+                                        Mettre à jour mes préférences
                                     </Button>
                                 </AnimateButton>
                             </Stack>

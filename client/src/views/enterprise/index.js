@@ -105,7 +105,7 @@ const Enterprise = () => {
                                 name="nameEnterprise"
                                 type="text"
                                 placeholder="Nom de l'entreprise"
-                                value={data.name}
+                                defaultValue={data.name}
                                 onChange={formik.handleChange}
                                 error={formik.touched.nameEnterprise && Boolean(formik.errors.nameEnterprise)}
                                 helperText={formik.touched.nameEnterprise && formik.errors.nameEnterprise}
@@ -118,7 +118,7 @@ const Enterprise = () => {
                                 id="enterpriseAdress"
                                 name="enterpriseAdress"
                                 placeholder="Adresse de l'entreprise"
-                                value={data.adresse}
+                                defaultValue={data.adresse}
                                 onChange={formik.handleChange}
                                 error={formik.touched.enterpriseAdress && Boolean(formik.errors.enterpriseAdress)}
                                 helperText={formik.touched.enterpriseAdress && formik.errors.enterpriseAdress}
@@ -132,7 +132,7 @@ const Enterprise = () => {
                                 name="siretNumber"
                                 type="text"
                                 placeholder="Numéro de SIRET"
-                                value={data.siretNumber}
+                                defaultValue={data.siretNumber}
                                 onChange={formik.handleChange}
                                 error={formik.touched.siretNumber && Boolean(formik.errors.siretNumber)}
                                 helperText={formik.touched.siretNumber && formik.errors.siretNumber}
@@ -153,7 +153,7 @@ const Enterprise = () => {
                                 name="tvaNumber"
                                 type="text"
                                 placeholder="Numéro de TVA"
-                                value={data.tvaNumber}
+                                defaultValue={data.tvaNumber}
                                 onChange={formik.handleChange}
                                 error={formik.touched.tvaNumber && Boolean(formik.errors.tvaNumber)}
                                 helperText={formik.touched.tvaNumber && formik.errors.tvaNumber}
@@ -167,7 +167,7 @@ const Enterprise = () => {
                                 name="desc"
                                 type="textarea"
                                 placeholder="Description"
-                                value={data.description}
+                                defaultValue={data.description}
                                 onChange={formik.handleChange}
                                 error={formik.touched.desc && Boolean(formik.errors.desc)}
                                 helperText={formik.touched.desc && formik.errors.desc}
@@ -181,7 +181,7 @@ const Enterprise = () => {
                                 name="emailEnterprise"
                                 type="email"
                                 placeholder="Adresse Email de l'entreprise"
-                                value={data.email}
+                                defaultValue={data.email}
                                 onChange={formik.handleChange}
                                 error={formik.touched.emailEnterprise && Boolean(formik.errors.emailEnterprise)}
                                 helperText={formik.touched.emailEnterprise && formik.errors.emailEnterprise}
@@ -195,7 +195,7 @@ const Enterprise = () => {
                                 name="phoneEnterprise"
                                 type="phone"
                                 placeholder="Numéro de téléphone de l'entreprise"
-                                value={data.phone}
+                                defaultValue={data.phone}
                                 onChange={formik.handleChange}
                                 error={formik.touched.phoneEnterprise && Boolean(formik.errors.phoneEnterprise)}
                                 helperText={formik.touched.phoneEnterprise && formik.errors.phoneEnterprise}
@@ -221,7 +221,8 @@ const Enterprise = () => {
                                 <FormControlLabel
                                     control={
                                         <Switch
-                                            checked={data.livraison}
+                                            defaultChecked={data.livraison}
+                                            // checked={data.livraison}
                                             id="delivery"
                                             name="delivery"
                                             onChange={formik.handleChange}

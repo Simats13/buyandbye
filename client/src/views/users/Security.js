@@ -16,21 +16,21 @@ const Security = () => {
             <Grid item sm={6} md={8}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
-                        <SubCard title="Change Password">
+                        <SubCard title="Changer le mot de passe">
                             <Grid container spacing={gridSpacing}>
                                 <Grid item xs={12}>
-                                    <TextField id="outlined-basic9" fullWidth label="Current password" />
+                                    <TextField id="outlined-basic9" fullWidth label="Mot de passe actuel" />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField id="outlined-basic10" fullWidth label="New Password" />
+                                    <TextField id="outlined-basic10" fullWidth label="Nouveau mot de passe" />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField id="outlined-basic11" fullWidth label="Re-enter New Password" />
+                                    <TextField id="outlined-basic11" fullWidth label="Ressaisir le nouveau mot de passe" />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Stack direction="row">
                                         <AnimateButton>
-                                            <Button variant="contained">Change Password</Button>
+                                            <Button variant="contained">Changer le mot de passe</Button>
                                         </AnimateButton>
                                     </Stack>
                                 </Grid>
@@ -42,12 +42,12 @@ const Security = () => {
             <Grid item sm={6} md={4}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12}>
-                        <SubCard title="Delete Account">
+                        <SubCard title="Supprimer le compte">
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Typography variant="body1">
-                                        To deactivate your account, first delete its resources. If you are the only owner of any teams,
-                                        either assign another owner or deactivate the team.
+                                        Cette action entraine la suppression de votre compte, toute suppression est définitive et
+                                        irréversible.
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -65,7 +65,7 @@ const Security = () => {
                                                 variant="outlined"
                                                 size="small"
                                             >
-                                                Deactivate Account
+                                                Supprimer le compte
                                             </Button>
                                         </AnimateButton>
                                     </Stack>

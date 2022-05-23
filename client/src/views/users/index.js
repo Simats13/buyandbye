@@ -43,7 +43,7 @@ const Profile3 = () => {
     };
 
     return (
-        <MainCard title="Account">
+        <MainCard title="Compte">
             <div>
                 <Tabs
                     value={value}
@@ -70,9 +70,9 @@ const Profile3 = () => {
                     aria-label="simple tabs example"
                     variant="scrollable"
                 >
-                    <Tab component={Link} to="#" label="Profile" {...a11yProps(0)} />
-                    <Tab component={Link} to="#" label="Billing" {...a11yProps(1)} />
-                    <Tab component={Link} to="#" label="Security" {...a11yProps(2)} />
+                    <Tab component={Link} to="#" label="Profil" {...a11yProps(0)} />
+                    <Tab component={Link} to="#" label="Paiement" {...a11yProps(1)} />
+                    <Tab component={Link} to="#" label="Sécurité" {...a11yProps(2)} />
                     <Tab component={Link} to="#" label="Notifications" {...a11yProps(3)} />
                 </Tabs>
                 <TabPanel value={value} index={0}>

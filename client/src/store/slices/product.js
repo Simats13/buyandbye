@@ -13,10 +13,10 @@ import { openSnackbar } from './snackbar';
 const initialState = {
     error: null,
     products: [],
-    product: null,
-    relatedProducts: [],
-    reviews: [],
-    addresses: []
+    product: null
+    // relatedProducts: [],
+    // reviews: [],
+    // addresses: []
 };
 
 const slice = createSlice({
@@ -33,40 +33,40 @@ const slice = createSlice({
             state.products = action.payload;
         },
 
-        // FILTER PRODUCTS
-        filterProductsSuccess(state, action) {
-            state.products = action.payload;
-        },
+        // // FILTER PRODUCTS
+        // filterProductsSuccess(state, action) {
+        //     state.products = action.payload;
+        // },
 
-        // GET PRODUCT
+        // // GET PRODUCT
         getProductSuccess(state, action) {
             state.product = action.payload;
-        },
-
-        // GET RELATED PRODUCTS
-        getRelatedProductsSuccess(state, action) {
-            state.relatedProducts = action.payload;
-        },
-
-        // GET PRODUCT REVIEWS
-        getProductReviewsSuccess(state, action) {
-            state.reviews = action.payload;
-        },
-
-        // GET ADDRESSES
-        getAddressesSuccess(state, action) {
-            state.addresses = action.payload;
-        },
-
-        // ADD ADDRESS
-        addAddressSuccess(state, action) {
-            state.addresses = action.payload;
-        },
-
-        // EDIT ADDRESS
-        editAddressSuccess(state, action) {
-            state.addresses = action.payload;
         }
+
+        // // GET RELATED PRODUCTS
+        // getRelatedProductsSuccess(state, action) {
+        //     state.relatedProducts = action.payload;
+        // },
+
+        // // GET PRODUCT REVIEWS
+        // getProductReviewsSuccess(state, action) {
+        //     state.reviews = action.payload;
+        // },
+
+        // // GET ADDRESSES
+        // getAddressesSuccess(state, action) {
+        //     state.addresses = action.payload;
+        // },
+
+        // // ADD ADDRESS
+        // addAddressSuccess(state, action) {
+        //     state.addresses = action.payload;
+        // },
+
+        // // EDIT ADDRESS
+        // editAddressSuccess(state, action) {
+        //     state.addresses = action.payload;
+        // }
     }
 });
 
@@ -75,11 +75,10 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getProducts() {
+export function getProducts(id) {
     return async () => {
         try {
-            const { user } = useAuth();
-            const response = await axios.get(`/api/shops/${user.id}/products`);
+            const response = await axios.get(`/api/shops/${id}/products`);
             dispatch(slice.actions.getProductsSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
@@ -98,10 +97,10 @@ export function filterProducts(filter) {
     };
 }
 
-export function getProduct(id) {
+export function getProduct(idShop, idProduct) {
     return async () => {
         try {
-            const response = await axios.post('/api/product/details', { id });
+            const response = await axios.post('/api/product/details', { idProduct, idShop });
             dispatch(slice.actions.getProductSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));

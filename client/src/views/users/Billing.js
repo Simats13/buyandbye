@@ -50,38 +50,29 @@ const Billing = () => {
         <Grid container spacing={gridSpacing}>
             <Grid item xs={12} sm={6} md={4}>
                 <BillCard
-                    primary="Bill Due"
-                    secondary="$150.00"
-                    link="Pay Now"
+                    primary="Facture"
+                    secondary="150,00 €"
+                    link="Payer maintenant"
                     color={theme.palette.orange.dark}
                     bg={theme.palette.orange.light}
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
                 <BillCard
-                    primary="Total Credits"
-                    secondary="1570 GB"
-                    link="Full Report"
-                    color={theme.palette.warning.dark}
-                    bg={theme.palette.warning.light}
-                />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-                <BillCard
-                    primary="Plan"
-                    secondary="Basic"
-                    link="Upgrade?"
+                    primary="Statut"
+                    secondary="Essentiel"
+                    link="Passer premium ?"
                     color={theme.palette.success.dark}
                     bg={theme.palette.success.light}
                 />
             </Grid>
             <Grid item xs={12}>
                 <SubCard
-                    title="Payment Methods"
+                    title="Moyens de paiement"
                     secondary={
                         <AnimateButton>
                             <Button variant="contained" size="small">
-                                Add New Method
+                                Ajouter un moyen de Paiement
                             </Button>
                         </AnimateButton>
                     }
@@ -94,7 +85,7 @@ const Billing = () => {
                                         <CardMedia component="img" image={imageVisa} title="payment" sx={{ width: 65 }} />
                                         <Stack>
                                             <Typography variant="subtitle1">Visa card</Typography>
-                                            <Typography variant="subtitle2">Ending in 5269 07XX XXXX 8110</Typography>
+                                            <Typography variant="subtitle2">5269 07XX XXXX 8110</Typography>
                                         </Stack>
                                     </Stack>
                                 </Grid>
@@ -105,7 +96,7 @@ const Billing = () => {
                                             |
                                         </Typography>
                                         <Link component={RouterLink} to="#" underline="hover">
-                                            Edit
+                                            Changer
                                         </Link>
                                     </Stack>
                                 </Grid>
@@ -123,20 +114,20 @@ const Billing = () => {
                                             <Typography component="div" variant="subtitle1">
                                                 Discover
                                             </Typography>
-                                            <Typography variant="subtitle2">Ending in 6109 07XX XXXX 8020</Typography>
+                                            <Typography variant="subtitle2">6109 07XX XXXX 8020</Typography>
                                         </Stack>
                                     </Stack>
                                 </Grid>
                                 <Grid item>
                                     <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
                                         <Link component={RouterLink} to="#" color="secondary" underline="hover">
-                                            Make Default
+                                            Mettre par défault
                                         </Link>
                                         <Typography variant="caption" sx={{ color: 'grey.300' }}>
                                             |
                                         </Typography>
                                         <Link component={RouterLink} to="#" underline="hover">
-                                            Edit
+                                            Changer
                                         </Link>
                                     </Stack>
                                 </Grid>
@@ -154,20 +145,20 @@ const Billing = () => {
                                             <Typography component="div" variant="subtitle1">
                                                 Mastercard
                                             </Typography>
-                                            <Typography variant="subtitle2">Ending in 7278 07XX XXXX 4290</Typography>
+                                            <Typography variant="subtitle2">7278 07XX XXXX 4290</Typography>
                                         </Stack>
                                     </Stack>
                                 </Grid>
                                 <Grid item>
                                     <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={1}>
                                         <Link component={RouterLink} to="#" color="secondary" underline="hover">
-                                            Make Default
+                                            Mettre par défault
                                         </Link>
                                         <Typography variant="caption" sx={{ color: 'grey.300' }}>
                                             |
                                         </Typography>
                                         <Link component={RouterLink} to="#" underline="hover">
-                                            Edit
+                                            Changer
                                         </Link>
                                     </Stack>
                                 </Grid>

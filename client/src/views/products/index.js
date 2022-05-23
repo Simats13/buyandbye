@@ -235,17 +235,6 @@ const Product = () => {
     const [rows, setRows] = React.useState([]);
     const { products } = useSelector((state) => state.product);
     const { user } = useAuth();
-    const getData = async () => {
-        const res = await axios.get(`/api/shops/${user.id}/products`).then((res, err) => {
-            if (!res || err) {
-                dispatch(openSnackbar('error', 'Error while fetching data'));
-            }
-            return res;
-        });
-
-        return res.data;
-    };
-
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleMenuClick = (event) => {
@@ -257,11 +246,18 @@ const Product = () => {
     };
 
     React.useEffect(() => {
-        getData().then((res) => setRows(res));
+        setRows(products);
+    }, [products]);
+
+    React.useEffect(() => {
+        dispatch(getProducts(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    console.log(rows);
+    // React.useEffect(() => {
+    //     getData().then((res) => setRows(res));
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, []);
 
     const handleSearch = (event) => {
         const newString = event?.target.value;
@@ -287,13 +283,14 @@ const Product = () => {
             });
             setRows(newRows);
         } else {
-            getProducts();
+            setRows(products);
         }
     };
 
     // show a right sidebar when clicked on new product
     const [openAdd, setOpenAdd] = React.useState(false);
     const [openEdit, setOpenEdit] = React.useState(false);
+    const [infoEdit, setInfoEdit] = React.useState(false);
     const handleClickOpenDialogAdd = () => {
         setOpenAdd(true);
     };
@@ -301,7 +298,8 @@ const Product = () => {
         setOpenAdd(false);
     };
 
-    const handleClickOpenDialogEdit = () => {
+    const handleClickOpenDialogEdit = (data) => {
+        setInfoEdit(data);
         setOpenEdit(true);
     };
     const handleCloseDialogEdit = () => {
@@ -476,41 +474,8 @@ const Product = () => {
                                             />
                                         </TableCell>
                                         <TableCell align="center" sx={{ pr: 3 }}>
-                                            <IconButton onClick={handleMenuClick} size="large">
-                                                <MoreHorizOutlinedIcon
-                                                    fontSize="small"
-                                                    aria-controls="menu-popular-card-1"
-                                                    aria-haspopup="true"
-                                                    sx={{ color: 'grey.500' }}
-                                                />
-                                            </IconButton>
-                                            <Menu
-                                                id="menu-popular-card-1"
-                                                anchorEl={anchorEl}
-                                                keepMounted
-                                                open={Boolean(anchorEl)}
-                                                onClose={handleClose}
-                                                variant="selectedMenu"
-                                                anchorOrigin={{
-                                                    vertical: 'bottom',
-                                                    horizontal: 'right'
-                                                }}
-                                                transformOrigin={{
-                                                    vertical: 'top',
-                                                    horizontal: 'right'
-                                                }}
-                                                sx={{
-                                                    '& .MuiMenu-paper': {
-                                                        boxShadow: theme.customShadows.z1
-                                                    }
-                                                }}
-                                            >
-                                                <MenuItem onClick={handleClickOpenDialogEdit} value={row.id}>
-                                                    Editer
-                                                </MenuItem>
-                                                <ProductEdit open={openEdit} handleCloseDialog={handleCloseDialogEdit} />
-                                                <MenuItem onClick={handleClose}> Supprimer</MenuItem>
-                                            </Menu>
+                                            <MenuItem onClick={() => handleClickOpenDialogEdit(products[index])}>Editer</MenuItem>
+                                            <ProductEdit open={openEdit} data={infoEdit} handleCloseDialog={handleCloseDialogEdit} />
                                         </TableCell>
                                     </TableRow>
                                 );
