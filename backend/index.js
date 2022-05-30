@@ -38,6 +38,6 @@ app.use('/api', authRoutes.routes);
 app.use(cors()); 
 var httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(443);
+// httpsServer.listen(443);
 app.listen(config.port, () => console.log('App is listening on url http://localhost:' + config.port));
  

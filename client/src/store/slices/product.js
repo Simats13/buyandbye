@@ -5,9 +5,6 @@ import { createSlice } from '@reduxjs/toolkit';
 import axios from 'utils/axios';
 import { dispatch } from '../index';
 
-import useAuth from 'hooks/useAuth';
-import { openSnackbar } from './snackbar';
-
 // ----------------------------------------------------------------------
 
 const initialState = {

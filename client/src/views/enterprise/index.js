@@ -1,4 +1,3 @@
-import { useDispatch } from 'store';
 // material-ui
 import React, { useState } from 'react';
 
@@ -24,6 +23,8 @@ import InputLabel from 'ui-component/extended/Form/InputLabel';
 import { gridSpacing } from 'store/constant';
 import { openSnackbar } from 'store/slices/snackbar';
 import AnimateButton from 'ui-component/extended/AnimateButton';
+import { useDispatch, useSelector } from 'store';
+import { getEnterprise } from 'store/slices/enterprise';
 // assets
 import LockTwoToneIcon from '@mui/icons-material/LockTwoTone';
 import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone';
@@ -32,14 +33,16 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import useAuth from 'hooks/useAuth';
 
-import axios from 'utils/axios';
-
 // Schéma de validation des champs du formulaire
 
 const validationSchema = yup.object({
-    email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup.string().min(8, 'Password should be of minimum 8 characters length').required('Password is required'),
-    enterpriseAdress: yup.string().required('Enterprise Adress is required')
+    emailEnterprise: yup.string().email('Veuillez entrer une adresse mail valide').required('Veuillez entrer une adresse mail'),
+    enterpriseAdress: yup.string().required('Veuillez entrer une adresse'),
+    enterpriseName: yup.string().required('Veuillez entrer le nom de votre entreprise'),
+    enterprisePhone: yup.string().required('Veuillez entrer un numéro de téléphone'),
+    tvaNumber: yup.string().required('Veuillez entrer le numéro de TVA'),
+    description: yup.string().required('Veuillez entrer une description'),
+    siretNumber: yup.string().required('Veuillez entrer le numéro de SIRET')
 });
 
 // ==============================|| SAMPLE PAGE ||============================== //
@@ -48,33 +51,35 @@ const Enterprise = () => {
     const dispatch = useDispatch();
 
     const [data, setData] = React.useState([]);
+    const { enterprise } = useSelector((state) => state.enterprise);
     const { user } = useAuth();
-    const getData = async () => {
-        const res = await axios.get(`/api/shops/${user.id}`).then((res, err) => {
-            if (!res || err) {
-                dispatch(openSnackbar('error', 'Error while fetching data'));
-            }
-            return res;
-        });
-
-        return res.data;
-    };
-
     React.useEffect(() => {
-        getData().then((res) => setData(res));
-    }, []);
-    console.log('test');
-    console.log(data);
-
+        setData(enterprise);
+    }, [enterprise]);
     // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
 
+    React.useEffect(() => {
+        dispatch(getEnterprise(user.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const formik = useFormik({
+        validationSchema,
         initialValues: {
-            email: '',
-            password: '',
-            submit: null
+            enterpriseName: data.name || '',
+            enterpriseAdress: data.adresse || '',
+            siretNumber: data.siretNumber || '',
+            tvaNumber: data.tvaNumber || '',
+            description: data.description || '',
+            emailEnterprise: data.email || '',
+            enterprisePhone: data.phone || '',
+            clickAndCollect: data.ClickAndCollect || false,
+            delivery: data.livraison || false,
+            isPhoneVisible: data.isPhoneVisible || false
         },
+        enableReinitialize: true,
         onSubmit: () => {
+            console.log(formik.values);
             console.log('send');
             dispatch(
                 openSnackbar({
@@ -101,14 +106,13 @@ const Enterprise = () => {
                             <InputLabel>Nom de l&apos;entreprise</InputLabel>
                             <TextField
                                 fullWidth
-                                id="nameEnterprise"
-                                name="nameEnterprise"
+                                name="enterpriseName"
                                 type="text"
                                 placeholder="Nom de l'entreprise"
-                                defaultValue={data.name}
+                                value={formik.values.enterpriseName}
                                 onChange={formik.handleChange}
-                                error={formik.touched.nameEnterprise && Boolean(formik.errors.nameEnterprise)}
-                                helperText={formik.touched.nameEnterprise && formik.errors.nameEnterprise}
+                                error={formik.touched.enterpriseName && Boolean(formik.errors.enterpriseName)}
+                                helperText={formik.touched.enterpriseName && formik.errors.enterpriseName}
                             />
                         </Grid>
                         <Grid item xs={12} lg={6}>
@@ -118,7 +122,7 @@ const Enterprise = () => {
                                 id="enterpriseAdress"
                                 name="enterpriseAdress"
                                 placeholder="Adresse de l'entreprise"
-                                defaultValue={data.adresse}
+                                value={formik.values.enterpriseAdress}
                                 onChange={formik.handleChange}
                                 error={formik.touched.enterpriseAdress && Boolean(formik.errors.enterpriseAdress)}
                                 helperText={formik.touched.enterpriseAdress && formik.errors.enterpriseAdress}
@@ -128,11 +132,11 @@ const Enterprise = () => {
                             <InputLabel>Numéro de SIRET</InputLabel>
                             <TextField
                                 fullWidth
-                                id="siretNumber"
+                                id=""
                                 name="siretNumber"
                                 type="text"
                                 placeholder="Numéro de SIRET"
-                                defaultValue={data.siretNumber}
+                                value={formik.values.siretNumber}
                                 onChange={formik.handleChange}
                                 error={formik.touched.siretNumber && Boolean(formik.errors.siretNumber)}
                                 helperText={formik.touched.siretNumber && formik.errors.siretNumber}
@@ -153,7 +157,7 @@ const Enterprise = () => {
                                 name="tvaNumber"
                                 type="text"
                                 placeholder="Numéro de TVA"
-                                defaultValue={data.tvaNumber}
+                                value={formik.values.tvaNumber}
                                 onChange={formik.handleChange}
                                 error={formik.touched.tvaNumber && Boolean(formik.errors.tvaNumber)}
                                 helperText={formik.touched.tvaNumber && formik.errors.tvaNumber}
@@ -163,14 +167,16 @@ const Enterprise = () => {
                             <InputLabel>Description</InputLabel>
                             <TextField
                                 fullWidth
-                                id="desc"
-                                name="desc"
+                                id="description"
+                                name="description"
                                 type="textarea"
                                 placeholder="Description"
-                                defaultValue={data.description}
+                                multiline
+                                rows={3}
+                                value={formik.values.description}
                                 onChange={formik.handleChange}
-                                error={formik.touched.desc && Boolean(formik.errors.desc)}
-                                helperText={formik.touched.desc && formik.errors.desc}
+                                error={formik.touched.description && Boolean(formik.errors.description)}
+                                helperText={formik.touched.description && formik.errors.description}
                             />
                         </Grid>
                         <Grid item xs={12} lg={6}>
@@ -181,7 +187,7 @@ const Enterprise = () => {
                                 name="emailEnterprise"
                                 type="email"
                                 placeholder="Adresse Email de l'entreprise"
-                                defaultValue={data.email}
+                                value={formik.values.emailEnterprise}
                                 onChange={formik.handleChange}
                                 error={formik.touched.emailEnterprise && Boolean(formik.errors.emailEnterprise)}
                                 helperText={formik.touched.emailEnterprise && formik.errors.emailEnterprise}
@@ -191,14 +197,14 @@ const Enterprise = () => {
                             <InputLabel>Numéro de téléphone de l&apos;entreprise</InputLabel>
                             <TextField
                                 fullWidth
-                                id="phoneEnterprise"
-                                name="phoneEnterprise"
+                                id="enterprisePhone"
+                                name="enterprisePhone"
                                 type="phone"
                                 placeholder="Numéro de téléphone de l'entreprise"
-                                defaultValue={data.phone}
+                                value={formik.values.enterprisePhone}
                                 onChange={formik.handleChange}
-                                error={formik.touched.phoneEnterprise && Boolean(formik.errors.phoneEnterprise)}
-                                helperText={formik.touched.phoneEnterprise && formik.errors.phoneEnterprise}
+                                error={formik.touched.enterprisePhone && Boolean(formik.errors.enterprisePhone)}
+                                helperText={formik.touched.enterprisePhone && formik.errors.enterprisePhone}
                             />
                         </Grid>
                         <Grid container spacing={2}>
@@ -206,12 +212,11 @@ const Enterprise = () => {
                                 <FormControlLabel
                                     control={
                                         <Switch
-                                            checked={data.ClickAndCollect}
+                                            checked={formik.values.clickAndCollect || false}
                                             id="clickAndCollect"
                                             name="clickAndCollect"
                                             onChange={formik.handleChange}
-                                            error={formik.touched.clickAndCollect && Boolean(formik.errors.clickAndCollect)}
-                                            helperText={formik.touched.clickAndCollect && formik.errors.clickAndCollect}
+                                            error={formik.values.toString()}
                                         />
                                     }
                                     label="Click & Collect"
@@ -221,13 +226,11 @@ const Enterprise = () => {
                                 <FormControlLabel
                                     control={
                                         <Switch
-                                            defaultChecked={data.livraison}
-                                            // checked={data.livraison}
+                                            checked={formik.values.delivery || false}
                                             id="delivery"
                                             name="delivery"
                                             onChange={formik.handleChange}
-                                            error={formik.touched.delivery && Boolean(formik.errors.delivery)}
-                                            helperText={formik.touched.delivery && formik.errors.delivery}
+                                            error={formik.values.toString()}
                                         />
                                     }
                                     label="Lirvaison à domicile"
@@ -237,12 +240,11 @@ const Enterprise = () => {
                                 <FormControlLabel
                                     control={
                                         <Switch
-                                            checked={data.isPhoneVisible}
+                                            checked={formik.values.isPhoneVisible || false}
                                             id="isPhoneVisible"
                                             name="isPhoneVisible"
                                             onChange={formik.handleChange}
-                                            error={formik.touched.isPhoneVisible && Boolean(formik.errors.isPhoneVisible)}
-                                            helperText={formik.touched.isPhoneVisible && formik.errors.isPhoneVisible}
+                                            error={formik.values.toString()}
                                         />
                                     }
                                     label="Afficher le numéro de téléphone aux clients"
