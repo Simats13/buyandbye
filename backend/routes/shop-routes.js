@@ -25,7 +25,7 @@ const upload = multer({
 router.post('/shops', addShop);
 router.get('/shops', getAllShops);
 router.get('/shops/:id', getShop);
-router.post('/shops/:id',upload.single('banniere'), updateShop); 
+router.patch('/shops/:id',upload.single('banniere'), updateShop); 
 router.delete('/shops/:id', deleteShop);
   
 router.get('/shops/:id/products', getAllProducts);

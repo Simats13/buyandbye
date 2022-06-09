@@ -7,7 +7,6 @@ import { gridSpacing } from 'store/constant';
 
 // assets
 import FacebookIcon from '@mui/icons-material/Facebook';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
 import logoDark from 'assets/images/logo.svg';
@@ -56,7 +55,7 @@ const FooterPage = () => {
                 <Container>
                     <Grid container alignItems="center" spacing={gridSpacing}>
                         <Grid item xs={12} sm={4}>
-                            <img src={logoDark} alt="Berry" width="100" />
+                            <img src={logoDark} alt="Buy&Bye" width="100" />
                         </Grid>
                         <Grid item xs={12} sm={8}>
                             <Grid

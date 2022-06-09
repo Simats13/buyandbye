@@ -24,11 +24,11 @@ import { gridSpacing } from 'store/constant';
 import { openSnackbar } from 'store/slices/snackbar';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { useDispatch, useSelector } from 'store';
-import { getEnterprise } from 'store/slices/enterprise';
+import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
 // assets
 import LockTwoToneIcon from '@mui/icons-material/LockTwoTone';
 import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone';
-
+import axios from '../../utils/axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import useAuth from 'hooks/useAuth';
@@ -49,9 +49,9 @@ const validationSchema = yup.object({
 
 const Enterprise = () => {
     const dispatch = useDispatch();
-
     const [data, setData] = React.useState([]);
-    const { enterprise } = useSelector((state) => state.enterprise);
+    const [enterpriseUpdate, setEnterpriseUpdate] = React.useState([]);
+    const { enterprise, infoEnterprise } = useSelector((state) => state.enterprise);
     const { user } = useAuth();
     React.useEffect(() => {
         setData(enterprise);
@@ -62,6 +62,7 @@ const Enterprise = () => {
         dispatch(getEnterprise(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
 
     const formik = useFormik({
         validationSchema,
@@ -78,20 +79,35 @@ const Enterprise = () => {
             isPhoneVisible: data.isPhoneVisible || false
         },
         enableReinitialize: true,
-        onSubmit: () => {
-            console.log(formik.values);
-            console.log('send');
-            dispatch(
-                openSnackbar({
-                    open: true,
-                    message: 'Vos modifications ont été enregistrées avec succès',
-                    variant: 'alert',
-                    alert: {
-                        color: 'success'
-                    },
-                    close: false
-                })
-            );
+        onSubmit: async () => {
+            dispatch(editEnterpriseInfo(user.id, formik.values));
+            // dispatch(infoEnterprise);
+            console.log('infoEnterprise', infoEnterprise);
+            if (infoEnterprise.status === 'success') {
+                dispatch(
+                    openSnackbar({
+                        open: true,
+                        message: infoEnterprise.message,
+                        variant: 'alert',
+                        alert: {
+                            color: 'success'
+                        },
+                        close: true
+                    })
+                );
+            } else {
+                dispatch(
+                    openSnackbar({
+                        open: true,
+                        message: infoEnterprise.message,
+                        variant: 'alert',
+                        alert: {
+                            color: 'error'
+                        },
+                        close: true
+                    })
+                );
+            }
         }
     });
     return (

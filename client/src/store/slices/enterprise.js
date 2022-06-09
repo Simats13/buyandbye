@@ -9,7 +9,8 @@ import { dispatch } from '../index';
 
 const initialState = {
     error: null,
-    enterprise: []
+    enterprise: [],
+    infoEnterprise: []
 };
 
 const slice = createSlice({
@@ -24,6 +25,10 @@ const slice = createSlice({
         // GET PRODUCTS
         getEnterpriseSuccess(state, action) {
             state.enterprise = action.payload;
+        },
+
+        editEnterpriseInfoSuccess(state, action) {
+            state.infoEnterprise = action.payload;
         }
     }
 });
@@ -38,6 +43,17 @@ export function getEnterprise(id) {
         try {
             const response = await axios.get(`/api/shops/${id}/`);
             dispatch(slice.actions.getEnterpriseSuccess(response.data));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function editEnterpriseInfo(id, data) {
+    return async () => {
+        try {
+            const response = await axios.patch(`/api/shops/${id}/`, data);
+            dispatch(slice.actions.editEnterpriseInfoSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }

@@ -119,28 +119,25 @@ const updateShop = async (req, res, next) => {
     try {
         const id = req.params.id;    
         const shop =  firestore.collection('magasins').doc(id);
-        var data = JSON.parse(req.body.data);
         if(!req.file) {
             await shop.update({
-                Fname: data.ownerFirstName,
-                Lname: data.ownerLastName,
-                name: data.companyName,
-                adresse: data.autocomplete,
-                email: data.email,
-                phone: data.phone,
-                description: data.description,
-                ClickAndCollect: data.clickandcollect,
-                livraison: data.livraison,
-                isPhoneVisible: data.isPhoneVisible,
-                mainCategorie: data.tagsCompany,
-                siretNumber: data.siretNumber,
-                tvaNumber: data.tvaNumber,
-                colorStore: data.colorStore.substring(1),
-                imgUrl:data.old_banniere, 
-                'position.latitude': data.latitude,
-                'position.longitude': data.longitude,
+                name: req.body.enterpriseName,
+                adresse: req.body.enterpriseAdress,
+                email: req.body.emailEnterprise,
+                phone: req.body.enterprisePhone,
+                description: req.body.description,
+                ClickAndCollect: req.body.clickAndCollect,
+                livraison: req.body.delivery,
+                isPhoneVisible: req.body.isPhoneVisible,
+                siretNumber: req.body.siretNumber,
+                tvaNumber: req.body.tvaNumber,
+                // mainCategorie: data.tagsCompany,
+                // colorStore: data.colorStore.substring(1),
+                // imgUrl:data.old_banniere, 
+                // 'position.latitude': data.latitude,
+                // 'position.longitude': data.longitude,
             });
-           return res.status(200).json({success:"success"});
+           return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
         } else {
             const blob = firebase.storage().bucket().file(`profile/${id}/banniere`); 
    
@@ -155,7 +152,7 @@ const updateShop = async (req, res, next) => {
             blobWriter.on('error', (err) => {
                
                 console.log(err);
-                return res.status(409).json({error:"Votre image n'a pas été envoyé"});
+                return res.status(409).json({status:"error", message:"Votre image n'a pas été envoyé"});
             })
             
             blobWriter.on('finish',async ()  => {
@@ -178,7 +175,7 @@ const updateShop = async (req, res, next) => {
                     'position.latitude': data.latitude,
                     'position.longitude': data.longitude,
                 });  
-               return res.status(200).json({success:"success"});
+               return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
                 // res.redirect('/entreprise/'); 
             });
             
@@ -186,7 +183,7 @@ const updateShop = async (req, res, next) => {
         }     
     } catch (error) {
         console.log(error) 
-        res.status(400).send(error.message);
+        res.status(400).json({status:"error", message:"Votre magasin n'a pas été modifié"});
     }
 } 
 
