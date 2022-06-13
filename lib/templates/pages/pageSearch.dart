@@ -34,16 +34,16 @@ class _PageSearchState extends State<PageSearch> {
   bool isExecuted = false;
   int activeMenu = 0;
 
-  Widget searchedData({
-    required String photoUrl,
-    required name,
-    description,
-    required adresse,
-    clickAndCollect,
-    livraison,
-    colorStore,
-    sellerID,
-  }) {
+  Widget searchedData(
+      {required String photoUrl,
+      required name,
+      description,
+      required adresse,
+      clickAndCollect,
+      livraison,
+      colorStore,
+      sellerID,
+      horairesOuverture}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -58,6 +58,7 @@ class _PageSearchState extends State<PageSearch> {
                     livraison: livraison,
                     sellerID: sellerID,
                     colorStore: colorStore,
+                    horairesOuverture: horairesOuverture,
                   )),
         );
       },
@@ -125,6 +126,7 @@ class _PageSearchState extends State<PageSearch> {
                   description: ds["description"],
                   clickAndCollect: ds["ClickAndCollect"],
                   livraison: ds["livraison"],
+                  horairesOuverture: ds["horairesOuverture"],
                   colorStore: ds["colorStore"],
                   sellerID: ds["id"]);
             },
@@ -225,25 +227,25 @@ class _PageSearchState extends State<PageSearch> {
                     width: 250,
                     height: 50,
                     child: TextField(
-                          controller: _searchTerm,
-                          textInputAction: TextInputAction.search,
-                          textAlignVertical: TextAlignVertical.center,
-                          onSubmitted: (val) {
-                            setState(() {
-                              _searchTerm.text = val;
-                            });
-                          },
-                          style: new TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          ),
-                          decoration: new InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: 14),
-                            floatingLabelBehavior: FloatingLabelBehavior.auto,
-                            border: InputBorder.none,
-                            hintText: 'Trouver un commerçant ...',
-                          )),
-                    ),
+                        controller: _searchTerm,
+                        textInputAction: TextInputAction.search,
+                        textAlignVertical: TextAlignVertical.center,
+                        onSubmitted: (val) {
+                          setState(() {
+                            _searchTerm.text = val;
+                          });
+                        },
+                        style: new TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                        decoration: new InputDecoration(
+                          contentPadding: EdgeInsets.only(bottom: 14),
+                          floatingLabelBehavior: FloatingLabelBehavior.auto,
+                          border: InputBorder.none,
+                          hintText: 'Trouver un commerçant ...',
+                        )),
+                  ),
                   Container(
                     child: Icon(Icons.search),
                     alignment: Alignment.centerRight,
@@ -292,6 +294,9 @@ class _PageSearchState extends State<PageSearch> {
                                           livraisonMagasin:
                                               currSearchStuff[index]
                                                   .data["livraison"],
+                                          horairesOuverture:
+                                              currSearchStuff[index]
+                                                  .data["horairesOuverture"],
                                           colorStoreMagasin:
                                               currSearchStuff[index]
                                                   .data["colorStore"],
@@ -376,6 +381,7 @@ class DisplaySearchResult extends StatelessWidget {
   final String nameMagasin, adresseMagasin, imgMagasin;
   String? descriptionMagasin, colorStoreMagasin, sellerIDMagasin;
   bool? clickAndCollectMagasin, livraisonMagasin;
+  Map? horairesOuverture;
 
   DisplaySearchResult(
       {Key? key,
@@ -386,7 +392,8 @@ class DisplaySearchResult extends StatelessWidget {
       this.colorStoreMagasin,
       this.descriptionMagasin,
       this.livraisonMagasin,
-      this.sellerIDMagasin})
+      this.sellerIDMagasin,
+      this.horairesOuverture})
       : super(key: key);
 
   @override
@@ -405,6 +412,7 @@ class DisplaySearchResult extends StatelessWidget {
                       clickAndCollect: clickAndCollectMagasin,
                       livraison: livraisonMagasin,
                       sellerID: sellerIDMagasin,
+                      horairesOuverture: horairesOuverture,
                       colorStore: colorStoreMagasin,
                     )),
           );

@@ -16,10 +16,13 @@ class PageCategorie extends StatefulWidget {
       this.name,
       this.description,
       this.adresse,
-      this.categorie})
+      this.categorie,
+      this.horairesOuverture
+      })
       : super(key: key);
 
   final String? img, name, description, adresse, categorie;
+  final Map? horairesOuverture;
 
   @override
   _PageCategorieState createState() => _PageCategorieState();
@@ -157,7 +160,8 @@ class _PageCategorieState extends State<PageCategorie> {
                         clickAndCollect: ds["ClickAndCollect"],
                         livraison: ds["livraison"],
                         colorStore: ds["colorStore"],
-                        sellerID: ds["id"]);
+                        sellerID: ds["id"],
+                        horairesOuverture: ds["horairesOuverture"]);
                   },
                 ),
               ],
@@ -199,7 +203,7 @@ class _PageCategorieState extends State<PageCategorie> {
       clickAndCollect,
       livraison,
       colorStore,
-      sellerID}) {
+      sellerID, horairesOuverture}) {
     return ListTile(
       onTap: () {
         Navigator.push(
@@ -214,6 +218,7 @@ class _PageCategorieState extends State<PageCategorie> {
                     livraison: livraison,
                     sellerID: sellerID,
                     colorStore: colorStore,
+                    horairesOuverture: horairesOuverture
                   )),
         );
       },

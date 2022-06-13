@@ -135,13 +135,16 @@ class _SlideItemState extends State<SlideItem> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "${widget.name}",
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w800,
-                            ),
-                            textAlign: TextAlign.left,
+                          Container(
+                            width: 180,
+                            child: Text(
+                                "${widget.name}",
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width / 3.5,

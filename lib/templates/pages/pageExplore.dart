@@ -259,6 +259,9 @@ class _PageExploreState extends State<PageExplore> {
                                                     sellerID: (snapshot.data!
                                                             as QuerySnapshot)
                                                         .docs[index]['id'],
+                                                    horairesOuverture: (snapshot.data!
+                                                            as QuerySnapshot)
+                                                        .docs[index]["horairesOuverture"],
                                                   )));
                                     },
                                     child: Center(
@@ -625,6 +628,7 @@ class _PageExploreState extends State<PageExplore> {
                                                             sellerID: snapshot
                                                                     .data[index]
                                                                 ['id'],
+                                                            horairesOuverture: snapshot.data[index]["horairesOuverture"],
                                                           ),
                                                         ),
                                                       );

@@ -86,10 +86,13 @@ class _PageFideliteState extends State<PageFidelite> {
               padding: const EdgeInsets.only(left: 20.0, right: 20),
               child: Text(
                 "Fidéliser vos achats",
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            membershipCard(),
+
+            // membershipCard(),
+
             Column(
               children: [
                 SizedBox(
@@ -194,77 +197,77 @@ class _PageFideliteState extends State<PageFidelite> {
     );
   }
 
-  membershipCard() {
-    return Container(
-      child: FlipCard(
-        direction: FlipDirection.HORIZONTAL,
-        front: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Container(
-            height: 200,
-            width: 200,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/cardBuy&Bye.png"),
-                fit: BoxFit.contain,
-              ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.fromLTRB(20, 125, 0, 0),
-                  child: Row(children: [
-                    Text(widget.firstName! + " " + widget.lastName!,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    SizedBox(
-                      width: 50,
-                    ),
-                    Container(
-                      child: Text("180 pts",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          )),
-                    ),
-                  ]),
-                ),
-              ],
-            ),
-          ),
-        ),
-        back: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Container(
-            height: 200,
-            width: 200,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/cardBuy&ByeReverse.png"),
-                fit: BoxFit.contain,
-              ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  child: QrImage(
-                    foregroundColor: Colors.white,
-                    data: "buyandbye.fr",
-                    version: QrVersions.auto,
-                    size: 150,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // membershipCard() {
+  //   return Container(
+  //     child: FlipCard(
+  //       direction: FlipDirection.HORIZONTAL,
+  //       front: Padding(
+  //         padding: const EdgeInsets.all(20.0),
+  //         child: Container(
+  //           height: 200,
+  //           width: 200,
+  //           padding: EdgeInsets.all(20),
+  //           decoration: BoxDecoration(
+  //             image: DecorationImage(
+  //               image: AssetImage("assets/images/cardBuy&Bye.png"),
+  //               fit: BoxFit.contain,
+  //             ),
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               Container(
+  //                 margin: EdgeInsets.fromLTRB(20, 125, 0, 0),
+  //                 child: Row(children: [
+  //                   Text(widget.firstName! + " " + widget.lastName!,
+  //                       style: TextStyle(
+  //                         color: Colors.white,
+  //                         fontSize: 18,
+  //                         fontWeight: FontWeight.w500,
+  //                       )),
+  //                   SizedBox(
+  //                     width: 50,
+  //                   ),
+  //                   Container(
+  //                     child: Text("180 pts",
+  //                         style: TextStyle(
+  //                           color: Colors.white,
+  //                           fontSize: 24,
+  //                           fontWeight: FontWeight.w600,
+  //                         )),
+  //                   ),
+  //                 ]),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       back: Padding(
+  //         padding: const EdgeInsets.all(20.0),
+  //         child: Container(
+  //           height: 200,
+  //           width: 200,
+  //           padding: EdgeInsets.all(20),
+  //           decoration: BoxDecoration(
+  //             image: DecorationImage(
+  //               image: AssetImage("assets/images/cardBuy&ByeReverse.png"),
+  //               fit: BoxFit.contain,
+  //             ),
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               Container(
+  //                 child: QrImage(
+  //                   foregroundColor: Colors.white,
+  //                   data: "buyandbye.fr",
+  //                   version: QrVersions.auto,
+  //                   size: 150,
+  //                 ),
+  //               )
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

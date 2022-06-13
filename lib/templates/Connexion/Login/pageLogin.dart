@@ -308,11 +308,11 @@ class _PageLoginState extends State<PageLogin> {
                   ),
                   SizedBox(height: 20),
                   Container(
-                    height: size.height / 25,
+                    height: size.height / 20,
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      color: BuyandByeAppTheme.orange,
+                      color: BuyandByeAppTheme.orangeMiFonce,
                     ),
                     child: MaterialButton(
                       child: Text('CONNEXION'),
