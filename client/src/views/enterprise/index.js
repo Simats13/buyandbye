@@ -32,6 +32,8 @@ import axios from '../../utils/axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import useAuth from 'hooks/useAuth';
+import { CloudUploadOutlined } from '@mui/icons-material';
+import { useTheme } from '@mui/styles';
 
 // Schéma de validation des champs du formulaire
 
@@ -53,6 +55,7 @@ const Enterprise = () => {
     const [enterpriseUpdate, setEnterpriseUpdate] = React.useState([]);
     const { enterprise, infoEnterprise } = useSelector((state) => state.enterprise);
     const { user } = useAuth();
+    const theme = useTheme();
     React.useEffect(() => {
         setData(enterprise);
     }, [enterprise]);
@@ -265,6 +268,38 @@ const Enterprise = () => {
                                     }
                                     label="Afficher le numéro de téléphone aux clients"
                                 />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Grid container spacing={1}>
+                                    <Grid item xs={12}>
+                                        <Typography variant="subtitle1" align="left">
+                                            Bannière de la boutique
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <div>
+                                            <TextField type="file" id="file-upload" fullWidth label="Enter SKU" sx={{ display: 'none' }} />
+                                            <InputLabel
+                                                htmlFor="file-upload"
+                                                sx={{
+                                                    background: theme.palette.background.default,
+                                                    py: 3.75,
+                                                    px: 0,
+                                                    textAlign: 'center',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    mb: 3,
+                                                    '& > svg': {
+                                                        verticalAlign: 'sub',
+                                                        mr: 0.5
+                                                    }
+                                                }}
+                                            >
+                                                <CloudUploadOutlined /> Drop file here to upload
+                                            </InputLabel>
+                                        </div>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={12}>
