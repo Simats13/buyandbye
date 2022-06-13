@@ -212,7 +212,7 @@ class _PageSearchState extends State<PageSearch> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  GestureDetector(
+                  _searchTerm.text.length > 0 ? GestureDetector(
                     onTap: () {
                       setState(() {
                         _searchTerm.text = "";
@@ -221,8 +221,8 @@ class _PageSearchState extends State<PageSearch> {
                     child: Container(
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.only(right: 12),
-                        child: Icon(Icons.arrow_back)),
-                  ),
+                        child: Icon(Icons.close)),
+                  ) : Container(),
                   Container(
                     width: 250,
                     height: 50,
