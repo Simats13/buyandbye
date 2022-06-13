@@ -82,35 +82,34 @@ const Enterprise = () => {
             isPhoneVisible: data.isPhoneVisible || false
         },
         enableReinitialize: true,
-        onSubmit: async () => {
+        onSubmit: () => {
             dispatch(editEnterpriseInfo(user.id, formik.values));
-            // dispatch(infoEnterprise);
-            console.log('infoEnterprise', infoEnterprise);
-            if (infoEnterprise.status === 'success') {
-                dispatch(
-                    openSnackbar({
-                        open: true,
-                        message: infoEnterprise.message,
-                        variant: 'alert',
-                        alert: {
-                            color: 'success'
-                        },
-                        close: true
-                    })
-                );
-            } else {
-                dispatch(
-                    openSnackbar({
-                        open: true,
-                        message: infoEnterprise.message,
-                        variant: 'alert',
-                        alert: {
-                            color: 'error'
-                        },
-                        close: true
-                    })
-                );
-            }
+            // console.log('infoEnterprise', infoEnterprise);
+            // if (infoEnterprise && infoEnterprise.status === 'success') {
+            //     dispatch(
+            //         openSnackbar({
+            //             open: true,
+            //             message: infoEnterprise.message,
+            //             variant: 'alert',
+            //             alert: {
+            //                 color: 'success'
+            //             },
+            //             close: false
+            //         })
+            //     );
+            // } else {
+            //     dispatch(
+            //         openSnackbar({
+            //             open: true,
+            //             message: infoEnterprise.message,
+            //             variant: 'alert',
+            //             alert: {
+            //                 color: 'error'
+            //             },
+            //             close: false
+            //         })
+            //     );
+            // }
         }
     });
     return (

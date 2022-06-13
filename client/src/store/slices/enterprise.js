@@ -22,7 +22,7 @@ const slice = createSlice({
             state.error = action.payload;
         },
 
-        // GET PRODUCTS
+        // GET ENTERPRISE INFOS
         getEnterpriseSuccess(state, action) {
             state.enterprise = action.payload;
         },
