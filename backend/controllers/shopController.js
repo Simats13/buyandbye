@@ -8,6 +8,7 @@ const Products = require('../models/products');
 const firestore = firebase.firestore();
 const multer = require('multer')
 const axios = require('axios');
+const Chats = require('../models/chats');
 
 const upload = multer({
     storage: multer.memoryStorage()
@@ -500,6 +501,39 @@ const getAllCommands = async (req, res, next) => {
 }
 
 
+const getChats = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const chats = await firestore.collectionGroup('commonData').where('users', 'array-contains', id).get();
+        const chatsArray = [];
+        if(chats.empty) {
+            res.status(404).send('Aucune conversation trouvée');
+        }else {
+            chats.forEach(doc => {
+                const chat = new Chats(
+                    doc.ref.id,
+                    doc.data().users,
+                    doc.data().lastMessage,
+                );
+                chatsArray.push(chat);
+            });
+            // const messages = await firestore.collection('commonData').doc(id).collection('messages').get();
+            // messages.forEach(doc => {
+            //     console.log(doc);
+            //     const message = new Chats(
+            //         doc.data().message,
+            //     );
+            //     chatsArray.push(message);
+            // });
+            res.send(chatsArray);
+            // console.log(chatsArray);
+
+        }
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+}
+
 
 
 
@@ -514,4 +548,5 @@ module.exports = {
     deleteProduct,
     updateProduct,
     getAllCommands,
+    getChats,
 }
