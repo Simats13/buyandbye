@@ -41,12 +41,12 @@ class ImageController {
       imageUrl: imageUrl, //data['userImageUrl'],
       placeholder: (context, url) => Container(
         transform: Matrix4.translationValues(0, 0, 0),
-        child: Container(
+        child: const SizedBox(
             width: 60,
             height: 80,
-            child: Center(child: new CircularProgressIndicator())),
+            child: Center(child: CircularProgressIndicator())),
       ),
-      errorWidget: (context, url, error) => new Icon(Icons.error),
+      errorWidget: (context, url, error) => const Icon(Icons.error),
       width: 60, height: 80, fit: BoxFit.cover,
     );
   }

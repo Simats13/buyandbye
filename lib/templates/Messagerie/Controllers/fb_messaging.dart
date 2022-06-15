@@ -33,17 +33,13 @@ class NotificationController {
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         saveUerTokenToSharedPreference();
-        print('User granted permission');
       } else if (settings.authorizationStatus ==
           AuthorizationStatus.provisional) {
         saveUerTokenToSharedPreference();
-        print('User granted provisional permission');
       } else {
-        print('User declined or has not accepted permission');
       }
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print('A new onMessageOpenedApp event was published!');
         // Navigator.pushNamed(context, '/message',
         //     arguments: MessageArguments(message, true));
       });
@@ -83,7 +79,7 @@ class NotificationController {
     if (Platform.isIOS) {
       // set iOS Local notification.
       var initializationSettingsAndroid =
-          AndroidInitializationSettings('icon_notification');
+          const AndroidInitializationSettings('icon_notification');
       var initializationSettingsIOS = IOSInitializationSettings(
         requestSoundPermission: true,
         requestBadgePermission: true,
@@ -97,7 +93,7 @@ class NotificationController {
           onSelectNotification: _selectNotification);
     } else {
       var initializationSettingsAndroid =
-          AndroidInitializationSettings('icon_notification');
+          const AndroidInitializationSettings('icon_notification');
       var initializationSettingsIOS = IOSInitializationSettings(
           onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
       var initializationSettings = InitializationSettings(

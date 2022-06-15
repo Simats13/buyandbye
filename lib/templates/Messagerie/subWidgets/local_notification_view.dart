@@ -14,8 +14,8 @@ class LocalNotificationData {
 }
 
 class LocalNotificationView {
-  final timeout = Duration(seconds: 4);
-  final ms = Duration(milliseconds: 1);
+  final timeout = const Duration(seconds: 4);
+  final ms = const Duration(milliseconds: 1);
 
   bool isShowLocalNotification = false;
   double localNotificationAnimationOpacity = 0.0;
@@ -31,8 +31,6 @@ class LocalNotificationView {
     this.changeNotificationState =
         changeNotificationState as void Function(List<dynamic>);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print('ChatList Got a message whilst in the foreground!');
-      print('ChatList Message data: ${message.data}');
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final inRoomChatId = prefs.getString("inRoomChatId") ?? "";
@@ -84,10 +82,10 @@ class LocalNotificationView {
         left: size.width / 6,
         child: AnimatedOpacity(
           opacity: localNotificationAnimationOpacity,
-          duration: Duration(milliseconds: 1000),
+          duration: const Duration(milliseconds: 1000),
           child: localNotificationAnimationOpacity == 0
               ? Container()
-              : Container(
+              : SizedBox(
                   width: size.width / 1.5,
                   child: Card(
                       color: Colors.red[900],
@@ -97,7 +95,7 @@ class LocalNotificationView {
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Container(
+                              child: SizedBox(
                                 width: 50,
                                 height: 50,
                                 child: localNotificationData.userImage != ""
@@ -112,21 +110,21 @@ class LocalNotificationView {
                                             transform:
                                                 Matrix4.translationValues(
                                                     0.0, 0.0, 0.0),
-                                            child: Container(
+                                            child: const SizedBox(
                                                 width: 60,
                                                 height: 60,
                                                 child: Center(
                                                     child:
-                                                        new CircularProgressIndicator())),
+                                                        CircularProgressIndicator())),
                                           ),
                                           errorWidget: (context, url, error) =>
-                                              new Icon(Icons.error),
+                                              const Icon(Icons.error),
                                           width: 50,
                                           height: 50,
                                           fit: BoxFit.cover,
                                         ),
                                       )
-                                    : Icon(
+                                    : const Icon(
                                         Icons.account_circle,
                                         color: Colors.white,
                                       ),
@@ -138,14 +136,14 @@ class LocalNotificationView {
                                   padding: const EdgeInsets.only(bottom: 4.0),
                                   child: Text(
                                     localNotificationData.userName!,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Text(localNotificationData.userMessage!,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white, fontSize: 14)),
                               ],
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,6 +162,6 @@ class LocalNotificationView {
   }
 
   void handleTimeout() {
-    this.changeNotificationState([null, 0.0]);
+    changeNotificationState([null, 0.0]);
   }
 }

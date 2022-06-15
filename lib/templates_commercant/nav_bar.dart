@@ -3,13 +3,15 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:badges/badges.dart';
 
-import 'accueilCommercant.dart';
-import 'commandesCommercant.dart';
-import 'produitsCommercant.dart';
-import 'compteCommercant.dart';
-import 'messagerieCommercant.dart';
+import 'accueil_commercant.dart';
+import 'commandes_commercant.dart';
+import 'produits_commercant.dart';
+import 'compte_commercant.dart';
+import 'messagerie_commercant.dart';
 
 class NavBar extends StatefulWidget {
+  const NavBar({Key? key}) : super(key: key);
+
   @override
   _NavBarState createState() => _NavBarState();
 }
@@ -18,7 +20,7 @@ class _NavBarState extends State<NavBar> {
   @override
   void initState() {
     super.initState();
-    AuthMethods.toogleNavBar = this.toogleNavBar;
+    AuthMethods.toogleNavBar = toogleNavBar;
   }
 
   int pageIndex = 0;
@@ -26,12 +28,12 @@ class _NavBarState extends State<NavBar> {
   int badgeMessages = 1;
   double gap = 8;
 
-  Widget? _affichePage = AccueilCommercant();
-  final AccueilCommercant _accueilCommercant = AccueilCommercant();
-  final CommandesCommercant _commandesCommercant = CommandesCommercant();
-  final Products _products = Products();
-  final MessagerieCommercant _messagerieCommercant = MessagerieCommercant();
-  final CompteCommercant _compteCommercant = CompteCommercant();
+  Widget? _affichePage = const AccueilCommercant();
+  final AccueilCommercant _accueilCommercant = const AccueilCommercant();
+  final CommandesCommercant _commandesCommercant = const CommandesCommercant();
+  final Products _products = const Products();
+  final MessagerieCommercant _messagerieCommercant = const MessagerieCommercant();
+  final CompteCommercant _compteCommercant = const CompteCommercant();
 
   Widget? _pageSelection(int page) {
     switch (page) {
@@ -75,9 +77,9 @@ class _NavBarState extends State<NavBar> {
                           gap: 2,
                           haptic: true,
                           iconSize: 28,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 12),
-                          duration: Duration(milliseconds: 400),
+                          duration: const Duration(milliseconds: 400),
                           tabs: [
                             GButton(
                               icon: Icons.home,

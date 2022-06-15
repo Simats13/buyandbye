@@ -8,22 +8,22 @@ const kLightPrimaryColor = Color(0xFFFFFFFF);
 const kLightSecondaryColor = Color(0xFFF3F7FB);
 const kAccentColor = Color(0xFFFFC107);
 
-final kTitleTextStyle = TextStyle(
+const kTitleTextStyle = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w600,
 );
 
-final kCaptionTextStyle = TextStyle(
+const kCaptionTextStyle = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w100,
 );
 
-final kCaption2TextStyle = TextStyle(
+const kCaption2TextStyle = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w400,
 );
 
-final kButtonTextStyle = TextStyle(
+const kButtonTextStyle = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w400,
 );

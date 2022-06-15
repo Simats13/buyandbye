@@ -1,5 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/compte/historyDetails.dart';
+import 'package:buyandbye/templates/compte/history_details.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class UserHistory extends StatefulWidget {
+  const UserHistory({Key? key}) : super(key: key);
+
   @override
   _UserHistoryState createState() => _UserHistoryState();
 }
@@ -16,6 +18,7 @@ class UserHistory extends StatefulWidget {
 class _UserHistoryState extends State<UserHistory> {
   String? userid;
 
+  @override
   void initState() {
     super.initState();
     getMyInfo();
@@ -33,10 +36,10 @@ class _UserHistoryState extends State<UserHistory> {
     return Scaffold(
       backgroundColor: BuyandByeAppTheme.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
           title: RichText(
-            text: TextSpan(
+            text: const TextSpan(
               children: [
                 TextSpan(
                     text: "Historique d'Achat",
@@ -47,7 +50,7 @@ class _UserHistoryState extends State<UserHistory> {
                     )),
                 WidgetSpan(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    padding: EdgeInsets.symmetric(horizontal: 5.0),
                     child: Icon(
                       Icons.history,
                       color: BuyandByeAppTheme.orangeFonce,
@@ -63,7 +66,7 @@ class _UserHistoryState extends State<UserHistory> {
           elevation: 0.0,
           bottomOpacity: 0.0,
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back,
               color: BuyandByeAppTheme.orange,
             ),
@@ -78,24 +81,22 @@ class _UserHistoryState extends State<UserHistory> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Shimmer.fromColors(
-              child: Container(
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    SizedBox(
-                      height: 150,
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 150,
+                  ),
+                ],
               ),
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
@@ -104,7 +105,7 @@ class _UserHistoryState extends State<UserHistory> {
           if (snapshot.hasData) {
             return SingleChildScrollView(
               padding:
-                  EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
+                  const EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
               child: snapshot.data.docs.length > 0
                   ? ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
@@ -117,49 +118,45 @@ class _UserHistoryState extends State<UserHistory> {
                         return UserCommand(shopId, commandId, userid);
                       },
                     )
-                  : Container(
-                      child: Center(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.shopping_cart_rounded,
-                            color: Colors.grey[700],
-                            size: 64,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              "Vous n\'avez aucune commande.\n\nVous pouvez commander n\'importe quel produit depuis la page d'un magasin.",
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.grey[700]),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      )),
-                    ),
+                  : Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.shopping_cart_rounded,
+                        color: Colors.grey[700],
+                        size: 64,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          "Vous n'avez aucune commande.\n\nVous pouvez commander n'importe quel produit depuis la page d'un magasin.",
+                          style: TextStyle(
+                              fontSize: 18, color: Colors.grey[700]),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  )),
             );
           } else {
             return Shimmer.fromColors(
-              child: Container(
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    SizedBox(
-                      height: 150,
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 150,
+                  ),
+                ],
               ),
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
@@ -172,15 +169,16 @@ class _UserHistoryState extends State<UserHistory> {
 }
 
 class UserCommand extends StatefulWidget {
-  const UserCommand(this.shopId, this.commandId, this.userid);
+  const UserCommand(this.shopId, this.commandId, this.userid, {Key? key}) : super(key: key);
   final String? shopId, commandId, userid;
+  @override
   _UserCommandState createState() => _UserCommandState();
 }
 
 class _UserCommandState extends State<UserCommand> {
   late String shopName /*, address*/;
   String formatTimestamp(var timestamp) {
-    var format = new DateFormat('d/MM/y');
+    var format = DateFormat('d/MM/y');
     return format.format(timestamp.toDate());
   }
 
@@ -196,6 +194,7 @@ class _UserCommandState extends State<UserCommand> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     getShopInfos(widget.shopId);
     return FutureBuilder<dynamic>(
@@ -209,8 +208,8 @@ class _UserCommandState extends State<UserCommand> {
               children: [
                 Text(formatTimestamp(snapshot.data["horodatage"]),
                     style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                SizedBox(height: 10),
+                        const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 10),
                 MaterialButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
@@ -233,7 +232,7 @@ class _UserCommandState extends State<UserCommand> {
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                               color: Colors.grey,
                               blurRadius: 4,
@@ -253,11 +252,11 @@ class _UserCommandState extends State<UserCommand> {
                                     children: [
                                       Text(
                                         shopName,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700),
                                       ),
-                                      SizedBox(height: 30),
+                                      const SizedBox(height: 30),
                                       // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
                                       snapshot.data["articles"] == 1
                                           ? Text(snapshot.data["articles"]
@@ -271,12 +270,12 @@ class _UserCommandState extends State<UserCommand> {
                                   Text(
                                     snapshot.data["prix"].toStringAsFixed(2) +
                                         "€",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700),
                                   )
                                 ]),
-                                SizedBox(height: 15),
+                                const SizedBox(height: 15),
                             Center(
                                 child: Text(snapshot.data['statut'] == 0
                                     ? "Statut : En attente"
@@ -337,29 +336,27 @@ class _UserCommandState extends State<UserCommand> {
                         ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             );
           } else {
             return Shimmer.fromColors(
-              child: Container(
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    SizedBox(
-                      height: 200,
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 200,
+                  ),
+                ],
               ),
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,

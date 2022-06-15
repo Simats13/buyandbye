@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(Settings());
+void main() => runApp(const Settings());
 
 class Settings extends StatelessWidget {
+  const Settings({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final title = 'Paramètres';
+    const title = 'Paramètres';
 
-    return MaterialApp(
+    return const MaterialApp(
       title: title,
       home: MyHomePage(title: title),
     );
@@ -17,7 +19,7 @@ class Settings extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   final String? title;
 
-  MyHomePage({Key? key, this.title}) : super(key: key);
+  const MyHomePage({Key? key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,30 +27,32 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title!),
       ),
-      body: Center(child: MyButton()),
+      body: const Center(child: MyButton()),
     );
   }
 }
 
 class MyButton extends StatelessWidget {
+  const MyButton({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // The GestureDetector wraps the button.
     return GestureDetector(
       // When the child is tapped, show a snackbar.
       onTap: () {
-        final snackBar = SnackBar(content: Text("Tap"));
+        const snackBar = SnackBar(content: Text("Tap"));
 
         Scaffold.of(context).showSnackBar(snackBar);
       },
       // The custom button
       child: Container(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           color: Theme.of(context).buttonColor,
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: Text('My Button'),
+        child: const Text('My Button'),
       ),
     );
   }

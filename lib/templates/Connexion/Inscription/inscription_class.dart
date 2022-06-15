@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/main.dart';
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';
-import 'package:buyandbye/templates_commercant/accueilCommercant.dart';
+import 'package:buyandbye/templates_commercant/accueil_commercant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ import 'package:sign_button/sign_button.dart';
 import '../../accueil.dart';
 
 class SignUpScreen extends StatefulWidget {
-  SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -58,7 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               content: Text(e),
               actions: [
                 TextButton(
-                  child: Text("Ok"),
+                  child: const Text("Ok"),
                   onPressed: () async {
                     Navigator.of(builderContext).pop();
                   },
@@ -75,7 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 actions: [
                   // Close the dialog
                   CupertinoButton(
-                      child: Text('OK'),
+                      child: const Text('OK'),
                       onPressed: () async {
                         Navigator.of(context).pop();
                       }),
@@ -96,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SizedBox(width: size.width),
             SafeArea(
                 child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black, size: 28),
+              icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -104,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "INSCRIPTION",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -115,18 +115,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   "assets/icons/signup.png",
                   height: size.height * 0.20,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Sélection du type d'utilisateur
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                   ToggleButtons(
                     color: Colors.black.withOpacity(0.60),
-                    selectedColor: Color(0xFF6200EE),
-                    selectedBorderColor: Color(0xFF6200EE),
-                    fillColor: Color(0xFF6200EE).withOpacity(0.08),
-                    splashColor: Color(0xFF6200EE).withOpacity(0.12),
-                    hoverColor: Color(0xFF6200EE).withOpacity(0.04),
+                    selectedColor: const Color(0xFF6200EE),
+                    selectedBorderColor: const Color(0xFF6200EE),
+                    fillColor: const Color(0xFF6200EE).withOpacity(0.08),
+                    splashColor: const Color(0xFF6200EE).withOpacity(0.12),
+                    hoverColor: const Color(0xFF6200EE).withOpacity(0.04),
                     borderRadius: BorderRadius.circular(4.0),
-                    constraints: BoxConstraints(minHeight: 36.0),
+                    constraints: const BoxConstraints(minHeight: 36.0),
                     isSelected: userType,
                     onPressed: (index) {
                       // Respond to button selection
@@ -142,7 +142,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         }
                       });
                     },
-                    children: [
+                    children: const [
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text('Client'),
@@ -180,7 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                               MaterialPageRoute(
                                                   builder:
                                                       (BuildContext context) =>
-                                                          Accueil()),
+                                                          const Accueil()),
                                               (Route<dynamic> route) => false);
                                         }
                                       })
@@ -243,7 +243,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => MyApp(),
+                                              builder: (context) => const MyApp(),
                                             ),
                                           );
                                         }
@@ -264,7 +264,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   }),
                             ],
                           ),
-                          OrDivider(),
+                          const OrDivider(),
                         ],
                       ),
                     ),
@@ -283,7 +283,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 return null;
                               },
                               autocorrect: false,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   labelText: 'Votre nom',
                                   icon: Icon(
                                     Icons.person,
@@ -301,7 +301,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 return null;
                               },
                               autocorrect: false,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   labelText: 'Votre prénom',
                                   icon: Icon(
                                     Icons.person,
@@ -324,7 +324,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 return null;
                               },
                               autocorrect: false,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   labelText: 'Votre adresse email',
                                   icon: Text(
                                     "@",
@@ -349,7 +349,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               autocorrect: false,
                               decoration: InputDecoration(
                                 hintText: "Votre mot de passe",
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.lock,
                                   color: BuyandByeAppTheme.kLightPrimaryColor,
                                 ),
@@ -378,7 +378,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: size.height * 0.03),
                     Container(
                       height: size.height / 25,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         color: BuyandByeAppTheme.orange,
@@ -395,7 +395,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            Accueil()),
+                                            const Accueil()),
                                     (Route<dynamic> route) => false);
                               } catch (e) {
                                 print(e);
@@ -408,7 +408,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            AccueilCommercant()),
+                                            const AccueilCommercant()),
                                     (Route<dynamic> route) => false);
                               } catch (e) {
                                 print(e);
@@ -416,7 +416,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             }
                           }
                         },
-                        child: Text('INSCRIPTION'),
+                        child: const Text('INSCRIPTION'),
                       ),
                     ),
                   ]),

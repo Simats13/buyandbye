@@ -17,10 +17,10 @@ Widget mineListTile(BuildContext context, String? message, Timestamp time, bool 
         Padding(
             padding: const EdgeInsets.only(bottom:14.0, right: 2,left:4),
             child:
-            isRead ? Container(
+            isRead ? SizedBox(
               width: size.width*0.044,
               child: Stack(
-                children: [
+                children: const [
                   Positioned(
                       right:4,
                       child: FaIcon(FontAwesomeIcons.check,color: Colors.blue,size: 10,)
@@ -30,13 +30,13 @@ Widget mineListTile(BuildContext context, String? message, Timestamp time, bool 
                 ],
               ),
             ) :
-            FaIcon(FontAwesomeIcons.check,color: Colors.grey,size: 10,)
+            const FaIcon(FontAwesomeIcons.check,color: Colors.grey,size: 10,)
           // Text(isRead ? '' : '1',style: TextStyle(fontSize: 12,color: Colors.yellow[900]),),
 
         ),
         // padding contenant le timestamp
-        Padding(
-          padding: const EdgeInsets.only(bottom:14.0, right: 4,left:8),
+        const Padding(
+          padding: EdgeInsets.only(bottom:14.0, right: 4,left:8),
           child: Text("",style: TextStyle(fontSize: 12),),
         ),
         Row(
@@ -54,7 +54,7 @@ Widget mineListTile(BuildContext context, String? message, Timestamp time, bool 
                   padding: EdgeInsets.all(type == 'text' ? 10.0:0),
                   child: Container(
                       child: type == 'text' ? Text(message!,
-                        style: TextStyle(color: Colors.white),) :
+                        style: const TextStyle(color: Colors.white),) :
                       imageMessage(context,message)
                   ),
                 ),

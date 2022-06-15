@@ -7,11 +7,11 @@ class BuyandByeAppTheme {
   static const Color orange = Color(0xFFf4a261);
   static const Color orangeClair = Color(0xFFFFAA66);
   static const Color orangeTresClair = Color(0xFFFAB29E);
-  static const Color orangeTest = Color(0xf3722c);
+  static const Color orangeTest = Color(0x00f3722c);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color white_grey = Color(0xFFe8e8e8);
+  static const Color whiteGrey = Color(0xFFe8e8e8);
   static const Color grey = Color(0xFF5c5c5c);
-  static const Color black_electrik = Color(0xFF131313);
+  static const Color blackElectrik = Color(0xFF131313);
   static const kPrimaryColor = Color(0xFFF54A19);
   static const kLightPrimaryColor = Color(0xFFFFFFFF);
   static const kDarkPrimaryColor = Color(0xFF212121);
