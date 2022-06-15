@@ -14,7 +14,9 @@ import {
     Stack,
     Button,
     Switch,
-    Typography
+    Typography,
+    Autocomplete,
+    CardMedia
 } from '@mui/material';
 
 // project imports
@@ -34,6 +36,9 @@ import * as yup from 'yup';
 import useAuth from 'hooks/useAuth';
 import { CloudUploadOutlined } from '@mui/icons-material';
 import { useTheme } from '@mui/styles';
+import { TwitterPicker } from 'react-color';
+import SubCard from 'ui-component/cards/SubCard';
+import useConfig from 'hooks/useConfig';
 
 // Schéma de validation des champs du formulaire
 
@@ -55,7 +60,40 @@ const Enterprise = () => {
     const [enterpriseUpdate, setEnterpriseUpdate] = React.useState([]);
     const { enterprise, infoEnterprise } = useSelector((state) => state.enterprise);
     const { user } = useAuth();
+    const { borderRadius } = useConfig();
     const theme = useTheme();
+    const tagsCompany = [];
+    console.log(data);
+    if (data.type === 'Magasin') {
+        tagsCompany.push(
+            'Electroménager',
+            'Jeux-Vidéos',
+            'Livres',
+            'Vêtements',
+            'Sport',
+            'Vins & Spiritueux',
+            'Téléphonie',
+            'High-Tech',
+            'Musique',
+            'Loisirs',
+            'Alimentation',
+            'Montre & Bijoux',
+            'Divertissement',
+            'Autres'
+        );
+    } else if (data.type === 'Service') {
+        console.log('Salon');
+    }
+    const twitterStyle = {
+        default: {
+            input: {
+                display: 'none'
+            },
+            hash: {
+                display: 'none'
+            }
+        }
+    };
     React.useEffect(() => {
         setData(enterprise);
     }, [enterprise]);
@@ -66,7 +104,6 @@ const Enterprise = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
-
     const formik = useFormik({
         validationSchema,
         initialValues: {
@@ -79,11 +116,13 @@ const Enterprise = () => {
             enterprisePhone: data.phone || '',
             clickAndCollect: data.ClickAndCollect || false,
             delivery: data.livraison || false,
-            isPhoneVisible: data.isPhoneVisible || false
+            isPhoneVisible: data.isPhoneVisible || false,
+            tagsEnterprise: data.mainCategorie || []
         },
         enableReinitialize: true,
         onSubmit: () => {
-            dispatch(editEnterpriseInfo(user.id, formik.values));
+            // dispatch(editEnterpriseInfo(user.id, formik.values));
+            console.log('values', formik.values);
             // console.log('infoEnterprise', infoEnterprise);
             // if (infoEnterprise && infoEnterprise.status === 'success') {
             //     dispatch(
@@ -225,8 +264,8 @@ const Enterprise = () => {
                                 helperText={formik.touched.enterprisePhone && formik.errors.enterprisePhone}
                             />
                         </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item>
+                        <Grid item xs={12} lg={6}>
+                            <Grid item xs={12} lg={6}>
                                 <FormControlLabel
                                     control={
                                         <Switch
@@ -240,7 +279,7 @@ const Enterprise = () => {
                                     label="Click & Collect"
                                 />
                             </Grid>
-                            <Grid item>
+                            <Grid item xs={12} lg={6}>
                                 <FormControlLabel
                                     control={
                                         <Switch
@@ -251,10 +290,10 @@ const Enterprise = () => {
                                             error={formik.values.toString()}
                                         />
                                     }
-                                    label="Lirvaison à domicile"
+                                    label="Livraison à domicile"
                                 />
                             </Grid>
-                            <Grid item>
+                            <Grid item xs={12} lg={6}>
                                 <FormControlLabel
                                     control={
                                         <Switch
@@ -268,38 +307,88 @@ const Enterprise = () => {
                                     label="Afficher le numéro de téléphone aux clients"
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" align="left">
-                                            Bannière de la boutique
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <div>
-                                            <TextField type="file" id="file-upload" fullWidth label="Enter SKU" sx={{ display: 'none' }} />
-                                            <InputLabel
-                                                htmlFor="file-upload"
-                                                sx={{
-                                                    background: theme.palette.background.default,
-                                                    py: 3.75,
-                                                    px: 0,
-                                                    textAlign: 'center',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    mb: 3,
-                                                    '& > svg': {
-                                                        verticalAlign: 'sub',
-                                                        mr: 0.5
-                                                    }
-                                                }}
-                                            >
-                                                <CloudUploadOutlined /> Drop file here to upload
-                                            </InputLabel>
-                                        </div>
-                                    </Grid>
+                        </Grid>
+                        <Grid item xs={12} lg={6}>
+                            <InputLabel>Couleur de la boutique</InputLabel>
+                            <TwitterPicker styles={twitterStyle} onChange={formik.handleChange} />
+                        </Grid>
+                        <Grid item xs={12} lg={6}>
+                            <Grid container direction="column" spacing={3}>
+                                <Grid item>
+                                    <InputLabel>Tags de l&apos;entreprise</InputLabel>
+                                    <Autocomplete
+                                        id="tagsEnterprise"
+                                        name="tagsEnterprise"
+                                        multiple
+                                        options={tagsCompany}
+                                        value={formik.values.tagsEnterprise}
+                                        limitTags={3}
+                                        isOptionEqualToValue={(option, value) => option === value}
+                                        renderInput={(params) => <TextField id="tagsEnterprise" name="tagsEnterprise" {...params} />}
+                                        onChange={formik.handleChange}
+                                    />
                                 </Grid>
                             </Grid>
+                        </Grid>
+                        <Grid item lg={12}>
+                            <InputLabel>Bannière de la boutique</InputLabel>
+                            <TextField
+                                type="file"
+                                id="file-upload"
+                                fullWidth
+                                label="Enter SKU"
+                                sx={{ display: 'none' }}
+                                onChange={formik.handleChange}
+                            />
+                            <InputLabel
+                                htmlFor="file-upload"
+                                sx={{
+                                    background: theme.palette.background.default,
+                                    py: 3.75,
+                                    px: 0,
+                                    textAlign: 'center',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    mb: 3,
+                                    '& > svg': {
+                                        verticalAlign: 'sub',
+                                        mr: 0.5
+                                    }
+                                }}
+                            >
+                                <MainCard content={false} border={false} boxShadow>
+                                    <CardMedia
+                                        component="img"
+                                        image={data.imgUrl}
+                                        height="150"
+                                        style={{ filter: 'blur(5px)' }}
+                                        title="Banniere Entreprise"
+                                        sx={{ borderRadius: `${borderRadius}px`, overflow: 'hidden' }}
+                                    />
+                                    <Typography
+                                        align="center"
+                                        variant="h3"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            position: 'absolute',
+                                            top: '50%',
+                                            width: '100%',
+                                            textAlign: 'center',
+                                            // color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)',
+                                            fontWeight: 'bold'
+                                        }}
+                                        gutterBottom
+                                    >
+                                        <CloudUploadOutlined
+                                            fontSize="large"
+                                            color="primary"
+                                            sx={{ color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)' }}
+                                        />
+                                    </Typography>
+                                </MainCard>
+                            </InputLabel>
                         </Grid>
                         <Grid item xs={12}>
                             <Stack direction="row" justifyContent="flex-end">
