@@ -63,7 +63,7 @@ const Enterprise = () => {
     const { borderRadius } = useConfig();
     const theme = useTheme();
     const tagsCompany = [];
-    console.log(data);
+
     if (data.type === 'Magasin') {
         tagsCompany.push(
             'Electroménager',

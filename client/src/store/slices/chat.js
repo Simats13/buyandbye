@@ -56,10 +56,10 @@ export function getUser(id) {
     };
 }
 
-export function getUserChats(user) {
+export function getUserChats(id) {
     return async () => {
         try {
-            const response = await axios.post('/api/chat/filter', { user });
+            const response = await axios.get(`/api/chat/user/${id}`);
             dispatch(slice.actions.getUserChatsSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));

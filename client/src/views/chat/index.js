@@ -43,6 +43,7 @@ import CallTwoToneIcon from '@mui/icons-material/CallTwoTone';
 import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
 import MoodTwoToneIcon from '@mui/icons-material/MoodTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
+import useAuth from 'hooks/useAuth';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -75,7 +76,7 @@ const Chat = () => {
     const matchDownSM = useMediaQuery(theme.breakpoints.down('lg'));
 
     const dispatch = useDispatch();
-
+    const { user } = useAuth();
     // handle right sidebar dropdown menu
     const [anchorEl, setAnchorEl] = React.useState(null);
     const handleClickSort = (event) => {
@@ -103,12 +104,12 @@ const Chat = () => {
         setOpenChatDrawer(!matchDownSM);
     }, [matchDownSM]);
 
-    const [user, setUser] = useState({});
+    const [userData, setUserData] = useState({});
     const [data, setData] = React.useState([]);
     const chatState = useSelector((state) => state.chat);
 
     React.useEffect(() => {
-        setUser(chatState.user);
+        setUserData(chatState.user);
     }, [chatState.user]);
 
     React.useEffect(() => {
@@ -123,7 +124,7 @@ const Chat = () => {
     }, []);
 
     React.useEffect(() => {
-        dispatch(getUserChats(user.name));
+        dispatch(getUserChats(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
@@ -134,7 +135,7 @@ const Chat = () => {
         setMessage('');
         const newMessage = {
             from: 'User1',
-            to: user.name,
+            to: userData.name,
             text: message,
             time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
@@ -165,11 +166,11 @@ const Chat = () => {
         setAnchorElEmoji(null);
     };
 
-    if (!user) return <Typography>Loading...</Typography>;
+    if (!userData) return <Typography>Loading...</Typography>;
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <ChatDrawer openChatDrawer={openChatDrawer} handleDrawerOpen={handleDrawerOpen} setUser={setUser} />
+            <ChatDrawer openChatDrawer={openChatDrawer} handleDrawerOpen={handleDrawerOpen} setUser={setUserData} />
             <Main theme={theme} open={openChatDrawer}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs zeroMinWidth sx={{ display: emailDetails ? { xs: 'none', sm: 'flex' } : 'flex' }}>
@@ -189,18 +190,21 @@ const Chat = () => {
                                         <Grid item>
                                             <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
                                                 <Grid item>
-                                                    <Avatar alt={user.name} src={user.avatar && avatarImage(`./${user.avatar}`).default} />
+                                                    <Avatar
+                                                        alt={userData.name}
+                                                        src={userData.avatar && avatarImage(`./${userData.avatar}`).default}
+                                                    />
                                                 </Grid>
                                                 <Grid item sm zeroMinWidth>
                                                     <Grid container spacing={0} alignItems="center">
                                                         <Grid item xs={12}>
                                                             <Typography variant="h4" component="div">
-                                                                {user.name}{' '}
-                                                                {user.online_status && <AvatarStatus status={user.online_status} />}
+                                                                {userData.name}{' '}
+                                                                {userData.online_status && <AvatarStatus status={userData.online_status} />}
                                                             </Typography>
                                                         </Grid>
                                                         <Grid item xs={12}>
-                                                            <Typography variant="subtitle2">Last seen {user.lastMessage}</Typography>
+                                                            <Typography variant="subtitle2">Last seen {userData.lastMessage}</Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
@@ -258,7 +262,7 @@ const Chat = () => {
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
                                             handleDrawerOpen={handleDrawerOpen}
-                                            user={user}
+                                            user={userData}
                                             data={data}
                                         />
                                     </CardContent>
@@ -336,7 +340,7 @@ const Chat = () => {
                                     <HighlightOffTwoToneIcon />
                                 </IconButton>
                             </Box>
-                            <UserDetails user={user} />
+                            <UserDetails user={userData} />
                         </Grid>
                     )}
                 </Grid>
