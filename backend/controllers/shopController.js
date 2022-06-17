@@ -9,6 +9,7 @@ const firestore = firebase.firestore();
 const multer = require('multer')
 const axios = require('axios');
 const Chats = require('../models/chats');
+const Messages = require('../models/messages');
 
 const upload = multer({
     storage: multer.memoryStorage()
@@ -506,28 +507,72 @@ const getChats = async (req, res, next) => {
         const id = req.params.id;
         const chats = await firestore.collectionGroup('commonData').where('users', 'array-contains', id).get();
         const chatsArray = [];
+        const messagesUsers = [];
+
         if(chats.empty) {
             res.status(404).send('Aucune conversation trouvée');
         }else {
-            chats.forEach(doc => {
+            chats.forEach(async doc => {
+                const messages = await firestore.collection('commonData').doc(doc.id).collection('messages').get();
+                messages.forEach(message => {
+                    const messageData = new Messages(
+                        message.data().idFrom,
+                        message.data().idTo,
+                        message.data().isread,
+                        message.data().message,
+                        message.data().sentByClient,
+                        message.data().timestamp,
+                        message.data().type
+                    );
+                   
+                    messagesUsers.push(messageData);
+                }); 
                 const chat = new Chats(
                     doc.ref.id,
                     doc.data().users,
                     doc.data().lastMessage,
+                    messagesUsers,
+                    doc.data().timestamp,
                 );
                 chatsArray.push(chat);
+                res.send(chatsArray);
             });
-            // const messages = await firestore.collection('commonData').doc(id).collection('messages').get();
-            // messages.forEach(doc => {
-            //     console.log(doc);
-            //     const message = new Chats(
-            //         doc.data().message,
-            //     );
-            //     chatsArray.push(message);
-            // });
-            res.send(chatsArray);
-            // console.log(chatsArray);
 
+            
+        }
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+const getMessages = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const chats = await firestore.collectionGroup('commonData').where('users', 'array-contains', id).get();
+        const messagesUsers = [];
+
+        if(chats.empty) {
+            res.status(404).send('Aucune conversation trouvée');
+        }else {
+            chats.forEach(async doc => {
+                const messages = await firestore.collection('commonData').doc(doc.id).collection('messages').get();
+                messages.forEach(message => {
+                    const messageData = new Messages(
+                        message.data().idFrom,
+                        message.data().idTo,
+                        message.data().isread,
+                        message.data().message,
+                        message.data().sentByClient,
+                        message.data().timestamp,
+                        message.data().type
+                    );
+                   
+                    messagesUsers.push(messageData);
+                }); 
+                res.send(messagesUsers);
+            });
+
+            
         }
     } catch (error) {
         res.status(400).send(error.message);
@@ -549,4 +594,5 @@ module.exports = {
     updateProduct,
     getAllCommands,
     getChats,
+    getMessages,
 }

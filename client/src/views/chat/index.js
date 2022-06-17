@@ -109,25 +109,15 @@ const Chat = () => {
     const chatState = useSelector((state) => state.chat);
 
     React.useEffect(() => {
-        setUserData(chatState.user);
-    }, [chatState.user]);
-
-    React.useEffect(() => {
         setData(chatState.chats);
     }, [chatState.chats]);
 
     React.useEffect(() => {
         // hide left drawer when email app opens
-        dispatch(openDrawer(false));
-        dispatch(getUser(1));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    React.useEffect(() => {
         dispatch(getUserChats(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
-
+    }, []);
+    console.log(data);
     // handle new message form
     const [message, setMessage] = useState('');
     const handleOnSend = () => {
@@ -166,7 +156,7 @@ const Chat = () => {
         setAnchorElEmoji(null);
     };
 
-    if (!userData) return <Typography>Loading...</Typography>;
+    if (!data) return <Typography>Loading...</Typography>;
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -204,7 +194,7 @@ const Chat = () => {
                                                             </Typography>
                                                         </Grid>
                                                         <Grid item xs={12}>
-                                                            <Typography variant="subtitle2">Last seen {userData.lastMessage}</Typography>
+                                                            <Typography variant="subtitle2">Dernier message {data.lastMessage}</Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
