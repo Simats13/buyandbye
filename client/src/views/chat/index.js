@@ -117,7 +117,6 @@ const Chat = () => {
         dispatch(getUserChats(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    console.log(data);
     // handle new message form
     const [message, setMessage] = useState('');
     const handleOnSend = () => {
@@ -201,21 +200,11 @@ const Chat = () => {
                                             </Grid>
                                         </Grid>
                                         <Grid item sm zeroMinWidth />
-                                        <Grid item>
-                                            <IconButton size="large">
-                                                <CallTwoToneIcon />
-                                            </IconButton>
-                                        </Grid>
-                                        <Grid item>
-                                            <IconButton size="large">
-                                                <VideoCallTwoToneIcon />
-                                            </IconButton>
-                                        </Grid>
-                                        <Grid item>
+                                        {/* <Grid item>
                                             <IconButton onClick={handleUserChange} size="large">
                                                 <ErrorTwoToneIcon />
                                             </IconButton>
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid item>
                                             <IconButton onClick={handleClickSort} size="large">
                                                 <MoreHorizTwoToneIcon />
@@ -252,7 +241,7 @@ const Chat = () => {
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
                                             handleDrawerOpen={handleDrawerOpen}
-                                            user={userData}
+                                            user={user}
                                             data={data}
                                         />
                                     </CardContent>
