@@ -11,7 +11,8 @@ const {
     updateProduct,
     getAllCommands,
     getChats,
-    getMessages
+    getMessages,
+    getChatsUsers
     
 } = require('../controllers/shopController');
 
@@ -35,8 +36,9 @@ router.post('/shops/:id/products/:idProduct/edit',upload.single('new_image'),upd
 router.post('/shops/:id/products/:idProduct/delete',deleteProduct);
 router.post('/shops/:id/products/add',upload.single('add_image'),addProduct); 
 
-router.get('/chat/user/:id',getChats)
-router.get('/chat/user/:id/messages',getMessages)
+router.get('/chat/user/:id',getChats);
+router.get('/chat/user/:id/messages',getMessages);
+router.get('/chat/user/:id/users',getChatsUsers);
 
 router.get('/shops/:id/commands',getAllCommands);
 

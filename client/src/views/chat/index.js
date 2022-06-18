@@ -31,7 +31,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import Avatar from 'ui-component/extended/Avatar';
 import { appDrawerWidth as drawerWidth, gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
-import { getUser, getUserChats, insertChat } from 'store/slices/chat';
+import { getUser, getUserChats, getUsers, insertChat } from 'store/slices/chat';
 
 // assets
 import AttachmentTwoToneIcon from '@mui/icons-material/AttachmentTwoTone';
@@ -104,17 +104,16 @@ const Chat = () => {
         setOpenChatDrawer(!matchDownSM);
     }, [matchDownSM]);
 
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState([]);
     const [data, setData] = React.useState([]);
     const chatState = useSelector((state) => state.chat);
-
     React.useEffect(() => {
-        setData(chatState.chats);
-    }, [chatState.chats]);
+        setUserData(chatState.users);
+    }, [chatState.users]);
 
     React.useEffect(() => {
         // hide left drawer when email app opens
-        dispatch(getUserChats(user.id));
+        dispatch(getUsers(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // handle new message form
@@ -159,7 +158,7 @@ const Chat = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <ChatDrawer openChatDrawer={openChatDrawer} handleDrawerOpen={handleDrawerOpen} setUser={setUserData} />
+            <ChatDrawer openChatDrawer={openChatDrawer} handleDrawerOpen={handleDrawerOpen} setUser={userData} />
             <Main theme={theme} open={openChatDrawer}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs zeroMinWidth sx={{ display: emailDetails ? { xs: 'none', sm: 'flex' } : 'flex' }}>
@@ -236,7 +235,7 @@ const Chat = () => {
                                 <PerfectScrollbar
                                     style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 525 }}
                                 >
-                                    <CardContent>
+                                    {/* <CardContent>
                                         <ChartHistory
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
@@ -244,7 +243,7 @@ const Chat = () => {
                                             user={user}
                                             data={data}
                                         />
-                                    </CardContent>
+                                    </CardContent> */}
                                 </PerfectScrollbar>
                                 <Grid item xs={12}>
                                     <Grid container spacing={1} alignItems="center">

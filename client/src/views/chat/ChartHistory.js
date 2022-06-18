@@ -21,15 +21,13 @@ const ChartHistory = ({ data, theme, user }) => {
         scrollToBottom();
     }, [data.length, scrollToBottom]);
 
-    console.log(data);
-
     return (
         <Grid item xs={12}>
             <Grid container spacing={gridSpacing} ref={wrapper}>
                 {data.map((chats, index) => (
                     <React.Fragment key={index}>
-                        {chats.messages.forEach((message, index) =>
-                            message[index].idFrom === user.id ? (
+                        {chats.messages.forEach((message) =>
+                            message.idFrom === user.id ? (
                                 <Grid item xs={12}>
                                     <Grid container spacing={gridSpacing}>
                                         <Grid item xs={2} />
@@ -48,7 +46,7 @@ const ChartHistory = ({ data, theme, user }) => {
                                                                 variant="body2"
                                                                 color={theme.palette.mode === 'dark' ? 'dark.900' : ''}
                                                             >
-                                                                {message[index].message}
+                                                                {message.message}
                                                             </Typography>
                                                         </Grid>
                                                         <Grid item xs={12}>
@@ -83,7 +81,7 @@ const ChartHistory = ({ data, theme, user }) => {
                                                 <CardContent sx={{ p: 2, pb: '16px !important' }}>
                                                     <Grid container spacing={1}>
                                                         <Grid item xs={12}>
-                                                            <Typography variant="body2">{chats.lastMessage}</Typography>
+                                                            <Typography variant="body2">hello</Typography>
                                                         </Grid>
                                                         <Grid item xs={12}>
                                                             <Typography align="right" variant="subtitle2">

@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use('/' ,require('./routes/pages-routes'));
        
 // app.use(express.json())
-// app.use('/api', userRoutes.routes);
+app.use('/api', cors(), userRoutes.routes);
 app.use('/api', cors(), shopRoutes.routes);
 app.use('/api', authRoutes.routes);
 

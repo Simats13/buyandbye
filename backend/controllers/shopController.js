@@ -505,38 +505,22 @@ const getAllCommands = async (req, res, next) => {
 const getChats = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const chats = await firestore.collectionGroup('commonData').where('users', 'array-contains', id).get();
+        const chats = await firestore.collection('commonData').where('users', 'array-contains', id).get();
         const chatsArray = [];
-        const messagesUsers = [];
 
         if(chats.empty) {
             res.status(404).send('Aucune conversation trouvée');
         }else {
-            chats.forEach(async doc => {
-                const messages = await firestore.collection('commonData').doc(doc.id).collection('messages').get();
-                messages.forEach(message => {
-                    const messageData = new Messages(
-                        message.data().idFrom,
-                        message.data().idTo,
-                        message.data().isread,
-                        message.data().message,
-                        message.data().sentByClient,
-                        message.data().timestamp,
-                        message.data().type
-                    );
-                   
-                    messagesUsers.push(messageData);
-                }); 
+            chats.forEach(doc => {
                 const chat = new Chats(
                     doc.ref.id,
                     doc.data().users,
                     doc.data().lastMessage,
-                    messagesUsers,
                     doc.data().timestamp,
                 );
                 chatsArray.push(chat);
-                res.send(chatsArray);
             });
+            res.send(chatsArray);
 
             
         }
@@ -548,32 +532,42 @@ const getChats = async (req, res, next) => {
 const getMessages = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const chats = await firestore.collectionGroup('commonData').where('users', 'array-contains', id).get();
+        const chats = await firestore.collection('commonData').doc(id).collection('messages').get();
         const messagesUsers = [];
 
         if(chats.empty) {
             res.status(404).send('Aucune conversation trouvée');
         }else {
-            chats.forEach(async doc => {
-                const messages = await firestore.collection('commonData').doc(doc.id).collection('messages').get();
-                messages.forEach(message => {
+            chats.forEach(doc => {
                     const messageData = new Messages(
-                        message.data().idFrom,
-                        message.data().idTo,
-                        message.data().isread,
-                        message.data().message,
-                        message.data().sentByClient,
-                        message.data().timestamp,
-                        message.data().type
+                        doc.data().idFrom,
+                        doc.data().idTo,
+                        doc.data().isread,
+                        doc.data().message,
+                        doc.data().sentByClient,
+                        doc.data().timestamp,
+                        doc.data().type
                     );
-                   
                     messagesUsers.push(messageData);
-                }); 
-                res.send(messagesUsers);
             });
-
-            
+            res.send(messagesUsers);
         }
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+}
+
+const getChatsUsers = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const chats = await firestore.collection('commonData').where('users', 'array-contains', id).get();
+        const chatsUsersArray = [];
+        chats.forEach(doc => {
+            chatsUsersArray.push(doc.data().users[1]);
+        });
+
+        const test = 
+        res.send(chatsUsersArray);
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -595,4 +589,5 @@ module.exports = {
     getAllCommands,
     getChats,
     getMessages,
+    getChatsUsers,
 }

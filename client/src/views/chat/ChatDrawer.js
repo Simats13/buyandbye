@@ -36,6 +36,8 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUser }) => {
         setAnchorEl(event?.currentTarget);
     };
 
+    console.log(setUser);
+
     const handleCloseRightMenu = () => {
         setAnchorEl(null);
     };

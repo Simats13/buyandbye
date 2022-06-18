@@ -48,8 +48,19 @@ export default slice.reducer;
 export function getUser(id) {
     return async () => {
         try {
-            const response = await axios.post('/api/chat/users/id', { id });
+            const response = await axios.get(`/api/users/${id}`);
             dispatch(slice.actions.getUserSuccess(response.data));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function getUsers(id) {
+    return async () => {
+        try {
+            const response = await axios.get(`/api/chat/user/${id}`);
+            dispatch(slice.actions.getUsersSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }
@@ -59,7 +70,7 @@ export function getUser(id) {
 export function getUserChats(id) {
     return async () => {
         try {
-            const response = await axios.get(`/api/chat/user/${id}`);
+            const response = await axios.get(`/api/chat/user/${id}/messages`);
             dispatch(slice.actions.getUserChatsSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
@@ -71,17 +82,6 @@ export function insertChat(chat) {
     return async () => {
         try {
             await axios.post('/api/chat/insert', chat);
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
-export function getUsers() {
-    return async () => {
-        try {
-            const response = await axios.get('/api/chat/users');
-            dispatch(slice.actions.getUsersSuccess(response.data.users));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }
