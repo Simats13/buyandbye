@@ -562,12 +562,18 @@ const getChatsUsers = async (req, res, next) => {
         const id = req.params.id;
         const chats = await firestore.collection('commonData').where('users', 'array-contains', id).get();
         const chatsUsersArray = [];
+        const userInfos = [];
+
         chats.forEach(doc => {
             chatsUsersArray.push(doc.data().users[1]);
         });
 
-        const test = 
-        res.send(chatsUsersArray);
+        for (const idUser of chatsUsersArray){
+            const users = await firestore.collection('users').doc(idUser).get();
+            userInfos.push(users.data());
+        }
+
+        res.send(userInfos);
     } catch (error) {
         res.status(400).send(error.message);
     }

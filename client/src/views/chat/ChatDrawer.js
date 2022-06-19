@@ -23,7 +23,7 @@ import useConfig from 'hooks/useConfig';
 
 // ==============================|| CHAT DRAWER ||============================== //
 
-const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUser }) => {
+const ChatDrawer = ({ handleDrawerOpen, openChatDrawer }) => {
     const theme = useTheme();
 
     const { user } = useAuth();
@@ -35,8 +35,6 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUser }) => {
     const handleClickRightMenu = (event) => {
         setAnchorEl(event?.currentTarget);
     };
-
-    console.log(setUser);
 
     const handleCloseRightMenu = () => {
         setAnchorEl(null);
@@ -149,7 +147,7 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUser }) => {
                         }}
                     >
                         <Box sx={{ p: 3, pt: 0 }}>
-                            <UserList setUser={setUser} />
+                            <UserList setUser={user.id} />
                         </Box>
                     </PerfectScrollbar>
                 </MainCard>
@@ -160,8 +158,7 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUser }) => {
 
 ChatDrawer.propTypes = {
     handleDrawerOpen: PropTypes.func,
-    openChatDrawer: PropTypes.bool,
-    setUser: PropTypes.func
+    openChatDrawer: PropTypes.bool
 };
 
 export default ChatDrawer;

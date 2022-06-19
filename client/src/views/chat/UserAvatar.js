@@ -20,7 +20,7 @@ const UserAvatar = ({ user }) => (
             horizontal: 'right'
         }}
     >
-        <Avatar alt={user.name} src={user.avatar && avatarImage(`./${user.avatar}`).default} />
+        <Avatar alt={user.lname} src={user.imgUrl} />
     </Badge>
 );
 

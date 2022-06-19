@@ -16,16 +16,9 @@ const UserList = ({ setUser }) => {
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
     const { users } = useSelector((state) => state.chat);
-    const userArray = [];
-    setUser.forEach((user) => {
-        console.log('user', user.users[1]);
-        dispatch(getUsers(user.users[1]));
-    });
-
-    console.log('userArray', userArray);
 
     useEffect(() => {
-        dispatch(getUsers(userArray));
+        dispatch(getUsers(setUser));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -33,7 +26,6 @@ const UserList = ({ setUser }) => {
         setData(users);
     }, [users]);
 
-    console.log('setUser', setUser);
     return (
         <List component="nav">
             {data.map((user) => (
@@ -61,7 +53,7 @@ const UserList = ({ setUser }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {user.name}
+                                            {`${user.fname} ${user.lname}`}
                                         </Typography>
                                     </Grid>
                                     <Grid item component="span">

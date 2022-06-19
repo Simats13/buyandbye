@@ -10,8 +10,8 @@ import { dispatch } from '../index';
 const initialState = {
     error: null,
     chats: [],
-    user: {},
-    users: []
+    users: [],
+    conversations: []
 };
 
 const slice = createSlice({
@@ -24,8 +24,8 @@ const slice = createSlice({
         },
 
         // GET USER
-        getUserSuccess(state, action) {
-            state.user = action.payload;
+        getUsersSuccess(state, action) {
+            state.users = action.payload;
         },
 
         // GET USER CHATS
@@ -34,8 +34,8 @@ const slice = createSlice({
         },
 
         // GET USERS
-        getUsersSuccess(state, action) {
-            state.users = action.payload;
+        getConversations(state, action) {
+            state.conversations = action.payload;
         }
     }
 });
@@ -45,21 +45,10 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getUser(id) {
-    return async () => {
-        try {
-            const response = await axios.get(`/api/users/${id}`);
-            dispatch(slice.actions.getUserSuccess(response.data));
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
 export function getUsers(id) {
     return async () => {
         try {
-            const response = await axios.get(`/api/chat/user/${id}`);
+            const response = await axios.get(`/api/chat/user/${id}/users`);
             dispatch(slice.actions.getUsersSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
@@ -67,7 +56,18 @@ export function getUsers(id) {
     };
 }
 
-export function getUserChats(id) {
+export function getConversations(id) {
+    return async () => {
+        try {
+            const response = await axios.get(`/api/chat/user/${id}`);
+            dispatch(slice.actions.getConversationsSuccess(response.data));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function getAllUserChats(id) {
     return async () => {
         try {
             const response = await axios.get(`/api/chat/user/${id}/messages`);
