@@ -34,7 +34,7 @@ const slice = createSlice({
         },
 
         // GET USERS
-        getConversations(state, action) {
+        getConversationsSuccess(state, action) {
             state.conversations = action.payload;
         }
     }

@@ -23,7 +23,7 @@ import useConfig from 'hooks/useConfig';
 
 // ==============================|| CHAT DRAWER ||============================== //
 
-const ChatDrawer = ({ handleDrawerOpen, openChatDrawer }) => {
+const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, conversations }) => {
     const theme = useTheme();
 
     const { user } = useAuth();
@@ -147,7 +147,7 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer }) => {
                         }}
                     >
                         <Box sx={{ p: 3, pt: 0 }}>
-                            <UserList setUser={user.id} />
+                            <UserList setUser={user.id} conversations={conversations} />
                         </Box>
                     </PerfectScrollbar>
                 </MainCard>
@@ -158,7 +158,8 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer }) => {
 
 ChatDrawer.propTypes = {
     handleDrawerOpen: PropTypes.func,
-    openChatDrawer: PropTypes.bool
+    openChatDrawer: PropTypes.bool,
+    conversations: PropTypes.array
 };
 
 export default ChatDrawer;

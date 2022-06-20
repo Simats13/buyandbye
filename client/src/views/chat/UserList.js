@@ -12,10 +12,11 @@ import { getUsers } from 'store/slices/chat';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUser }) => {
+const UserList = ({ setUser, conversations }) => {
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
     const { users } = useSelector((state) => state.chat);
+    const usersAndMessages = [];
 
     useEffect(() => {
         dispatch(getUsers(setUser));
@@ -26,9 +27,12 @@ const UserList = ({ setUser }) => {
         setData(users);
     }, [users]);
 
+    // eslint-disable-next-line no-unused-expressions
+    console.log(!!data.includes('KkyhBb5pD2WBNkbw98U98rGOdCt2'));
+
     return (
         <List component="nav">
-            {data.map((user) => (
+            {conversations.map((user) => (
                 <Fragment key={user.id}>
                     <ListItemButton
                         onClick={() => {
@@ -76,7 +80,7 @@ const UserList = ({ setUser }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {user.status}
+                                            {user.lastMessage}
                                         </Typography>
                                     </Grid>
                                     <Grid item component="span">
@@ -107,7 +111,8 @@ const UserList = ({ setUser }) => {
 };
 
 UserList.propTypes = {
-    setUser: PropTypes.func
+    setUser: PropTypes.func,
+    conversations: PropTypes.array
 };
 
 export default UserList;
