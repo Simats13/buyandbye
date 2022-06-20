@@ -24,10 +24,10 @@ const ChartHistory = ({ data, theme, user }) => {
     return (
         <Grid item xs={12}>
             <Grid container spacing={gridSpacing} ref={wrapper}>
-                {data.map((chats, index) => (
+                {data.map((history, index) => (
                     <React.Fragment key={index}>
-                        {chats.messages.forEach((message) =>
-                            message.idFrom === user.id ? (
+                        {history.messages.map((message, indexMessage) =>
+                            message.idFrom !== user.id ? (
                                 <Grid item xs={12}>
                                     <Grid container spacing={gridSpacing}>
                                         <Grid item xs={2} />
@@ -55,7 +55,7 @@ const ChartHistory = ({ data, theme, user }) => {
                                                                 variant="subtitle2"
                                                                 color={theme.palette.mode === 'dark' ? 'dark.900' : ''}
                                                             >
-                                                                {chats.time}
+                                                                {/* {message.timestramp} */}
                                                             </Typography>
                                                         </Grid>
                                                     </Grid>
@@ -81,11 +81,11 @@ const ChartHistory = ({ data, theme, user }) => {
                                                 <CardContent sx={{ p: 2, pb: '16px !important' }}>
                                                     <Grid container spacing={1}>
                                                         <Grid item xs={12}>
-                                                            <Typography variant="body2">hello</Typography>
+                                                            <Typography variant="body2">{message.message}</Typography>
                                                         </Grid>
                                                         <Grid item xs={12}>
                                                             <Typography align="right" variant="subtitle2">
-                                                                chats
+                                                                {/* {history.time} */}
                                                             </Typography>
                                                         </Grid>
                                                     </Grid>

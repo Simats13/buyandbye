@@ -106,7 +106,7 @@ const Chat = () => {
 
     const [userData, setUserData] = useState([]);
     const [data, setData] = React.useState([]);
-    const { conversations } = useSelector((state) => state.chat);
+    const { conversations, users } = useSelector((state) => state.chat);
 
     React.useEffect(() => {
         // hide left drawer when email app opens
@@ -115,8 +115,19 @@ const Chat = () => {
     }, []);
 
     React.useEffect(() => {
-        setUserData(conversations);
+        setData(conversations.id);
     }, [conversations]);
+
+    React.useEffect(() => {
+        // hide left drawer when email app opens
+        dispatch(getUsers(user.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    React.useEffect(() => {
+        setUserData(users);
+    }, [users]);
+
     // handle new message form
     const [message, setMessage] = useState('');
     const handleOnSend = () => {
@@ -159,7 +170,7 @@ const Chat = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <ChatDrawer openChatDrawer={openChatDrawer} handleDrawerOpen={handleDrawerOpen} conversations={userData} />
+            <ChatDrawer openChatDrawer={openChatDrawer} handleDrawerOpen={handleDrawerOpen} setUserData={setUserData} />
             <Main theme={theme} open={openChatDrawer}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs zeroMinWidth sx={{ display: emailDetails ? { xs: 'none', sm: 'flex' } : 'flex' }}>
@@ -241,7 +252,7 @@ const Chat = () => {
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
                                             handleDrawerOpen={handleDrawerOpen}
-                                            user={user}
+                                            user={userData}
                                             data={data}
                                         />
                                     </CardContent>

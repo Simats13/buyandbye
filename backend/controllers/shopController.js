@@ -507,6 +507,7 @@ const getChats = async (req, res, next) => {
         const id = req.params.id;
         const chats = await firestore.collection('commonData').where('users', 'array-contains', id).get();
         const chatsArray = [];
+        const allChats = [];
 
         if(chats.empty) {
             res.status(404).send('Aucune conversation trouvée');
@@ -518,9 +519,25 @@ const getChats = async (req, res, next) => {
                     doc.data().lastMessage,
                     doc.data().timestamp,
                 );
-                chatsArray.push(chat);
+                chatsArray.push(chat);         
+                // test1.push(chat);
             });
-            res.send(chatsArray);
+            
+            for (const idChat of chatsArray){
+                await axios.get(`http://localhost:81/api/chat/user/${idChat.id}/messages`).then((response) =>{
+                    const chat = new Chats(
+                        idChat.id,
+                        idChat.users,
+                        idChat.lastMessage,
+                        idChat.timestamp,
+                        response.data,
+                    ); 
+                    allChats.push(chat);
+                });
+
+                  
+            }
+            res.send(allChats);
 
             
         }

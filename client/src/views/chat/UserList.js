@@ -9,38 +9,37 @@ import UserAvatar from './UserAvatar';
 
 import { useDispatch, useSelector } from 'store';
 import { getUsers } from 'store/slices/chat';
+import useAuth from 'hooks/useAuth';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUser, conversations }) => {
+const UserList = ({ setUserData }) => {
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
     const { users } = useSelector((state) => state.chat);
+    const { user } = useAuth();
     const usersAndMessages = [];
 
     useEffect(() => {
-        dispatch(getUsers(setUser));
+        dispatch(getUsers(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         setData(users);
     }, [users]);
-
     // eslint-disable-next-line no-unused-expressions
-    console.log(!!data.includes('KkyhBb5pD2WBNkbw98U98rGOdCt2'));
-
     return (
         <List component="nav">
-            {conversations.map((user) => (
+            {data.map((userSelect) => (
                 <Fragment key={user.id}>
                     <ListItemButton
                         onClick={() => {
-                            setUser(user);
+                            setUserData(user.id + userSelect.id);
                         }}
                     >
                         <ListItemAvatar>
-                            <UserAvatar user={user} />
+                            <UserAvatar user={userSelect} />
                         </ListItemAvatar>
                         <ListItemText
                             primary={
@@ -57,14 +56,14 @@ const UserList = ({ setUser, conversations }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {`${user.fname} ${user.lname}`}
+                                            {`${userSelect.fname} ${userSelect.lname}`}
                                         </Typography>
                                     </Grid>
-                                    <Grid item component="span">
+                                    {/* <Grid item component="span">
                                         <Typography component="span" variant="subtitle2">
                                             {user.lastMessage}
                                         </Typography>
-                                    </Grid>
+                                    </Grid> */}
                                 </Grid>
                             }
                             secondary={
@@ -80,10 +79,10 @@ const UserList = ({ setUser, conversations }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {user.lastMessage}
+                                            {userSelect.lastMessage}
                                         </Typography>
                                     </Grid>
-                                    <Grid item component="span">
+                                    {/* <Grid item component="span">
                                         {user.unReadChatCount !== 0 && (
                                             <Chip
                                                 label={user.unReadChatCount}
@@ -98,7 +97,7 @@ const UserList = ({ setUser, conversations }) => {
                                                 }}
                                             />
                                         )}
-                                    </Grid>
+                                    </Grid> */}
                                 </Grid>
                             }
                         />
@@ -111,8 +110,7 @@ const UserList = ({ setUser, conversations }) => {
 };
 
 UserList.propTypes = {
-    setUser: PropTypes.func,
-    conversations: PropTypes.array
+    setUserData: PropTypes.func
 };
 
 export default UserList;
