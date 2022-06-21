@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
@@ -104,29 +104,32 @@ const Chat = () => {
         setOpenChatDrawer(!matchDownSM);
     }, [matchDownSM]);
 
-    const [userData, setUserData] = useState([]);
-    const [data, setData] = React.useState([]);
-    const { conversations, users } = useSelector((state) => state.chat);
+    const [userData, setUserData] = useState([]); // Information sur l'utilisateur
+    const [data, setData] = useState([]); // Message de la conversation
+    const { chats, users } = useSelector((state) => state.chat);
 
-    React.useEffect(() => {
-        // hide left drawer when email app opens
-        dispatch(getConversations(user.id));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    React.useEffect(() => {
-        setData(conversations.id);
-    }, [conversations]);
-
-    React.useEffect(() => {
+    useEffect(() => {
         // hide left drawer when email app opens
         dispatch(getUsers(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setUserData(users);
     }, [users]);
+
+    useEffect(() => {
+        // hide left drawer when email app opens
+        dispatch(getAllUserChats(user.id + userData.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        setData(chats);
+    }, [chats]);
+
+    console.log('userData', userData);
+    console.log('data', data);
 
     // handle new message form
     const [message, setMessage] = useState('');

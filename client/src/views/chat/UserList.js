@@ -18,7 +18,6 @@ const UserList = ({ setUserData }) => {
     const [data, setData] = useState([]);
     const { users } = useSelector((state) => state.chat);
     const { user } = useAuth();
-    const usersAndMessages = [];
 
     useEffect(() => {
         dispatch(getUsers(user.id));
@@ -32,10 +31,10 @@ const UserList = ({ setUserData }) => {
     return (
         <List component="nav">
             {data.map((userSelect) => (
-                <Fragment key={user.id}>
+                <Fragment key={user.id + userSelect.id}>
                     <ListItemButton
                         onClick={() => {
-                            setUserData(user.id + userSelect.id);
+                            setUserData(userSelect);
                         }}
                     >
                         <ListItemAvatar>
