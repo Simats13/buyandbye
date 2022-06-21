@@ -103,6 +103,12 @@ const Enterprise = () => {
         dispatch(getEnterprise(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    React.useEffect(() => {
+        setEnterpriseUpdate(infoEnterprise);
+    }, [infoEnterprise]);
+    // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
+    // console.log('infoEnterprise', infoEnterprise);
     // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
     const formik = useFormik({
         validationSchema,
@@ -121,9 +127,9 @@ const Enterprise = () => {
         },
         enableReinitialize: true,
         onSubmit: () => {
-            // dispatch(editEnterpriseInfo(user.id, formik.values));
-            console.log('values', formik.values);
-            // console.log('infoEnterprise', infoEnterprise);
+            dispatch(editEnterpriseInfo(user.id, formik.values));
+            console.log('infoEnterprise', infoEnterprise);
+            dispatch(setData(formik.values));
             // if (infoEnterprise && infoEnterprise.status === 'success') {
             //     dispatch(
             //         openSnackbar({

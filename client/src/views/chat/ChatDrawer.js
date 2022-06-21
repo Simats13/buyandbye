@@ -147,7 +147,7 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData }) => {
                         }}
                     >
                         <Box sx={{ p: 3, pt: 0 }}>
-                            <UserList setUserData={setUserData} />
+                            <UserList sellerID={user.id} setUserData={setUserData} />
                         </Box>
                     </PerfectScrollbar>
                 </MainCard>

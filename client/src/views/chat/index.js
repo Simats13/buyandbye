@@ -31,7 +31,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import Avatar from 'ui-component/extended/Avatar';
 import { appDrawerWidth as drawerWidth, gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
-import { getAllUserChats, getConversations, getUsers, insertChat } from 'store/slices/chat';
+import { getAllUserChats, getUsers, insertChat } from 'store/slices/chat';
 
 // assets
 import AttachmentTwoToneIcon from '@mui/icons-material/AttachmentTwoTone';
@@ -106,7 +106,7 @@ const Chat = () => {
 
     const [userData, setUserData] = useState([]); // Information sur l'utilisateur
     const [data, setData] = useState([]); // Message de la conversation
-    const { chats, users } = useSelector((state) => state.chat);
+    const { chats, userInfo } = useSelector((state) => state.chat);
 
     useEffect(() => {
         // hide left drawer when email app opens
@@ -115,8 +115,8 @@ const Chat = () => {
     }, []);
 
     useEffect(() => {
-        setUserData(users);
-    }, [users]);
+        setUserData(userInfo);
+    }, [userInfo]);
 
     useEffect(() => {
         // hide left drawer when email app opens
@@ -128,22 +128,22 @@ const Chat = () => {
         setData(chats);
     }, [chats]);
 
-    console.log('userData', userData);
-    console.log('data', data);
-
     // handle new message form
     const [message, setMessage] = useState('');
     const handleOnSend = () => {
         const d = new Date();
         setMessage('');
         const newMessage = {
-            from: 'User1',
-            to: userData.name,
-            text: message,
-            time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            idFrom: user.id,
+            idTo: userData.id,
+            message,
+            iread: false,
+            sentByClient: false,
+            type: 'text',
+            timestamp: d
         };
         setData((prevState) => [...prevState, newMessage]);
-        dispatch(insertChat(newMessage));
+        dispatch(insertChat(newMessage, user.id + userData.id));
     };
 
     const handleEnter = (event) => {
@@ -193,21 +193,20 @@ const Chat = () => {
                                         <Grid item>
                                             <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
                                                 <Grid item>
-                                                    <Avatar
-                                                        alt={userData.name}
-                                                        src={userData.avatar && avatarImage(`./${userData.avatar}`).default}
-                                                    />
+                                                    <Avatar alt={userData.fname + userData.lname} src={userData.imgUrl} />
                                                 </Grid>
                                                 <Grid item sm zeroMinWidth>
                                                     <Grid container spacing={0} alignItems="center">
                                                         <Grid item xs={12}>
                                                             <Typography variant="h4" component="div">
-                                                                {userData.name}{' '}
+                                                                {userData.fname} {userData.lname}
                                                                 {userData.online_status && <AvatarStatus status={userData.online_status} />}
                                                             </Typography>
                                                         </Grid>
                                                         <Grid item xs={12}>
-                                                            <Typography variant="subtitle2">Dernier message {data.lastMessage}</Typography>
+                                                            <Typography variant="subtitle2">
+                                                                Dernière connexion {data.lastMessage}
+                                                            </Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
@@ -255,7 +254,7 @@ const Chat = () => {
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
                                             handleDrawerOpen={handleDrawerOpen}
-                                            user={userData}
+                                            user={user}
                                             data={data}
                                         />
                                     </CardContent>
@@ -305,7 +304,7 @@ const Chat = () => {
                                         <Grid item xs zeroMinWidth>
                                             <TextField
                                                 fullWidth
-                                                label="Type a Message"
+                                                label="Envoyer un message"
                                                 value={message}
                                                 onChange={(e) => setMessage(e.target.value)}
                                                 onKeyPress={handleEnter}

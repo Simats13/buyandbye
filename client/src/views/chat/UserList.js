@@ -8,19 +8,18 @@ import { Chip, Divider, Grid, List, ListItemButton, ListItemAvatar, ListItemText
 import UserAvatar from './UserAvatar';
 
 import { useDispatch, useSelector } from 'store';
-import { getUsers } from 'store/slices/chat';
+import { getUsers, getAllUserChats, getUserWithID } from 'store/slices/chat';
 import useAuth from 'hooks/useAuth';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUserData }) => {
+const UserList = ({ setUserData, sellerID }) => {
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
     const { users } = useSelector((state) => state.chat);
-    const { user } = useAuth();
 
     useEffect(() => {
-        dispatch(getUsers(user.id));
+        dispatch(getUsers(sellerID));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -31,10 +30,11 @@ const UserList = ({ setUserData }) => {
     return (
         <List component="nav">
             {data.map((userSelect) => (
-                <Fragment key={user.id + userSelect.id}>
+                <Fragment key={sellerID + userSelect.id}>
                     <ListItemButton
                         onClick={() => {
-                            setUserData(userSelect);
+                            dispatch(getAllUserChats(sellerID + userSelect.id));
+                            dispatch(getUserWithID(userSelect.id));
                         }}
                     >
                         <ListItemAvatar>
@@ -58,11 +58,11 @@ const UserList = ({ setUserData }) => {
                                             {`${userSelect.fname} ${userSelect.lname}`}
                                         </Typography>
                                     </Grid>
-                                    {/* <Grid item component="span">
+                                    <Grid item component="span">
                                         <Typography component="span" variant="subtitle2">
-                                            {user.lastMessage}
+                                            {data.lastMessage}
                                         </Typography>
-                                    </Grid> */}
+                                    </Grid>
                                 </Grid>
                             }
                             secondary={

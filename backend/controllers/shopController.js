@@ -139,7 +139,7 @@ const updateShop = async (req, res, next) => {
                 // 'position.latitude': data.latitude,
                 // 'position.longitude': data.longitude,
             });
-           return res.status(200).json({status:"error", message:"Votre magasin a bien été modifié"});
+           return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
         } else {
             const blob = firebase.storage().bucket().file(`profile/${id}/banniere`); 
    
@@ -596,6 +596,17 @@ const getChatsUsers = async (req, res, next) => {
     }
 }
 
+const addMessage = async (req, res, next) => {
+    try{
+        const id = req.params.id;
+        console.log(req.body);
+        await firestore.collection('commonData').doc(id).collection('messages').add(req.body);
+        res.send('Menssage send');
+    }catch (error) {
+        res.status(400).send('ehe');
+    }
+}
+
 
 
 
@@ -613,4 +624,5 @@ module.exports = {
     getChats,
     getMessages,
     getChatsUsers,
+    addMessage
 }

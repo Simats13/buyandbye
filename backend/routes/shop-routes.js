@@ -12,7 +12,8 @@ const {
     getAllCommands,
     getChats,
     getMessages,
-    getChatsUsers
+    getChatsUsers,
+    addMessage,
     
 } = require('../controllers/shopController');
 
@@ -39,6 +40,7 @@ router.post('/shops/:id/products/add',upload.single('add_image'),addProduct);
 router.get('/chat/user/:id',getChats);
 router.get('/chat/user/:id/messages',getMessages);
 router.get('/chat/user/:id/users',getChatsUsers);
+router.post('/chat/:id', addMessage);
 
 router.get('/shops/:id/commands',getAllCommands);
 
