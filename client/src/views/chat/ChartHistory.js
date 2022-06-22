@@ -51,7 +51,10 @@ const ChartHistory = ({ data, theme, user }) => {
                                                             variant="subtitle2"
                                                             color={theme.palette.mode === 'dark' ? 'dark.900' : ''}
                                                         >
-                                                            {messages.time}
+                                                            {
+                                                                // eslint-disable-next-line no-underscore-dangle
+                                                                new Date(messages.timestamp._seconds * 1000).toLocaleString()
+                                                            }
                                                         </Typography>
                                                     </Grid>
                                                 </Grid>
@@ -79,7 +82,10 @@ const ChartHistory = ({ data, theme, user }) => {
                                                     </Grid>
                                                     <Grid item xs={12}>
                                                         <Typography align="right" variant="subtitle2">
-                                                            {/* {messages.timestamp.toDateString()} */}
+                                                            {
+                                                                // eslint-disable-next-line no-underscore-dangle
+                                                                new Date(messages.timestamp._seconds * 1000).toLocaleString()
+                                                            }
                                                         </Typography>
                                                     </Grid>
                                                 </Grid>

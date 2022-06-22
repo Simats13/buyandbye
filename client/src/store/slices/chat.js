@@ -56,17 +56,6 @@ export function getUsers(id) {
     };
 }
 
-export function getAllUserChats(id) {
-    return async () => {
-        try {
-            const response = await axios.get(`/api/chat/user/${id}/messages`);
-            dispatch(slice.actions.getUserChatsSuccess(response.data));
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
 export function getUserWithID(id) {
     return async () => {
         try {
@@ -78,6 +67,27 @@ export function getUserWithID(id) {
     };
 }
 
+export function getAllUserChats(id) {
+    return async () => {
+        try {
+            const response = await axios.get(`/api/chat/user/${id}/messages`);
+            dispatch(slice.actions.getUserChatsSuccess(response.data));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function getLatestChat(id) {
+    return async () => {
+        try {
+            const response = await axios.get(`/api/chat/user/${id}/messages/latest`);
+            dispatch(slice.actions.getUserChatsSuccess(response.data));
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
 export function insertChat(chat, idConv) {
     return async () => {
         try {

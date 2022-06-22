@@ -39,6 +39,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopyTwoTone';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import useAuth from 'hooks/useAuth';
 
 // table sort
 function descendingComparator(a, b, orderBy) {
@@ -76,37 +77,31 @@ const headCells = [
     {
         id: 'name',
         numeric: false,
-        label: 'Customer Name',
+        label: 'Client',
         align: 'left'
     },
     {
-        id: 'company',
+        id: 'prix',
         numeric: true,
-        label: 'Branch',
+        label: 'Total',
         align: 'left'
     },
     {
-        id: 'type',
+        id: 'articles',
         numeric: true,
-        label: 'Payment Type',
-        align: 'left'
-    },
-    {
-        id: 'qty',
-        numeric: true,
-        label: 'Quantity',
+        label: 'Quantité',
         align: 'right'
     },
     {
-        id: 'date',
+        id: 'horodatage',
         numeric: true,
-        label: 'Registered',
+        label: 'Date',
         align: 'center'
     },
     {
-        id: 'status',
+        id: 'statut',
         numeric: false,
-        label: 'Status',
+        label: 'Statut',
         align: 'center'
     }
 ];
@@ -231,9 +226,10 @@ const Commands = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [search, setSearch] = React.useState('');
     const [rows, setRows] = React.useState([]);
+    const { user } = useAuth();
     const { orders } = useSelector((state) => state.customer);
     React.useEffect(() => {
-        dispatch(getOrders());
+        dispatch(getOrders(user.id));
     }, [dispatch]);
     React.useEffect(() => {
         setRows(orders);
@@ -246,7 +242,7 @@ const Commands = () => {
             const newRows = rows.filter((row) => {
                 let matches = true;
 
-                const properties = ['name', 'company', 'type', 'qty', 'id'];
+                const properties = ['id', 'articles', 'prix', 'horodatage', 'statut'];
                 let containsQuery = false;
 
                 properties.forEach((property) => {
@@ -324,7 +320,7 @@ const Commands = () => {
                                 )
                             }}
                             onChange={handleSearch}
-                            placeholder="Search Order"
+                            placeholder="Chercher une commande"
                             value={search}
                             size="small"
                         />
@@ -420,14 +416,18 @@ const Commands = () => {
                                                 {row.name}{' '}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>{row.company}</TableCell>
-                                        <TableCell>{row.type}</TableCell>
-                                        <TableCell align="right">{row.qty}</TableCell>
-                                        <TableCell align="center">{row.date}</TableCell>
+                                        <TableCell>{row.prix}</TableCell>
+                                        <TableCell align="right">{row.articles}</TableCell>
                                         <TableCell align="center">
-                                            {row.status === 1 && <Chip label="Complete" size="small" chipcolor="success" />}
-                                            {row.status === 2 && <Chip label="Pending" size="small" chipcolor="orange" />}
-                                            {row.status === 3 && <Chip label="Processing" size="small" chipcolor="primary" />}
+                                            {
+                                                // eslint-disable-next-line no-underscore-dangle
+                                                new Date(row.horodatage._seconds * 1000).toLocaleString()
+                                            }
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            {row.statut === 2 && <Chip label="Terminé" size="small" chipcolor="success" />}
+                                            {row.statut === 0 && <Chip label="En Attente" size="small" chipcolor="orange" />}
+                                            {row.statut === 1 && <Chip label="En cours" size="small" chipcolor="primary" />}
                                         </TableCell>
                                         <TableCell align="center" sx={{ pr: 3 }}>
                                             <IconButton color="primary" size="large">

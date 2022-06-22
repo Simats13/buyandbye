@@ -1,5 +1,5 @@
 // material-ui
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     Checkbox,
@@ -94,6 +94,7 @@ const Enterprise = () => {
             }
         }
     };
+
     React.useEffect(() => {
         setData(enterprise);
     }, [enterprise]);
@@ -104,12 +105,43 @@ const Enterprise = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    React.useEffect(() => {
-        setEnterpriseUpdate(infoEnterprise);
-    }, [infoEnterprise]);
+    // useEffect(() => {
+    //     setEnterpriseUpdate(infoEnterprise);
+    // }, [infoEnterprise]);
+    if (enterpriseUpdate.status === 'success') {
+        dispatch(
+            openSnackbar({
+                open: true,
+                message: enterpriseUpdate.message,
+                variant: 'alert',
+                alert: {
+                    color: 'success'
+                },
+                close: false
+            })
+        );
+        dispatch(setEnterpriseUpdate());
+    } else if (enterpriseUpdate.status === 'error') {
+        dispatch(
+            openSnackbar({
+                open: true,
+                message: enterpriseUpdate.message,
+                variant: 'alert',
+                alert: {
+                    color: 'error'
+                },
+                close: false
+            })
+        );
+    }
     // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
     // console.log('infoEnterprise', infoEnterprise);
     // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
+    const [values, setValues] = useState('');
+    React.useEffect(() => {
+        setValues(data.mainCategorie || []);
+    }, [data.mainCategorie]);
+
     const formik = useFormik({
         validationSchema,
         initialValues: {
@@ -123,38 +155,13 @@ const Enterprise = () => {
             clickAndCollect: data.ClickAndCollect || false,
             delivery: data.livraison || false,
             isPhoneVisible: data.isPhoneVisible || false,
-            tagsEnterprise: data.mainCategorie || []
+            tagsEnterprise: values || []
         },
         enableReinitialize: true,
         onSubmit: () => {
+            console.log(formik.values);
             dispatch(editEnterpriseInfo(user.id, formik.values));
-            console.log('infoEnterprise', infoEnterprise);
-            dispatch(setData(formik.values));
-            // if (infoEnterprise && infoEnterprise.status === 'success') {
-            //     dispatch(
-            //         openSnackbar({
-            //             open: true,
-            //             message: infoEnterprise.message,
-            //             variant: 'alert',
-            //             alert: {
-            //                 color: 'success'
-            //             },
-            //             close: false
-            //         })
-            //     );
-            // } else {
-            //     dispatch(
-            //         openSnackbar({
-            //             open: true,
-            //             message: infoEnterprise.message,
-            //             variant: 'alert',
-            //             alert: {
-            //                 color: 'error'
-            //             },
-            //             close: false
-            //         })
-            //     );
-            // }
+            dispatch(setEnterpriseUpdate(infoEnterprise));
         }
     });
     return (
@@ -327,11 +334,11 @@ const Enterprise = () => {
                                         name="tagsEnterprise"
                                         multiple
                                         options={tagsCompany}
-                                        value={formik.values.tagsEnterprise}
+                                        value={values}
                                         limitTags={3}
                                         isOptionEqualToValue={(option, value) => option === value}
-                                        renderInput={(params) => <TextField id="tagsEnterprise" name="tagsEnterprise" {...params} />}
-                                        onChange={formik.handleChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                        onChange={(_, value) => setValues(value)}
                                     />
                                 </Grid>
                             </Grid>

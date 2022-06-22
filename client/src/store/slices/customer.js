@@ -62,11 +62,11 @@ export function getCustomers() {
     };
 }
 
-export function getOrders() {
+export function getOrders(id) {
     return async () => {
         try {
-            const response = await axios.get('/api/customer/order/list');
-            dispatch(slice.actions.getOrdersSuccess(response.data.orders));
+            const response = await axios.get(`/api/shops/${id}/commands`);
+            dispatch(slice.actions.getOrdersSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }

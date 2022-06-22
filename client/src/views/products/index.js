@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Button,
     CardContent,
     Checkbox,
     Fab,
@@ -44,6 +45,7 @@ import PrintIcon from '@mui/icons-material/PrintTwoTone';
 import FileCopyIcon from '@mui/icons-material/FileCopyTwoTone';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/AddTwoTone';
+import EditIcon from '@mui/icons-material/Edit';
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import { openSnackbar } from 'store/slices/snackbar';
 import axios from 'utils/axios';
@@ -198,7 +200,7 @@ const EnhancedTableToolbar = ({ numSelected }) => (
     >
         {numSelected > 0 ? (
             <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="h4" component="div">
-                {numSelected} Selected
+                {numSelected} Sélectionné
             </Typography>
         ) : (
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
@@ -207,7 +209,7 @@ const EnhancedTableToolbar = ({ numSelected }) => (
         )}
 
         {numSelected > 0 && (
-            <Tooltip title="Delete">
+            <Tooltip title="Supprimer">
                 <IconButton size="large">
                     <DeleteIcon fontSize="small" />
                 </IconButton>
@@ -474,7 +476,20 @@ const Product = () => {
                                             />
                                         </TableCell>
                                         <TableCell align="center" sx={{ pr: 3 }}>
-                                            <MenuItem onClick={() => handleClickOpenDialogEdit(products[index])}>Editer</MenuItem>
+                                            <IconButton
+                                                onClick={() => handleClickOpenDialogEdit(products[index])}
+                                                color="primary"
+                                                size="large"
+                                            >
+                                                <EditIcon sx={{ fontSize: '1.3rem' }} />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleClickOpenDialogEdit(products[index])}
+                                                color="secondary"
+                                                size="large"
+                                            >
+                                                <DeleteIcon sx={{ fontSize: '1.3rem' }} />
+                                            </IconButton>
                                             <ProductEdit open={openEdit} data={infoEdit} handleCloseDialog={handleCloseDialogEdit} />
                                         </TableCell>
                                     </TableRow>

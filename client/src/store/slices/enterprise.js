@@ -10,7 +10,7 @@ import { dispatch } from '../index';
 const initialState = {
     error: null,
     enterprise: [],
-    infoEnterprise: []
+    infoEnterprise: {}
 };
 
 const slice = createSlice({

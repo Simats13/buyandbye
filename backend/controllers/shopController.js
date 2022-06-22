@@ -2,7 +2,7 @@
 
 const firebase = require('../db');
 const fieldValue = firebase.firestore.FieldValue; 
-const testFirebase = require('firebase-admin');
+const adminFirebase = require('firebase-admin');
 const Shop = require('../models/shop');
 const Products = require('../models/products');
 const firestore = firebase.firestore();
@@ -133,7 +133,7 @@ const updateShop = async (req, res, next) => {
                 isPhoneVisible: req.body.isPhoneVisible,
                 siretNumber: req.body.siretNumber,
                 tvaNumber: req.body.tvaNumber,
-                // mainCategorie: data.tagsCompany,
+                mainCategorie: req.body.tagsEnterprise,
                 // colorStore: data.colorStore.substring(1),
                 // imgUrl:data.old_banniere, 
                 // 'position.latitude': data.latitude,
@@ -222,7 +222,7 @@ const addProduct = async (req, res, next) => {
                 visible: data.visibility,
             });
             await firestore.collection('magasins').doc(id).update({
-                produits: testFirebase.firestore.FieldValue.arrayUnion({
+                produits: adminFirebase.firestore.FieldValue.arrayUnion({
                     id: data.idProduct,
                     nom: data.productName,
                     categorie:data.category,
@@ -285,7 +285,7 @@ const addProduct = async (req, res, next) => {
                 });
         
                 await firestore.collection('magasins').doc(id).update({
-                    produits: testFirebase.firestore.FieldValue.arrayUnion({
+                    produits: adminFirebase.firestore.FieldValue.arrayUnion({
                         id: docRef.id,
                         nom: data.productName,
                         categorie:data.category,
@@ -364,13 +364,13 @@ const updateProduct = async (req, res, next) => {
        
     
             await firestore.collection('magasins').doc(id).update({
-                produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+                produits: adminFirebase.firestore.FieldValue.arrayRemove(found),
             });
             found.nom = data.productName;
             found.categorie = data.category;
     
             await firestore.collection('magasins').doc(id).update({
-                produits: testFirebase.firestore.FieldValue.arrayUnion(found),
+                produits: adminFirebase.firestore.FieldValue.arrayUnion(found),
             });
 
   
@@ -423,13 +423,13 @@ const updateProduct = async (req, res, next) => {
                 // console.log(found)
         
                 await firestore.collection('magasins').doc(id).update({
-                    produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+                    produits: adminFirebase.firestore.FieldValue.arrayRemove(found),
                 });
                 found.nom = data.productName;
                 found.categorie = data.category;
         
                 await firestore.collection('magasins').doc(id).update({
-                    produits: testFirebase.firestore.FieldValue.arrayUnion(found),
+                    produits: adminFirebase.firestore.FieldValue.arrayUnion(found),
                 });
                 return res.status(200).json({
                     nom: data.productName,
@@ -474,7 +474,7 @@ const deleteProduct = async (req, res, next) => {
         
 
         await firestore.collection('magasins').doc(id).update({
-            produits: testFirebase.firestore.FieldValue.arrayRemove(found),
+            produits: adminFirebase.firestore.FieldValue.arrayRemove(found),
         });
         res.send("Le produit a bien été supprimé");
     } catch (error) {
@@ -483,29 +483,11 @@ const deleteProduct = async (req, res, next) => {
 }
 
 
-const getAllCommands = async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        console.log(id)
-        const commandesCollection = await firestore.collection('commandes').get()
-        console.log(commandesCollection.data);
-        // const commands = await commandesCollection.where('users', 'array-contains', id).get();
-        // console.log(commands.data);
-        if(!data.exists) {
-            res.status(404).send('Aucunes commandes trouvées');
-        }else {
-            res.send(data.data());
-        }
-    } catch (error) {
-        res.status(400).send(error.message);
-    }
-}
-
 
 const getChats = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const chats = await firestore.collection('commonData').where('users', 'array-contains', id).get();
+        const chats = await firestore.collection('commonData').where('users', 'array-contains', id).orderBy('timestamp', 'desc').get();
         const chatsArray = [];
         const allChats = [];
 
@@ -599,11 +581,37 @@ const getChatsUsers = async (req, res, next) => {
 const addMessage = async (req, res, next) => {
     try{
         const id = req.params.id;
-        console.log(req.body);
-        await firestore.collection('commonData').doc(id).collection('messages').add(req.body);
-        res.send('Menssage send');
+        const date = new Date();
+        await firestore.collection('commonData').doc(id).collection('messages').add({
+            idFrom: req.body.idFrom,
+            idTo: req.body.idTo,
+            message: req.body.message,
+            isread: req.body.isread,
+            sentByClient: req.body.sentByClient,
+            type: req.body.type,
+            timestamp: adminFirebase.firestore.Timestamp.fromDate(date),
+        });
+        await firestore.collection('commonData').doc(id).update({
+            lastMessage: req.body.message,
+            timestamp: adminFirebase.firestore.Timestamp.fromDate(date),
+        });
+        res.send('Message send');
     }catch (error) {
-        res.status(400).send('ehe');
+        res.status(400).send(error.message);
+    }
+};
+
+const getAllCommands = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const commandesCollection = await firestore.collectionGroup('commands').where('sellerID', '==', id).get()
+        const commands = [];
+        commandesCollection.forEach(doc => {
+            commands.push(doc.data());      
+        });
+        res.send(commands);
+    } catch (error) {
+        res.status(400).send(error.message);
     }
 }
 

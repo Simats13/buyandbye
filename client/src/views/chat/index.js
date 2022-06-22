@@ -131,17 +131,20 @@ const Chat = () => {
     // handle new message form
     const [message, setMessage] = useState('');
     const handleOnSend = () => {
-        const d = new Date();
         setMessage('');
+        const d = {
+            _seconds: Math.round(Date.now() / 1000)
+        };
         const newMessage = {
             idFrom: user.id,
             idTo: userData.id,
             message,
-            iread: false,
+            isread: false,
             sentByClient: false,
             type: 'text',
             timestamp: d
         };
+        console.log(newMessage);
         setData((prevState) => [...prevState, newMessage]);
         dispatch(insertChat(newMessage, user.id + userData.id));
     };
