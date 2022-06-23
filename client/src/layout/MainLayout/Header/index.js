@@ -39,25 +39,27 @@ const Header = () => {
                 <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
                     <LogoSection />
                 </Box>
-                <Avatar
-                    variant="rounded"
-                    sx={{
-                        ...theme.typography.commonAvatar,
-                        ...theme.typography.mediumAvatar,
-                        overflow: 'hidden',
-                        transition: 'all .2s ease-in-out',
-                        background: theme.palette.mode === 'dark' ? theme.palette.dark.main : theme.palette.secondary.light,
-                        color: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.secondary.dark,
-                        '&:hover': {
-                            background: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.secondary.dark,
-                            color: theme.palette.mode === 'dark' ? theme.palette.secondary.light : theme.palette.secondary.light
-                        }
-                    }}
-                    onClick={() => dispatch(openDrawer(!drawerOpen))}
-                    color="inherit"
-                >
-                    <IconMenu2 stroke={1.5} size="1.3rem" />
-                </Avatar>
+                <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                    <Avatar
+                        variant="rounded"
+                        sx={{
+                            ...theme.typography.commonAvatar,
+                            ...theme.typography.mediumAvatar,
+                            overflow: 'hidden',
+                            transition: 'all .2s ease-in-out',
+                            background: theme.palette.mode === 'dark' ? theme.palette.dark.main : theme.palette.secondary.light,
+                            color: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.secondary.dark,
+                            '&:hover': {
+                                background: theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.secondary.dark,
+                                color: theme.palette.mode === 'dark' ? theme.palette.secondary.light : theme.palette.secondary.light
+                            }
+                        }}
+                        onClick={() => dispatch(openDrawer(!drawerOpen))}
+                        color="inherit"
+                    >
+                        <IconMenu2 stroke={1.5} size="1.3rem" />
+                    </Avatar>
+                </Box>
             </Box>
 
             {/* header search */}

@@ -531,7 +531,7 @@ const getChats = async (req, res, next) => {
 const getMessages = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const chats = await firestore.collection('commonData').doc(id).collection('messages').get();
+        const chats = await firestore.collection('commonData').doc(id).collection('messages').orderBy('timestamp', 'asc').get();
         const messagesUsers = [];
 
         if(chats.empty) {
@@ -564,12 +564,23 @@ const getChatsUsers = async (req, res, next) => {
         const userInfos = [];
 
         chats.forEach(doc => {
-            chatsUsersArray.push(doc.data().users[1]);
+            chatsUsersArray.push({
+                'lastMessage': doc.data().lastMessage,
+                'timestamp': doc.data().timestamp,
+                'id': doc.data().users[1]
+            });
         });
+        console.log(chatsUsersArray);
 
         for (const idUser of chatsUsersArray){
-            const users = await firestore.collection('users').doc(idUser).get();
-            userInfos.push(users.data());
+            const users = await firestore.collection('users').doc(idUser.id).get();
+            userInfos.push({
+                'lastMessage': idUser.lastMessage,
+                'timestamp': idUser.timestamp,
+                'imgUrl': users.data().imgUrl,
+                'name': users.data().fname + " " + users.data().lname,
+                'id': users.data().id,
+            });
         }
 
         res.send(userInfos);

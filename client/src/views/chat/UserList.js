@@ -26,6 +26,7 @@ const UserList = ({ setUserData, sellerID }) => {
     useEffect(() => {
         setData(users);
     }, [users]);
+
     // eslint-disable-next-line no-unused-expressions
     return (
         <List component="nav">
@@ -55,12 +56,15 @@ const UserList = ({ setUserData, sellerID }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {`${userSelect.fname} ${userSelect.lname}`}
+                                            {`${userSelect.name}`}
                                         </Typography>
                                     </Grid>
                                     <Grid item component="span">
                                         <Typography component="span" variant="subtitle2">
-                                            {data.lastMessage}
+                                            {
+                                                // eslint-disable-next-line no-underscore-dangle
+                                                new Date(userSelect.timestamp._seconds * 1000).toLocaleString()
+                                            }
                                         </Typography>
                                     </Grid>
                                 </Grid>
