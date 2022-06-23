@@ -24,6 +24,7 @@ import {
     Typography
 } from '@mui/material';
 
+import * as yup from 'yup';
 // project imports
 import { gridSpacing } from 'store/constant';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -31,6 +32,8 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 // assets
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
+import { Form, Formik, useFormik } from 'formik';
+import { dispatch } from 'store';
 
 // styles
 const ImageWrapper = styled('div')(({ theme }) => ({
@@ -82,6 +85,10 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
     const theme = useTheme();
     // handle category change dropdown
     const [currency, setCurrency] = useState('2');
+
+    useEffect(() => {
+        setCurrency(data.category || []);
+    }, [data.category]);
     const handleSelectChange = (event) => {
         setCurrency(event?.target.value);
     };
@@ -115,6 +122,37 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
         setPersonName(event?.target.value);
     };
 
+    const validationSchema = yup.object({
+        productName: yup.string().required('Product name is required'),
+        productDescription: yup.string().required('Product description is required'),
+        productPrice: yup.number().required('Product price is required'),
+        productCategory: yup.string().required('Product category is required'),
+        productReference: yup.string().required('Product reference is required'),
+        productDiscount: yup.number().required('Product discount is required'),
+        productQuantity: yup.number().required('Product quantity is required'),
+        productBrand: yup.string().required('Product brand is required'),
+        productWeight: yup.number().required('Product weight is required')
+    });
+
+    const formik = useFormik({
+        // validationSchema,
+        initialValues: {
+            productName: data.name || '',
+            productDescription: data.description || '',
+            productCategory: currency || '',
+            productReference: data.reference || 0,
+            productPrice: data.price || 0,
+            productDiscount: data.discount || 0,
+            productQuantity: data.quantity || 0,
+            productBrand: data.brand || '',
+            productWeight: data.weight || 0
+        },
+        enableReinitialize: true,
+        onSubmit: () => {
+            console.log(formik.values);
+        }
+    });
+
     return (
         <Dialog
             open={open}
@@ -135,152 +173,150 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
         >
             {open && (
                 <>
-                    <DialogTitle>Editer un Produit</DialogTitle>
-                    <DialogContent>
-                        <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-                            <Grid item xs={12}>
-                                <TextField id="outlined-basic1" fullWidth label="Nom du Produit*" defaultValue={data.name} />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="outlined-basic2"
-                                    fullWidth
-                                    multiline
-                                    rows={3}
-                                    label="Description"
-                                    defaultValue={data.description}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Select
-                                    id="demo-multiple-chip"
-                                    multiple
-                                    fullWidth
-                                    defaultValue={data.category}
-                                    onChange={handleTagSelectChange}
-                                    input={<Input id="select-multiple-chip" />}
-                                    renderdefaultValue={(selected) => (
-                                        <div>
-                                            {typeof selected !== 'string' && selected.map((value) => <Chip key={value} label={value} />)}
-                                        </div>
-                                    )}
-                                    MenuProps={MenuProps}
-                                >
-                                    {tags.map((name) => (
-                                        <MenuItem key={name} defaultValue={data.category} style={getStyles(name, personName, theme)}>
-                                            {name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField id="outlined-basic3" fullWidth label="Reférence*" defaultValue="" />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Prix*"
-                                    id="filled-start-adornment1"
-                                    defaultValue={data.price}
-                                    InputProps={{ startAdornment: <InputAdornment position="start">€</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Réduction"
-                                    id="filled-start-adornment2"
-                                    defaultValue={data.discount}
-                                    InputProps={{ startAdornment: <InputAdornment position="start">%</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField label="Quantité*" id="quantity" defaultValue={data.quantity} placeholder="0" />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField label="Marque*" id="brand" defaultValue={data.brand} placeholder="Ex : Apple" />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    defaultValue={data.weight}
-                                    label="Poids"
-                                    InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" align="left">
-                                            Images du Produit*
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <div>
-                                            <TextField type="file" id="file-upload" fullWidth label="Enter SKU" sx={{ display: 'none' }} />
-                                            <InputLabel
-                                                htmlFor="file-upload"
-                                                sx={{
-                                                    background: theme.palette.background.default,
-                                                    py: 3.75,
-                                                    px: 0,
-                                                    textAlign: 'center',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    mb: 3,
-                                                    '& > svg': {
-                                                        verticalAlign: 'sub',
-                                                        mr: 0.5
-                                                    }
-                                                }}
-                                            >
-                                                <CloudUploadIcon /> Déposer vos images
-                                            </InputLabel>
-                                        </div>
+                    <form onSubmit={formik.handleSubmit}>
+                        <DialogTitle>Editer un Produit</DialogTitle>
+                        <DialogContent>
+                            <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic1"
+                                        fullWidth
+                                        label="Nom du Produit*"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.productName}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic2"
+                                        fullWidth
+                                        multiline
+                                        rows={3}
+                                        label="Description"
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productDescription}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="standard-select-currency"
+                                        select
+                                        label="Categorie du Produit*"
+                                        value={formik.values.productCategory}
+                                        fullWidth
+                                        onChange={handleSelectChange}
+                                    >
+                                        {tags.map((name) => (
+                                            <MenuItem value={name}>{name}</MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-basic3"
+                                        fullWidth
+                                        label="Reférence*"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.productReference}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        label="Prix*"
+                                        id="filled-start-adornment1"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.productPrice}
+                                        defaultValue={formik.values.productPrice}
+                                        InputProps={{ endAdornment: <InputAdornment position="start">€</InputAdornment> }}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        label="Réduction"
+                                        id="filled-start-adornment2"
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productDiscount}
+                                        InputProps={{ endAdornment: <InputAdornment position="start">%</InputAdornment> }}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        label="Quantité*"
+                                        id="quantity"
+                                        defaultValue={formik.values.productQuantity}
+                                        value={formik.values.productQuantity}
+                                        onChange={formik.handleChange}
+                                        placeholder="0"
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        label="Marque du produit*"
+                                        id="brand"
+                                        defaultValue={formik.values.productBrand}
+                                        onChange={formik.handleChange}
+                                        placeholder="Ex : Apple"
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        defaultValue={formik.values.productWeight}
+                                        onChange={formik.handleChange}
+                                        label="Poids"
+                                        InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Grid container spacing={1}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="subtitle1" align="left">
+                                                Images du Produit*
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <div>
+                                                <TextField
+                                                    type="file"
+                                                    id="file-upload"
+                                                    fullWidth
+                                                    label="Enter SKU"
+                                                    sx={{ display: 'none' }}
+                                                />
+                                                <InputLabel
+                                                    htmlFor="file-upload"
+                                                    sx={{
+                                                        background: theme.palette.background.default,
+                                                        py: 3.75,
+                                                        px: 0,
+                                                        textAlign: 'center',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        mb: 3,
+                                                        '& > svg': {
+                                                            verticalAlign: 'sub',
+                                                            mr: 0.5
+                                                        }
+                                                    }}
+                                                >
+                                                    <CloudUploadIcon /> Déposer vos images
+                                                </InputLabel>
+                                            </div>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" align="left">
-                                            Tags
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <div>
-                                            <Select
-                                                id="demo-multiple-chip"
-                                                multiple
-                                                fullWidth
-                                                defaultValue={personName}
-                                                onChange={handleTagSelectChange}
-                                                input={<Input id="select-multiple-chip" />}
-                                                renderdefaultValue={(selected) => (
-                                                    <div>
-                                                        {typeof selected !== 'string' &&
-                                                            selected.map((value) => <Chip key={value} label={value} />)}
-                                                    </div>
-                                                )}
-                                                MenuProps={MenuProps}
-                                            >
-                                                {tagNames.map((name) => (
-                                                    <MenuItem key={name} defaultValue={name} style={getStyles(name, personName, theme)}>
-                                                        {name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button variant="text" color="error" onClick={handleCloseDialog}>
-                            Fermer
-                        </Button>
-                        <AnimateButton>
-                            <Button variant="contained">Créer</Button>
-                        </AnimateButton>
-                    </DialogActions>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button variant="text" color="error" onClick={handleCloseDialog}>
+                                Fermer
+                            </Button>
+                            <AnimateButton>
+                                <Button variant="contained" type="submit">
+                                    Modifier
+                                </Button>
+                            </AnimateButton>
+                        </DialogActions>
+                    </form>
                 </>
             )}
         </Dialog>

@@ -2,7 +2,7 @@
     "name": "berry-material-react",
     "version": "3.1.0",
     "private": true,
-    "proxy": "http://localhost:81",
+    "proxy": "https://api.buyandbye.fr",
     "dependencies": {
         "@auth0/auth0-spa-js": "^1.19.4",
         "@emotion/cache": "^11.7.1",

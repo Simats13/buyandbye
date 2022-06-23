@@ -206,13 +206,13 @@ const Enterprise = () => {
                                 onChange={formik.handleChange}
                                 error={formik.touched.siretNumber && Boolean(formik.errors.siretNumber)}
                                 helperText={formik.touched.siretNumber && formik.errors.siretNumber}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <LockTwoToneIcon />
-                                        </InputAdornment>
-                                    )
-                                }}
+                                // InputProps={{
+                                //     endAdornment: (
+                                //         <InputAdornment position="end">
+                                //             <LockTwoToneIcon />
+                                //         </InputAdornment>
+                                //     )
+                                // }}
                             />
                         </Grid>
                         <Grid item xs={12} lg={6}>
