@@ -29,7 +29,7 @@ const MainRoutes = {
             element: <Dashboard />
         },
         {
-            path: '/Dashboard',
+            path: '/dashboard',
             element: <Dashboard />
         },
         {
