@@ -104,10 +104,6 @@ const Enterprise = () => {
         dispatch(getEnterprise(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    // useEffect(() => {
-    //     setEnterpriseUpdate(infoEnterprise);
-    // }, [infoEnterprise]);
     if (enterpriseUpdate.status === 'success') {
         dispatch(
             openSnackbar({

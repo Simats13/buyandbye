@@ -50,26 +50,6 @@ const ImageWrapper = styled('div')(({ theme }) => ({
     }
 }));
 
-// product category options
-const categories = [
-    {
-        value: '1',
-        label: 'Iphone 12 Pro Max'
-    },
-    {
-        value: '2',
-        label: 'Iphone 11 Pro Max'
-    },
-    {
-        value: '3',
-        label: 'Nokia'
-    },
-    {
-        value: '4',
-        label: 'Samsung'
-    }
-];
-
 // animation
 const Transition = forwardRef((props, ref) => <Slide direction="left" ref={ref} {...props} />);
 
@@ -98,7 +78,7 @@ function getStyles(name, personName, theme) {
 
 // ==============================|| PRODUCT ADD DIALOG ||============================== //
 
-const ProductEdit = ({ open, handleCloseDialog, data }) => {
+const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
     const theme = useTheme();
     // handle category change dropdown
     const [currency, setCurrency] = useState('2');
@@ -172,21 +152,26 @@ const ProductEdit = ({ open, handleCloseDialog, data }) => {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
-                                    id="standard-select-currency"
-                                    select
-                                    label="Categorie du Produit*"
-                                    defaultValue=""
+                                <Select
+                                    id="demo-multiple-chip"
+                                    multiple
                                     fullWidth
-                                    onChange={handleSelectChange}
-                                    helperText="Veuillez choisir une categorie"
+                                    defaultValue={data.category}
+                                    onChange={handleTagSelectChange}
+                                    input={<Input id="select-multiple-chip" />}
+                                    renderdefaultValue={(selected) => (
+                                        <div>
+                                            {typeof selected !== 'string' && selected.map((value) => <Chip key={value} label={value} />)}
+                                        </div>
+                                    )}
+                                    MenuProps={MenuProps}
                                 >
-                                    {categories.map((option) => (
-                                        <MenuItem key={option.value} defaultValue={option.value}>
-                                            {option.label}
+                                    {tags.map((name) => (
+                                        <MenuItem key={name} defaultValue={data.category} style={getStyles(name, personName, theme)}>
+                                            {name}
                                         </MenuItem>
                                     ))}
-                                </TextField>
+                                </Select>
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField id="outlined-basic3" fullWidth label="Reférence*" defaultValue="" />

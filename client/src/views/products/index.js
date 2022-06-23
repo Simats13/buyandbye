@@ -52,6 +52,7 @@ import axios from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import ProductAdd from './ProductAdd';
 import ProductEdit from './Edit';
+import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
 
 const prodImage = require.context('assets/images/e-commerce', true);
 
@@ -237,8 +238,43 @@ const Product = () => {
     const [rows, setRows] = React.useState([]);
     const { products } = useSelector((state) => state.product);
     const { user } = useAuth();
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [data, setData] = React.useState([]);
+    const { enterprise } = useSelector((state) => state.enterprise);
 
+    React.useEffect(() => {
+        setData(enterprise);
+    }, [enterprise]);
+
+    // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
+
+    React.useEffect(() => {
+        dispatch(getEnterprise(user.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const tagsCompany = [];
+
+    if (data.type === 'Magasin') {
+        tagsCompany.push(
+            'Electroménager',
+            'Jeux-Vidéos',
+            'Livres',
+            'Vêtements',
+            'Sport',
+            'Vins & Spiritueux',
+            'Téléphonie',
+            'High-Tech',
+            'Musique',
+            'Loisirs',
+            'Alimentation',
+            'Montre & Bijoux',
+            'Divertissement',
+            'Autres'
+        );
+    } else if (data.type === 'Service') {
+        console.log('Salon');
+    }
     const handleMenuClick = (event) => {
         setAnchorEl(event?.currentTarget);
     };
@@ -490,7 +526,12 @@ const Product = () => {
                                             >
                                                 <DeleteIcon sx={{ fontSize: '1.3rem' }} />
                                             </IconButton>
-                                            <ProductEdit open={openEdit} data={infoEdit} handleCloseDialog={handleCloseDialogEdit} />
+                                            <ProductEdit
+                                                open={openEdit}
+                                                data={infoEdit}
+                                                tags={tagsCompany}
+                                                handleCloseDialog={handleCloseDialogEdit}
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 );
