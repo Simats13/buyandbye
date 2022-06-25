@@ -112,42 +112,7 @@ const ContactCard = () => {
                                         />
                                     </FormControl>
                                 </Grid>
-                                {/* <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth sx={{ textAlign: 'left' }}>
-                                        <TextField
-                                            id="outlined-select-Size"
-                                            select
-                                            fullWidth
-                                            label="Company Size"
-                                            value={size}
-                                            onChange={handleChange1}
-                                        >
-                                            {sizes.map((option, index) => (
-                                                <MenuItem key={index} value={option.value}>
-                                                    {option.label}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <FormControl fullWidth sx={{ textAlign: 'left' }}>
-                                        <TextField
-                                            id="outlined-select-budget"
-                                            select
-                                            fullWidth
-                                            label="Project Budget"
-                                            value={budget}
-                                            onChange={handleChange}
-                                        >
-                                            {currencies.map((option, index) => (
-                                                <MenuItem key={index} value={option.value}>
-                                                    {option.label}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </FormControl>
-                                </Grid> */}
+
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
@@ -176,7 +141,7 @@ const ContactCard = () => {
                                         </Grid>
                                         <Grid item>
                                             <AnimateButton>
-                                                <Button variant="contained" color="secondary">
+                                                <Button variant="contained" color="secondary" style={{ color: 'white' }}>
                                                     Envoyer
                                                 </Button>
                                             </AnimateButton>

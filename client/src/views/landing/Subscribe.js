@@ -6,7 +6,7 @@ import { Container, Grid, Typography } from '@mui/material';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import imgMail from 'assets/images/landing/newsletter.svg';
+import imgMail from 'assets/images/landing/newsletters.svg';
 import MailerSubscriber from 'views/maintenance/ComingSoon/ComingSoon1/MailerSubscriber';
 
 // styles
@@ -85,12 +85,12 @@ const Subscribe = () => {
                                         component="div"
                                         sx={{ [theme.breakpoints.down('md')]: { fontSize: '1.125rem' } }}
                                     >
-                                        Contactez-nous !
+                                        Newsletter
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={12}>
                                     <Typography variant="body2">
-                                        Vous hésitez à nous rejoindre ? N&apos;hésitez pas alors à nous contacter pour en savoir davantage !
+                                        N&apos;ésitez pas à vous abonner à notre newsletter pour ne manquer aucune nouveauté !
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={12}>

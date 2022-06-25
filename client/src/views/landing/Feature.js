@@ -27,7 +27,7 @@ const FeaturePage = () => {
                             <Grid container spacing={1}>
                                 <Grid item>
                                     <Typography variant="h5" color="primary">
-                                        Top Features
+                                        Buy&Bye
                                     </Typography>
                                 </Grid>
                             </Grid>

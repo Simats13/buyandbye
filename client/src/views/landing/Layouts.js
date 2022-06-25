@@ -7,15 +7,9 @@ import Slider from './Slider';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import imgLayout1 from 'assets/images/landing/demo-dark.png';
-import imgLayout2 from 'assets/images/landing/demo-rtl.png';
-import imgLayout3 from 'assets/images/landing/demo-multi.png';
-import imgLayoutGrid from 'assets/images/landing/img-lay-grid.png';
-import imgLayoutDarkGrid from 'assets/images/landing/img-bg-grid-dark.svg';
 import interfaceWeb from 'assets/images/landing/interfaceWeb.svg';
 import interfaceStep from 'assets/images/landing/interfaceStep.svg';
 import colorView from 'assets/images/landing/colorView.svg';
-import whiteScreen from 'assets/images/landing/whiteScreen.png';
 // styles
 const LayoutImageWrapper = styled(Box)(({ theme }) => ({
     width: '100%',
@@ -142,10 +136,6 @@ const LayoutsPage = () => {
                         <Grid container alignItems="center" spacing={gridSpacing}>
                             <Grid item sm={6}>
                                 <img src={interfaceWeb} alt="Berry" style={{ width: '75%', animation: '5s wings ease-in-out infinite' }} />
-                                {/* <LayoutImageWrapper>
-                                    
-                                    <LayoutImage src={interfaceWeb} alt="Berry" />
-                                </LayoutImageWrapper> */}
                             </Grid>
                             <Grid item sm={6}>
                                 <LayoutContent container spacing={2}>
@@ -175,18 +165,13 @@ const LayoutsPage = () => {
                                     </Grid>
                                     <Grid item sm={12}>
                                         <Typography variant="body2">
-                                            Gérer votre entreprise directement depuis le panel qui lui est dédié
+                                            Gérer votre entreprise directement depuis le panel qui lui est dédié.
                                         </Typography>
                                     </Grid>
                                 </LayoutRightContent>
                             </Grid>
                             <Grid item sm={6}>
                                 <img src={interfaceStep} alt="Berry" style={{ width: '75%', animation: '5s wings ease-in-out infinite' }} />
-
-                                {/* <LayoutImageWrapper>
-                                    <img src={whiteScreen} alt="Berry" style={{ width: '100%' }} />
-                                    <LayoutImage src={interfaceStep} alt="Berry" style={{ animationDelay: '1.5s' }} />
-                                </LayoutImageWrapper> */}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -194,11 +179,6 @@ const LayoutsPage = () => {
                         <Grid container alignItems="center" spacing={gridSpacing}>
                             <Grid item sm={6}>
                                 <img src={colorView} alt="Berry" style={{ width: '75%', animation: '5s wings ease-in-out infinite' }} />
-
-                                {/* <LayoutImageWrapper>
-                                    <img src={whiteScreen} alt="Berry" style={{ width: '100%' }} />
-                                    <LayoutImage src={colorView} alt="Berry" style={{ animationDelay: '3s' }} />
-                                </LayoutImageWrapper> */}
                             </Grid>
                             <Grid item sm={6}>
                                 <LayoutContent

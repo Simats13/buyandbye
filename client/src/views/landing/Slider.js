@@ -8,29 +8,19 @@ import { Box, Grid, Typography } from '@mui/material';
 import Slider from 'react-slick';
 
 // assets
-import imgLayout1 from 'assets/images/landing/demo-dark.png';
-import imgLayout2 from 'assets/images/landing/demo-rtl.png';
-import imgLayout3 from 'assets/images/landing/demo-multi.png';
-import imgLayoutGrid from 'assets/images/landing/img-lay-grid.png';
+import interfaceWeb from 'assets/images/landing/interfaceWeb.svg';
+import interfaceStep from 'assets/images/landing/interfaceStep.svg';
+import colorView from 'assets/images/landing/colorView.svg';
 
 // styles
-const LayoutImage = styled('img')({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    animation: '5s wings ease-in-out infinite'
-});
 
 // =============================|| SLIDER ITEMS ||============================= //
 
 const Item = ({ item }) => (
     <Grid container alignItems="center" justifyContent="center" spacing={3} textAlign="center">
         <Grid item xs={11}>
-            <Box sx={{ width: '100%', position: 'relative' }}>
-                <img src={item.bg} alt="Berry" style={{ width: '100%' }} />
-                <LayoutImage src={item.image} alt="Berry" />
+            <Box sx={{ position: 'relative' }}>
+                <img src={item.image} alt="Berry" style={{ width: '100%', animation: '5s wings ease-in-out infinite' }} />
             </Box>
         </Grid>
         <Grid item xs={10}>
@@ -67,22 +57,20 @@ const SliderPage = () => {
 
     const items = [
         {
-            bg: imgLayoutGrid,
-            image: imgLayout1,
-            title: 'Dark Layout',
-            content: 'Modern, sleek and elegant dark color scheme that looks great in a dark variant.'
+            image: interfaceWeb,
+            title: 'Une interface simple et intuitive',
+            content:
+                "L'interface a été conçu afin de coller aux besoins réels des entreprises, mais surtout d'une simplicité à rude épreuve."
         },
         {
-            bg: imgLayoutGrid,
-            image: imgLayout2,
-            title: 'RTL',
-            content: 'Fully Support Right-to-left (RTL) design variant.'
+            image: interfaceStep,
+            title: 'Gestion de votre page',
+            content: 'Gérer votre entreprise directement depuis le panel qui lui est dédié.'
         },
         {
-            bg: imgLayoutGrid,
-            image: imgLayout3,
-            title: 'Multi-language Support',
-            content: 'Support Multi-language. Added 4 pre-filled language.'
+            image: colorView,
+            title: 'Personnalisation',
+            content: 'Personnalisez votre boutique aux couleurs de votre entreprise et ainsi vous démarquer des autres !'
         }
     ];
 

@@ -14,9 +14,6 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import dashboard from 'assets/images/landing/dashboard.png';
-import widget1 from 'assets/images/landing/widget-1.png';
-import widget2 from 'assets/images/landing/widget-2.png';
 import shopping1 from 'assets/images/landing/shopping1.svg';
 
 // styles

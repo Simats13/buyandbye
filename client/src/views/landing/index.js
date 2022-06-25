@@ -4,7 +4,6 @@ import { styled } from '@mui/material/styles';
 // project imports
 import Header from './Header';
 import Feature from './Feature';
-import Demos from './Demos';
 import Layouts from './Layouts';
 import KeyFeature from './KeyFeature';
 import Subscribe from './Subscribe';
