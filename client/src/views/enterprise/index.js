@@ -16,7 +16,8 @@ import {
     Switch,
     Typography,
     Autocomplete,
-    CardMedia
+    CardMedia,
+    Box
 } from '@mui/material';
 
 // project imports
@@ -27,9 +28,11 @@ import { openSnackbar } from 'store/slices/snackbar';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { useDispatch, useSelector } from 'store';
 import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
+import { usePlacesWidget } from 'react-google-autocomplete';
 // assets
 import LockTwoToneIcon from '@mui/icons-material/LockTwoTone';
 import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from '../../utils/axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -39,6 +42,8 @@ import { useTheme } from '@mui/styles';
 import { TwitterPicker } from 'react-color';
 import SubCard from 'ui-component/cards/SubCard';
 import useConfig from 'hooks/useConfig';
+import throttle from 'lodash/throttle';
+import parse from 'autosuggest-highlight/parse';
 
 // Schéma de validation des champs du formulaire
 
@@ -52,6 +57,22 @@ const validationSchema = yup.object({
     siretNumber: yup.string().required('Veuillez entrer le numéro de SIRET')
 });
 
+const GOOGLE_MAPS_API_KEY = 'AIzaSyDdnevI_6sCr0LvfpC4y9_wevsSequKsdk';
+
+function loadScript(src, position, id) {
+    if (!position) {
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.setAttribute('async', '');
+    script.setAttribute('id', id);
+    script.src = src;
+    position.appendChild(script);
+}
+
+const autocompleteService = { current: null };
+
 // ==============================|| SAMPLE PAGE ||============================== //
 
 const Enterprise = () => {
@@ -63,6 +84,67 @@ const Enterprise = () => {
     const { borderRadius } = useConfig();
     const theme = useTheme();
     const tagsCompany = [];
+
+    const [value, setValue] = React.useState(null);
+    const [inputValue, setInputValue] = React.useState('');
+    const [options, setOptions] = React.useState([]);
+    const loaded = React.useRef(false);
+
+    if (typeof window !== 'undefined' && !loaded.current) {
+        if (!document.querySelector('#google-maps')) {
+            loadScript(
+                `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&region=fr`,
+                document.querySelector('head'),
+                'google-maps'
+            );
+        }
+
+        loaded.current = true;
+    }
+
+    const fetch = React.useMemo(
+        () =>
+            throttle((request, callback) => {
+                autocompleteService.current.getPlacePredictions(request, callback);
+            }, 200),
+        []
+    );
+
+    React.useEffect(() => {
+        let active = true;
+
+        if (!autocompleteService.current && window.google) {
+            autocompleteService.current = new window.google.maps.places.AutocompleteService();
+        }
+        if (!autocompleteService.current) {
+            return undefined;
+        }
+
+        if (inputValue === '') {
+            setOptions(value ? [value] : []);
+            return undefined;
+        }
+
+        fetch({ input: inputValue }, (results) => {
+            if (active) {
+                let newOptions = [];
+
+                if (value) {
+                    newOptions = [value];
+                }
+
+                if (results) {
+                    newOptions = [...newOptions, ...results];
+                }
+
+                setOptions(newOptions);
+            }
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [value, inputValue, fetch]);
 
     if (data.type === 'Magasin') {
         tagsCompany.push(
@@ -138,6 +220,10 @@ const Enterprise = () => {
         setValues(data.mainCategorie || []);
     }, [data.mainCategorie]);
 
+    // useEffect(() => {
+    //     set
+    // });
+
     const formik = useFormik({
         validationSchema,
         initialValues: {
@@ -159,6 +245,11 @@ const Enterprise = () => {
             dispatch(editEnterpriseInfo(user.id, formik.values));
             dispatch(setEnterpriseUpdate(infoEnterprise));
         }
+    });
+
+    const { ref } = usePlacesWidget({
+        apiKey: 'AIzaSyDdnevI_6sCr0LvfpC4y9_wevsSequKsdk',
+        onPlaceSelected: (place) => console.log(place)
     });
     return (
         <MainCard title="Information de l'entreprise">
@@ -183,15 +274,57 @@ const Enterprise = () => {
                         </Grid>
                         <Grid item xs={12} lg={6}>
                             <InputLabel>Adresse de l&apos;entreprise</InputLabel>
-                            <TextField
-                                fullWidth
+                            <Autocomplete
                                 id="enterpriseAdress"
-                                name="enterpriseAdress"
-                                placeholder="Adresse de l'entreprise"
-                                value={formik.values.enterpriseAdress}
-                                onChange={formik.handleChange}
-                                error={formik.touched.enterpriseAdress && Boolean(formik.errors.enterpriseAdress)}
-                                helperText={formik.touched.enterpriseAdress && formik.errors.enterpriseAdress}
+                                // sx={{ width: 300 }}
+                                getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
+                                filterOptions={(x) => x}
+                                options={options}
+                                autoComplete
+                                includeInputInList
+                                filterSelectedOptions
+                                value={value}
+                                onChange={(event, newValue) => {
+                                    setOptions(newValue ? [newValue, ...options] : options);
+                                    setValue(newValue);
+                                }}
+                                onInputChange={(event, newInputValue) => {
+                                    setInputValue(newInputValue);
+                                }}
+                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                renderOption={(props, option) => {
+                                    const matches = option.structured_formatting.main_text_matched_substrings;
+                                    const parts = parse(
+                                        option.structured_formatting.main_text,
+                                        matches.map((match) => [match.offset, match.offset + match.length])
+                                    );
+
+                                    return (
+                                        <li {...props}>
+                                            <Grid container alignItems="center">
+                                                <Grid item>
+                                                    <Box component={LocationOnIcon} sx={{ color: 'text.secondary', mr: 2 }} />
+                                                </Grid>
+                                                <Grid item xs>
+                                                    {parts.map((part, index) => (
+                                                        <span
+                                                            key={index}
+                                                            style={{
+                                                                fontWeight: part.highlight ? 700 : 400
+                                                            }}
+                                                        >
+                                                            {part.text}
+                                                        </span>
+                                                    ))}
+
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {option.structured_formatting.secondary_text}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </li>
+                                    );
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} lg={6}>
@@ -229,7 +362,7 @@ const Enterprise = () => {
                                 helperText={formik.touched.tvaNumber && formik.errors.tvaNumber}
                             />
                         </Grid>
-                        <Grid item lg={12}>
+                        <Grid item lg={12} md={12} sm={12} xs={12}>
                             <InputLabel>Description</InputLabel>
                             <TextField
                                 fullWidth
@@ -339,7 +472,7 @@ const Enterprise = () => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item lg={12}>
+                        <Grid item lg={12} md={12} sm={12} xs={12}>
                             <InputLabel>Bannière de la boutique</InputLabel>
                             <TextField
                                 type="file"
@@ -402,7 +535,7 @@ const Enterprise = () => {
                         <Grid item xs={12}>
                             <Stack direction="row" justifyContent="flex-end">
                                 <AnimateButton>
-                                    <Button variant="contained" type="submit">
+                                    <Button variant="contained" type="submit" style={{ color: 'white' }}>
                                         Modifier
                                     </Button>
                                 </AnimateButton>

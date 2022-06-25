@@ -26,7 +26,7 @@ import {
 import Logo from 'ui-component/Logo';
 
 // assets
-import { IconBook, IconCreditCard, IconDashboard, IconHome2 } from '@tabler/icons';
+import { IconBook, IconCreditCard, IconDashboard, IconHome2, IconLogin } from '@tabler/icons';
 import MenuIcon from '@mui/icons-material/Menu';
 
 // elevation scroll
@@ -77,14 +77,24 @@ const AppBar = ({ ...others }) => {
                             <Logo />
                         </Typography>
                         <Stack direction="row" sx={{ display: { xs: 'none', sm: 'block' } }} spacing={2}>
-                            <Button color="inherit" component={Link} href="#" target="_blank">
+                            <Button color="inherit" component={Link} href="/">
                                 Accueil
                             </Button>
-                            <Button color="inherit" component={Link} href="/abonnements" target="_blank">
+                            {/* <Button color="inherit" component={Link} href="/abonnements">
                                 Abonnements
+                            </Button> */}
+                            <Button color="inherit" component={Link} href="/contact">
+                                Contact
                             </Button>
-                            <Button component={Link} href="/login" disableElevation variant="contained" color="secondary">
-                                Connexion
+                            <Button
+                                component={Link}
+                                href="/login"
+                                disableElevation
+                                variant="contained"
+                                color="secondary"
+                                style={{ color: 'white' }}
+                            >
+                                Espace Entreprise
                             </Button>
                         </Stack>
                         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
@@ -105,39 +115,23 @@ const AppBar = ({ ...others }) => {
                                                     <ListItemIcon>
                                                         <IconHome2 />
                                                     </ListItemIcon>
-                                                    <ListItemText primary="Home" />
+                                                    <ListItemText primary="Accueil" />
                                                 </ListItemButton>
                                             </Link>
                                             <Link style={{ textDecoration: 'none' }} href="/login" target="_blank">
                                                 <ListItemButton component="a">
                                                     <ListItemIcon>
-                                                        <IconDashboard />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary="Dashboard" />
-                                                </ListItemButton>
-                                            </Link>
-                                            <Link
-                                                style={{ textDecoration: 'none' }}
-                                                href="https://codedthemes.gitbook.io/berry"
-                                                target="_blank"
-                                            >
-                                                <ListItemButton component="a">
-                                                    <ListItemIcon>
-                                                        <IconBook />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary="Documentation" />
-                                                </ListItemButton>
-                                            </Link>
-                                            <Link
-                                                style={{ textDecoration: 'none' }}
-                                                href="https://material-ui.com/store/items/berry-react-material-admin/"
-                                                target="_blank"
-                                            >
-                                                <ListItemButton component="a">
-                                                    <ListItemIcon>
                                                         <IconCreditCard />
                                                     </ListItemIcon>
-                                                    <ListItemText primary="Purchase Now" />
+                                                    <ListItemText primary="Abonnements" />
+                                                </ListItemButton>
+                                            </Link>
+                                            <Link style={{ textDecoration: 'none' }} href="/login" target="_blank">
+                                                <ListItemButton component="a">
+                                                    <ListItemIcon>
+                                                        <IconLogin />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary="Espace Entreprise" />
                                                 </ListItemButton>
                                             </Link>
                                         </List>

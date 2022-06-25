@@ -27,51 +27,10 @@ import { gridSpacing } from 'store/constant';
 // assets
 import mailImg from 'assets/images/landing/img-contact-mail.svg';
 
-// select options
-const currencies = [
-    {
-        value: '1',
-        label: 'Below $1000'
-    },
-    {
-        value: '2',
-        label: '$1000 - $5000'
-    },
-    {
-        value: '3',
-        label: 'Not specified'
-    }
-];
-
-const sizes = [
-    {
-        value: '1',
-        label: '1 - 5'
-    },
-    {
-        value: '2',
-        label: '5 - 10'
-    },
-    {
-        value: '3',
-        label: '10+'
-    }
-];
-
 // ===========================|| CONTACT CARD - FORMS ||=========================== //
 
 const ContactCard = () => {
     const theme = useTheme();
-
-    const [budget, setBudget] = React.useState(1);
-    const handleChange = (event) => {
-        setBudget(Number(event.target?.value));
-    };
-
-    const [size, setSize] = React.useState(1);
-    const handleChange1 = (event) => {
-        setSize(Number(event.target?.value));
-    };
 
     return (
         <Container>
@@ -90,7 +49,7 @@ const ContactCard = () => {
                                     [theme.breakpoints.down('md')]: { fontSize: '1.8125rem', marginTop: '80px' }
                                 }}
                             >
-                                Talk to our account expert
+                                Contactez-nous !
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
@@ -100,8 +59,7 @@ const ContactCard = () => {
                                 sx={{ fontWeight: 400, lineHeight: 1.4, [theme.breakpoints.up('md')]: { my: 0, mx: 12.5 } }}
                                 color="white"
                             >
-                                The starting point for your next project based on easy-to-customize Material-UI © helps you build apps
-                                faster and better.
+                                Vous hésitez à nous rejoindre ? N&apos;hésitez pas alors à nous contacter pour en savoir davantage !
                             </Typography>
                         </Grid>
                     </Grid>
@@ -127,19 +85,19 @@ const ContactCard = () => {
                             <Grid container spacing={gridSpacing}>
                                 <Grid item xs={12} sm={6}>
                                     <FormControl fullWidth>
-                                        <InputLabel>Name</InputLabel>
+                                        <InputLabel>Nom</InputLabel>
                                         <OutlinedInput type="text" label="Name" />
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <FormControl fullWidth>
-                                        <InputLabel>Company Name</InputLabel>
+                                        <InputLabel>Nom de l&apos;entreprise</InputLabel>
                                         <OutlinedInput type="text" label="Company Name" />
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <FormControl fullWidth>
-                                        <InputLabel>Email Address</InputLabel>
+                                        <InputLabel>Adresse Email</InputLabel>
                                         <OutlinedInput type="text" label="Email Address" />
                                     </FormControl>
                                 </Grid>
@@ -150,11 +108,11 @@ const ContactCard = () => {
                                             mask="_"
                                             fullWidth
                                             customInput={TextField}
-                                            label="Phone Number"
+                                            label="Numéro de téléphone"
                                         />
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                {/* <Grid item xs={12} sm={6}>
                                     <FormControl fullWidth sx={{ textAlign: 'left' }}>
                                         <TextField
                                             id="outlined-select-Size"
@@ -189,7 +147,7 @@ const ContactCard = () => {
                                             ))}
                                         </TextField>
                                     </FormControl>
-                                </Grid>
+                                </Grid> */}
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
@@ -206,20 +164,20 @@ const ContactCard = () => {
                                     <Grid container spacing={gridSpacing}>
                                         <Grid item sm zeroMinWidth>
                                             <Typography align="left" variant="body2">
-                                                By submitting this, you agree to the
+                                                En envoyant ce formulaire, vous acceptez par défaut notre
                                                 <Typography variant="subtitle1" component={Link} to="#" color="primary" sx={{ mx: 0.5 }}>
-                                                    Privacy Policy
+                                                    Politique de Confidentialité
                                                 </Typography>
-                                                and
+                                                ainsi que la manière de traiter
                                                 <Typography variant="subtitle1" component={Link} to="#" color="primary" sx={{ ml: 0.5 }}>
-                                                    Cookie Policy
+                                                    vos données personnelles.
                                                 </Typography>
                                             </Typography>
                                         </Grid>
                                         <Grid item>
                                             <AnimateButton>
                                                 <Button variant="contained" color="secondary">
-                                                    Get Started
+                                                    Envoyer
                                                 </Button>
                                             </AnimateButton>
                                         </Grid>

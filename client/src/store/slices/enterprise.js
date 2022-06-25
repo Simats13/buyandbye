@@ -41,7 +41,7 @@ export default slice.reducer;
 export function getEnterprise(id) {
     return async () => {
         try {
-            const response = await axios.get(`${process.env.API_URL}/api/shops/${id}/`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/shops/${id}/`);
             dispatch(slice.actions.getEnterpriseSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
@@ -52,7 +52,7 @@ export function getEnterprise(id) {
 export function editEnterpriseInfo(id, data) {
     return async () => {
         try {
-            const response = await axios.patch(`${process.env.API_URL}/api/shops/${id}/`, data);
+            const response = await axios.patch(`${process.env.REACT_APP_API_URL}/api/shops/${id}/`, data);
             dispatch(slice.actions.editEnterpriseInfoSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));

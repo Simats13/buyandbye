@@ -65,7 +65,7 @@ export function getCustomers() {
 export function getOrders(id) {
     return async () => {
         try {
-            const response = await axios.get(`${process.env.API_URL}/api/shops/${id}/commands`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/shops/${id}/commands`);
             dispatch(slice.actions.getOrdersSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));

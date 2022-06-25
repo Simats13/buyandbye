@@ -193,7 +193,6 @@ const deleteShop = async (req, res, next) => {
     try {
         const id = req.params.id;
          await firestore.collection('magasins').doc(id).delete();
-        console.log(id)
         res.send("Le magasin a bien été supprimé");
     } catch (error) {
         res.status(400).send(error.message);
@@ -202,8 +201,7 @@ const deleteShop = async (req, res, next) => {
 
 const addProduct = async (req, res, next) => {
     try {
-        const id = req.params.id;
-        console.log(id)    
+        const id = req.params.id;   
         const docRef = firestore.collection('magasins').doc(id).collection("produits").doc();
         var data = JSON.parse(req.body.data);
         var images = [];
@@ -231,7 +229,6 @@ const addProduct = async (req, res, next) => {
             var categoryInput;
             if(data.category === "Magasin") {
                  categoryInput = `<div class="form-group">    <label class="mr-sm-2" for="category">Catégorie</label>    <select class="custom-select mr-sm-2" name="category" id="category" required>        <option selected disabled hidden>Veuillez choisir une catégorie</option>        <option ${data.category === "Electroménager" ? 'selected' : ''} >Electroménager</option>        <option ${data.category === "Jeux-Vidéos" ? 'selected' : ''} >Jeux-Vidéos</option>        <option ${data.category === "High-Tech" ? 'selected' : ''} >High-Tech</option>        <option ${data.category === "Alimentation" ? 'selected' : ''} >Alimentation</option>        <option ${data.category === "Vêtements" ? 'selected' : ''} >Vêtements</option>        <option ${data.category === "Films & Séries" ? 'selected' : ''} >Films & Séries</option>        <option ${data.category === "Chaussures" ? 'selected' : ''} >Chaussures</option>        <option ${data.category === "Bricolage" ? 'selected' : ''} >Bricolage</option>        <option ${data.category === "Montres & Bijoux" ? 'selected' : ''} >Montres & Bijoux</option>        <option ${data.category === "Téléphonie" ? 'selected' : ''} >Téléphonie</option>        <option ${data.category === "Restaurant" ? 'selected' : ''} >Restaurant</option>    </select></div>`;
-            console.log(categoryInput);
                 } else if(data.category === "Service") {
                  categoryInput = `<div class="form-group">    <label class="mr-sm-2" for="category">Catégorie</label>    <select class="custom-select mr-sm-2" name="category" id="category" required>        <option selected disabled hidden>Veuillez choisir une catégorie</option>        <option ${data.category === "Menuiserie" ? 'selected' : ''} >Menuiserie</option>        <option ${data.category === "Plomberie" ? 'selected' : ''} >Plomberie</option>        <option ${data.category === "Piscine" ? 'selected' : ''} >Piscine</option>        <option ${data.category === "Meubles" ? 'selected' : ''} >Meubles</option>        <option ${data.category === "Vêtements" ? 'selected' : ''} >Vêtements</option>        <option ${data.category === "Gestion de patrimoine" ? 'selected' : ''} >Gestion de patrimoine</option>    </select></div>`;
             } else if(data.category === "Restaurant") {
@@ -241,7 +238,6 @@ const addProduct = async (req, res, next) => {
             } else if(data.category === "Culture & Loisirs") {
                  categoryInput = `<div class="form-group">    <label class="mr-sm-2" for="category">Catégorie</label>    <select class="custom-select mr-sm-2" name="category" id="category" required>        <option selected disabled hidden>Veuillez choisir une catégorie</option>        <option ${data.category === "Parc d'attraction" ? 'selected' : ''} >Parc d'attraction</option>        <option ${data.category === "Musée" ? 'selected' : ''} >Musée</option>        <option ${data.category === "Tourisme" ? 'selected' : ''} >Tourisme</option>    </select></div>`;    
             };
-            console.log(categoryInput);
             return res.status(200).json({
                 id:id,
                 idProduct: docRef.id,
@@ -256,7 +252,6 @@ const addProduct = async (req, res, next) => {
                 visible: data.visibility,
              });
         } else {
-            console.log("Id Product : "+docRef.id)
             const blob = firebase.storage().bucket().file(`products/${id}/${docRef.id}/1`); 
             const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/products%2F${id}%2F${docRef.id}%2F1?alt=media`;
             const blobWriter = blob.createWriteStream({
@@ -305,7 +300,6 @@ const addProduct = async (req, res, next) => {
                 } else if(data.category === "Culture & Loisirs") {
                      categoryInput = `<div class="form-group">    <label class="mr-sm-2" for="category">Catégorie</label>    <select class="custom-select mr-sm-2" name="category" id="category" required>        <option selected disabled hidden>Veuillez choisir une catégorie</option>        <option ${data.category === "Parc d'attraction" ? 'selected' : ''} >Parc d'attraction</option>        <option ${data.category === "Musée" ? 'selected' : ''} >Musée</option>        <option ${data.category === "Tourisme" ? 'selected' : ''} >Tourisme</option>    </select></div>`;    
                 };
-                console.log(categoryInput);
                 return res.status(200).json({
                     id:id,
                     idProduct: docRef.id,
@@ -420,7 +414,6 @@ const updateProduct = async (req, res, next) => {
                 });
         
                 var found = array.find(product => product.id === idProduct);
-                // console.log(found)
         
                 await firestore.collection('magasins').doc(id).update({
                     produits: adminFirebase.firestore.FieldValue.arrayRemove(found),
@@ -570,7 +563,6 @@ const getChatsUsers = async (req, res, next) => {
                 'id': doc.data().users[1]
             });
         });
-        console.log(chatsUsersArray);
 
         for (const idUser of chatsUsersArray){
             const users = await firestore.collection('users').doc(idUser.id).get();

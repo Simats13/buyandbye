@@ -32,7 +32,6 @@ import Avatar from 'ui-component/extended/Avatar';
 import { appDrawerWidth as drawerWidth, gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
 import { getAllUserChats, getUsers, insertChat } from 'store/slices/chat';
-
 // assets
 import AttachmentTwoToneIcon from '@mui/icons-material/AttachmentTwoTone';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
@@ -44,6 +43,7 @@ import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
 import MoodTwoToneIcon from '@mui/icons-material/MoodTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import useAuth from 'hooks/useAuth';
+import { usePlacesWidget } from 'react-google-autocomplete';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -77,6 +77,7 @@ const Chat = () => {
 
     const dispatch = useDispatch();
     const { user } = useAuth();
+    const [sellerData, setSellerData] = useState({});
     // handle right sidebar dropdown menu
     const [anchorEl, setAnchorEl] = React.useState(null);
     const handleClickSort = (event) => {
@@ -107,6 +108,11 @@ const Chat = () => {
     const [userData, setUserData] = useState([]); // Information sur l'utilisateur
     const [data, setData] = useState([]); // Message de la conversation
     const { chats, userInfo } = useSelector((state) => state.chat);
+    const { userWithID } = useSelector((state) => state.user);
+
+    useEffect(() => {
+        setSellerData(userWithID);
+    }, [userWithID]);
 
     useEffect(() => {
         // hide left drawer when email app opens
@@ -144,7 +150,6 @@ const Chat = () => {
             type: 'text',
             timestamp: d
         };
-        console.log(newMessage);
         setData((prevState) => [...prevState, newMessage]);
         dispatch(insertChat(newMessage, user.id + userData.id));
     };
@@ -164,6 +169,7 @@ const Chat = () => {
     const [anchorElEmoji, setAnchorElEmoji] = React.useState(); /** No single type can cater for all elements */
     const handleOnEmojiButtonClick = (event) => {
         setAnchorElEmoji(anchorElEmoji ? null : event?.currentTarget);
+        // handleCloseEmoji();
     };
 
     const emojiOpen = Boolean(anchorElEmoji);
@@ -172,7 +178,7 @@ const Chat = () => {
         setAnchorElEmoji(null);
     };
 
-    if (!data) return <Typography>Loading...</Typography>;
+    if (!data) return <Typography>Chargement des messages...</Typography>;
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -216,11 +222,6 @@ const Chat = () => {
                                             </Grid>
                                         </Grid>
                                         <Grid item sm zeroMinWidth />
-                                        {/* <Grid item>
-                                            <IconButton onClick={handleUserChange} size="large">
-                                                <ErrorTwoToneIcon />
-                                            </IconButton>
-                                        </Grid> */}
                                         <Grid item>
                                             <IconButton onClick={handleClickSort} size="large">
                                                 <MoreHorizTwoToneIcon />
@@ -250,7 +251,7 @@ const Chat = () => {
                                     <Divider sx={{ mt: theme.spacing(2) }} />
                                 </Grid>
                                 <PerfectScrollbar
-                                    style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 525 }}
+                                    style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 275 }}
                                 >
                                     <CardContent>
                                         <ChartHistory

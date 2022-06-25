@@ -55,7 +55,13 @@ const getUser = async (req, res, next) => {
         const user = await firestore.collection('users').doc(id);
         const data = await user.get();
         if(!data.exists) {
-            res.status(404).send('Aucun utilisateur trouvé');
+            const shop = await firestore.collection('magasins').doc(id);
+            const shopData = await shop.get();
+            if(!shopData.exists) {
+                res.status(404).send('Aucun utilisateur trouvé');
+            }else{
+                res.send(shopData.data());
+            }
         }else {
             res.send(data.data());
         }

@@ -12,7 +12,8 @@ import { gridSpacing } from 'store/constant';
 import PaletteTwoToneIcon from '@mui/icons-material/PaletteTwoTone';
 import ReorderTwoToneIcon from '@mui/icons-material/ReorderTwoTone';
 import SpeedTwoToneIcon from '@mui/icons-material/SpeedTwoTone';
-
+import HailIcon from '@mui/icons-material/Hail';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 // =============================|| LANDING - FEATURE PAGE ||============================= //
 
 const FeaturePage = () => {
@@ -33,12 +34,13 @@ const FeaturePage = () => {
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="h2" component="div">
-                                What Berry brings to you?
+                                Qu&apos;est-ce que Buy&Bye ?
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2">
-                                Berry is a solid dashboard template for your next project, with the following top features.
+                                Buy&Bye est une application de mise en relation entre les entreprises, comme vous et les particuliers de
+                                proximité !
                             </Typography>
                         </Grid>
                     </Grid>
@@ -61,16 +63,16 @@ const FeaturePage = () => {
                                                     color: theme.palette.primary.main
                                                 }}
                                             >
-                                                <PaletteTwoToneIcon fontSize="large" />
+                                                <VisibilityIcon fontSize="large" />
                                             </Avatar>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="h3">Beautiful User Interface</Typography>
+                                            <Typography variant="h3">Visibilité Locale</Typography>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Typography variant="body2">
-                                                Warm color palates and minimally designed interfaces make the user experience more
-                                                comfortable.
+                                                Buy&Bye permet de redécouvrir les régions en mettant en avant différent acteurs du
+                                                territoire. Pourquoi pas vous ?
                                             </Typography>
                                         </Grid>
                                     </Grid>
@@ -93,47 +95,16 @@ const FeaturePage = () => {
                                                     color: theme.palette.secondary.main
                                                 }}
                                             >
-                                                <ReorderTwoToneIcon fontSize="large" />
+                                                <HailIcon fontSize="large" />
                                             </Avatar>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="h3">Modern Technology Stack</Typography>
+                                            <Typography variant="h3">Le Commerce 2.0</Typography>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Typography variant="body2">
-                                                Technology behind Berry is less complicated so you can focus on creating the actual web
-                                                applications.
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                </SubCard>
-                            </FadeInWhenVisible>
-                        </Grid>
-                        <Grid item md={4} sm={6}>
-                            <FadeInWhenVisible>
-                                <SubCard>
-                                    <Grid container justifyContent="center" spacing={2}>
-                                        <Grid item>
-                                            <Avatar
-                                                size="xl"
-                                                variant="rounded"
-                                                sx={{
-                                                    background:
-                                                        theme.palette.mode === 'dark'
-                                                            ? theme.palette.dark[900]
-                                                            : theme.palette.success.light,
-                                                    color: theme.palette.success.dark
-                                                }}
-                                            >
-                                                <SpeedTwoToneIcon fontSize="large" />
-                                            </Avatar>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="h3">Performance Centric</Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body2">
-                                                Code that makes it easier and faster to render the page for your web applications.
+                                                Grâce à Buy&Bye vous pouvez étendre votre entreprise au delà des frontières du physique et
+                                                permettre ainsi de toucher un plus large public !
                                             </Typography>
                                         </Grid>
                                     </Grid>

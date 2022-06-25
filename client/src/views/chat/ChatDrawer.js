@@ -1,5 +1,6 @@
+import React, { useEffect, useState } from 'react';
+
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -15,6 +16,7 @@ import UserAvatar from './UserAvatar';
 import useAuth from 'hooks/useAuth';
 import MainCard from 'ui-component/cards/MainCard';
 import { appDrawerWidth as drawerWidth, gridSpacing } from 'store/constant';
+import { useSelector } from 'store';
 
 // assets
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
@@ -28,7 +30,9 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData }) => {
 
     const { user } = useAuth();
     const { borderRadius } = useConfig();
+    const [sellerData, setSellerData] = useState({});
     const matchDownLG = useMediaQuery(theme.breakpoints.down('lg'));
+    const { userWithID } = useSelector((state) => state.user);
 
     // show menu to set current user status
     const [anchorEl, setAnchorEl] = useState();
@@ -39,6 +43,10 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData }) => {
     const handleCloseRightMenu = () => {
         setAnchorEl(null);
     };
+
+    useEffect(() => {
+        setSellerData(userWithID);
+    }, [userWithID]);
 
     // set user status on status menu click
     const [status, setStatus] = useState('available');
@@ -83,11 +91,17 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData }) => {
                             <Grid item xs={12}>
                                 <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
                                     <Grid item>
-                                        <UserAvatar user={{ online_status: status, avatar: 'avatar-5.png', name: 'User 1' }} />
+                                        <UserAvatar
+                                            user={{
+                                                online_status: status,
+                                                avatar: sellerData?.imgUrl,
+                                                name: sellerData?.Fname + sellerData?.Lname
+                                            }}
+                                        />
                                     </Grid>
                                     <Grid item xs zeroMinWidth>
                                         <Typography align="left" variant="h4">
-                                            {user?.name}
+                                            {sellerData?.Fname} {sellerData?.Lname}
                                         </Typography>
                                     </Grid>
                                     <Grid item>
@@ -143,7 +157,7 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData }) => {
                         style={{
                             overflowX: 'hidden',
                             height: matchDownLG ? 'calc(100vh - 190px)' : 'calc(100vh - 445px)',
-                            minHeight: matchDownLG ? 0 : 520
+                            minHeight: matchDownLG ? 0 : 300
                         }}
                     >
                         <Box sx={{ p: 3, pt: 0 }}>

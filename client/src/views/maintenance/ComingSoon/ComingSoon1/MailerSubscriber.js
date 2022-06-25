@@ -66,7 +66,7 @@ const MailerSubscriber = ({ ...others }) => {
                     <Grid container alignItems="center" spacing={gridSpacing}>
                         <Grid item xs zeroMinWidth>
                             <FormControl fullWidth error={Boolean(touched.email && errors.email)}>
-                                <InputLabel htmlFor="outlined-adornment-email-forgot">Email Address</InputLabel>
+                                <InputLabel htmlFor="outlined-adornment-email-forgot">Adresse Email</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-email-forgot"
                                     type="email"
@@ -74,7 +74,7 @@ const MailerSubscriber = ({ ...others }) => {
                                     name="email"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    label="Email Address"
+                                    label="Adresse Email"
                                 />
                             </FormControl>
                         </Grid>
@@ -91,7 +91,7 @@ const MailerSubscriber = ({ ...others }) => {
                                         py: 1.5
                                     }}
                                 >
-                                    Subscribe
+                                    Envoyer
                                 </Button>
                             </AnimateButton>
                         </Grid>

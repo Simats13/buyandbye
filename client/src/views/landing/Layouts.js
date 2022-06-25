@@ -12,7 +12,10 @@ import imgLayout2 from 'assets/images/landing/demo-rtl.png';
 import imgLayout3 from 'assets/images/landing/demo-multi.png';
 import imgLayoutGrid from 'assets/images/landing/img-lay-grid.png';
 import imgLayoutDarkGrid from 'assets/images/landing/img-bg-grid-dark.svg';
-
+import interfaceWeb from 'assets/images/landing/interfaceWeb.svg';
+import interfaceStep from 'assets/images/landing/interfaceStep.svg';
+import colorView from 'assets/images/landing/colorView.svg';
+import whiteScreen from 'assets/images/landing/whiteScreen.png';
 // styles
 const LayoutImageWrapper = styled(Box)(({ theme }) => ({
     width: '100%',
@@ -138,25 +141,23 @@ const LayoutsPage = () => {
                     <Grid item xs={12}>
                         <Grid container alignItems="center" spacing={gridSpacing}>
                             <Grid item sm={6}>
-                                <LayoutImageWrapper>
-                                    <img
-                                        src={theme.palette.mode === 'dark' ? imgLayoutDarkGrid : imgLayoutGrid}
-                                        alt="Berry"
-                                        style={{ width: '100%' }}
-                                    />
-                                    <LayoutImage src={imgLayout1} alt="Berry" />
-                                </LayoutImageWrapper>
+                                <img src={interfaceWeb} alt="Berry" style={{ width: '75%', animation: '5s wings ease-in-out infinite' }} />
+                                {/* <LayoutImageWrapper>
+                                    
+                                    <LayoutImage src={interfaceWeb} alt="Berry" />
+                                </LayoutImageWrapper> */}
                             </Grid>
                             <Grid item sm={6}>
                                 <LayoutContent container spacing={2}>
                                     <Grid item sm={12}>
                                         <Typography variant="h4" component="div">
-                                            Dark Layout
+                                            Une interface simple et intuitive
                                         </Typography>
                                     </Grid>
                                     <Grid item sm={12}>
                                         <Typography variant="body2">
-                                            Modern, sleek and elegant dark color scheme that looks great in a dark variant.
+                                            L&apos;interface a été conçu afin de coller aux besoins réels des entreprises, mais surtout
+                                            d&apos;une simplicité à rude épreuve.
                                         </Typography>
                                     </Grid>
                                 </LayoutContent>
@@ -169,37 +170,35 @@ const LayoutsPage = () => {
                                 <LayoutRightContent container spacing={2}>
                                     <Grid item sm={12}>
                                         <Typography variant="h4" component="div">
-                                            RTL
+                                            Gestion de votre page
                                         </Typography>
                                     </Grid>
                                     <Grid item sm={12}>
-                                        <Typography variant="body2">Fully Support Right-to-left (RTL) design variant.</Typography>
+                                        <Typography variant="body2">
+                                            Gérer votre entreprise directement depuis le panel qui lui est dédié
+                                        </Typography>
                                     </Grid>
                                 </LayoutRightContent>
                             </Grid>
                             <Grid item sm={6}>
-                                <LayoutImageWrapper>
-                                    <img
-                                        src={theme.palette.mode === 'dark' ? imgLayoutDarkGrid : imgLayoutGrid}
-                                        alt="Berry"
-                                        style={{ width: '100%' }}
-                                    />
-                                    <LayoutImage src={imgLayout2} alt="Berry" style={{ animationDelay: '1.5s' }} />
-                                </LayoutImageWrapper>
+                                <img src={interfaceStep} alt="Berry" style={{ width: '75%', animation: '5s wings ease-in-out infinite' }} />
+
+                                {/* <LayoutImageWrapper>
+                                    <img src={whiteScreen} alt="Berry" style={{ width: '100%' }} />
+                                    <LayoutImage src={interfaceStep} alt="Berry" style={{ animationDelay: '1.5s' }} />
+                                </LayoutImageWrapper> */}
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12}>
                         <Grid container alignItems="center" spacing={gridSpacing}>
                             <Grid item sm={6}>
-                                <LayoutImageWrapper>
-                                    <img
-                                        src={theme.palette.mode === 'dark' ? imgLayoutDarkGrid : imgLayoutGrid}
-                                        alt="Berry"
-                                        style={{ width: '100%' }}
-                                    />
-                                    <LayoutImage src={imgLayout3} alt="Berry" style={{ animationDelay: '3s' }} />
-                                </LayoutImageWrapper>
+                                <img src={colorView} alt="Berry" style={{ width: '75%', animation: '5s wings ease-in-out infinite' }} />
+
+                                {/* <LayoutImageWrapper>
+                                    <img src={whiteScreen} alt="Berry" style={{ width: '100%' }} />
+                                    <LayoutImage src={colorView} alt="Berry" style={{ animationDelay: '3s' }} />
+                                </LayoutImageWrapper> */}
                             </Grid>
                             <Grid item sm={6}>
                                 <LayoutContent
@@ -213,11 +212,14 @@ const LayoutsPage = () => {
                                 >
                                     <Grid item sm={12}>
                                         <Typography variant="h4" component="div">
-                                            Multi-language Support
+                                            Personnalisation
                                         </Typography>
                                     </Grid>
                                     <Grid item sm={12}>
-                                        <Typography variant="body2">Support Multi-language. Added 4 pre-filled language.</Typography>
+                                        <Typography variant="body2">
+                                            Personnalisez votre boutique aux couleurs de votre entreprise et ainsi vous démarquer des autres
+                                            !
+                                        </Typography>
                                     </Grid>
                                 </LayoutContent>
                             </Grid>

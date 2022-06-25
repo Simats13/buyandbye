@@ -15,14 +15,14 @@ import logoDark from 'assets/images/logo.svg';
 const FooterWrapper = styled('div')(({ theme }) => ({
     padding: '35px 0',
     color: '#fff',
-    background: theme.palette.secondary.main,
+    background: theme.palette.secondary.secondaryLight,
     [theme.breakpoints.down('md')]: {
         textAlign: 'center'
     }
 }));
 
 const FooterLink = styled(Link)({
-    color: '#fff',
+    color: '#000',
     display: 'inline-flex',
     alignItems: 'center',
     textDecoration: 'none !important',
@@ -38,8 +38,8 @@ const FooterLink = styled(Link)({
 
 const FooterSubWrapper = styled('div')(({ theme }) => ({
     padding: '20px 0',
-    color: '#fff',
-    background: theme.palette.secondary.dark,
+    color: '#000',
+    background: theme.palette.secondary.secondaryLight,
     [theme.breakpoints.down('md')]: {
         textAlign: 'center'
     }

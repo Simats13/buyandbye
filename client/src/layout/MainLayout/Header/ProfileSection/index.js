@@ -38,7 +38,8 @@ import User1 from 'assets/images/users/user-round.svg';
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
 import useConfig from 'hooks/useConfig';
-
+import { useSelector, dispatch } from 'store';
+import { getUserWithID } from 'store/slices/user';
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
@@ -47,11 +48,14 @@ const ProfileSection = () => {
     const navigate = useNavigate();
 
     const [sdm, setSdm] = useState(true);
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState([]);
     const [notification, setNotification] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
+    const { userWithID } = useSelector((state) => state.user);
     const { logout, user } = useAuth();
     const [open, setOpen] = useState(false);
+    const hours = new Date().getHours();
+    const isDayTime = hours > 6 && hours < 20;
     /**
      * anchorRef is used on different components and specifying one type leads to other components throwing an error
      * */
@@ -63,6 +67,13 @@ const ProfileSection = () => {
             console.error(err);
         }
     };
+    useEffect(() => {
+        dispatch(getUserWithID(user.id));
+    }, []);
+
+    useEffect(() => {
+        setValue(userWithID);
+    }, [userWithID]);
 
     const handleClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
@@ -115,7 +126,7 @@ const ProfileSection = () => {
                 }}
                 icon={
                     <Avatar
-                        src={User1}
+                        src={value.imgUrl}
                         sx={{
                             ...theme.typography.mediumAvatar,
                             margin: '8px 0 8px 8px !important',
@@ -163,17 +174,17 @@ const ProfileSection = () => {
                                         <Box sx={{ p: 2, pb: 0 }}>
                                             <Stack>
                                                 <Stack direction="row" spacing={0.5} alignItems="center">
-                                                    <Typography variant="h4">Bonjour,</Typography>
+                                                    <Typography variant="h4">{isDayTime ? 'Bonjour,' : 'Bonsoir,'}</Typography>
                                                     <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                                                        {user?.name}
+                                                        {value.Fname} {value.Lname}
                                                     </Typography>
                                                 </Stack>
-                                                <Typography variant="subtitle2">Project Admin</Typography>
+                                                {/* <Typography variant="subtitle2">Project Admin</Typography> */}
                                             </Stack>
                                         </Box>
                                         <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                                             <Box sx={{ p: 2, pt: 0 }}>
-                                                <UpgradePlanCard />
+                                                {value.premium ? 'Premium' : <UpgradePlanCard />}
                                                 <Divider />
                                                 <Card
                                                     sx={{

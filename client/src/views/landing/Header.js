@@ -17,6 +17,7 @@ import { gridSpacing } from 'store/constant';
 import dashboard from 'assets/images/landing/dashboard.png';
 import widget1 from 'assets/images/landing/widget-1.png';
 import widget2 from 'assets/images/landing/widget-2.png';
+import shopping1 from 'assets/images/landing/shopping1.svg';
 
 // styles
 const HeaderImage = styled('img')(({ theme }) => ({
@@ -117,13 +118,14 @@ const HeaderPage = () => {
                                         <AnimateButton>
                                             <Button
                                                 component={RouterLink}
-                                                to="/dashboard/default"
+                                                to="/dashboard"
                                                 target="_blank"
                                                 size="large"
                                                 variant="contained"
                                                 color="secondary"
+                                                style={{ color: 'white' }}
                                             >
-                                                Découvrir l&apos;application
+                                                Découvrir Buy&Bye
                                             </Button>
                                         </AnimateButton>
                                     </Grid>
@@ -153,8 +155,8 @@ const HeaderPage = () => {
                 </Grid>
                 <Grid item xs={12} md={7} sx={{ display: { xs: 'none', md: 'flex' } }}>
                     <Box sx={{ position: 'relative', mt: 8.75 }}>
-                        <HeaderImage src={dashboard} alt="Berry" />
-                        <Box
+                        <HeaderImage src={shopping1} alt="Berry" />
+                        {/* <Box
                             sx={{
                                 position: 'absolute',
                                 top: '-110px',
@@ -175,8 +177,8 @@ const HeaderPage = () => {
                             >
                                 <HeaderAnimationImage src={widget1} alt="Berry" />
                             </motion.div>
-                        </Box>
-                        <Box
+                        </Box> */}
+                        {/* <Box
                             sx={{
                                 position: 'absolute',
                                 bottom: -90,
@@ -198,7 +200,7 @@ const HeaderPage = () => {
                             >
                                 <HeaderAnimationImage src={widget2} alt="Berry" />
                             </motion.div>
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Grid>
             </Grid>

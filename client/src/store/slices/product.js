@@ -75,7 +75,7 @@ export default slice.reducer;
 export function getProducts(id) {
     return async () => {
         try {
-            const response = await axios.get(`${process.env.API_URL}/api/shops/${id}/products`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/shops/${id}/products`);
             dispatch(slice.actions.getProductsSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));

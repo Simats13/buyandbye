@@ -11,6 +11,7 @@ import Subscribe from './Subscribe';
 import Footer from './Footer';
 import Customization from 'layout/Customization';
 import AppBar from 'ui-component/extended/AppBar';
+import Price1 from './price/Price1';
 
 const HeaderWrapper = styled('div')(({ theme }) => ({
     paddingTop: 30,
@@ -39,20 +40,22 @@ const Landing = () => (
         <SecondWrapper>
             <Feature />
         </SecondWrapper>
-        <SecondWrapper>
+        {/* <SecondWrapper>
             <Demos />
-        </SecondWrapper>
+        </SecondWrapper> */}
         <SecondWrapper>
             <Layouts />
         </SecondWrapper>
-        <SecondWrapper>
+        {/* <SecondWrapper>
             <KeyFeature />
+        </SecondWrapper> */}
+        <SecondWrapper>
+            <Price1 />
         </SecondWrapper>
         <SecondWrapper>
             <Subscribe />
         </SecondWrapper>
         <Footer />
-        <Customization />
     </>
 );
 

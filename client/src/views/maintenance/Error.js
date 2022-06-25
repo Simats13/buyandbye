@@ -88,18 +88,18 @@ const Error = () => {
                             <Grid container spacing={gridSpacing}>
                                 <Grid item xs={12}>
                                     <Typography variant="h1" component="div">
-                                        Something is wrong
+                                        Cette page n&apos;est pas disponible
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography variant="body2">
-                                        The page you are looking was moved, removed, renamed, or might never exist!{' '}
+                                        La page que vous recherchez n&apos;existe pas ou bien a été supprimé !
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <AnimateButton>
                                         <Button variant="contained" size="large" component={Link} to={DASHBOARD_PATH}>
-                                            <HomeTwoToneIcon sx={{ fontSize: '1.3rem', mr: 0.75 }} /> Home
+                                            <HomeTwoToneIcon sx={{ fontSize: '1.3rem', mr: 0.75 }} /> Retourner à l&apos;accueil
                                         </Button>
                                     </AnimateButton>
                                 </Grid>

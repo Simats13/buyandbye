@@ -6,7 +6,7 @@ import { Container, Grid, Typography } from '@mui/material';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import imgMail from 'assets/images/landing/img-groupmail.png';
+import imgMail from 'assets/images/landing/newsletter.svg';
 import MailerSubscriber from 'views/maintenance/ComingSoon/ComingSoon1/MailerSubscriber';
 
 // styles
@@ -85,12 +85,12 @@ const Subscribe = () => {
                                         component="div"
                                         sx={{ [theme.breakpoints.down('md')]: { fontSize: '1.125rem' } }}
                                     >
-                                        Subscribe
+                                        Contactez-nous !
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={12}>
                                     <Typography variant="body2">
-                                        Subscribe for the latest news &#38; updates of Berry admin template. We never send spam newsletters.
+                                        Vous hésitez à nous rejoindre ? N&apos;hésitez pas alors à nous contacter pour en savoir davantage !
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={12}>

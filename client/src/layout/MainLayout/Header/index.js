@@ -39,7 +39,7 @@ const Header = () => {
                 <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
                     <LogoSection />
                 </Box>
-                <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                <Box sx={{ display: { xs: 'block', sm: 'block', md: 'block', lg: 'none', xl: 'none' } }}>
                     <Avatar
                         variant="rounded"
                         sx={{
