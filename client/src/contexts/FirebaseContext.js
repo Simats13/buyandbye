@@ -4,6 +4,7 @@ import { createContext, useEffect, useReducer } from 'react';
 // third-party
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // action - state management
 import { LOGIN, LOGOUT } from 'store/actions';
@@ -56,6 +57,7 @@ export const FirebaseProvider = ({ children }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [dispatch]
     );
+    const db = getFirestore();
 
     const firebaseEmailPasswordSignIn = (email, password) => firebase.auth().signInWithEmailAndPassword(email, password);
 
@@ -88,6 +90,7 @@ export const FirebaseProvider = ({ children }) => {
                 firebaseGoogleSignIn,
                 logout,
                 resetPassword,
+                db,
                 updateProfile
             }}
         >

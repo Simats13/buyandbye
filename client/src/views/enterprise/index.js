@@ -28,7 +28,6 @@ import { openSnackbar } from 'store/slices/snackbar';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { useDispatch, useSelector } from 'store';
 import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
-import { usePlacesWidget } from 'react-google-autocomplete';
 // assets
 import LockTwoToneIcon from '@mui/icons-material/LockTwoTone';
 import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone';
@@ -245,11 +244,6 @@ const Enterprise = () => {
             dispatch(editEnterpriseInfo(user.id, formik.values));
             dispatch(setEnterpriseUpdate(infoEnterprise));
         }
-    });
-
-    const { ref } = usePlacesWidget({
-        apiKey: 'AIzaSyDdnevI_6sCr0LvfpC4y9_wevsSequKsdk',
-        onPlaceSelected: (place) => console.log(place)
     });
     return (
         <MainCard title="Information de l'entreprise">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import { collection, onSnapshot, query, doc } from 'firebase/firestore';
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
 import {
@@ -43,7 +43,6 @@ import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
 import MoodTwoToneIcon from '@mui/icons-material/MoodTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import useAuth from 'hooks/useAuth';
-import { usePlacesWidget } from 'react-google-autocomplete';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -74,7 +73,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
 const Chat = () => {
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('lg'));
-
+    const { db } = useAuth();
     const dispatch = useDispatch();
     const { user } = useAuth();
     const [sellerData, setSellerData] = useState({});
@@ -133,6 +132,17 @@ const Chat = () => {
     useEffect(() => {
         setData(chats);
     }, [chats]);
+
+    const collectionRef = collection(db, 'commonData');
+    const ref = getDocs(db, collectionRef);
+
+    console.log(ref);
+
+    useEffect(() => {
+        onSnapshot(collectionRef, (snapshot) => {
+            console.log(snapshot.map((doc) => doc.data()));
+        });
+    }, []);
 
     // handle new message form
     const [message, setMessage] = useState('');
