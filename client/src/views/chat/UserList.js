@@ -25,42 +25,47 @@ const UserList = ({ setUserData, sellerID }) => {
 
     const queryClient = useFirestoreQueryData(['commonData'], ref, { subscribe: true });
 
-    useEffect(() => {
-        dispatch(getUsers(sellerID));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // useEffect(() => {
-    //     setUserInfo(users);
-    // }, [users]);
+    const lastClientId = queryClient.data?.length > 0 ? queryClient.data[0].users[1] : null;
 
     // console.log(userTestInfo);
     useEffect(() => {
         setClient(queryClient);
     }, []);
 
+    useEffect(() => {
+        dispatch(getUsers(sellerID));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        setUserInfo(users);
+    }, [users]);
+
     if (queryClient.isLoading) {
         return <div>Loading...</div>;
     }
-    queryClient.data.map((data) => setUserInfo(doc(db, 'users', data.users[1])));
-    if (queryClient.isLoading) {
-        return <div>Loading...</div>;
-    }
+
+    console.log(queryClient.data);
+
+    // queryClient.data.map((data) => setUserInfo(doc(db, 'users', data.users[1])));
+    // if (queryClient.isLoading) {
+    //     return <div>Loading...</div>;
+    // }
     console.log(userInfo);
 
     // eslint-disable-next-line no-unused-expressions
     return (
         <List component="nav">
-            {queryClient.data.map((userSelect) => (
-                <Fragment key={sellerID + userSelect.id}>
+            {queryClient.data.map((userSelect, index) => (
+                <Fragment key={sellerID + userSelect.users[1]}>
                     <ListItemButton
                         onClick={() => {
                             dispatch(getAllUserChats(sellerID + userSelect.users[1]));
-                            dispatch(getUserWithID(userSelect.users[1]));
+                            dispatch(getUserWithID(userSelect.users[1] ? '' : ''));
                         }}
                     >
                         <ListItemAvatar>
-                            <UserAvatar user={userSelect} />
+                            <UserAvatar user={userInfo[index] ? '' : ''} />
                         </ListItemAvatar>
                         <ListItemText
                             primary={
@@ -77,7 +82,7 @@ const UserList = ({ setUserData, sellerID }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {`${user.name}`}
+                                            {`${userInfo[index].name ? '' : ''}`}
                                         </Typography>
                                     </Grid>
                                     <Grid item component="span">
