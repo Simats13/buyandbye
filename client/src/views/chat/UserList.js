@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 
 // material-ui
 import { Chip, Divider, Grid, List, ListItemButton, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
+import { query, collection, where, limit, QuerySnapshot, doc, orderBy } from 'firebase/firestore';
+import { useFirestoreDocument, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
 // project imports
 import UserAvatar from './UserAvatar';
 
@@ -15,27 +17,46 @@ import useAuth from 'hooks/useAuth';
 
 const UserList = ({ setUserData, sellerID }) => {
     const dispatch = useDispatch();
-    const [data, setData] = useState([]);
+    const [client, setClient] = useState([]);
+    const [userInfo, setUserInfo] = useState([]);
     const { users } = useSelector((state) => state.chat);
+    const { db, user } = useAuth();
+    const ref = query(collection(db, 'commonData'), where('users', 'array-contains', sellerID), orderBy('timestamp', 'desc'));
+
+    const queryClient = useFirestoreQueryData(['commonData'], ref, { subscribe: true });
 
     useEffect(() => {
         dispatch(getUsers(sellerID));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // useEffect(() => {
+    //     setUserInfo(users);
+    // }, [users]);
+
+    // console.log(userTestInfo);
     useEffect(() => {
-        setData(users);
-    }, [users]);
+        setClient(queryClient);
+    }, []);
+
+    if (queryClient.isLoading) {
+        return <div>Loading...</div>;
+    }
+    queryClient.data.map((data) => setUserInfo(doc(db, 'users', data.users[1])));
+    if (queryClient.isLoading) {
+        return <div>Loading...</div>;
+    }
+    console.log(userInfo);
 
     // eslint-disable-next-line no-unused-expressions
     return (
         <List component="nav">
-            {data.map((userSelect) => (
+            {queryClient.data.map((userSelect) => (
                 <Fragment key={sellerID + userSelect.id}>
                     <ListItemButton
                         onClick={() => {
-                            dispatch(getAllUserChats(sellerID + userSelect.id));
-                            dispatch(getUserWithID(userSelect.id));
+                            dispatch(getAllUserChats(sellerID + userSelect.users[1]));
+                            dispatch(getUserWithID(userSelect.users[1]));
                         }}
                     >
                         <ListItemAvatar>
@@ -56,14 +77,14 @@ const UserList = ({ setUserData, sellerID }) => {
                                                 display: 'block'
                                             }}
                                         >
-                                            {`${userSelect.name}`}
+                                            {`${user.name}`}
                                         </Typography>
                                     </Grid>
                                     <Grid item component="span">
                                         <Typography component="span" variant="subtitle2">
                                             {
                                                 // eslint-disable-next-line no-underscore-dangle
-                                                new Date(userSelect.timestamp._seconds * 1000).toLocaleString()
+                                                new Date(userSelect.timestamp.seconds * 1000).toLocaleString()
                                             }
                                         </Typography>
                                     </Grid>

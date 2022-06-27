@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, doc } from 'firebase/firestore';
+import { collection, onSnapshot, query, doc, getDoc, getDocs, where, orderBy, collectionGroup } from 'firebase/firestore';
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
 import {
@@ -133,16 +133,17 @@ const Chat = () => {
         setData(chats);
     }, [chats]);
 
-    const collectionRef = collection(db, 'commonData');
-    const ref = getDocs(db, collectionRef);
+    console.log('data', userData);
 
-    console.log(ref);
-
-    useEffect(() => {
-        onSnapshot(collectionRef, (snapshot) => {
-            console.log(snapshot.map((doc) => doc.data()));
-        });
-    }, []);
+    // useEffect(() => {
+    //     const q = query(collection(db, 'commonData'), where('users', 'array-contains', user.id), orderBy('timestamp', 'desc'));
+    //     const unsuscribe = getDocs(q, (querySnapshot) => {
+    //         querySnapshot.docs.map((doc) => doc);
+    //     });
+    //     return () => {
+    //         unsuscribe();
+    //     };
+    // }, []);
 
     // handle new message form
     const [message, setMessage] = useState('');

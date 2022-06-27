@@ -7,7 +7,7 @@ import NavigationScroll from 'layout/NavigationScroll';
 import RTLLayout from 'ui-component/RTLLayout';
 import Snackbar from 'ui-component/extended/Snackbar';
 import ThemeCustomization from 'themes';
-
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 // auth provider
 import { FirebaseProvider as AuthProvider } from 'contexts/FirebaseContext';
 // import { AWSCognitoProvider as AuthProvider } from 'contexts/AWSCognitoContext';
@@ -15,23 +15,26 @@ import { FirebaseProvider as AuthProvider } from 'contexts/FirebaseContext';
 // import { Auth0Provider as AuthProvider } from 'contexts/Auth0Context';
 
 // ==============================|| APP ||============================== //
+const queryClient = new QueryClient();
 
 const App = () => (
-    <ThemeCustomization>
-        {/* RTL layout */}
-        <RTLLayout>
-            <Locales>
-                <NavigationScroll>
-                    <AuthProvider>
-                        <>
-                            <Routes />
-                            <Snackbar />
-                        </>
-                    </AuthProvider>
-                </NavigationScroll>
-            </Locales>
-        </RTLLayout>
-    </ThemeCustomization>
+    <QueryClientProvider client={queryClient}>
+        <ThemeCustomization>
+            {/* RTL layout */}
+            <RTLLayout>
+                <Locales>
+                    <NavigationScroll>
+                        <AuthProvider>
+                            <>
+                                <Routes />
+                                <Snackbar />
+                            </>
+                        </AuthProvider>
+                    </NavigationScroll>
+                </Locales>
+            </RTLLayout>
+        </ThemeCustomization>
+    </QueryClientProvider>
 );
 
 export default App;
