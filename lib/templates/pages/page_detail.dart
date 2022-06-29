@@ -12,6 +12,7 @@ import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/pages/page_produit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:number_ticker/number_ticker.dart';
 import 'package:status_alert/status_alert.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -23,18 +24,18 @@ import '../Messagerie/Controllers/fb_messaging.dart';
 import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class PageDetail extends StatefulWidget {
-  const PageDetail(
-      {Key? key,
-      this.img,
-      this.name,
-      this.description,
-      this.adresse,
-      this.clickAndCollect,
-      this.livraison,
-      this.sellerID,
-      this.colorStore,
-      this.horairesOuverture})
-      : super(key: key);
+  const PageDetail({
+    Key? key,
+    this.img,
+    this.name,
+    this.description,
+    this.adresse,
+    this.clickAndCollect,
+    this.livraison,
+    this.sellerID,
+    this.colorStore,
+    this.horairesOuverture,
+  }) : super(key: key);
   final String? img;
   final String? name;
   final String? description;
@@ -77,10 +78,13 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
       myUserName,
       myEmail,
       selectedUserToken,
+      geohash,
       name1,
       message,
       menuDropDownValue,
       dropdownValue;
+  double latitude= 0.0;
+  double longitude = 0.0;
   Stream? usersStream, chatRoomsStream;
   String? userid;
   String? adresseGoogleUrl;
@@ -134,7 +138,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myID = "${querySnapshot.docs[0]["id"]}";
-    myName = "${querySnapshot.docs[0]["fname"]} ${querySnapshot.docs[0]["lname"]}";
+    myName =
+        "${querySnapshot.docs[0]["fname"]} ${querySnapshot.docs[0]["lname"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
     myEmail = "${querySnapshot.docs[0]["email"]}";
     loved = await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
@@ -147,6 +152,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     selectedUserToken = "${querySnapshot.docs[0]["FCMToken"]}";
     mainCategorie = "${querySnapshot.docs[0]["type"]}";
     adresseGoogleUrl = "${querySnapshot.docs[0]["adresse"]}";
+    geohash = "${querySnapshot.docs[0]["position"]["geohash"]}";
+    latitude = double.parse(querySnapshot.docs[0]["position"]["latitude"]);
+    longitude = double.parse(querySnapshot.docs[0]["position"]["longitude"]);
     // Retire les caractères en trop et split les catégories dans une liste
     if (mainCategorie == "Restaurant") {
       isRestaurant = true;
@@ -249,7 +257,6 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
 
-    
     var googleUri = Uri(
       scheme: 'https',
       host: 'www.google.com',
@@ -328,7 +335,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                 ),
                 middle: Text(
                   widget.name!,
-                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 21, fontWeight: FontWeight.bold),
                 ),
                 trailing: Wrap(
                   children: [
@@ -352,7 +360,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             ),
                             onPressed: () async {
                               await DatabaseMethods().addFavoriteShop(
-                                  myID!, widget.sellerID, true);
+                                  myID!, widget.sellerID, true, geohash, latitude, longitude);
                               setState(() {
                                 loved = !loved;
                               });
@@ -361,8 +369,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                 duration: const Duration(seconds: 2),
                                 title: 'Favoris',
                                 subtitle: 'Ajouté au favoris',
-                                configuration:
-                                    const IconConfiguration(icon: Icons.favorite),
+                                configuration: const IconConfiguration(
+                                    icon: Icons.favorite),
                               );
                             },
                           )
@@ -382,7 +390,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             ),
                             onPressed: () async {
                               await DatabaseMethods().addFavoriteShop(
-                                  myID, widget.sellerID, false);
+                                  myID, widget.sellerID, false, geohash, latitude, longitude);
                               setState(() {
                                 loved = !loved;
                               });
@@ -766,16 +774,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                               ? Icons.arrow_drop_down
                                               : Icons.arrow_left,
                                           size: 25,
-                                          color: Color(
-                                                  int.parse("0x$pimpMyStore"))
-                                              .withOpacity(0.8),
+                                          color:
+                                              Color(int.parse("0x$pimpMyStore"))
+                                                  .withOpacity(0.8),
                                         ),
                                       ],
                                     ),
                                     onTap: () {
                                       setState(() {
-                                        horairesIsVisible =
-                                            !horairesIsVisible;
+                                        horairesIsVisible = !horairesIsVisible;
                                       });
                                     },
                                   ),
@@ -786,24 +793,31 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           Visibility(
                             visible: horairesIsVisible,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                              const SizedBox(height: 10),
-                              Text("Lundi:       ${widget.horairesOuverture!['Lundi']['Matin'][0]}h à ${widget.horairesOuverture!['Lundi']['Matin'][1]}h - ${widget.horairesOuverture!['Lundi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Lundi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),
-                              Text("Mardi:       ${widget.horairesOuverture!['Mardi']['Matin'][0]}h à ${widget.horairesOuverture!['Mardi']['Matin'][1]}h - ${widget.horairesOuverture!['Mardi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mardi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),
-                              Text("Mercredi:  ${widget.horairesOuverture!['Mercredi']['Matin'][0]}h à ${widget.horairesOuverture!['Mercredi']['Matin'][1]}h - ${widget.horairesOuverture!['Mercredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mercredi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),
-                              Text("Jeudi:        ${widget.horairesOuverture!['Jeudi']['Matin'][0]}h à ${widget.horairesOuverture!['Jeudi']['Matin'][1]}h - ${widget.horairesOuverture!['Jeudi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Jeudi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),                              
-                              Text("Vendredi:   ${widget.horairesOuverture!['Vendredi']['Matin'][0]}h à ${widget.horairesOuverture!['Vendredi']['Matin'][1]}h - ${widget.horairesOuverture!['Vendredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Vendredi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),                              
-                              const Text("Samedi:          Fermé                  "),
-                              const SizedBox(height: 5),                              
-                              const Text("Dimanche:      Fermé                  "),
-                              const SizedBox(height: 5),
-                            ]),
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Text(
+                                      "Lundi:       ${widget.horairesOuverture!['Lundi']['Matin'][0]}h à ${widget.horairesOuverture!['Lundi']['Matin'][1]}h - ${widget.horairesOuverture!['Lundi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Lundi']['Après-midi'][1]}h"),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                      "Mardi:       ${widget.horairesOuverture!['Mardi']['Matin'][0]}h à ${widget.horairesOuverture!['Mardi']['Matin'][1]}h - ${widget.horairesOuverture!['Mardi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mardi']['Après-midi'][1]}h"),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                      "Mercredi:  ${widget.horairesOuverture!['Mercredi']['Matin'][0]}h à ${widget.horairesOuverture!['Mercredi']['Matin'][1]}h - ${widget.horairesOuverture!['Mercredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mercredi']['Après-midi'][1]}h"),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                      "Jeudi:        ${widget.horairesOuverture!['Jeudi']['Matin'][0]}h à ${widget.horairesOuverture!['Jeudi']['Matin'][1]}h - ${widget.horairesOuverture!['Jeudi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Jeudi']['Après-midi'][1]}h"),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                      "Vendredi:   ${widget.horairesOuverture!['Vendredi']['Matin'][0]}h à ${widget.horairesOuverture!['Vendredi']['Matin'][1]}h - ${widget.horairesOuverture!['Vendredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Vendredi']['Après-midi'][1]}h"),
+                                  const SizedBox(height: 5),
+                                  const Text(
+                                      "Samedi:          Fermé                  "),
+                                  const SizedBox(height: 5),
+                                  const Text(
+                                      "Dimanche:      Fermé                  "),
+                                  const SizedBox(height: 5),
+                                ]),
                           ),
                           // SizedBox(
                           //   height: 10,
@@ -1541,8 +1555,9 @@ class _ReservationPageState extends State<ReservationPage> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(30)),
-                                    primary: const Color.fromARGB(255, 108, 112, 109)
-                                        .withOpacity(0.2),
+                                    primary:
+                                        const Color.fromARGB(255, 108, 112, 109)
+                                            .withOpacity(0.2),
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -1557,9 +1572,11 @@ class _ReservationPageState extends State<ReservationPage> {
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: horairesDropDownValue == name
-                                            ? const Color.fromARGB(255, 45, 46, 45)
+                                            ? const Color.fromARGB(
+                                                    255, 45, 46, 45)
                                                 .withOpacity(1)
-                                            : const Color.fromARGB(255, 89, 92, 90)
+                                            : const Color.fromARGB(
+                                                    255, 89, 92, 90)
                                                 .withOpacity(0.9),
                                         fontWeight:
                                             horairesDropDownValue == name

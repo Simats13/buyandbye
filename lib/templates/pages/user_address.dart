@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
@@ -47,7 +47,7 @@ class _UserAddressState extends State<UserAddress> {
   bool permissionChecked = false;
   bool chargementChecked = false;
 
-  Geoflutterfire? geo;
+  GeoFlutterFire? geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
   final controller = TextEditingController();
@@ -122,7 +122,7 @@ class _UserAddressState extends State<UserAddress> {
       //Adresse de l'utilisateur via la localisation
       currentLocationAddress = "${first.name}, ${first.locality}";
 
-      currentLocationAddress = _textReplace(currentLocationAddress!); 
+      currentLocationAddress = _textReplace(currentLocationAddress!);
 
       //Ville de l'utilisateur via la localisation
       currentCityLocation = "${first.locality}";
@@ -275,74 +275,74 @@ class _UserAddressState extends State<UserAddress> {
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 1.20,
                           child: InkWell(
-                            onTap: () async {
-                              //RECUPERE LA LOCALISATION DE L'UTILISATEUR ET CONVERTIT LES COODORNEES EN ADRESSE
-                              List<geocoder.Placemark> addresses =
-                                  await geocoder.placemarkFromCoordinates(
-                                      currentLocationLatitude,
-                                      currentLocationLongitude,
-                                      localeIdentifier: 'fr_FR');
-                              var first = addresses.first;
-                              setState(() {
-                                currentCityLocation = first.locality!;
-                                currentLocationAddress =
-                                    first.name! + ', ' + first.locality!;
-                                //A CHANGER LORSQUE LE PROVIDER SERA MIS EN PLACE PREND EN COMPTE LA NOUVELLE ADRESSE ET RECHARGE L'APPLICATION
-                                geo = Geoflutterfire();
-                                GeoFirePoint center = geo!.point(
-                                    latitude: latitude, longitude: longitude);
-                                stream = radius.switchMap((rad) {
-                                  var collectionReference = FirebaseFirestore
-                                      .instance
-                                      .collection('magasins');
-                                  return geo!
-                                      .collection(
-                                          collectionRef: collectionReference)
-                                      .within(
-                                          center: center,
-                                          radius: 100,
-                                          field: 'position',
-                                          strictMode: true);
+                              onTap: () async {
+                                //RECUPERE LA LOCALISATION DE L'UTILISATEUR ET CONVERTIT LES COODORNEES EN ADRESSE
+                                List<geocoder.Placemark> addresses =
+                                    await geocoder.placemarkFromCoordinates(
+                                        currentLocationLatitude,
+                                        currentLocationLongitude,
+                                        localeIdentifier: 'fr_FR');
+                                var first = addresses.first;
+                                setState(() {
+                                  currentCityLocation = first.locality!;
+                                  currentLocationAddress =
+                                      first.name! + ', ' + first.locality!;
+                                  //A CHANGER LORSQUE LE PROVIDER SERA MIS EN PLACE PREND EN COMPTE LA NOUVELLE ADRESSE ET RECHARGE L'APPLICATION
+                                  geo = GeoFlutterFire();
+                                  GeoFirePoint center = geo!.point(
+                                      latitude: latitude, longitude: longitude);
+                                  stream = radius.switchMap((rad) {
+                                    var collectionReference = FirebaseFirestore
+                                        .instance
+                                        .collection('magasins');
+                                    return geo!
+                                        .collection(
+                                            collectionRef: collectionReference)
+                                        .within(
+                                            center: center,
+                                            radius: 100,
+                                            field: 'position',
+                                            strictMode: true);
+                                  });
                                 });
-                              });
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageAddressNext(
-                                            lat: currentLocationLatitude,
-                                            long: currentLocationLongitude,
-                                            adresse: currentLocationAddress,
-                                          )));
-                            },
-                            child: Container(
-                                constraints: const BoxConstraints(maxHeight: 57, minHeight: 50),
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PageAddressNext(
+                                              lat: currentLocationLatitude,
+                                              long: currentLocationLongitude,
+                                              adresse: currentLocationAddress,
+                                            )));
+                              },
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                    maxHeight: 57, minHeight: 50),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 padding: const EdgeInsets.only(top: 5),
                                 child: Row(
-                                    children: [
-                                      const Icon(Icons.near_me_rounded),
-                                      const SizedBox(width: 15),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text("Position actuelle"),
-                                          
-                                            SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width / 1.40,
-                                                child:
-                                                    Text(currentLocationAddress!),
-                                              ),                         
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                )),
-                          ),
+                                  children: [
+                                    const Icon(Icons.near_me_rounded),
+                                    const SizedBox(width: 15),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text("Position actuelle"),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              1.40,
+                                          child: Text(currentLocationAddress!),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ),
                       ),
                     ],
                   )
@@ -567,7 +567,7 @@ class _UserAddressState extends State<UserAddress> {
                                   currentAddressSaved =
                                       first.name! + ", " + first.locality!;
 
-                                  geo = Geoflutterfire();
+                                  geo = GeoFlutterFire();
                                   GeoFirePoint center = geo!.point(
                                       latitude:
                                           (snapshot.data! as QuerySnapshot)

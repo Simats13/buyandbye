@@ -2,7 +2,7 @@ import 'package:buyandbye/templates/accueil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
@@ -23,7 +23,7 @@ class _PageAddressNextState extends State<PageAddressNext> {
   late GoogleMapController _mapController;
   Stream<List<DocumentSnapshot>>? stream;
   final _formKey = GlobalKey<FormState>();
-  Geoflutterfire? geo;
+  final geo = GeoFlutterFire();
   bool mapToggle = false;
   final Set<Marker> _markers = <Marker>{};
   bool isEnabled = false;
@@ -274,8 +274,8 @@ class _PageAddressNextState extends State<PageAddressNext> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       primary: Colors.black,
-                      textStyle:
-                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      textStyle: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold)),
                   onPressed: isEnabled
                       ? () async {
                           // Validate returns true if the form is valid, or false otherwise.
@@ -297,17 +297,17 @@ class _PageAddressNextState extends State<PageAddressNext> {
                             // Retourne la page d'accueil sans animation
                             int count = 0;
 
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation1, animation2) =>
-                                            const Accueil(),
-                                    transitionDuration: const Duration(seconds: 0),
-                                  ),
-                                  (_) =>
-                                      count++ >=
-                                      3, //3 is count of your pages you want to pop
-                                );
+                            Navigator.of(context).pushAndRemoveUntil(
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation1, animation2) =>
+                                        const Accueil(),
+                                transitionDuration: const Duration(seconds: 0),
+                              ),
+                              (_) =>
+                                  count++ >=
+                                  3, //3 is count of your pages you want to pop
+                            );
                           }
                         }
                       : null,

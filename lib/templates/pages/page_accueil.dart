@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 import 'package:geocoding/geocoding.dart' as geocoder;
 
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
@@ -19,9 +19,10 @@ import 'package:buyandbye/templates/pages/page_detail.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:buyandbye/theme/styles.dart';
-import 'package:buyandbye/services/database.dart'; 
+import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/widgets/custom_slider.dart';
 
 class PageAccueil extends StatefulWidget {
@@ -46,8 +47,11 @@ class _PageAccueilState extends State<PageAccueil> {
       zipCode,
       idAddress,
       userid;
-  double latitude = 0, longitude = 0, currentLocationLatitude = 0, currentLocationLongitude = 0;
-  late Geoflutterfire geo;
+  double latitude = 0,
+      longitude = 0,
+      currentLocationLatitude = 0,
+      currentLocationLongitude = 0;
+  late GeoFlutterFire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
   final controller = TextEditingController();
@@ -76,70 +80,70 @@ class _PageAccueilState extends State<PageAccueil> {
     return str;
   }
 
-    //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
-    //S'il n'a pas accepté alors cela renvoit false
-    //S'il a accepté alors ça renvoie la localisation périodiquement
-    Future<bool> _determinePermission() async {
-        bool localisationActive;
-        PermissionStatus permissionAutorise;
+  //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
+  //S'il n'a pas accepté alors cela renvoit false
+  //S'il a accepté alors ça renvoie la localisation périodiquement
+  Future<bool> _determinePermission() async {
+    bool localisationActive;
+    PermissionStatus permissionAutorise;
 
-        localisationActive = await location.serviceEnabled();
-          if (!localisationActive) {
-            localisationActive = await location.requestService();
-            if (!localisationActive) {
-                return false;
-            }
-        }
-        print(localisationActive);
+    localisationActive = await location.serviceEnabled();
+    if (!localisationActive) {
+      localisationActive = await location.requestService();
+      if (!localisationActive) {
+        return false;
+      }
+    }
+    print(localisationActive);
 
-        permissionAutorise = await location.hasPermission();
-        if (permissionAutorise == PermissionStatus.denied) {
-        permissionAutorise = await location.requestPermission();
-          if (permissionAutorise != PermissionStatus.granted) {
-              setState(() {
-                chargementChecked = true;
-              });
-              return false;
-          }
-        }
-
+    permissionAutorise = await location.hasPermission();
+    if (permissionAutorise == PermissionStatus.denied) {
+      permissionAutorise = await location.requestPermission();
+      if (permissionAutorise != PermissionStatus.granted) {
         setState(() {
-          permissionChecked = true;
+          chargementChecked = true;
         });
-
-        return true;
+        return false;
+      }
     }
 
-    getCoordinates() async {
-        final User user = await AuthMethods().getCurrentUser();
-        userid = user.uid;
-        QuerySnapshot querySnapshot =
-            await DatabaseMethods().getChosenAddress(userid);
-        latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-        longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-        List<geocoder.Placemark> addresses =
-            await geocoder.placemarkFromCoordinates(latitude, longitude);
+    setState(() {
+      permissionChecked = true;
+    });
 
-        var first = addresses.first;
-        currentAddress = "${first.name}, ${first.locality}";
-        currentAddress = _textReplace(currentAddress!);
-        idAddress = "${querySnapshot.docs[0]['idDoc']}";
-        city = "${first.locality}";
-        chargementChecked = true;
-        setState(() {});
-    }
+    return true;
+  }
 
-    positionCheck() async {
-        geo = Geoflutterfire();
-        GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
-        stream = radius.switchMap((rad) {
-        var collectionReference =
-            FirebaseFirestore.instance.collection('magasins');
+  getCoordinates() async {
+    final User user = await AuthMethods().getCurrentUser();
+    userid = user.uid;
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
+    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+    List<geocoder.Placemark> addresses =
+        await geocoder.placemarkFromCoordinates(latitude, longitude);
 
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
-        });
-    }
+    var first = addresses.first;
+    currentAddress = "${first.name}, ${first.locality}";
+    currentAddress = _textReplace(currentAddress!);
+    idAddress = "${querySnapshot.docs[0]['idDoc']}";
+    city = "${first.locality}";
+    chargementChecked = true;
+    setState(() {});
+  }
+
+  positionCheck() async {
+    final geo = GeoFlutterFire();
+    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+    stream = radius.switchMap((rad) {
+      var collectionReference =
+          FirebaseFirestore.instance.collection('magasins');
+
+      return geo.collection(collectionRef: collectionReference).within(
+          center: center, radius: 10, field: 'position', strictMode: true);
+    });
+  }
 
   String? username;
   userinfo() async {
@@ -153,253 +157,47 @@ class _PageAccueilState extends State<PageAccueil> {
     var size = MediaQuery.of(context).size;
     positionCheck();
 
-    return chargementChecked ? CupertinoPageScaffold(
-      child: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            PreferredSize(
-              preferredSize: const Size.fromHeight(10),
-              child: CupertinoSliverNavigationBar(
-                middle: Container(
-                  height: 45,
-                  width: MediaQuery.of(context).size.width - 70,
-                  decoration: BoxDecoration(
-                    color: textFieldColor,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.location_on,
-                            color: BuyandByeAppTheme.orangeMiFonce),
-                        const SizedBox(
-                          width: 10,
+    return chargementChecked
+        ? CupertinoPageScaffold(
+            child: NestedScrollView(
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  PreferredSize(
+                    preferredSize: const Size.fromHeight(10),
+                    child: CupertinoSliverNavigationBar(
+                      middle: Container(
+                        height: 45,
+                        width: MediaQuery.of(context).size.width - 70,
+                        decoration: BoxDecoration(
+                          color: textFieldColor,
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        SizedBox(
-                          height: 40,
-                          child: InkWell(
-                            onTapCancel: () {
-                              Navigator.of(context).pop();
-                            },
-                            onTap: () {
-                              affichageAddress();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text(
-                                currentAddress!,
-                                style: const TextStyle(fontSize: 13.5),
-                                textAlign: TextAlign.left,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                trailing: Container(
-                  padding: const EdgeInsets.only(
-                    left: 6,
-                    right: 6,
-                  ),
-                  child: IconButton(
-                    icon: const Center(
-                      child: Icon(Icons.shopping_cart,
-                          color: BuyandByeAppTheme.orangeMiFonce
-                          // size: 22,
-                          ),
-                    ),
-                    onPressed: () {
-                      affichageCart();
-                    },
-                  ),
-                ),
-                largeTitle: RichText(
-                  text: TextSpan(
-                    // style: Theme.of(context).textTheme.bodyText2,
-                    children: [
-                      const TextSpan(
-                          text: 'Bienvenue ',
-                          style: TextStyle(
-                            fontSize: 25,
-                            color: BuyandByeAppTheme.orangeMiFonce,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      TextSpan(
-                        text: username,
-                        style: const TextStyle(
-                          fontSize: 23,
-                          color: BuyandByeAppTheme.blackElectrik,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ];
-        },
-        body: StreamBuilder(
-          stream: stream,
-          builder: (BuildContext context,
-              AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-
-            if (!snapshot.hasData) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    ColorLoader3(
-                      radius: 15.0,
-                      dotRadius: 6.0,
-                    ),
-                    Text("Chargement, veuillez patienter"),
-                  ],
-                ),
-              );
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: ColorLoader3(
-                  radius: 15.0,
-                  dotRadius: 6.0,
-                ),
-              );
-            }
-            if (snapshot.data!.isNotEmpty) {
-              return ListView(
-                padding: const EdgeInsets.all(0.0),
-                children: [
-                  const SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Slider bons plans
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Les bons plans du moment",
-                          style: customTitle,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Des bons plans à $city  🤲",
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderAccueil1(latitude, longitude),
-                      ),
-
-                      const Center(
-                          child: Text(
-                        "Sponsorisé",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20.00),
-                      )),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      //trait gris de séparation
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      // Slider près de chez vous
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Près de chez vous",
-                          style: customTitle,
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "-3km 📍",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderAccueil2(latitude, longitude),
-                      ),
-                      //trait gris de séparation
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      // Slider plus à découvrir
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Plus à découvrir",
-                          style: customTitle,
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "-10km 🗺️",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderAccueil3(latitude, longitude),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      //trait gris de séparation
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      // Slider favoris
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: RichText(
-                          text: TextSpan(
-                            style: Theme.of(context).textTheme.bodyText2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
                             children: [
-                              TextSpan(
-                                text: 'Mes magasins préférés',
-                                style: customTitle,
+                              const Icon(Icons.location_on,
+                                  color: BuyandByeAppTheme.orangeMiFonce),
+                              const SizedBox(
+                                width: 10,
                               ),
-                              const WidgetSpan(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  child: Icon(
-                                    Icons.favorite,
-                                    color: Colors.red,
-                                    size: 25,
+                              SizedBox(
+                                height: 40,
+                                child: InkWell(
+                                  onTapCancel: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  onTap: () {
+                                    affichageAddress();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: Text(
+                                      currentAddress!,
+                                      style: const TextStyle(fontSize: 13.5),
+                                      textAlign: TextAlign.left,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -407,106 +205,316 @@ class _PageAccueilState extends State<PageAccueil> {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderFavorite(latitude, longitude, userid),
-                      ),
-                      // Text(
-                      //   "    Vous avez acheté chez eux récemment",
-                      //   style: customTitle,
-                      // ),
-                      // Container(
-                      //   padding: EdgeInsets.all(20),
-                      //   child: SliderAccueil4(latitude, longitude),
-                      //   ),
-                      // SizedBox(
-                      //   height: 20,
-                      // ),
-                      // Container(
-                      //   width: size.width,
-                      //   height: 10,
-                      //   decoration: BoxDecoration(color: textFieldColor),
-                      // ),
-                      // SizedBox(
-                      //   height: 20,
-                      // ),
-                      // Center(
-                      //   child: GestureDetector(
-                      //     onTap: () {
-                      //       affichageAllStores();
-                      //     },
-                      //     child: Container(
-                      //       height: 50,
-                      //       width: 210,
-                      //       decoration: BoxDecoration(
-                      //           borderRadius: BorderRadius.circular(20),
-                      //           color: BuyandByeAppTheme.black_electrik),
-                      //       child: Text(
-                      //         "Afficher tous les commerçants",
-                      //         style: TextStyle(color: white),
-                      //       ),
-                      //       alignment: Alignment.center,
-                      //     ),
-                      //   ),
-                      // ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            } else {
-              return ListView(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  ),
-                  Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/images/splash_2.png',
-                        width: 300,
-                        height: 300,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
-                          style: TextStyle(
-                            fontSize: 18,
-                            // color: Colors.grey[700]
+                      trailing: Container(
+                        padding: const EdgeInsets.only(
+                          left: 6,
+                          right: 6,
+                        ),
+                        child: IconButton(
+                          icon: const Center(
+                            child: Icon(Icons.shopping_cart,
+                                color: BuyandByeAppTheme.orangeMiFonce
+                                // size: 22,
+                                ),
                           ),
-                          textAlign: TextAlign.justify,
+                          onPressed: () {
+                            affichageCart();
+                          },
                         ),
                       ),
-                    ],
-                  )),
-                ],
-              );
-            }
-          },
-        ),
-      ),
-    ) : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    ColorLoader3(
-                      radius: 15.0,
-                      dotRadius: 6.0,
+                      largeTitle: RichText(
+                        text: TextSpan(
+                          // style: Theme.of(context).textTheme.bodyText2,
+                          children: [
+                            const TextSpan(
+                                text: 'Bienvenue ',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: BuyandByeAppTheme.orangeMiFonce,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            TextSpan(
+                              text: username,
+                              style: const TextStyle(
+                                fontSize: 23,
+                                color: BuyandByeAppTheme.blackElectrik,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    Text("Chargement, veuillez patienter"),
-                  ],
-                ));
+                  ),
+                ];
+              },
+              body: StreamBuilder(
+                stream: stream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          ColorLoader3(
+                            radius: 15.0,
+                            dotRadius: 6.0,
+                          ),
+                          Text("Chargement, veuillez patienter"),
+                        ],
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: ColorLoader3(
+                        radius: 15.0,
+                        dotRadius: 6.0,
+                      ),
+                    );
+                  }
+                  if (snapshot.data!.isNotEmpty) {
+                    return ListView(
+                      padding: const EdgeInsets.all(0.0),
+                      children: [
+                        const SizedBox(height: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Slider bons plans
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Les bons plans du moment",
+                                style: customTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Des bons plans à $city  🤲",
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderAccueil1(latitude, longitude),
+                            ),
+
+                            const Center(
+                                child: Text(
+                              "Sponsorisé",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20.00),
+                            )),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // Slider près de chez vous
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Près de chez vous",
+                                style: customTitle,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "-3km 📍",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderAccueil2(latitude, longitude),
+                            ),
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // Slider plus à découvrir
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Plus à découvrir",
+                                style: customTitle,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "-10km 🗺️",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderAccueil3(latitude, longitude),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // Slider favoris
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                  children: [
+                                    TextSpan(
+                                      text: 'Mes magasins préférés',
+                                      style: customTitle,
+                                    ),
+                                    const WidgetSpan(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        child: Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
+                                          size: 25,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child:
+                                  SliderFavorite(latitude, longitude, userid),
+                            ),
+                            // Text(
+                            //   "    Vous avez acheté chez eux récemment",
+                            //   style: customTitle,
+                            // ),
+                            // Container(
+                            //   padding: EdgeInsets.all(20),
+                            //   child: SliderAccueil4(latitude, longitude),
+                            //   ),
+                            // SizedBox(
+                            //   height: 20,
+                            // ),
+                            // Container(
+                            //   width: size.width,
+                            //   height: 10,
+                            //   decoration: BoxDecoration(color: textFieldColor),
+                            // ),
+                            // SizedBox(
+                            //   height: 20,
+                            // ),
+                            // Center(
+                            //   child: GestureDetector(
+                            //     onTap: () {
+                            //       affichageAllStores();
+                            //     },
+                            //     child: Container(
+                            //       height: 50,
+                            //       width: 210,
+                            //       decoration: BoxDecoration(
+                            //           borderRadius: BorderRadius.circular(20),
+                            //           color: BuyandByeAppTheme.black_electrik),
+                            //       child: Text(
+                            //         "Afficher tous les commerçants",
+                            //         style: TextStyle(color: white),
+                            //       ),
+                            //       alignment: Alignment.center,
+                            //     ),
+                            //   ),
+                            // ),
+
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  } else {
+                    return ListView(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                        Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Image.asset(
+                              'assets/images/splash_2.png',
+                              width: 300,
+                              height: 300,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text(
+                                "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  // color: Colors.grey[700]
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                            ),
+                          ],
+                        )),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          )
+        : Center(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              ColorLoader3(
+                radius: 15.0,
+                dotRadius: 6.0,
+              ),
+              Text("Chargement, veuillez patienter"),
+            ],
+          ));
   }
 
   @override
@@ -557,12 +565,11 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 }
 
+class Geoflutterfire {}
+
 // ignore: must_be_immutable
 class SliderAccueil1 extends StatefulWidget {
-  SliderAccueil1(
-    this.latitude,
-    this.longitude, {Key? key}
-  ) : super(key: key);
+  SliderAccueil1(this.latitude, this.longitude, {Key? key}) : super(key: key);
   double? latitude;
   double? longitude;
   @override
@@ -583,7 +590,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
     //FONCTION PERMETTANT DE RECUPERER LES MAGASINS ET DE LES AFFICHER EN FONCTION DE LA POSITION DE L'UTLISATEUR
 
     setState(() {
-      geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       GeoFirePoint center =
           geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
@@ -690,10 +697,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
 // ignore: must_be_immutable
 class SliderAccueil2 extends StatefulWidget {
-  SliderAccueil2(
-    this.latitude,
-    this.longitude, {Key? key}
-  ) : super(key: key);
+  SliderAccueil2(this.latitude, this.longitude, {Key? key}) : super(key: key);
   double? latitude;
   double? longitude;
   @override
@@ -711,7 +715,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
     super.initState();
 
     setState(() {
-      geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       GeoFirePoint center =
           geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
@@ -817,10 +821,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
 // ignore: must_be_immutable
 class SliderAccueil3 extends StatefulWidget {
-  SliderAccueil3(
-    this.latitude,
-    this.longitude, {Key? key}
-  ) : super(key: key);
+  SliderAccueil3(this.latitude, this.longitude, {Key? key}) : super(key: key);
   double? latitude;
   double? longitude;
   @override
@@ -828,7 +829,7 @@ class SliderAccueil3 extends StatefulWidget {
 }
 
 class _SliderAccueil3State extends State<SliderAccueil3> {
-  late Geoflutterfire geo;
+  // late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
 
@@ -837,7 +838,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
     super.initState();
 
     setState(() {
-      geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       GeoFirePoint center =
           geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
@@ -943,11 +944,8 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
 // ignore: must_be_immutable
 class SliderFavorite extends StatefulWidget {
-  SliderFavorite(
-    this.latitude,
-    this.longitude,
-    this.userID, {Key? key}
-  ) : super(key: key);
+  SliderFavorite(this.latitude, this.longitude, this.userID, {Key? key})
+      : super(key: key);
   double latitude;
   double longitude;
   String? userID;
@@ -959,32 +957,24 @@ class _SliderFavoriteState extends State<SliderFavorite> {
   Geoflutterfire? geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
+  final lovedId = [];
 
   @override
   void initState() {
     super.initState();
-
     setState(() {
-      geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       GeoFirePoint center =
-          geo!.point(latitude: widget.latitude, longitude: widget.longitude);
+          geo.point(latitude: widget.latitude, longitude: widget.longitude);
       stream = radius.switchMap((rad) {
-        var collectionReference = FirebaseFirestore.instance
+        Query collectionReference = FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userID)
-            .collection('liked');
-        return geo!.collection(collectionRef: collectionReference).within(
+            .collection('loved');
+        return geo.collection(collectionRef: collectionReference).within(
             center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
-  }
-
-  List listImages(documents) {
-    List shopImages = [];
-    for (int i = 0; i < documents.length; i++) {
-      shopImages.add(documents[i]["imgUrl"]);
-    }
-    return shopImages;
   }
 
   int carouselItem = 0;
@@ -992,8 +982,8 @@ class _SliderFavoriteState extends State<SliderFavorite> {
   Widget build(BuildContext context) {
     return StreamBuilder<dynamic>(
         stream: stream,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+        builder: (context, snapshot1) {
+          if (!snapshot1.hasData) {
             return Shimmer.fromColors(
               child: Stack(
                 children: [
@@ -1014,8 +1004,7 @@ class _SliderFavoriteState extends State<SliderFavorite> {
             );
           }
           // Les éléments sont mélangés à chaque mouvement du carousel
-          final documents = snapshot.data!..shuffle();
-          if (documents.length > 0) {
+          if (snapshot1.data.length > 0) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2.4,
               width: MediaQuery.of(context).size.width,
@@ -1023,22 +1012,31 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                 primary: false,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: documents.length,
+                itemCount: snapshot1.data.length,
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: SlideItem(
-                        img: documents[index]["imgUrl"],
-                        name: documents[index]["name"],
-                        address: documents[index]["adresse"],
-                        description: documents[index]["description"],
-                        livraison: documents[index]["livraison"],
-                        sellerID: documents[index]["id"],
-                        horairesOuverture: documents[index]["horairesOuverture"],
-                        colorStore: documents[index]["colorStore"],
-                        clickAndCollect: documents[index]["ClickAndCollect"],
-                        mainCategorie: documents[index]["mainCategorie"]),
-                  );
+                  return StreamBuilder<dynamic>(
+                      stream: FirebaseFirestore.instance
+                          .collection('magasins')
+                          .doc(snapshot1.data[index]["id"])
+                          .snapshots(),
+                      builder: (context, snapshot2) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: SlideItem(
+                              img: snapshot2.data["imgUrl"],
+                              name: snapshot2.data["name"],
+                              address: snapshot2.data["adresse"],
+                              description: snapshot2.data["description"],
+                              livraison: snapshot2.data["livraison"],
+                              sellerID: snapshot2.data["id"],
+                              horairesOuverture:
+                                  snapshot2.data["horairesOuverture"],
+                              colorStore: snapshot2.data["colorStore"],
+                              clickAndCollect:
+                                  snapshot2.data["ClickAndCollect"],
+                              mainCategorie: snapshot2.data["mainCategorie"]),
+                        );
+                      });
                 },
               ),
             );
@@ -1141,7 +1139,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                     ['ClickAndCollect'],
                                 livraison: documents[carouselItem]['livraison'],
                                 sellerID: documents[carouselItem]['id'],
-                                horairesOuverture: snapshot.data[carouselItem]['horairesOuverture'],
+                                horairesOuverture: snapshot.data[carouselItem]
+                                    ['horairesOuverture'],
                               ),
                             ),
                           );
@@ -1150,7 +1149,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                             width: MediaQuery.of(context).size.width,
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10),
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
@@ -1169,8 +1169,8 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                                   child: Image.network(i),
                                 ),
                                 Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 10, top: 40),
+                                    padding: const EdgeInsets.only(
+                                        bottom: 10, top: 40),
                                     child: Text(documents[carouselItem]["name"],
                                         style: const TextStyle(
                                             fontSize: 20,
@@ -1227,7 +1227,7 @@ class _AllStoresState extends State<AllStores> {
     Geolocator.getCurrentPosition().then((value) {
       setState(() {
         position = value;
-        geo = Geoflutterfire();
+        final geo = GeoFlutterFire();
         GeoFirePoint center = geo.point(
             latitude: position.latitude, longitude: position.longitude);
         stream = radius.switchMap((rad) {
@@ -1299,7 +1299,8 @@ class _AllStoresState extends State<AllStores> {
                                             onTap: () async {},
                                             child: Container(
                                               width: size.width - 150,
-                                              padding: const EdgeInsets.only(top: 5),
+                                              padding:
+                                                  const EdgeInsets.only(top: 5),
                                               child: const SizedBox(
                                                 height: 10,
                                                 width: 10,
@@ -1402,7 +1403,8 @@ class _AllStoresState extends State<AllStores> {
                                         livraison: snapshot.data[index]
                                             ['livraison'],
                                         sellerID: snapshot.data[index]['id'],
-                                        horairesOuverture: snapshot.data[index]['horairesOuverture'],
+                                        horairesOuverture: snapshot.data[index]
+                                            ['horairesOuverture'],
                                       )));
                         },
                         child: Column(

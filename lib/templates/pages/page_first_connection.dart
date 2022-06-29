@@ -14,7 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:location/location.dart';
 import 'package:geocoding/geocoding.dart' as geocoder;
 
@@ -119,7 +119,8 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                               itemCount: snapshot.data!.docs.length,
                               itemBuilder: (context, index) {
                                 return Padding(
-                                  padding: const EdgeInsets.fromLTRB(00, 0, 0, 0),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(00, 0, 0, 0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -131,7 +132,8 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Icon(Icons.place_rounded),
+                                                      const Icon(
+                                                          Icons.place_rounded),
                                                       const SizedBox(width: 10),
                                                       Column(
                                                         mainAxisAlignment:
@@ -141,12 +143,12 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                             CrossAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          const SizedBox(height: 30),
+                                                          const SizedBox(
+                                                              height: 30),
                                                           Text(
                                                             snapshot.data!
-                                                                        .docs[
-                                                                    index][
-                                                                "addressName"],
+                                                                    .docs[index]
+                                                                ["addressName"],
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -165,7 +167,8 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
                                                                   ["address"]),
                                                             ),
                                                           ),
-                                                          const SizedBox(height: 30),
+                                                          const SizedBox(
+                                                              height: 30),
                                                         ],
                                                       ),
                                                       Column(
@@ -426,7 +429,7 @@ class _AddressChooseState extends State<AddressChoose> {
       userid;
   double? latitude, longitude, currentLatitude, currentLongitude;
   bool permissionChecked = false;
-  Geoflutterfire? geo;
+  final geo = GeoFlutterFire();
 
   @override
   Widget build(BuildContext context) {
@@ -509,7 +512,8 @@ class _AddressChooseState extends State<AddressChoose> {
                           return showCupertinoDialog(
                               context: context,
                               builder: (context) => CupertinoAlertDialog(
-                                    title: const Text("Localisation desactivée"),
+                                    title:
+                                        const Text("Localisation desactivée"),
                                     content: const Text(
                                         "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                     actions: [
@@ -647,12 +651,11 @@ class _AddressChooseState extends State<AddressChoose> {
             child: InkWell(
               onTap: () async {
                 // generate a new token here
-                  final sessionToken = const Uuid().v4();
-                  final  result =
-                      await showSearch(
-                    context: context,
-                    delegate: AddressSearch(sessionToken),
-                  );
+                final sessionToken = const Uuid().v4();
+                final result = await showSearch(
+                  context: context,
+                  delegate: AddressSearch(sessionToken),
+                );
 
                 // This will change the text displayed in the TextField
                 final placeDetails = await PlaceApiProvider(sessionToken)
@@ -664,8 +667,7 @@ class _AddressChooseState extends State<AddressChoose> {
                   street = placeDetails.street;
                   city = placeDetails.city;
                   zipCode = placeDetails.zipCode;
-                  currentAddressLocation =
-                      "$streetNumber $street, $city ";
+                  currentAddressLocation = "$streetNumber $street, $city ";
                 });
 
                 final query = "$streetNumber $street , $city";

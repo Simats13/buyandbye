@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/auth.dart';
@@ -519,17 +519,31 @@ class DatabaseMethods {
    * Avec ses infos elle ajoute dans la collection de l'utilisateur les informations du magasins et les supprime s'il n'aime plus
    */
 
-  Future addFavoriteShop(String? userID, sellerID, bool addFavorite) async {
+  Future addFavoriteShop(String? userID, sellerID, bool addFavorite, String? geohash, double latitude, double longitude) async {
     if (addFavorite == true) {
-      await FirebaseFirestore.instance.collection('users').doc(userID).update({
-        "loved": FieldValue.arrayUnion([sellerID]),
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .collection("loved")
+          .doc(sellerID)
+          .set({
+        'id': sellerID,
+        'position': {
+          'geohash': geohash,
+          'geopoint': GeoPoint(latitude, longitude)
+        }
       });
     } else {
-      await FirebaseFirestore.instance.collection('users').doc(userID).update({
-        'loved': FieldValue.arrayRemove([sellerID]),
-      });
-    }
-  }
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .collection("loved")
+          .doc(sellerID)
+          .delete();
+        }
+      }
+
+
 
   Future checkFavoriteShop() async {
     final User user = await AuthMethods().getCurrentUser();
@@ -553,8 +567,9 @@ class DatabaseMethods {
 
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection("users")
-        .where("id", isEqualTo: userID)
-        .where("loved", arrayContains: sellerID)
+        .doc(userID)
+        .collection("loved")
+        .where("id", isEqualTo: sellerID)
         .get();
     if (querySnapshot.docs.isEmpty) {
       return true;
@@ -873,6 +888,20 @@ class DatabaseMethods {
         .update({"amount": amount});
   }
 
+  List getLoved(String? userID) {
+    List lovedId = [];
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .get()
+        .then((value) => {
+              value.data()!['loved'].forEach((element) {
+                return lovedId.add(element);
+              })
+            });
+    return lovedId;
+  }
+
   Future deleteCartProduct(String nomProduit, sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userid = user.uid;
@@ -1092,7 +1121,7 @@ class DatabaseMethods {
 
   Future allProductsCategory(
       String categorie, double latitude, longitude) async {
-    Geoflutterfire geo = Geoflutterfire();
+    GeoFlutterFire geo = GeoFlutterFire();
     GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
     var collectionReference = FirebaseFirestore.instance
         .collection('magasins')

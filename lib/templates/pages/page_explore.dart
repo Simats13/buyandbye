@@ -14,7 +14,7 @@ import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -28,7 +28,7 @@ class PageExplore extends StatefulWidget {
 
 class _PageExploreState extends State<PageExplore> {
   var radius = BehaviorSubject<double>.seeded(10);
-  late Geoflutterfire geo;
+  final geo = GeoFlutterFire();
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   final Set<Marker> marker = {};
@@ -37,7 +37,7 @@ class _PageExploreState extends State<PageExplore> {
   Stream<List<DocumentSnapshot>>? stream;
   late BitmapDescriptor mapMaker, mapMakerUser;
   final PanelController _pc = PanelController();
-  
+
   List magasins = [];
   String label = 'kms';
   late String city;
@@ -106,7 +106,7 @@ class _PageExploreState extends State<PageExplore> {
     var first = addresses.first;
     setState(() {
       mapToggle = true;
-      geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       city = first.locality!;
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
@@ -248,15 +248,16 @@ class _PageExploreState extends State<PageExplore> {
                                                           .docs[index]
                                                       ['ClickAndCollect'],
                                                   livraison: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]
-                                                      ['livraison'],
+                                                          as QuerySnapshot)
+                                                      .docs[index]['livraison'],
                                                   sellerID: (snapshot.data!
                                                           as QuerySnapshot)
                                                       .docs[index]['id'],
-                                                  horairesOuverture: (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]["horairesOuverture"],
+                                                  horairesOuverture: (snapshot
+                                                                  .data!
+                                                              as QuerySnapshot)
+                                                          .docs[index]
+                                                      ["horairesOuverture"],
                                                 )));
                                   },
                                   child: const Center(
@@ -410,22 +411,22 @@ class _PageExploreState extends State<PageExplore> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
                         child: Platform.isIOS
-                        ? Center(
-                            child: Column(
-                              children: const [
-                                CupertinoActivityIndicator(),
-                                Text('Chargement...'),
-                              ],
-                            ),
-                          )
-                        : Center(
-                            child: Column(
-                              children: const [
-                                CircularProgressIndicator(),
-                                Text('Chargement...'),
-                              ],
-                            ),
-                          ),
+                            ? Center(
+                                child: Column(
+                                  children: const [
+                                    CupertinoActivityIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                ),
+                              )
+                            : Center(
+                                child: Column(
+                                  children: const [
+                                    CircularProgressIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                ),
+                              ),
                       );
                       //METTRE UN SHIMMER
                     }
@@ -442,7 +443,7 @@ class _PageExploreState extends State<PageExplore> {
                           // maxHeight: 30,
                           parallaxEnabled: true,
                           parallaxOffset: .5,
-                          controller:_pc,
+                          controller: _pc,
                           panelBuilder: (sc) {
                             return MediaQuery.removePadding(
                               context: context,
@@ -461,8 +462,9 @@ class _PageExploreState extends State<PageExplore> {
                                         height: 5,
                                         decoration: BoxDecoration(
                                             color: Colors.grey[300],
-                                            borderRadius: const BorderRadius.all(
-                                                Radius.circular(12.0))),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(12.0))),
                                       ),
                                     ],
                                   ),
@@ -530,11 +532,10 @@ class _PageExploreState extends State<PageExplore> {
                                                     ListTile(
                                                       title: Center(
                                                         child: Container(
-                                                          width:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
                                                           height: 30,
                                                           decoration:
                                                               const BoxDecoration(
@@ -546,11 +547,10 @@ class _PageExploreState extends State<PageExplore> {
                                                     ListTile(
                                                       title: Center(
                                                         child: Container(
-                                                          width:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
                                                           height: 30,
                                                           decoration:
                                                               const BoxDecoration(
@@ -562,11 +562,10 @@ class _PageExploreState extends State<PageExplore> {
                                                     ListTile(
                                                       title: Center(
                                                         child: Container(
-                                                          width:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
                                                           height: 30,
                                                           decoration:
                                                               const BoxDecoration(
@@ -609,17 +608,19 @@ class _PageExploreState extends State<PageExplore> {
                                                           adresse: snapshot
                                                                   .data[index]
                                                               ['adresse'],
-                                                          clickAndCollect:
-                                                              snapshot.data[
-                                                                      index][
-                                                                  'ClickAndCollect'],
+                                                          clickAndCollect: snapshot
+                                                                  .data[index][
+                                                              'ClickAndCollect'],
                                                           livraison: snapshot
                                                                   .data[index]
                                                               ['livraison'],
                                                           sellerID: snapshot
                                                                   .data[index]
                                                               ['id'],
-                                                          horairesOuverture: snapshot.data[index]["horairesOuverture"],
+                                                          horairesOuverture:
+                                                              snapshot.data[
+                                                                      index][
+                                                                  "horairesOuverture"],
                                                         ),
                                                       ),
                                                     );
@@ -636,21 +637,19 @@ class _PageExploreState extends State<PageExplore> {
                                                           _pc.close();
                                                           moveCamera(
                                                             snapshot
-                                                                .data[index][
-                                                                    'position']
-                                                                    [
-                                                                    'geopoint']
+                                                                .data[index]
+                                                                    ['position']
+                                                                    ['geopoint']
                                                                 .latitude,
                                                             snapshot
-                                                                .data[index][
-                                                                    'position']
-                                                                    [
-                                                                    'geopoint']
+                                                                .data[index]
+                                                                    ['position']
+                                                                    ['geopoint']
                                                                 .longitude,
                                                           );
                                                         },
-                                                        icon:
-                                                            const Icon(Icons.place),
+                                                        icon: const Icon(
+                                                            Icons.place),
                                                       ),
                                                     ],
                                                   ),
@@ -752,8 +751,8 @@ class _PageExploreState extends State<PageExplore> {
                             strictMode: true);
                   });
                   markers.clear();
-                  BitmapDescriptor.fromAssetImage(
-                          const ImageConfiguration(), 'assets/icons/location-pin.png')
+                  BitmapDescriptor.fromAssetImage(const ImageConfiguration(),
+                          'assets/icons/location-pin.png')
                       .then((value) {
                     mapMakerUser = value;
                   });
@@ -791,8 +790,8 @@ class _PageExploreState extends State<PageExplore> {
                             field: 'position',
                             strictMode: true);
                   });
-                  BitmapDescriptor.fromAssetImage(
-                          const ImageConfiguration(), 'assets/icons/location-pin.png')
+                  BitmapDescriptor.fromAssetImage(const ImageConfiguration(),
+                          'assets/icons/location-pin.png')
                       .then((value) {
                     mapMakerUser = value;
                   });
@@ -819,13 +818,15 @@ class _PageExploreState extends State<PageExplore> {
             icon: Icon(icon),
             color: Colors.white,
           ),
-          decoration:
-              BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: const [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.15),
-              blurRadius: 8.0,
-            )
-          ]),
+          decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  blurRadius: 8.0,
+                )
+              ]),
         ),
         const SizedBox(
           height: 12.0,
