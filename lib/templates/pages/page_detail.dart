@@ -48,24 +48,24 @@ class PageDetail extends StatefulWidget {
   _PageDetail createState() => _PageDetail();
 }
 
-class MapUtils {
-  MapUtils._();
+// class MapUtils {
+//   MapUtils._();
 
-  static Future<void> openMap(double latitude, double longitude) async {
-    /*String googleUrl = Uri.encodeFull(
-        'https://www.google.com/maps/search/?api=1&query=43.6889085,4.2724933');*/
-    var googleUri = Uri(
-      scheme: 'https',
-      host: 'www.google.com',
-      path: 'maps/search/?api=1&query=43.6889085,4.2724933'
-    );
-    if (await canLaunch("$googleUri")) {
-      await launch("$googleUri");
-    } else {
-      throw 'Could not open the map.';
-    }
-  }
-}
+//   static Future<void> openMap(double latitude, double longitude) async {
+//     /*String googleUrl = Uri.encodeFull(
+//         'https://www.google.com/maps/search/?api=1&query=43.6889085,4.2724933');*/
+//     var googleUri = Uri(
+//       scheme: 'https',
+//       host: 'www.google.com',
+//       path: 'maps/search/?api=1&query=43.6889085,4.2724933'
+//     );
+//     if (await canLaunch("$googleUri")) {
+//       await launch("$googleUri");
+//     } else {
+//       throw 'Could not open the map.';
+//     }
+//   }
+// }
 
 class _PageDetail extends State<PageDetail> with LocalNotificationView {
   double cartTotal = 0.0;
@@ -248,10 +248,12 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
+
+    
     var googleUri = Uri(
       scheme: 'https',
       host: 'www.google.com',
-      path: 'maps/search/?api=1&query=$adresseGoogleUrl"'
+      path: "maps/place/$adresseGoogleUrl",
     );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),

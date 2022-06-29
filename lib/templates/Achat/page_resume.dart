@@ -287,16 +287,14 @@ class _PageResumeState extends State<PageResume> {
                                     : widget.deliveryChoose == 0
                                         ? TextButton.icon(
                                             onPressed: () {
-                                              MapUtils.openMap(widget.latitude!,
-                                                  widget.longitude!);
+                                              MapUtils.openMap(widget.addressSeller!);
                                             },
                                             icon: const Icon(Icons.storefront),
                                             label: Text(widget.addressSeller!),
                                           )
                                         : TextButton.icon(
                                             onPressed: () {
-                                              MapUtils.openMap(widget.latitude!,
-                                                  widget.longitude!);
+                                              MapUtils.openMap(widget.addressSeller!);
                                             },
                                             icon: const Icon(Icons.home),
                                             label:
@@ -446,13 +444,14 @@ class _DetailState extends State<Detail> {
 class MapUtils {
   MapUtils._();
 
-  static Future<void> openMap(double latitude, double longitude) async {
+  static Future<void> openMap(String addressSeller) async {
     /*String googleUrl =
         'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';*/
+    
     var googleUri = Uri(
       scheme: 'https',
       host: 'www.google.com',
-      path: 'maps/search/?api=1&query=$latitude,$longitude'
+      path: "maps/place/$addressSeller",
     );
     if (await canLaunch("$googleUri")) {
       await launch("$googleUri");
