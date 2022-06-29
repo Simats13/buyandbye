@@ -5,6 +5,7 @@ import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
+import 'package:buyandbye/theme/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,17 +28,22 @@ class UserAddress extends StatefulWidget {
 }
 
 class _UserAddressState extends State<UserAddress> {
-  String? currentAddressLocation = "",
+  String? currentLocationAddress = "",
+      currentAddressSaved = "",
+      currentCityLocation,
       streetNumber,
       street,
       city,
       zipCode,
       idAddress,
       userid;
-  double latitude = 0, longitude = 0, currentLatitude = 0, currentLongitude = 0;
+  double latitude = 0,
+      longitude = 0,
+      currentLocationLatitude = 0,
+      currentLocationLongitude = 0;
 
   LocationData? _locationData;
-  Location location = Location();
+  Location location = new Location();
   bool permissionChecked = false;
   bool chargementChecked = false;
 
@@ -61,25 +67,33 @@ class _UserAddressState extends State<UserAddress> {
     }
   }
 
-  // Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
-  // S'il n'a pas accepté alors cela renvoit false
-  // S'il a accepté alors ça renvoie la localisation périodiquement
-  Future<bool> _determinePermission() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+  String _textReplace(String str) {
+    str = str.replaceAll('Avenue', 'Av');
+    str = str.replaceAll('Boulevard', 'Bd');
+    str = str.replaceAll('Chemin', 'Ch');
+    str = str.replaceAll('Impasse', 'Imp');
+    return str;
+  }
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
+  //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
+  //S'il n'a pas accepté alors cela renvoit false
+  //S'il a accepté alors ça renvoie la localisation périodiquement
+  _determinePermission() async {
+    bool localisationActive;
+    PermissionStatus permissionAutorise;
+
+    localisationActive = await location.serviceEnabled();
+    if (!localisationActive) {
+      localisationActive = await location.requestService();
+      if (!localisationActive) {
         return false;
       }
     }
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionAutorise = await location.hasPermission();
+    if (permissionAutorise == PermissionStatus.denied) {
+      permissionAutorise = await location.requestPermission();
+      if (permissionAutorise != PermissionStatus.granted) {
         setState(() {
           chargementChecked = true;
         });
@@ -90,15 +104,11 @@ class _UserAddressState extends State<UserAddress> {
     setState(() {
       permissionChecked = true;
     });
-    getLocationUser();
-    return true;
-  }
 
-  //Fonction permettant de retourner la localisation exacte d'un utilisateur
-  getLocationUser() async {
-    // bool docExists = await DatabaseMethods().checkIfDocExists(userid);
-
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
     _locationData = await location.getLocation();
+
     List<geocoder.Placemark> addresses =
         await geocoder.placemarkFromCoordinates(
             _locationData!.latitude!, _locationData!.longitude!);
@@ -106,31 +116,30 @@ class _UserAddressState extends State<UserAddress> {
 
     setState(() {
       //Latitude de l'utilisateur via la localisation
-      currentLatitude = _locationData!.latitude ?? 0;
+      currentLocationLatitude = _locationData?.latitude ?? 0;
       //Longitude de l'utilisateur via la localisation
-      currentLongitude = _locationData!.longitude ?? 0;
+      currentLocationLongitude = _locationData?.longitude ?? 0;
+      //Adresse de l'utilisateur via la localisation
+      currentLocationAddress = "${first.name}, ${first.locality}";
+
+      currentLocationAddress = _textReplace(currentLocationAddress!); 
+
       //Ville de l'utilisateur via la localisation
-      city = "${first.locality}";
+      currentCityLocation = "${first.locality}";
       chargementChecked = true;
     });
+    return true;
   }
 
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot = await (DatabaseMethods()
-        .getChosenAddress(userid) /*as Future<QuerySnapshot<Object>>*/);
+    QuerySnapshot querySnapshot =
+        await DatabaseMethods().getChosenAddress(userid);
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(latitude, longitude);
-
-    var first = addresses.first;
-    currentAddressLocation = "${first.name}, ${first.locality}";
     idAddress = "${querySnapshot.docs[0]['idDoc']}";
-    city = "${first.locality}";
-    // chargementChecked = true;
+    chargementChecked = true;
     setState(() {});
   }
 
@@ -184,6 +193,7 @@ class _UserAddressState extends State<UserAddress> {
                         zipCode = placeDetails.zipCode;
                       });
 
+                      //RECUPERE LA RECHERCHE DE L'UTILISATEUR ET LES CONVERTIT EN COORDONNEES
                       final query = "$street , $city";
 
                       List<geocoder.Location> locations =
@@ -255,23 +265,29 @@ class _UserAddressState extends State<UserAddress> {
                 ),
               ],
             ),
+
+            //LOCALISATION DU TELEPHONE DE L'UTILISATEUR
             permissionChecked
                 ? Row(
                     children: [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width / 1.57,
+                          width: MediaQuery.of(context).size.width / 1.20,
                           child: InkWell(
                             onTap: () async {
+                              //RECUPERE LA LOCALISATION DE L'UTILISATEUR ET CONVERTIT LES COODORNEES EN ADRESSE
                               List<geocoder.Placemark> addresses =
                                   await geocoder.placemarkFromCoordinates(
-                                      latitude, longitude);
+                                      currentLocationLatitude,
+                                      currentLocationLongitude,
+                                      localeIdentifier: 'fr_FR');
                               var first = addresses.first;
                               setState(() {
-                                city = first.locality!;
-                                currentAddressLocation =
-                                    first.name! + first.locality!;
+                                currentCityLocation = first.locality!;
+                                currentLocationAddress =
+                                    first.name! + ', ' + first.locality!;
+                                //A CHANGER LORSQUE LE PROVIDER SERA MIS EN PLACE PREND EN COMPTE LA NOUVELLE ADRESSE ET RECHARGE L'APPLICATION
                                 geo = Geoflutterfire();
                                 GeoFirePoint center = geo!.point(
                                     latitude: latitude, longitude: longitude);
@@ -293,36 +309,40 @@ class _UserAddressState extends State<UserAddress> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => PageAddressNext(
-                                            lat: currentLatitude,
-                                            long: currentLongitude,
-                                            adresse: currentAddressLocation,
+                                            lat: currentLocationLatitude,
+                                            long: currentLocationLongitude,
+                                            adresse: currentLocationAddress,
                                           )));
                             },
                             child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.near_me_rounded),
-                                  const SizedBox(width: 20),
-                                  Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Position actuelle"),
-                                        const SizedBox(height: 10),
-                                        Text(currentAddressLocation!)
-                                      ]),
-                                ],
-                              ),
-                            ),
+                                constraints: const BoxConstraints(maxHeight: 57, minHeight: 50),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Row(
+                                    children: [
+                                      const Icon(Icons.near_me_rounded),
+                                      const SizedBox(width: 15),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text("Position actuelle"),
+                                          
+                                            SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width / 1.40,
+                                                child:
+                                                    Text(currentLocationAddress!),
+                                              ),                         
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )),
                           ),
-                        ),
                       ),
                     ],
                   )
@@ -339,7 +359,8 @@ class _UserAddressState extends State<UserAddress> {
                                 return showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text("Localisation desactivée"),
+                                    title:
+                                        const Text("Localisation desactivée"),
                                     content: const Text(
                                         "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                     actions: <Widget>[
@@ -364,7 +385,8 @@ class _UserAddressState extends State<UserAddress> {
                               return showCupertinoDialog(
                                   context: context,
                                   builder: (context) => CupertinoAlertDialog(
-                                        title: const Text("Localisation desactivée"),
+                                        title: const Text(
+                                            "Localisation desactivée"),
                                         content: const Text(
                                             "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                         actions: [
@@ -446,50 +468,51 @@ class _UserAddressState extends State<UserAddress> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const SizedBox(width: 10),
-                    IconButton(
-                        onPressed: () async {
-                          // generate a new token here
-                          final sessionToken = const Uuid().v4();
-                          final Suggestion? result = await showSearch(
-                            context: context,
-                            delegate: AddressSearch(sessionToken)
-                                as SearchDelegate<Suggestion>,
-                          );
-                          // This will change the text displayed in the TextField
-                          if (result != null) {
-                            final placeDetails =
-                                await PlaceApiProvider(sessionToken)
-                                    .getPlaceDetailFromId(result.placeId);
+                  children: const [
+                    SizedBox(width: 10),
+                    Icon(Icons.home),
+                    // IconButton(
+                    //     onPressed: () async {
+                    //       // generate a new token here
+                    //       final sessionToken = const Uuid().v4();
+                    //       final Suggestion? result = await showSearch(
+                    //         context: context,
+                    //         delegate: AddressSearch(sessionToken)
+                    //             as SearchDelegate<Suggestion>,
+                    //       );
+                    //       // This will change the text displayed in the TextField
+                    //       if (result != null) {
+                    //         final placeDetails =
+                    //             await PlaceApiProvider(sessionToken)
+                    //                 .getPlaceDetailFromId(result.placeId);
 
-                            setState(() {
-                              controller.text = result.description!;
-                              streetNumber = placeDetails.streetNumber;
-                              street = placeDetails.street;
-                              city = placeDetails.city;
-                              zipCode = placeDetails.zipCode;
-                              currentAddressLocation =
-                                  "$streetNumber $street, $city ";
-                            });
+                    //         setState(() {
+                    //           controller.text = result.description!;
+                    //           streetNumber = placeDetails.streetNumber;
+                    //           street = placeDetails.street;
+                    //           city = placeDetails.city;
+                    //           zipCode = placeDetails.zipCode;
+                    //           currentLocationAddress =
+                    //               "$streetNumber $street, $city ";
+                    //         });
 
-                            final query = "$street , $city";
+                    //         final query = "$street , $city";
 
-                            List<geocoder.Location> locations =
-                                await geocoder.locationFromAddress(query);
-                            var first = locations.first;
+                    //         List<geocoder.Location> locations =
+                    //             await geocoder.locationFromAddress(query);
+                    //         var first = locations.first;
 
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PageAddressNext(
-                                          lat: first.latitude,
-                                          long: first.longitude,
-                                          adresse: query,
-                                        )));
-                          }
-                        },
-                        icon: const Icon(Icons.home)),
+                    //         Navigator.push(
+                    //             context,
+                    //             MaterialPageRoute(
+                    //                 builder: (context) => PageAddressNext(
+                    //                       lat: first.latitude,
+                    //                       long: first.longitude,
+                    //                       adresse: query,
+                    //                     )));
+                    //       }
+                    //     },
+                    //     icon: const Icon(Icons.home)),
                   ],
                 ),
               ],
@@ -541,7 +564,7 @@ class _UserAddressState extends State<UserAddress> {
                                       .docs[index]["latitude"];
                                   longitude = (snapshot.data! as QuerySnapshot)
                                       .docs[index]["longitude"];
-                                  currentAddressLocation =
+                                  currentAddressSaved =
                                       first.name! + ", " + first.locality!;
 
                                   geo = Geoflutterfire();
@@ -573,7 +596,8 @@ class _UserAddressState extends State<UserAddress> {
                                     pageBuilder:
                                         (context, animation1, animation2) =>
                                             const Accueil(),
-                                    transitionDuration: const Duration(seconds: 0),
+                                    transitionDuration:
+                                        const Duration(seconds: 0),
                                   ),
                                   (_) =>
                                       count++ >=
@@ -674,8 +698,8 @@ class _UserAddressState extends State<UserAddress> {
                                           "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
                                   WidgetSpan(
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 2.0),
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 2.0),
                                       child: Icon(Icons.home),
                                     ),
                                   ),

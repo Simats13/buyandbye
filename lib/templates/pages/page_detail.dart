@@ -59,8 +59,8 @@ class MapUtils {
       host: 'www.google.com',
       path: 'maps/search/?api=1&query=43.6889085,4.2724933'
     );
-    if (await canLaunchUrl(googleUri)) {
-      await launchUrl(googleUri);
+    if (await canLaunch("$googleUri")) {
+      await launch("$googleUri");
     } else {
       throw 'Could not open the map.';
     }
@@ -266,7 +266,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
               ),
             ),
             onPressed: () async {
-              await launchUrl(googleUri);
+              await launch("$googleUri");
             }),
         const SizedBox(
           width: 15,

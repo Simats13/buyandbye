@@ -454,8 +454,8 @@ class MapUtils {
       host: 'www.google.com',
       path: 'maps/search/?api=1&query=$latitude,$longitude'
     );
-    if (await canLaunchUrl(googleUri)) {
-      await launchUrl(googleUri);
+    if (await canLaunch("$googleUri")) {
+      await launch("$googleUri");
     } else {
       throw 'Could not open the map.';
     }

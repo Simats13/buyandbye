@@ -760,6 +760,7 @@ class DatabaseMethods {
   }
 
   Future changeChosenAddress(userID, addressID, previousID) async {
+    print(previousID);
     await FirebaseFirestore.instance
         .collection("users")
         .doc(userID)

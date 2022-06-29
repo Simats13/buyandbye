@@ -97,7 +97,7 @@ dependencies:
   flutter_phone_direct_caller:
   algolia:
   image_picker: ^0.8.4+11
-  url_launcher: ^6.0.20
+  url_launcher: 
   number_ticker:
 
 flutter_native_splash:

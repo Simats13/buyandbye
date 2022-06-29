@@ -21,7 +21,7 @@ import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:buyandbye/theme/styles.dart';
-import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/services/database.dart'; 
 import 'package:buyandbye/templates/widgets/custom_slider.dart';
 
 class PageAccueil extends StatefulWidget {
@@ -37,15 +37,16 @@ class _PageAccueilState extends State<PageAccueil> {
   late bool permissionChecked;
   bool chargementChecked = false;
 
-  String? currentAddress,
-      currentAddressLocation = "",
+  String? currentLocationAddress,
+      currentAddress = "",
+      locationCity,
       streetNumber,
       street,
       city,
       zipCode,
       idAddress,
       userid;
-  double latitude = 0, longitude = 0, currentLatitude = 0, currentLongitude = 0;
+  double latitude = 0, longitude = 0, currentLocationLatitude = 0, currentLocationLongitude = 0;
   late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
@@ -67,91 +68,78 @@ class _PageAccueilState extends State<PageAccueil> {
     }
   }
 
-  positionCheck() async {
-    geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
-    stream = radius.switchMap((rad) {
-      var collectionReference =
-          FirebaseFirestore.instance.collection('magasins');
-
-      return geo.collection(collectionRef: collectionReference).within(
-          center: center, radius: 10, field: 'position', strictMode: true);
-    });
+  String _textReplace(String str) {
+    str = str.replaceAll('Avenue', 'Av');
+    str = str.replaceAll('Boulevard', 'Bd');
+    str = str.replaceAll('Chemin', 'Ch');
+    str = str.replaceAll('Impasse', 'Imp');
+    return str;
   }
 
-  //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
-  //S'il n'a pas accepté alors cela renvoit false
-  //S'il a accepté alors ça renvoie la localisation périodiquement
-  Future<bool> _determinePermission() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    //Fonction permettant de determiner si l'utilisateur a accepté la localisation ou non
+    //S'il n'a pas accepté alors cela renvoit false
+    //S'il a accepté alors ça renvoie la localisation périodiquement
+    Future<bool> _determinePermission() async {
+        bool localisationActive;
+        PermissionStatus permissionAutorise;
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return false;
-      }
-    }
+        localisationActive = await location.serviceEnabled();
+          if (!localisationActive) {
+            localisationActive = await location.requestService();
+            if (!localisationActive) {
+                return false;
+            }
+        }
+        print(localisationActive);
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+        permissionAutorise = await location.hasPermission();
+        if (permissionAutorise == PermissionStatus.denied) {
+        permissionAutorise = await location.requestPermission();
+          if (permissionAutorise != PermissionStatus.granted) {
+              setState(() {
+                chargementChecked = true;
+              });
+              return false;
+          }
+        }
+
         setState(() {
-          chargementChecked = true;
+          permissionChecked = true;
         });
-        return false;
-      }
+
+        return true;
     }
 
-    setState(() {
-      permissionChecked = true;
-    });
-    getLocationUser();
-    return true;
-  }
+    getCoordinates() async {
+        final User user = await AuthMethods().getCurrentUser();
+        userid = user.uid;
+        QuerySnapshot querySnapshot =
+            await DatabaseMethods().getChosenAddress(userid);
+        latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+        longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+        List<geocoder.Placemark> addresses =
+            await geocoder.placemarkFromCoordinates(latitude, longitude);
 
-  //Fonction permettant de retourner la localisation exacte d'un utilisateur
-  getLocationUser() async {
-    //  bool docExists = await DatabaseMethods().checkIfDocExists(userid);
+        var first = addresses.first;
+        currentAddress = "${first.name}, ${first.locality}";
+        currentAddress = _textReplace(currentAddress!);
+        idAddress = "${querySnapshot.docs[0]['idDoc']}";
+        city = "${first.locality}";
+        chargementChecked = true;
+        setState(() {});
+    }
 
-    _locationData = await location.getLocation();
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(
-            _locationData.latitude!, _locationData.longitude!);
-    var first = addresses.first;
+    positionCheck() async {
+        geo = Geoflutterfire();
+        GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
+        stream = radius.switchMap((rad) {
+        var collectionReference =
+            FirebaseFirestore.instance.collection('magasins');
 
-    setState(() {
-      //Latitude de l'utilisateur via la localisation
-      currentLatitude = _locationData.latitude ?? 0;
-      //Longitude de l'utilisateur via la localisation
-      currentLongitude = _locationData.longitude ?? 0;
-      //Adresse de l'utilisateur via la localisation
-      currentAddress = "${first.name}, ${first.locality}";
-      //Ville de l'utilisateur via la localisation
-      city = "${first.locality}";
-      chargementChecked = true;
-    });
-  }
-
-  getCoordinates() async {
-    final User user = await AuthMethods().getCurrentUser();
-    userid = user.uid;
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
-    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(latitude, longitude);
-
-    var first = addresses.first;
-    currentAddressLocation = "${first.name}, ${first.locality}";
-    idAddress = "${querySnapshot.docs[0]['idDoc']}";
-    city = "${first.locality}";
-    chargementChecked = true;
-    setState(() {});
-  }
+        return geo.collection(collectionRef: collectionReference).within(
+            center: center, radius: 10, field: 'position', strictMode: true);
+        });
+    }
 
   String? username;
   userinfo() async {
@@ -200,7 +188,7 @@ class _PageAccueilState extends State<PageAccueil> {
                             child: Container(
                               padding: const EdgeInsets.only(top: 5),
                               child: Text(
-                                currentAddressLocation!,
+                                currentAddress!,
                                 style: const TextStyle(fontSize: 13.5),
                                 textAlign: TextAlign.left,
                               ),
