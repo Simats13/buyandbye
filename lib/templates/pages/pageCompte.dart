@@ -335,6 +335,7 @@ class _PageCompteState extends State<PageCompte> {
         child: Column(
           children: [
             Container(
+              constraints: BoxConstraints(maxWidth: 299),
               margin: EdgeInsets.fromLTRB(10, 25, 0, 0),
               alignment: Alignment.centerLeft,
               child: Container(
@@ -350,6 +351,7 @@ class _PageCompteState extends State<PageCompte> {
               height: 8,
             ),
             Container(
+              constraints: BoxConstraints(maxWidth: 299),
               margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
               alignment: Alignment.centerLeft,
               child: Container(
@@ -362,6 +364,7 @@ class _PageCompteState extends State<PageCompte> {
               ),
             ),
             Container(
+              constraints: BoxConstraints(maxWidth: 299),
               margin: EdgeInsets.fromLTRB(0, 25, 10, 0),
               alignment: Alignment.bottomRight,
               child: Text(fname! + " " + lname!,
