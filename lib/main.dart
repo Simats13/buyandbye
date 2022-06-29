@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/templates/Pages/pageFirstConnection.dart';
-import 'package:buyandbye/templates/pages/pageAccueil.dart';
-import 'package:buyandbye/templates/pages/pageBienvenue.dart';
+import 'package:buyandbye/templates/Pages/page_first_connection.dart';
+import 'package:buyandbye/templates/pages/page_accueil.dart';
+import 'package:buyandbye/templates/pages/page_bienvenue.dart';
 import 'package:buyandbye/templates_commercant/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,9 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/page_login.dart';
 import 'package:buyandbye/templates/accueil.dart';
-import 'package:buyandbye/templates/widgets/notificationControllers.dart';
+import 'package:buyandbye/templates/widgets/notification_controllers.dart';
 import 'package:provider/provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         routes: <String, WidgetBuilder>{
-          '/Accueil': (BuildContext context) => PageAccueil()
+          '/Accueil': (BuildContext context) => const PageAccueil()
         },
         title: "Buy&Bye",
         debugShowCheckedModeBanner: false,
@@ -153,14 +153,14 @@ class _MainScreenState extends State<MainScreen> {
                   if (snapshot.hasData) {
                     final user = snapshot.data;
                     if (user!['emailVerified'] == false) {
-                      return PageLogin();
+                      return const PageLogin();
                     } else if (user['firstConnection'] == true) {
                       return const PageFirstConnection();
                     } else {
                       return const Accueil();
                     }
                   } else {
-                    return PageLogin();
+                    return const PageLogin();
                   }
                 },
               );
@@ -175,12 +175,12 @@ class _MainScreenState extends State<MainScreen> {
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data!['emailVerified'] == true) {
-                        return NavBar();
+                        return const NavBar();
                       } else {
-                        return PageLogin();
+                        return const PageLogin();
                       }
                     } else {
-                      return PageLogin();
+                      return const PageLogin();
                     }
                   });
             }

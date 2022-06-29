@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:buyandbye/templates/pages/pageAccueil.dart';
-import 'package:buyandbye/templates/pages/pageCompte.dart';
-import 'package:buyandbye/templates/pages/pageExplore.dart';
-import 'package:buyandbye/templates/pages/pageMessagerie.dart';
-import 'package:buyandbye/templates/pages/pageSearch.dart';
+import 'package:buyandbye/templates/pages/page_accueil.dart';
+import 'package:buyandbye/templates/pages/page_compte.dart';
+import 'package:buyandbye/templates/pages/page_explore.dart';
+import 'package:buyandbye/templates/pages/page_messagerie.dart';
+import 'package:buyandbye/templates/pages/page_search.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -20,18 +20,18 @@ class _AccueilState extends State<Accueil> {
   @override
   void initState() {
     super.initState();
-    AuthMethods.toogleNavBar = this.toogleNavBar;
+    AuthMethods.toogleNavBar = toogleNavBar;
   }
 
   //INDEX DES PAGES
   int pageIndex = 0;
   // Création d'une liste permettant l'indexation des pages
   final List<Widget> pages = [
-    PageAccueil(),
-    PageSearch(),
-    PageExplore(),
-    PageMessagerie(),
-    PageCompte(),
+    const PageAccueil(),
+    const PageSearch(),
+    const PageExplore(),
+    const PageMessagerie(),
+    const PageCompte(),
   ];
 
   //Affiche la barre de navigation si l'utilisateur est connecté ou non
@@ -64,8 +64,8 @@ class _AccueilState extends State<Accueil> {
                       haptic: true,
                       iconSize: 28,
                       padding:
-                          EdgeInsets.symmetric(horizontal: 12.5, vertical: 10),
-                      duration: Duration(milliseconds: 400),
+                          const EdgeInsets.symmetric(horizontal: 12.5, vertical: 10),
+                      duration: const Duration(milliseconds: 400),
                       tabs: [
                         GButton(
                           icon: Icons.home,

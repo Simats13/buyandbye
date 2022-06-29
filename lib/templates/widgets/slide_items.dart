@@ -1,4 +1,4 @@
-import 'package:buyandbye/templates/Pages/pageDetail.dart';
+import 'package:buyandbye/templates/Pages/page_detail.dart';
 import 'package:flutter/material.dart';
 
 class SlideItem extends StatefulWidget {
@@ -13,7 +13,7 @@ class SlideItem extends StatefulWidget {
   final String sellerID;
   final Map horairesOuverture;
 
-  SlideItem({
+  const SlideItem({
     Key? key,
     required this.img,
     required this.name,
@@ -34,7 +34,6 @@ class SlideItem extends StatefulWidget {
 class _SlideItemState extends State<SlideItem> {
   mainCategorie() {
     for (String categorie in widget.mainCategorie) {
-      print(categorie);
       return Text(categorie);
     }
   }
@@ -42,8 +41,8 @@ class _SlideItemState extends State<SlideItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-        child: Container(
+        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+        child: SizedBox(
           height: MediaQuery.of(context).size.height / 2.9,
           width: MediaQuery.of(context).size.width / 1.2,
           child: Card(
@@ -73,11 +72,11 @@ class _SlideItemState extends State<SlideItem> {
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
-                      Container(
+                      SizedBox(
                         height: MediaQuery.of(context).size.height / 3.2,
                         width: MediaQuery.of(context).size.width,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(10.0),
                             topRight: Radius.circular(10.0),
                           ),
@@ -96,9 +95,9 @@ class _SlideItemState extends State<SlideItem> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Padding(
-                                  padding: EdgeInsets.all(2),
+                                  padding: const EdgeInsets.all(2),
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Icon(Icons.sell_outlined),
                                       Text("-50%",
                                           style: TextStyle(
@@ -112,7 +111,7 @@ class _SlideItemState extends State<SlideItem> {
                         child: Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(3.0)),
-                          child: Padding(
+                          child: const Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Text(
                               " OUVERT ",
@@ -127,31 +126,31 @@ class _SlideItemState extends State<SlideItem> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 7.0),
+                  const SizedBox(height: 7.0),
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0),
-                    child: Container(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
+                          SizedBox(
                             width: 180,
                             child: Text(
-                                "${widget.name}",
-                                style: TextStyle(
+                                widget.name,
+                                style: const TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.w800,
                                 ),
                                 textAlign: TextAlign.left,
                               ),
                           ),
-                          Container(
+                          SizedBox(
                             width: MediaQuery.of(context).size.width / 3.5,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Icon(Icons.screen_search_desktop_outlined),
+                                const Icon(Icons.screen_search_desktop_outlined),
                                 Icon(
                                   widget.clickAndCollect
                                       ? Icons.check_circle
@@ -161,7 +160,7 @@ class _SlideItemState extends State<SlideItem> {
                                       : Colors.red,
                                   size: 17,
                                 ),
-                                Icon(Icons.delivery_dining),
+                                const Icon(Icons.delivery_dining),
                                 Icon(
                                   widget.livraison
                                       ? Icons.check_circle
@@ -179,8 +178,8 @@ class _SlideItemState extends State<SlideItem> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0),
-                    child: Container(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: Row(
                           children: [

@@ -9,15 +9,16 @@ class AddressSearch extends SearchDelegate {
     apiClient = PlaceApiProvider(sessionToken);
   }
 
-  final sessionToken;
+  String sessionToken;
   late PlaceApiProvider apiClient;
+  @override
   String get searchFieldLabel => 'Rechercher une adresse';
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
         tooltip: 'Effacer',
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -29,7 +30,7 @@ class AddressSearch extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       tooltip: 'Retour',
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         // close(context, null)
         Navigator.pop(context);
@@ -39,7 +40,7 @@ class AddressSearch extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Container(child: Center(child: Text("buildResults")));
+    return const Center(child: Text("buildResults"));
   }
 
   // List<String> listExample = List.generate(10, (index) => "Text $index");
@@ -69,8 +70,8 @@ class AddressSearch extends SearchDelegate {
               query, Localizations.localeOf(context).languageCode),
       builder: (context, snapshot) => query == ''
           ? Container(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Entrez votre adresse'),
+              padding: const EdgeInsets.all(16.0),
+              child: const Text('Entrez votre adresse'),
             )
           : snapshot.hasData
               ? ListView.builder(
@@ -82,22 +83,21 @@ class AddressSearch extends SearchDelegate {
                     },
                   ),
                 )
-              : Container(
-                  child: Center(
-                  child: Platform.isIOS
-                      ? Column(
-                          children: [
-                            CupertinoActivityIndicator(),
-                            Text('Chargement...'),
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            CircularProgressIndicator(),
-                            Text('Chargement...'),
-                          ],
-                        ),
-                )),
+              : Center(
+              child: Platform.isIOS
+                  ? Column(
+                      children: const [
+                        CupertinoActivityIndicator(),
+                        Text('Chargement...'),
+                      ],
+                    )
+                  : Column(
+                      children: const [
+                        CircularProgressIndicator(),
+                        Text('Chargement...'),
+                      ],
+                    ),
+                ),
     );
   }
 }

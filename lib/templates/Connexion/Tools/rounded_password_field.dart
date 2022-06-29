@@ -24,7 +24,7 @@ class RoundedPasswordField extends StatelessWidget {
           }
           return null;
         },
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: "Votre mot de passe",
           icon: Icon(
             Icons.lock,

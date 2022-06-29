@@ -23,7 +23,7 @@ class _IntroductionAnimationScreenState
   @override
   void initState() {
     _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 8));
+        AnimationController(vsync: this, duration: const Duration(seconds: 8));
     _animationController?.animateTo(0.0);
     super.initState();
   }
@@ -36,7 +36,6 @@ class _IntroductionAnimationScreenState
 
   @override
   Widget build(BuildContext context) {
-    print(_animationController?.value);
     return Scaffold(
       // backgroundColor: Color(0xffF7EBE1),
       body: ClipRect(
@@ -74,7 +73,7 @@ class _IntroductionAnimationScreenState
 
   void _onSkipClick() {
     _animationController?.animateTo(0.8,
-        duration: Duration(milliseconds: 1200));
+        duration: const Duration(milliseconds: 1200));
   }
 
   void _onBackClick() {

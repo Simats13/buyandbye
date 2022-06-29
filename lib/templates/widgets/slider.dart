@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class PopupSlider extends StatefulWidget {
   final double sliderSize;
-  const PopupSlider(this.sliderSize);
+  const PopupSlider(this.sliderSize, {Key? key}) : super(key: key);
 
   @override
   _PopupSliderState createState() => _PopupSliderState();
@@ -21,19 +21,17 @@ class _PopupSliderState extends State<PopupSlider> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Font Size'),
-      content: Container(
-        child: Slider(
-          value: fontSize,
-          min: 10,
-          max: 100,
-          divisions: 9,
-          onChanged: (value) {
-            setState(() {
-              fontSize = value;
-            });
-          },
-        ),
+      title: const Text('Font Size'),
+      content: Slider(
+        value: fontSize,
+        min: 10,
+        max: 100,
+        divisions: 9,
+        onChanged: (value) {
+          setState(() {
+            fontSize = value;
+          });
+        },
       ),
       actions: <Widget>[
         TextButton(
@@ -42,7 +40,7 @@ class _PopupSliderState extends State<PopupSlider> {
             // back a result to the page that opened the dialog
             Navigator.pop(context, fontSize);
           },
-          child: Text('DONE'),
+          child: const Text('DONE'),
         )
       ],
     );

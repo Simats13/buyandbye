@@ -1,5 +1,5 @@
 import 'package:buyandbye/services/auth.dart';
-import 'package:buyandbye/templates/Achat/pageLivraison.dart';
+import 'package:buyandbye/templates/Achat/page_livraison.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 
 class CartPage extends StatefulWidget {
+  const CartPage({Key? key}) : super(key: key);
+
   @override
   _CartPageState createState() => _CartPageState();
 }
@@ -31,7 +33,7 @@ class _CartPageState extends State<CartPage> {
     if (querySnapshot.docs.isEmpty) {
       idCommercant = "empty";
     } else {
-      idCommercant = "${querySnapshot.docs[0].id}";
+      idCommercant = querySnapshot.docs[0].id;
     }
     setState(() {});
   }
@@ -65,21 +67,22 @@ class _CartPageState extends State<CartPage> {
             //     margin: EdgeInsets.only(left: 12, right: 12),
             //   );
             // }
-            if (!snapshot.hasData)
+            if (!snapshot.hasData) {
               return Container(
-                constraints: BoxConstraints(maxHeight: 200),
-                child: Center(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: const Center(
                   child: ColorLoader3(
                     radius: 15.0,
                     dotRadius: 6.0,
                   ),
                 ),
-                margin: EdgeInsets.only(left: 12, right: 12),
+                margin: const EdgeInsets.only(left: 12, right: 12),
               );
+            }
             if (snapshot.data.docs.length > 0) {
               return ListView.builder(
-                  padding: EdgeInsets.all(0.0),
-                  physics: NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(0.0),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: 1,
                   itemBuilder: (context, index) {
@@ -93,10 +96,10 @@ class _CartPageState extends State<CartPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: <Widget>[
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
-                          Text(
+                          const Text(
                             "Mon Panier",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -104,14 +107,14 @@ class _CartPageState extends State<CartPage> {
                             ),
                           ),
                           cartItem(),
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
-                          Divider(),
+                          const Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 "Sous-Total",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -120,19 +123,19 @@ class _CartPageState extends State<CartPage> {
                               ),
                               Text(
                                 cartTotal.toStringAsFixed(2) + "€",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                            children: const [
                               Text(
                                 "Frais de Livraison",
                                 style: TextStyle(
@@ -147,11 +150,11 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ],
                           ),
-                          Divider(),
+                          const Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 "Total",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -160,14 +163,14 @@ class _CartPageState extends State<CartPage> {
                               ),
                               Text(
                                 cartTotal.toStringAsFixed(2) + "€",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           MaterialButton(
@@ -191,7 +194,7 @@ class _CartPageState extends State<CartPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24)),
                             child: RichText(
-                              text: TextSpan(
+                              text: const TextSpan(
                                 text: 'CHOISIR LE MODE DE LIVRAISON',
                                 style: TextStyle(
                                   fontSize: 14.5,
@@ -200,7 +203,7 @@ class _CartPageState extends State<CartPage> {
                                 children: [
                                   WidgetSpan(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
+                                      padding: EdgeInsets.symmetric(
                                           horizontal: 5.0),
                                       child: Icon(
                                         Icons.local_shipping,
@@ -213,7 +216,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                         ],
@@ -223,7 +226,7 @@ class _CartPageState extends State<CartPage> {
             } else {
               cartTotal = 0.0;
               return Container(
-                constraints: BoxConstraints(maxHeight: 20),
+                constraints: const BoxConstraints(maxHeight: 20),
                 // margin: EdgeInsets.only(top: 100),
                 child: Center(
                     child: Column(
@@ -256,11 +259,11 @@ class _CartPageState extends State<CartPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
-              constraints: BoxConstraints(
+              constraints: const BoxConstraints(
                 maxHeight: 250,
               ),
               child: ListView.builder(
-                  padding: EdgeInsets.all(0.0),
+                  padding: const EdgeInsets.all(0.0),
                   // physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: snapshot.data.docs.length,
@@ -278,7 +281,7 @@ class _CartPageState extends State<CartPage> {
                     var money = snapshot.data.docs[index]["prixProduit"];
                     var allMoneyForProduct = money * amount;
                     return Container(
-                      margin: EdgeInsets.symmetric(vertical: 10),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: [
                           Container(
@@ -302,22 +305,22 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 12,
                           ),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Container(
+                                SizedBox(
                                   width: 100,
                                   child: Text(
                                     snapshot.data.docs[index]["nomProduit"],
                                     style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                        const TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 7,
                                 ),
                                 Row(
@@ -330,7 +333,7 @@ class _CartPageState extends State<CartPage> {
                                           borderRadius:
                                               BorderRadius.circular(4)),
                                       child: IconButton(
-                                        icon: Icon(Icons.remove,
+                                        icon: const Icon(Icons.remove,
                                             color: Colors.black, size: 15),
                                         onPressed: () {
                                           var itemdelete =
@@ -356,7 +359,7 @@ class _CartPageState extends State<CartPage> {
                                           horizontal: 8),
                                       child: Text(
                                         amount.toString(),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                         ),
@@ -370,7 +373,7 @@ class _CartPageState extends State<CartPage> {
                                           borderRadius:
                                               BorderRadius.circular(4)),
                                       child: IconButton(
-                                        icon: Icon(Icons.add,
+                                        icon: const Icon(Icons.add,
                                             color: Colors.black, size: 15),
                                         onPressed: () {
                                           var itemdelete =
@@ -383,10 +386,10 @@ class _CartPageState extends State<CartPage> {
                                         },
                                       ),
                                     ),
-                                    Spacer(),
+                                    const Spacer(),
                                     Text(
                                       allMoneyForProduct.toStringAsFixed(2) + "€",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold),
                                     )
                                   ],
@@ -400,7 +403,7 @@ class _CartPageState extends State<CartPage> {
                   }),
             );
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   }

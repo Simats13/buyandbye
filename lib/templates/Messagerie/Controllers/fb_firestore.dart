@@ -16,7 +16,7 @@ class FBCloudStore {
           .get();
       final List<DocumentSnapshot> documents = result.docs;
       String? myID = userId;
-      if (documents.length == 0) {
+      if (documents.isEmpty) {
         await prefs.setString('userId', userId);
         await FirebaseFirestore.instance.collection('users').doc(userId).set({
           'email': userEmail,
@@ -117,9 +117,6 @@ class FBCloudStore {
       myID, selectedUserID) async {
     int userBadgeCount = 0;
     var isRoom = false;
-
-    print("myID : " + documentID);
-    print("SelectedID : " + selectedUserID);
 
     DocumentSnapshot userDoc = await FirebaseFirestore.instance
         .collection('users')

@@ -18,7 +18,7 @@ import '../Messagerie/subWidgets/common_widgets.dart';
 import '../Messagerie/subWidgets/local_notification_view.dart';
 
 class ChatRoom extends StatefulWidget {
-  ChatRoom(
+  const ChatRoom(
       this.myID,
       this.myName,
       this.selectedUserToken,
@@ -28,7 +28,7 @@ class ChatRoom extends StatefulWidget {
       this.selectedUserLname,
       this.selectedUserThumbnail,
       this.myThumbnail,
-      this.userType);
+      this.userType, {Key? key}) : super(key: key);
 
   final String? myID,
       myName,
@@ -125,7 +125,7 @@ class _ChatRoomState extends State<ChatRoom>
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Container(
-        color: Color.fromRGBO(250, 250, 250, 1),
+        color: const Color.fromRGBO(250, 250, 250, 1),
         child: SafeArea(
           top: false,
           child: Scaffold(
@@ -138,14 +138,14 @@ class _ChatRoomState extends State<ChatRoom>
                         text: widget.selectedUserFname! +
                             " " +
                             widget.selectedUserLname!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                           color: BuyandByeAppTheme.orangeMiFonce,
                           fontWeight: FontWeight.bold,
                         )),
-                    WidgetSpan(
+                    const WidgetSpan(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
                         child: Icon(
                           Icons.message,
                           color: BuyandByeAppTheme.orangeMiFonce,
@@ -161,7 +161,7 @@ class _ChatRoomState extends State<ChatRoom>
               elevation: 0.0,
               bottomOpacity: 0.0,
               leading: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back,
                   color: BuyandByeAppTheme.orange,
                 ),
@@ -178,7 +178,7 @@ class _ChatRoomState extends State<ChatRoom>
                     .orderBy('timestamp', descending: false)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return LinearProgressIndicator();
+                  if (!snapshot.hasData) return const LinearProgressIndicator();
                   return Stack(
                     children: <Widget>[
                       Column(
@@ -238,15 +238,15 @@ class _ChatRoomState extends State<ChatRoom>
 
   Widget _buildTextComposer() {
     return IconTheme(
-      data: IconThemeData(color: Theme.of(context).accentColor),
+      data: IconThemeData(color: Theme.of(context).colorScheme.secondary),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 2.0),
+              margin: const EdgeInsets.symmetric(horizontal: 2.0),
               child: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.photo,
                     color: BuyandByeAppTheme.orangeMiFonce,
                   ),
@@ -265,7 +265,7 @@ class _ChatRoomState extends State<ChatRoom>
               child: TextField(
                 onChanged: (value) {
                   setState(() {
-                    if (value.length > 0) {
+                    if (value.isNotEmpty) {
                       celafonctionne = true;
                     } else {
                       celafonctionne = false;
@@ -278,28 +278,25 @@ class _ChatRoomState extends State<ChatRoom>
                 minLines: 1,
                 maxLines: 5,
                 decoration:
-                    InputDecoration.collapsed(hintText: "Envoyer un message"),
+                    const InputDecoration.collapsed(hintText: "Envoyer un message"),
               ),
             ),
-            Container(
-              //margin:  EdgeInsets.symmetric(horizontal: 2.0),
-              child: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  color:
-                      celafonctionne ? BuyandByeAppTheme.orangeMiFonce : null,
-                ),
-                onPressed: celafonctionne
-                    ? () {
-                        setState(() {
-                          messageType = 'text';
-                        });
-                        _handleSubmitted(_msgTextController.text);
-                        _msgTextController.text = '';
-                        celafonctionne = false;
-                      }
-                    : null,
+            IconButton(
+              icon: Icon(
+                Icons.send,
+                color:
+                    celafonctionne ? BuyandByeAppTheme.orangeMiFonce : null,
               ),
+              onPressed: celafonctionne
+                  ? () {
+                      setState(() {
+                        messageType = 'text';
+                      });
+                      _handleSubmitted(_msgTextController.text);
+                      _msgTextController.text = '';
+                      celafonctionne = false;
+                    }
+                  : null,
             ),
           ],
         ),

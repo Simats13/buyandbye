@@ -9,7 +9,7 @@ Widget stringListTile(String data) {
       child: Container(
         decoration: BoxDecoration(
             color: Colors.grey[300],
-            borderRadius: BorderRadius.all(Radius.circular(25.0))),
+            borderRadius: const BorderRadius.all(Radius.circular(25.0))),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(data),
@@ -27,7 +27,7 @@ Widget stringListTile(String data) {
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
             child: Text(
               data,
-              style: TextStyle(color: Colors.black87, fontSize: 12),
+              style: const TextStyle(color: Colors.black87, fontSize: 12),
             ),
           ),
         ),

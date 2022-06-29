@@ -15,11 +15,13 @@ import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 import 'package:buyandbye/templates/pages/place_service.dart';
-import 'package:buyandbye/templates/Pages/pageAddressEdit.dart';
-import 'package:buyandbye/templates/Pages/pageAddressNext.dart';
+import 'package:buyandbye/templates/Pages/page_address_edit.dart';
+import 'package:buyandbye/templates/Pages/page_address_next.dart';
 import 'package:geocoding/geocoding.dart' as geocoder;
 
 class UserAddress extends StatefulWidget {
+  const UserAddress({Key? key}) : super(key: key);
+
   @override
   _UserAddressState createState() => _UserAddressState();
 }
@@ -39,7 +41,6 @@ class _UserAddressState extends State<UserAddress> {
   bool permissionChecked = false;
   bool chargementChecked = false;
 
-  var currentLocation, position;
   Geoflutterfire? geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
@@ -141,7 +142,7 @@ class _UserAddressState extends State<UserAddress> {
         ),
         child: SingleChildScrollView(
           child: Column(children: [
-            Row(children: [
+            Row(children: const [
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 15, 0, 5),
                 child: Text(
@@ -153,11 +154,11 @@ class _UserAddressState extends State<UserAddress> {
                 ),
               ),
             ]),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
+              padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
               child: SizedBox(
                 height: 40,
                 width: MediaQuery.of(context).size.width - 50,
@@ -165,7 +166,7 @@ class _UserAddressState extends State<UserAddress> {
                 child: InkWell(
                   onTap: () async {
                     // generate a new token here
-                    final sessionToken = Uuid().v4();
+                    final sessionToken = const Uuid().v4();
                     final result = await showSearch(
                       context: context,
                       delegate: AddressSearch(sessionToken),
@@ -206,20 +207,20 @@ class _UserAddressState extends State<UserAddress> {
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.grey.withOpacity(0.15),
                     ),
-                    padding: EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     child: Row(children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           Icon(Icons.search),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           Text(
                             "Saisir une nouvelle adresse",
                             textAlign: TextAlign.left,
@@ -231,26 +232,24 @@ class _UserAddressState extends State<UserAddress> {
                 ),
               ),
             ),
-            Divider(
+            const Divider(
               color: Colors.black,
               thickness: 2,
               indent: 10,
               endIndent: 10,
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Row(
-              children: [
+              children: const [
                 Padding(
                   padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
-                  child: Container(
-                    child: Text(
-                      "Proche de vous",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+                  child: Text(
+                    "Proche de vous",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
                   ),
                 ),
@@ -260,7 +259,7 @@ class _UserAddressState extends State<UserAddress> {
                 ? Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 1.57,
                           child: InkWell(
@@ -272,7 +271,7 @@ class _UserAddressState extends State<UserAddress> {
                               setState(() {
                                 city = first.locality!;
                                 currentAddressLocation =
-                                    "${first.name! + ", " + first.locality!}";
+                                    first.name! + first.locality!;
                                 geo = Geoflutterfire();
                                 GeoFirePoint center = geo!.point(
                                     latitude: latitude, longitude: longitude);
@@ -304,19 +303,19 @@ class _UserAddressState extends State<UserAddress> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: EdgeInsets.only(top: 5),
+                              padding: const EdgeInsets.only(top: 5),
                               child: Row(
                                 children: [
-                                  Icon(Icons.near_me_rounded),
-                                  SizedBox(width: 20),
+                                  const Icon(Icons.near_me_rounded),
+                                  const SizedBox(width: 20),
                                   Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text("Position actuelle"),
-                                        SizedBox(height: 10),
+                                        const Text("Position actuelle"),
+                                        const SizedBox(height: 10),
                                         Text(currentAddressLocation!)
                                       ]),
                                 ],
@@ -330,7 +329,7 @@ class _UserAddressState extends State<UserAddress> {
                 : Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width - 50,
                           child: InkWell(
@@ -340,17 +339,17 @@ class _UserAddressState extends State<UserAddress> {
                                 return showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: Text("Localisation desactivée"),
-                                    content: Text(
+                                    title: const Text("Localisation desactivée"),
+                                    content: const Text(
                                         "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: Text("Annuler"),
+                                        child: const Text("Annuler"),
                                         onPressed: () =>
                                             Navigator.of(context).pop(false),
                                       ),
                                       TextButton(
-                                          child: Text("Activer"),
+                                          child: const Text("Activer"),
                                           onPressed: () async {
                                             await Geolocator
                                                 .openLocationSettings();
@@ -365,19 +364,19 @@ class _UserAddressState extends State<UserAddress> {
                               return showCupertinoDialog(
                                   context: context,
                                   builder: (context) => CupertinoAlertDialog(
-                                        title: Text("Localisation desactivée"),
-                                        content: Text(
+                                        title: const Text("Localisation desactivée"),
+                                        content: const Text(
                                             "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                         actions: [
                                           // Close the dialog
                                           // You can use the CupertinoDialogAction widget instead
                                           CupertinoButton(
-                                              child: Text('Annuler'),
+                                              child: const Text('Annuler'),
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               }),
                                           CupertinoButton(
-                                            child: Text('Activer'),
+                                            child: const Text('Activer'),
                                             onPressed: () async {
                                               await Geolocator
                                                   .openLocationSettings();
@@ -394,25 +393,25 @@ class _UserAddressState extends State<UserAddress> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: EdgeInsets.only(top: 5),
+                              padding: const EdgeInsets.only(top: 5),
                               child: Row(
                                 children: [
-                                  Icon(Icons.near_me_rounded),
-                                  SizedBox(width: 10),
+                                  const Icon(Icons.near_me_rounded),
+                                  const SizedBox(width: 10),
                                   Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text("Position actuelle"),
-                                        SizedBox(height: 10),
-                                        Container(
+                                        const Text("Position actuelle"),
+                                        const SizedBox(height: 10),
+                                        SizedBox(
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width -
                                               100,
-                                          child: Text(
+                                          child: const Text(
                                               "Vous devez activer la localisation sur votre téléphone"),
                                         )
                                       ]),
@@ -424,10 +423,10 @@ class _UserAddressState extends State<UserAddress> {
                       ),
                     ],
                   ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
-            Divider(
+            const Divider(
               color: Colors.black,
               thickness: 2,
               indent: 10,
@@ -435,26 +434,24 @@ class _UserAddressState extends State<UserAddress> {
             ),
             Row(
               children: [
-                Padding(
+                const Padding(
                   padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                  child: Container(
-                    child: Text(
-                      "Mes adresses enregistrées",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+                  child: Text(
+                    "Mes adresses enregistrées",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     IconButton(
                         onPressed: () async {
                           // generate a new token here
-                          final sessionToken = Uuid().v4();
+                          final sessionToken = const Uuid().v4();
                           final Suggestion? result = await showSearch(
                             context: context,
                             delegate: AddressSearch(sessionToken)
@@ -492,7 +489,7 @@ class _UserAddressState extends State<UserAddress> {
                                         )));
                           }
                         },
-                        icon: Icon(Icons.home)),
+                        icon: const Icon(Icons.home)),
                   ],
                 ),
               ],
@@ -505,7 +502,7 @@ class _UserAddressState extends State<UserAddress> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
+                    return const Center(
                       child: ColorLoader3(
                         radius: 15.0,
                         dotRadius: 6.0,
@@ -513,7 +510,7 @@ class _UserAddressState extends State<UserAddress> {
                     );
                   }
                   if (snapshot.hasData) {
-                    if ((snapshot.data! as QuerySnapshot).docs.length > 0) {
+                    if ((snapshot.data! as QuerySnapshot).docs.isNotEmpty) {
                       return ListView.builder(
                           padding: EdgeInsets.zero,
                           physics: const NeverScrollableScrollPhysics(),
@@ -545,7 +542,7 @@ class _UserAddressState extends State<UserAddress> {
                                   longitude = (snapshot.data! as QuerySnapshot)
                                       .docs[index]["longitude"];
                                   currentAddressLocation =
-                                      "${first.name! + ", " + first.locality!}";
+                                      first.name! + ", " + first.locality!;
 
                                   geo = Geoflutterfire();
                                   GeoFirePoint center = geo!.point(
@@ -575,8 +572,8 @@ class _UserAddressState extends State<UserAddress> {
                                   PageRouteBuilder(
                                     pageBuilder:
                                         (context, animation1, animation2) =>
-                                            Accueil(),
-                                    transitionDuration: Duration(seconds: 0),
+                                            const Accueil(),
+                                    transitionDuration: const Duration(seconds: 0),
                                   ),
                                   (_) =>
                                       count++ >=
@@ -590,8 +587,8 @@ class _UserAddressState extends State<UserAddress> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.place_rounded),
-                                    SizedBox(width: 15),
+                                    const Icon(Icons.place_rounded),
+                                    const SizedBox(width: 15),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -601,7 +598,7 @@ class _UserAddressState extends State<UserAddress> {
                                               .docs[index]["addressName"],
                                         ),
                                         Center(
-                                          child: Container(
+                                          child: SizedBox(
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width /
@@ -614,7 +611,7 @@ class _UserAddressState extends State<UserAddress> {
                                       ],
                                     ),
                                     IconButton(
-                                      icon: Icon(Icons.edit),
+                                      icon: const Icon(Icons.edit),
                                       onPressed: () {
                                         Navigator.push(
                                             context,
@@ -665,26 +662,24 @@ class _UserAddressState extends State<UserAddress> {
                     } else {
                       return Column(
                         children: [
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Padding(
                             padding: const EdgeInsets.only(left: 20.0),
-                            child: Container(
-                              child: RichText(
-                                text: TextSpan(
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                            "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
-                                    WidgetSpan(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 2.0),
-                                        child: Icon(Icons.home),
-                                      ),
+                            child: RichText(
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodyText2,
+                                children: const [
+                                  TextSpan(
+                                      text:
+                                          "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
+                                  WidgetSpan(
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 2.0),
+                                      child: Icon(Icons.home),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -692,10 +687,10 @@ class _UserAddressState extends State<UserAddress> {
                       );
                     }
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                 }),
-            SizedBox(height: 15)
+            const SizedBox(height: 15)
           ]),
         ));
   }

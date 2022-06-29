@@ -3,9 +3,7 @@ import 'dart:math';
 import 'package:buyandbye/templates/Messagerie/Model/const.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 // For Chat List Functions
 

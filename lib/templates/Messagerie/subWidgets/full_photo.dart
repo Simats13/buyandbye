@@ -5,8 +5,8 @@ import 'package:photo_view/photo_view_gallery.dart';
 class FullPhoto extends StatefulWidget {
   final String url;
 
-  FullPhoto({Key? key,required this.url}) : super(key: key);
-  @override State createState() => new _FullPhoto();
+  const FullPhoto({Key? key,required this.url}) : super(key: key);
+  @override State createState() => _FullPhoto();
 }
 
 class _FullPhoto extends State<FullPhoto> {
@@ -15,7 +15,7 @@ class _FullPhoto extends State<FullPhoto> {
     return Scaffold(
       body: GestureDetector(
         child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.black,
             ),
             child: Stack(
@@ -33,7 +33,7 @@ class _FullPhoto extends State<FullPhoto> {
                   },
                   itemCount: 1,
                   loadingBuilder: (context, event) => Center(
-                    child: Container(
+                    child: SizedBox(
                       width: 20.0,
                       height: 20.0,
                       child: CircularProgressIndicator(
@@ -41,7 +41,7 @@ class _FullPhoto extends State<FullPhoto> {
                       ),
                     ),
                   ),
-                  backgroundDecoration: BoxDecoration(
+                  backgroundDecoration: const BoxDecoration(
                     color: Colors.black,
                   ),
                 ),

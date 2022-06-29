@@ -7,7 +7,7 @@ import 'full_photo.dart';
 Widget loadingCircle(bool value,){
   return Positioned(
     child: value ? Container(
-      child: Center(
+      child: const Center(
         child: CircularProgressIndicator(),
       ),
       color: Colors.white.withOpacity(0.7),
@@ -17,7 +17,7 @@ Widget loadingCircle(bool value,){
 
 Widget loadingCircleForFB(){
   return Container(
-    child: Center(
+    child: const Center(
       child: CircularProgressIndicator(),
     ),
     color: Colors.white.withOpacity(0.7),
@@ -40,10 +40,10 @@ Widget imageMessage(context,imageUrlFromFB) {
         imageUrl: imageUrlFromFB,
         placeholder: (context, url) => Container(
           transform: Matrix4.translationValues(0, 0, 0),
-          child: Container( width: 60, height: 80,
-              child: Center(child: new CircularProgressIndicator())),
+          child: const SizedBox( width: 60, height: 80,
+              child: Center(child: CircularProgressIndicator())),
         ),
-        errorWidget: (context, url, error) => new Icon(Icons.error),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
         width: 60,
         height: 80,
         fit: BoxFit.cover,

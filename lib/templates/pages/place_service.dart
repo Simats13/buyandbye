@@ -39,10 +39,10 @@ class PlaceApiProvider {
 
   PlaceApiProvider(this.sessionToken);
 
-  final sessionToken;
+  final String sessionToken;
 
-  static final String androidKey = 'AIzaSyDulLvB415_SqiQgFoKVvFlPmMRWwui1xA';
-  static final String iosKey = 'AIzaSyCa-BOYmq2umW8Z5mMj-c76JO5gNdYVo2s';
+  static const String androidKey = 'AIzaSyDulLvB415_SqiQgFoKVvFlPmMRWwui1xA';
+  static const String iosKey = 'AIzaSyCa-BOYmq2umW8Z5mMj-c76JO5gNdYVo2s';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
   Future<List<Suggestion>?> fetchSuggestions(String input, String lang) async {
@@ -80,7 +80,7 @@ class PlaceApiProvider {
             result['result']['address_components'] as List<dynamic>;
         // build result
         final place = Place();
-        components.forEach((c) {
+        for (var c in components) {
           final List type = c['types'];
           if (type.contains('street_number')) {
             place.streetNumber = c['long_name'];
@@ -94,7 +94,7 @@ class PlaceApiProvider {
           if (type.contains('postal_code')) {
             place.zipCode = c['long_name'];
           }
-        });
+        }
         return place;
       }
       throw Exception(result['error_message']);

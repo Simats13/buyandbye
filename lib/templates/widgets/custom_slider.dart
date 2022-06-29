@@ -1,14 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-/*
- * for slider home page
- */
 class CustomSliderWidget extends StatefulWidget {
   // final List<String> items;
   final List? items;
 
-  CustomSliderWidget({this.items});
+  const CustomSliderWidget({Key? key, this.items}) : super(key: key);
 
   @override
   _CustomSliderWidgetState createState() => _CustomSliderWidgetState();
@@ -27,7 +24,7 @@ class _CustomSliderWidgetState extends State<CustomSliderWidget> {
     return Stack(
       clipBehavior: Clip.none,
       children: <Widget>[
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width,
           child: CarouselSlider(
             options: CarouselOptions(
@@ -42,7 +39,7 @@ class _CustomSliderWidgetState extends State<CustomSliderWidget> {
                 builder: (BuildContext context) {
                   return Stack(
                     children: <Widget>[
-                      Container(
+                      SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: Card(
                             child: item,

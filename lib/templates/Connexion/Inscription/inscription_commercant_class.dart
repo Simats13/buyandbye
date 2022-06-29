@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 
 import 'package:buyandbye/templates/Connexion/Tools/text_field_container.dart';
-import 'package:buyandbye/templates/Connexion/Login/pageLogin.dart';
+import 'package:buyandbye/templates/Connexion/Login/page_login.dart';
 
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 import 'package:buyandbye/templates/Connexion/Inscription/background_inscription.dart';
-import 'package:buyandbye/templates_commercant/accueilCommercant.dart';
+import 'package:buyandbye/templates_commercant/accueil_commercant.dart';
 
 class PageInscriCommercant extends StatefulWidget {
-  PageInscriCommercant({Key? key}) : super(key: key);
+  const PageInscriCommercant({Key? key}) : super(key: key);
 
   @override
   _PageInscriCommercantState createState() => _PageInscriCommercantState();
@@ -32,7 +32,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "INSCRIPTION COMMERÇANT",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -58,7 +58,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         return null;
                       },
                       autocorrect: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           labelText: 'Nom de votre enseigne',
                           icon: Icon(
                             Icons.person,
@@ -74,7 +74,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         return null;
                       },
                       autocorrect: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           labelText: 'Votre adresse',
                           icon: Icon(
                             Icons.person,
@@ -90,7 +90,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         return null;
                       },
                       autocorrect: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           labelText: 'Votre adresse email',
                           icon: Icon(
                             Icons.person,
@@ -106,7 +106,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                         return null;
                       },
                       autocorrect: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "Votre mot de passe",
                         icon: Icon(
                           Icons.lock,
@@ -158,13 +158,13 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AccueilCommercant()));
+                            builder: (context) => const AccueilCommercant()));
                   } catch (e) {
                     print(e);
                   }
                 }
               },
-              child: Text('INSCRIPTION'),
+              child: const Text('INSCRIPTION'),
             ),
             SizedBox(
               height: size.height * 0.03,
@@ -172,7 +172,7 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Déjà un compte ?",
                   style: TextStyle(
                     color: BuyandByeAppTheme.kPrimaryColor,
@@ -184,12 +184,12 @@ class _PageInscriCommercantState extends State<PageInscriCommercant> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return PageLogin();
+                          return const PageLogin();
                         },
                       ),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     " Connectez-vous ! ",
                     style: TextStyle(
                       color: BuyandByeAppTheme.kPrimaryColor,

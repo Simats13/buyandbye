@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Help extends StatefulWidget {
   @override
   _HelpState createState() => _HelpState();
-  Help(this.isAdmin, this.email);
+  const Help(this.isAdmin, this.email, {Key? key}) : super(key: key);
   final bool isAdmin;
   final String? email;
 }
@@ -24,9 +24,9 @@ class _HelpState extends State<Help> {
         resizeToAvoidBottomInset: false,
         backgroundColor: BuyandByeAppTheme.white,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(50.0),
           child: AppBar(
-            title: Text(
+            title: const Text(
               'Aide / Support',
               style: TextStyle(
                 color: BuyandByeAppTheme.orangeMiFonce,
@@ -37,7 +37,7 @@ class _HelpState extends State<Help> {
             elevation: 0.0,
             bottomOpacity: 0.0,
             leading: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back,
                 color: BuyandByeAppTheme.orange,
               ),
@@ -49,7 +49,7 @@ class _HelpState extends State<Help> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             child: Column(
               children: [
                 //Une question ?
@@ -59,11 +59,11 @@ class _HelpState extends State<Help> {
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(color: black.withOpacity(0.2))),
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
                         Column(
-                          children: [
+                          children: const [
                             SizedBox(
                               height: 20,
                             ),
@@ -77,12 +77,12 @@ class _HelpState extends State<Help> {
                         Container(
                           height: 60,
                           width: 60,
-                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          margin: const EdgeInsets.only(top: 30, bottom: 30),
                           child: Stack(
                             children: [
                               ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: Center(
+                                  child: const Center(
                                     child: Icon(
                                       Icons.question_answer_rounded,
                                       size: 50,
@@ -92,11 +92,11 @@ class _HelpState extends State<Help> {
                           ),
                         ),
                         TextButton(
-                          style: ButtonStyle(),
+                          style: const ButtonStyle(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 "Foire aux questions",
                                 style: TextStyle(
                                     fontSize: 20,
@@ -128,7 +128,7 @@ class _HelpState extends State<Help> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 //Une suggestion ?
@@ -138,11 +138,11 @@ class _HelpState extends State<Help> {
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(color: black.withOpacity(0.2))),
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
                         Column(
-                          children: [
+                          children: const [
                             SizedBox(
                               height: 20,
                             ),
@@ -156,12 +156,12 @@ class _HelpState extends State<Help> {
                         Container(
                           height: 60,
                           width: 60,
-                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          margin: const EdgeInsets.only(top: 30, bottom: 30),
                           child: Stack(
                             children: [
                               ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: Center(
+                                  child: const Center(
                                     child: Icon(
                                       Icons.chat,
                                       size: 50,
@@ -171,11 +171,11 @@ class _HelpState extends State<Help> {
                           ),
                         ),
                         TextButton(
-                          style: ButtonStyle(),
+                          style: const ButtonStyle(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 "Ecrivez-nous",
                                 style: TextStyle(
                                     fontSize: 20,
@@ -206,7 +206,7 @@ class _HelpState extends State<Help> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 //Un problème ?
@@ -216,11 +216,11 @@ class _HelpState extends State<Help> {
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(color: black.withOpacity(0.2))),
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
                         Column(
-                          children: [
+                          children: const [
                             SizedBox(
                               height: 20,
                             ),
@@ -234,12 +234,12 @@ class _HelpState extends State<Help> {
                         Container(
                           height: 60,
                           width: 60,
-                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          margin: const EdgeInsets.only(top: 30, bottom: 30),
                           child: Stack(
                             children: [
                               ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: Center(
+                                  child: const Center(
                                     child: Icon(
                                       Icons.contact_support,
                                       size: 50,
@@ -249,11 +249,11 @@ class _HelpState extends State<Help> {
                           ),
                         ),
                         TextButton(
-                          style: ButtonStyle(),
+                          style: const ButtonStyle(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 "Contactez le support",
                                 style: TextStyle(
                                     fontSize: 20,
@@ -282,7 +282,7 @@ class _HelpState extends State<Help> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
               ],
@@ -296,16 +296,17 @@ class _HelpState extends State<Help> {
 class Question extends StatefulWidget {
   @override
   _QuestionState createState() => _QuestionState();
-  Question(this.isAdmin);
+  const Question(this.isAdmin, {Key? key}) : super(key: key);
   final bool isAdmin;
 }
 
 class _QuestionState extends State<Question> {
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
         future: DatabaseMethods().getFAQ(widget.isAdmin),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData) return const CircularProgressIndicator();
           return ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -314,15 +315,15 @@ class _QuestionState extends State<Question> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
                     Text(snapshot.data.docs[index]['question'],
                         textAlign: TextAlign.justify,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w500)),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Text(snapshot.data.docs[index]['answer'],
                         textAlign: TextAlign.justify,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                         )),
                   ],
@@ -336,18 +337,18 @@ class MyTextFormField extends StatelessWidget {
   final Function? validator;
   final Function? onSaved;
 
-  MyTextFormField({
+  const MyTextFormField({Key? key, 
     this.validator,
     this.onSaved,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(15.0),
+          contentPadding: const EdgeInsets.all(15.0),
           border: InputBorder.none,
           filled: true,
           fillColor: Colors.grey[200],
@@ -363,7 +364,7 @@ class MyTextFormField extends StatelessWidget {
 class Formulaire extends StatefulWidget {
   @override
   _FormulaireState createState() => _FormulaireState();
-  Formulaire(this.email);
+  const Formulaire(this.email, {Key? key}) : super(key: key);
   final String? email;
 }
 
@@ -391,10 +392,10 @@ class _FormulaireState extends State<Formulaire> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 15),
-            Text("Votre suggestion :",
+            const SizedBox(height: 15),
+            const Text("Votre suggestion :",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -405,9 +406,9 @@ class _FormulaireState extends State<Formulaire> {
                 suggestion = value;
               },
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             ElevatedButton(
-              child: Text('Envoyer'),
+              child: const Text('Envoyer'),
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
@@ -416,13 +417,13 @@ class _FormulaireState extends State<Formulaire> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                            content: Text("Merci pour votre retour !"),
+                            content: const Text("Merci pour votre retour !"),
                             actions: [
                               TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: Text("Fermer"))
+                                  child: const Text("Fermer"))
                             ]);
                       });
                   Navigator.pop(context);
@@ -439,7 +440,7 @@ class _FormulaireState extends State<Formulaire> {
 class Formulaire2 extends StatefulWidget {
   @override
   _Formulaire2State createState() => _Formulaire2State();
-  Formulaire2(this.email);
+  const Formulaire2(this.email, {Key? key}) : super(key: key);
   final String? email;
 }
 
@@ -456,7 +457,6 @@ class _Formulaire2State extends State<Formulaire2> {
       "Problème": problem,
       "date": DateTime.now()
     };
-    print(problem);
     CollectionReference writeProblems =
         FirebaseFirestore.instance.collection('problems');
     writeProblems.add(userData);
@@ -467,15 +467,16 @@ class _Formulaire2State extends State<Formulaire2> {
   String? def;
   void listProblems() {
     problems.clear();
-    problems.add(DropdownMenuItem(
+    problems.add(const DropdownMenuItem(
         value: "1", child: Text("Problème 1", style: TextStyle(fontSize: 18))));
-    problems.add(DropdownMenuItem(
+    problems.add(const DropdownMenuItem(
         value: "2", child: Text("Problème 2", style: TextStyle(fontSize: 18))));
-    problems.add(DropdownMenuItem(
+    problems.add(const DropdownMenuItem(
         value: "3", child: Text("Problème 3", style: TextStyle(fontSize: 18))));
   }
 
   bool nullType = false;
+  @override
   Widget build(BuildContext context) {
     listProblems();
     return Form(
@@ -483,32 +484,32 @@ class _Formulaire2State extends State<Formulaire2> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 15),
-            Text("Quel type de problème ?",
+            const SizedBox(height: 15),
+            const Text("Quel type de problème ?",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             //Menu déroulant
             DropdownButton(
                 value: def,
                 elevation: 2,
                 items: problems,
                 hint:
-                    Text("Nature du problème", style: TextStyle(fontSize: 18)),
+                    const Text("Nature du problème", style: TextStyle(fontSize: 18)),
                 onChanged: (dynamic value) {
                   def = value;
                   problemType = value;
                   setState(() {});
                 }),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             nullType
-                ? Text("Veuillez sélectionner le type de problème",
+                ? const Text("Veuillez sélectionner le type de problème",
                     style: TextStyle(
                         fontSize: 12.5, color: Color.fromRGBO(210, 40, 40, 1)))
-                : SizedBox.shrink(),
-            SizedBox(height: 15),
-            Text("Décrivez votre problème :",
+                : const SizedBox.shrink(),
+            const SizedBox(height: 15),
+            const Text("Décrivez votre problème :",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -520,7 +521,7 @@ class _Formulaire2State extends State<Formulaire2> {
                 problem = value;
               },
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
                 if (problemType != null) {
@@ -534,13 +535,13 @@ class _Formulaire2State extends State<Formulaire2> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                              content: Text("Merci pour votre retour !"),
+                              content: const Text("Merci pour votre retour !"),
                               actions: [
                                 TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
-                                    child: Text("Fermer"))
+                                    child: const Text("Fermer"))
                               ]);
                         });
                     Navigator.pop(context);
@@ -551,7 +552,7 @@ class _Formulaire2State extends State<Formulaire2> {
                   });
                 }
               },
-              child: Text('Envoyer'),
+              child: const Text('Envoyer'),
             ),
           ],
         ));

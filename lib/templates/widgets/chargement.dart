@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Chargement extends StatefulWidget {
+  const Chargement({Key? key}) : super(key: key);
+
   @override
   _ChargementState createState() => _ChargementState();
 }
@@ -10,10 +12,10 @@ class _ChargementState extends State<Chargement> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.only(top: 220),
+        padding: const EdgeInsets.only(top: 220),
         child: Center(
           child: Column(
-            children: [
+            children: const [
               CircleAvatar(
                 radius: 40.0,
                 backgroundImage: AssetImage('assets/logo.jpg'),
