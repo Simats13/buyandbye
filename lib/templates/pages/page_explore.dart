@@ -156,6 +156,7 @@ class _PageExploreState extends State<PageExplore> {
         context: context,
         pageBuilder: (context, anim1, anim2) {
           return Container(
+              constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height / 4 ,maxHeight: MediaQuery.of(context).size.height / 1),
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(20)),
               margin: EdgeInsets.only(
@@ -179,7 +180,7 @@ class _PageExploreState extends State<PageExplore> {
                             (snapshot.data! as QuerySnapshot).docs.length,
                         itemBuilder: (context, index) {
                           return SizedBox(
-                            height: MediaQuery.of(context).size.height / 2.4,
+                            height: MediaQuery.of(context).size.height / 2.35,
                             width: MediaQuery.of(context).size.width,
                             child: SlideItemExplorer(
                               img: snapshot.data.docs[index]["imgUrl"],
