@@ -319,7 +319,8 @@ class _PageCompteState extends State<PageCompte> {
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.fromLTRB(10, 25, 0, 0),
+              constraints: BoxConstraints(maxWidth: 299),
+              margin: EdgeInsets.fromLTRB(10, 25, 0, 0),
               alignment: Alignment.centerLeft,
               child: const Text("Points Obtenus",
                   style: TextStyle(
@@ -332,7 +333,8 @@ class _PageCompteState extends State<PageCompte> {
               height: 8,
             ),
             Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              constraints: BoxConstraints(maxWidth: 299),
+              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
               alignment: Alignment.centerLeft,
               child: const Text("180 pts",
                   style: TextStyle(
@@ -342,7 +344,8 @@ class _PageCompteState extends State<PageCompte> {
                   )),
             ),
             Container(
-              margin: const EdgeInsets.fromLTRB(0, 25, 10, 0),
+              constraints: BoxConstraints(maxWidth: 299),
+              margin: EdgeInsets.fromLTRB(0, 25, 10, 0),
               alignment: Alignment.bottomRight,
               child: Text("$fname $lname",
                   style: const TextStyle(

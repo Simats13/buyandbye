@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
@@ -39,7 +39,7 @@ class _PageAddressEditState extends State<PageAddressEdit> {
   late GoogleMapController _mapController;
   Stream<List<DocumentSnapshot>>? stream;
   final _formKey = GlobalKey<FormState>();
-  Geoflutterfire? geo;
+  GeoFlutterFire? geo;
   bool mapToggle = false;
 
   final Set<Marker> _markers = <Marker>{};
@@ -198,7 +198,8 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                           ? showCupertinoDialog(
                               context: context,
                               builder: (context) => CupertinoAlertDialog(
-                                    title: const Text("Suppression de l'adresse"),
+                                    title:
+                                        const Text("Suppression de l'adresse"),
                                     content: const Text(
                                         "Souhaitez-vous réellement supprimer l'adresse ?"),
                                     actions: [
@@ -459,8 +460,8 @@ class _PageAddressEditState extends State<PageAddressEdit> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       primary: Colors.black,
-                      textStyle:
-                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      textStyle: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold)),
                   onPressed: () {
                     // Si un champ est vide, on envoi la valeur déjà présente
 

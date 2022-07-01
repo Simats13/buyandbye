@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -17,8 +17,7 @@ class PageCategorie extends StatefulWidget {
       this.description,
       this.adresse,
       this.categorie,
-      this.horairesOuverture
-      })
+      this.horairesOuverture})
       : super(key: key);
 
   final String? img, name, description, adresse, categorie;
@@ -47,7 +46,7 @@ class _PageCategorieState extends State<PageCategorie> {
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
     setState(() {
-      Geoflutterfire geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
 
       stream = radius.switchMap((rad) {
@@ -199,23 +198,23 @@ class _PageCategorieState extends State<PageCategorie> {
       clickAndCollect,
       livraison,
       colorStore,
-      sellerID, horairesOuverture}) {
+      sellerID,
+      horairesOuverture}) {
     return ListTile(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => PageDetail(
-                    img: photoUrl,
-                    name: name,
-                    description: description,
-                    adresse: adresse,
-                    clickAndCollect: clickAndCollect,
-                    livraison: livraison,
-                    sellerID: sellerID,
-                    colorStore: colorStore,
-                    horairesOuverture: horairesOuverture
-                  )),
+                  img: photoUrl,
+                  name: name,
+                  description: description,
+                  adresse: adresse,
+                  clickAndCollect: clickAndCollect,
+                  livraison: livraison,
+                  sellerID: sellerID,
+                  colorStore: colorStore,
+                  horairesOuverture: horairesOuverture)),
         );
       },
       leading: SizedBox(

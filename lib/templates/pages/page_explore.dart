@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Pages/page_detail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
+import 'package:buyandbye/templates/widgets/slide_items.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,7 +15,7 @@ import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -28,7 +29,7 @@ class PageExplore extends StatefulWidget {
 
 class _PageExploreState extends State<PageExplore> {
   var radius = BehaviorSubject<double>.seeded(10);
-  late Geoflutterfire geo;
+  final geo = GeoFlutterFire();
   bool mapToggle = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   final Set<Marker> marker = {};
@@ -37,7 +38,7 @@ class _PageExploreState extends State<PageExplore> {
   Stream<List<DocumentSnapshot>>? stream;
   late BitmapDescriptor mapMaker, mapMakerUser;
   final PanelController _pc = PanelController();
-  
+
   List magasins = [];
   String label = 'kms';
   late String city;
@@ -106,7 +107,7 @@ class _PageExploreState extends State<PageExplore> {
     var first = addresses.first;
     setState(() {
       mapToggle = true;
-      geo = Geoflutterfire();
+      final geo = GeoFlutterFire();
       city = first.locality!;
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
       stream = radius.switchMap((rad) {
@@ -154,127 +155,52 @@ class _PageExploreState extends State<PageExplore> {
         transitionDuration: const Duration(milliseconds: 400),
         context: context,
         pageBuilder: (context, anim1, anim2) {
-          return Card(
-            margin: EdgeInsets.only(
-                top: size.height / 1.9, left: 20, right: 20, bottom: 30),
-            child: Align(
-              child: Container(
-                margin: const EdgeInsets.only(left: 16, right: 16),
-                child: FutureBuilder(
-                    future: DatabaseMethods().getMagasinInfo(idSeller),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: ColorLoader3(
-                            radius: 15.0,
-                            dotRadius: 6.0,
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                          padding: EdgeInsets.zero,
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount:
-                              (snapshot.data! as QuerySnapshot).docs.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Center(
-                                  child: Text(
-                                    name!,
-                                    style: const TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 25,
-                                ),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 200,
-                                  child: Image(
-                                    image: NetworkImage(
-                                        (snapshot.data! as QuerySnapshot)
-                                            .docs[index]['imgUrl']),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text("Adresse : " +
-                                    (snapshot.data! as QuerySnapshot)
-                                        .docs[index]['adresse']),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text("Description : " +
-                                    (snapshot.data! as QuerySnapshot)
-                                        .docs[index]['description']),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => PageDetail(
-                                                  img: (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]['imgUrl'],
-                                                  name: (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]['name'],
-                                                  colorStore: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]
-                                                      ['colorStore'],
-                                                  description: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]
-                                                      ['description'],
-                                                  adresse: (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]['adresse'],
-                                                  clickAndCollect: (snapshot
-                                                                  .data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]
-                                                      ['ClickAndCollect'],
-                                                  livraison: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]
-                                                      ['livraison'],
-                                                  sellerID: (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]['id'],
-                                                  horairesOuverture: (snapshot.data!
-                                                          as QuerySnapshot)
-                                                      .docs[index]["horairesOuverture"],
-                                                )));
-                                  },
-                                  child: const Center(
-                                    child: Text(
-                                      "Accéder au magasin",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          });
-                    }),
-              ),
-            ),
-          );
+          return Container(
+              constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height / 4 ,maxHeight: MediaQuery.of(context).size.height / 1),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(20)),
+              margin: EdgeInsets.only(
+                  top: size.height / 1.9, left: 20, right: 20, bottom: 10),
+              child: FutureBuilder<dynamic>(
+                  future: DatabaseMethods().getMagasinInfo(idSeller),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: ColorLoader3(
+                          radius: 15.0,
+                          dotRadius: 6.0,
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount:
+                            (snapshot.data! as QuerySnapshot).docs.length,
+                        itemBuilder: (context, index) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height / 2.35,
+                            width: MediaQuery.of(context).size.width,
+                            child: SlideItemExplorer(
+                              img: snapshot.data.docs[index]["imgUrl"],
+                              name: snapshot.data.docs[index]["name"],
+                              address: snapshot.data.docs[index]["adresse"],
+                              description: snapshot.data.docs[index]
+                                  ["description"],
+                              livraison: snapshot.data.docs[index]["livraison"],
+                              sellerID: snapshot.data.docs[index]["id"],
+                              horairesOuverture: snapshot.data.docs[index]
+                                  ["horairesOuverture"],
+                              colorStore: snapshot.data.docs[index]
+                                  ["colorStore"],
+                              clickAndCollect: snapshot.data.docs[index]
+                                  ["ClickAndCollect"],
+                              mainCategorie: const [],
+                            ),
+                          );
+                        });
+                  }));
         });
   }
 
@@ -410,22 +336,22 @@ class _PageExploreState extends State<PageExplore> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
                         child: Platform.isIOS
-                        ? Center(
-                            child: Column(
-                              children: const [
-                                CupertinoActivityIndicator(),
-                                Text('Chargement...'),
-                              ],
-                            ),
-                          )
-                        : Center(
-                            child: Column(
-                              children: const [
-                                CircularProgressIndicator(),
-                                Text('Chargement...'),
-                              ],
-                            ),
-                          ),
+                            ? Center(
+                                child: Column(
+                                  children: const [
+                                    CupertinoActivityIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                ),
+                              )
+                            : Center(
+                                child: Column(
+                                  children: const [
+                                    CircularProgressIndicator(),
+                                    Text('Chargement...'),
+                                  ],
+                                ),
+                              ),
                       );
                       //METTRE UN SHIMMER
                     }
@@ -442,7 +368,7 @@ class _PageExploreState extends State<PageExplore> {
                           // maxHeight: 30,
                           parallaxEnabled: true,
                           parallaxOffset: .5,
-                          controller:_pc,
+                          controller: _pc,
                           panelBuilder: (sc) {
                             return MediaQuery.removePadding(
                               context: context,
@@ -461,8 +387,9 @@ class _PageExploreState extends State<PageExplore> {
                                         height: 5,
                                         decoration: BoxDecoration(
                                             color: Colors.grey[300],
-                                            borderRadius: const BorderRadius.all(
-                                                Radius.circular(12.0))),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(12.0))),
                                       ),
                                     ],
                                   ),
@@ -530,11 +457,10 @@ class _PageExploreState extends State<PageExplore> {
                                                     ListTile(
                                                       title: Center(
                                                         child: Container(
-                                                          width:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
                                                           height: 30,
                                                           decoration:
                                                               const BoxDecoration(
@@ -546,11 +472,10 @@ class _PageExploreState extends State<PageExplore> {
                                                     ListTile(
                                                       title: Center(
                                                         child: Container(
-                                                          width:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
                                                           height: 30,
                                                           decoration:
                                                               const BoxDecoration(
@@ -562,11 +487,10 @@ class _PageExploreState extends State<PageExplore> {
                                                     ListTile(
                                                       title: Center(
                                                         child: Container(
-                                                          width:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
                                                           height: 30,
                                                           decoration:
                                                               const BoxDecoration(
@@ -609,17 +533,19 @@ class _PageExploreState extends State<PageExplore> {
                                                           adresse: snapshot
                                                                   .data[index]
                                                               ['adresse'],
-                                                          clickAndCollect:
-                                                              snapshot.data[
-                                                                      index][
-                                                                  'ClickAndCollect'],
+                                                          clickAndCollect: snapshot
+                                                                  .data[index][
+                                                              'ClickAndCollect'],
                                                           livraison: snapshot
                                                                   .data[index]
                                                               ['livraison'],
                                                           sellerID: snapshot
                                                                   .data[index]
                                                               ['id'],
-                                                          horairesOuverture: snapshot.data[index]["horairesOuverture"],
+                                                          horairesOuverture:
+                                                              snapshot.data[
+                                                                      index][
+                                                                  "horairesOuverture"],
                                                         ),
                                                       ),
                                                     );
@@ -636,21 +562,19 @@ class _PageExploreState extends State<PageExplore> {
                                                           _pc.close();
                                                           moveCamera(
                                                             snapshot
-                                                                .data[index][
-                                                                    'position']
-                                                                    [
-                                                                    'geopoint']
+                                                                .data[index]
+                                                                    ['position']
+                                                                    ['geopoint']
                                                                 .latitude,
                                                             snapshot
-                                                                .data[index][
-                                                                    'position']
-                                                                    [
-                                                                    'geopoint']
+                                                                .data[index]
+                                                                    ['position']
+                                                                    ['geopoint']
                                                                 .longitude,
                                                           );
                                                         },
-                                                        icon:
-                                                            const Icon(Icons.place),
+                                                        icon: const Icon(
+                                                            Icons.place),
                                                       ),
                                                     ],
                                                   ),
@@ -752,8 +676,8 @@ class _PageExploreState extends State<PageExplore> {
                             strictMode: true);
                   });
                   markers.clear();
-                  BitmapDescriptor.fromAssetImage(
-                          const ImageConfiguration(), 'assets/icons/location-pin.png')
+                  BitmapDescriptor.fromAssetImage(const ImageConfiguration(),
+                          'assets/icons/location-pin.png')
                       .then((value) {
                     mapMakerUser = value;
                   });
@@ -791,8 +715,8 @@ class _PageExploreState extends State<PageExplore> {
                             field: 'position',
                             strictMode: true);
                   });
-                  BitmapDescriptor.fromAssetImage(
-                          const ImageConfiguration(), 'assets/icons/location-pin.png')
+                  BitmapDescriptor.fromAssetImage(const ImageConfiguration(),
+                          'assets/icons/location-pin.png')
                       .then((value) {
                     mapMakerUser = value;
                   });
@@ -819,13 +743,15 @@ class _PageExploreState extends State<PageExplore> {
             icon: Icon(icon),
             color: Colors.white,
           ),
-          decoration:
-              BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: const [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.15),
-              blurRadius: 8.0,
-            )
-          ]),
+          decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  blurRadius: 8.0,
+                )
+              ]),
         ),
         const SizedBox(
           height: 12.0,
