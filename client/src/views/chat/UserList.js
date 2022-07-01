@@ -15,7 +15,7 @@ import useAuth from 'hooks/useAuth';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUserData, userInfo, data, sellerID }) => {
+const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen }) => {
     const dispatch = useDispatch();
     const [client, setClient] = useState([]);
 
@@ -107,7 +107,7 @@ const UserList = ({ setUserData, userInfo, data, sellerID }) => {
                     <Fragment key={sellerID + userSelect.users[1]}>
                         <ListItemButton
                             onClick={() => {
-                                setUserData('hello from userList');
+                                setLastOpen(userSelect.users[1]);
                             }}
                         >
                             <Test userID={userSelect.users[1]} messageData={userSelect} />

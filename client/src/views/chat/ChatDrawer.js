@@ -25,7 +25,7 @@ import useConfig from 'hooks/useConfig';
 
 // ==============================|| CHAT DRAWER ||============================== //
 
-const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData, data, userInfo }) => {
+const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData, data, userInfo, setLastOpen }) => {
     const theme = useTheme();
 
     const { user } = useAuth();
@@ -161,7 +161,13 @@ const ChatDrawer = ({ handleDrawerOpen, openChatDrawer, setUserData, data, userI
                         }}
                     >
                         <Box sx={{ p: 3, pt: 0 }}>
-                            <UserList sellerID={user.id} setUserData={setUserData} data={data} userInfo={userInfo} />
+                            <UserList
+                                sellerID={user.id}
+                                setUserData={setUserData}
+                                data={data}
+                                userInfo={userInfo}
+                                setLastOpen={setLastOpen}
+                            />
                         </Box>
                     </PerfectScrollbar>
                 </MainCard>

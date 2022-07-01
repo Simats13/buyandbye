@@ -20,9 +20,6 @@ const ChartHistory = ({ data, theme, user }) => {
     useEffect(() => {
         scrollToBottom();
     }, [data.length, scrollToBottom]);
-
-    console.log(data);
-
     return (
         <Grid item xs={12}>
             <Grid container spacing={gridSpacing} ref={wrapper}>
@@ -55,7 +52,7 @@ const ChartHistory = ({ data, theme, user }) => {
                                                         >
                                                             {
                                                                 // eslint-disable-next-line no-underscore-dangle
-                                                                new Date(messages.timestamp._seconds * 1000).toLocaleString()
+                                                                new Date(messages.timestamp.seconds * 1000).toLocaleString()
                                                             }
                                                         </Typography>
                                                     </Grid>
@@ -86,7 +83,7 @@ const ChartHistory = ({ data, theme, user }) => {
                                                         <Typography align="right" variant="subtitle2">
                                                             {
                                                                 // eslint-disable-next-line no-underscore-dangle
-                                                                new Date(messages.timestamp._seconds * 1000).toLocaleString()
+                                                                new Date(messages.timestamp.seconds * 1000).toLocaleString()
                                                             }
                                                         </Typography>
                                                     </Grid>

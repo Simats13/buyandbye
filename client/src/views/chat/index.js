@@ -85,6 +85,8 @@ const Chat = () => {
 
     const [messages, setMessages] = useState([]); // Message de la conversation]
 
+    const [lastOpen, setLastOpen] = useState([]);
+
     const { chats, users } = useSelector((state) => state.chat);
 
     const { userWithID } = useSelector((state) => state.user);
@@ -95,7 +97,9 @@ const Chat = () => {
 
     const queryClient = useFirestoreQueryData(['commonData'], ref, { subscribe: true });
 
-    const lastClientId = queryClient.data?.length > 0 ? queryClient.data[0].users[1] : null;
+    useEffect(() => {
+        setLastOpen(queryClient.data?.length > 0 ? queryClient.data[0].users[1] : null);
+    }, [queryClient, lastOpen]);
 
     useEffect(() => {
         dispatch(getUsers(user.id));
@@ -112,21 +116,17 @@ const Chat = () => {
         }
     }, [queryClient, data]);
 
-    const refChats = query(collection(db, 'messages'), orderBy('timestamp', 'desc'));
+    const refChats = query(collection(db, `commonData/${user.id + lastOpen}/messages`), orderBy('timestamp', 'asc'));
 
-    const queryChats = useFirestoreQueryData(['messages', lastClientId], ref, { subscribe: true });
+    const queryChats = useFirestoreQueryData([`commonData/${user.id + lastOpen}/messages`], refChats, {
+        subscribe: true
+    });
 
-    // useEffect(() => {
-    //     setMessages(refChats);
-    // }, [refChats]);
-
-    // useEffect(() => {
-    //     if (queryChats.isSuccess) {
-    //         setData(queryChats.data);
-    //     }
-    // }, [queryChats, messages]);
-
-    console.log(messages);
+    useEffect(() => {
+        if (queryChats.isSuccess) {
+            setMessages(queryChats.data);
+        }
+    }, [queryChats, messages]);
 
     const handleClickSort = (event) => {
         setAnchorEl(event?.currentTarget);
@@ -207,6 +207,7 @@ const Chat = () => {
                 data={data}
                 setUserData={setUserData}
                 userInfo={userData}
+                setLastOpen={setLastOpen}
             />
             <Main theme={theme} open={openChatDrawer}>
                 <Grid container spacing={gridSpacing}>
@@ -279,13 +280,13 @@ const Chat = () => {
                                     style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 275 }}
                                 >
                                     <CardContent>
-                                        {/* <ChartHistory
+                                        <ChartHistory
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
                                             handleDrawerOpen={handleDrawerOpen}
                                             user={user}
-                                            data={data}
-                                        /> */}
+                                            data={messages}
+                                        />
                                     </CardContent>
                                 </PerfectScrollbar>
                                 <Grid item xs={12}>
