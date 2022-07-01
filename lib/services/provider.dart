@@ -33,11 +33,11 @@ class Count extends StatelessWidget {
 
 // Récupère l'identifiant de l'utiisateur connecté et le renvoie
 class UserId with ChangeNotifier, DiagnosticableTreeMixin {
-  final _userId = 'UaIZiq3TCrhAkeqYixauTs6UBhK2';
-  get userId => _userId;
+  final User? _user = FirebaseAuth.instance.currentUser;
+  User? get userId => _user;
 
   returnData() {
-    return _userId;
+    return _user?.uid;
   }
 }
 
