@@ -43,7 +43,7 @@ import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
 import MoodTwoToneIcon from '@mui/icons-material/MoodTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import useAuth from 'hooks/useAuth';
-import { useFirestoreDocumentData, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useFirestoreDocumentData, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
 import { useQueries } from 'react-query';
 
 const avatarImage = require.context('assets/images/users', true);
@@ -112,16 +112,21 @@ const Chat = () => {
         }
     }, [queryClient, data]);
 
-    const refChats = doc(db, 'commonData', user.id + lastClientId, 'messages');
+    const refChats = query(collection(db, 'messages'), orderBy('timestamp', 'desc'));
 
-    const queryChats = useFirestoreDocumentData(['commonData', user.id + lastClientId, 'messages'], refChats, { subscribe: true });
+    const queryChats = useFirestoreQueryData(['messages', lastClientId], ref, { subscribe: true });
 
-    useEffect(() => {
-        if (queryChats.isSuccess) {
-            setMessages(queryChats.data);
-            console.log(messages);
-        }
-    }, [queryChats, messages]);
+    // useEffect(() => {
+    //     setMessages(refChats);
+    // }, [refChats]);
+
+    // useEffect(() => {
+    //     if (queryChats.isSuccess) {
+    //         setData(queryChats.data);
+    //     }
+    // }, [queryChats, messages]);
+
+    console.log(messages);
 
     const handleClickSort = (event) => {
         setAnchorEl(event?.currentTarget);
@@ -274,13 +279,13 @@ const Chat = () => {
                                     style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 275 }}
                                 >
                                     <CardContent>
-                                        <ChartHistory
+                                        {/* <ChartHistory
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
                                             handleDrawerOpen={handleDrawerOpen}
                                             user={user}
                                             data={data}
-                                        />
+                                        /> */}
                                     </CardContent>
                                 </PerfectScrollbar>
                                 <Grid item xs={12}>
