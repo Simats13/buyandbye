@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Compte/page_cb_edit.dart';
 import 'package:buyandbye/templates/Connexion/Tools/bouton.dart';
 import 'package:buyandbye/templates/Pages/address_search.dart';
@@ -48,10 +49,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       myUserName = "",
       myEmail = "",
       myProfilePic = "",
-      apple = "",
-      google = "",
-      facebook = "",
-      mail = "",
       customerID = "",
       myPhone = "",
       nameCard = "",
@@ -61,6 +58,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       postalCodeCard = "",
       stateCard = "",
       countryCard = "";
+  bool? apple, facebook, mail, google;
   DateTime? dateTime;
 
   Map<String, dynamic>? paymentIntentData;
@@ -80,30 +78,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getMyInfo();
-    // getStripeInfo();
-  }
-
-  getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
-    myID = "${querySnapshot.docs[0]["id"]}";
-    myFirstName = "${querySnapshot.docs[0]["fname"]}";
-    myLastName = "${querySnapshot.docs[0]["lname"]}";
-    myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
-    myEmail = "${querySnapshot.docs[0]["email"]}";
-    myPhone = "${querySnapshot.docs[0]["phone"]}";
-    customerID = "${querySnapshot.docs[0]["customerId"]}";
-    apple = "${querySnapshot.docs[0]["providers"]['Apple']}";
-    facebook = "${querySnapshot.docs[0]["providers"]['Facebook']}";
-    mail = "${querySnapshot.docs[0]["providers"]['Mail']}";
-    google = "${querySnapshot.docs[0]["providers"]['Google']}";
-    final url =
-        "https://us-central1-oficium-11bf9.cloudfunctions.net/app/list_cards?customers=$customerID";
+  getPaymentInfo(customerID) async {
+    final url = "https://us-central1-oficium-11bf9.cloudfunctions.net/app/list_cards?customers=$customerID";
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -118,8 +94,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     setState(() {});
   }
-
-  getStripeInfo() async {}
 
   showMessage(String titre, e) {
     if (!Platform.isIOS) {
@@ -162,144 +136,151 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-        backgroundColor: BuyandByeAppTheme.white,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: AppBar(
-            title: RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                      text: 'Mes Informations',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: BuyandByeAppTheme.orangeMiFonce,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  WidgetSpan(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Icon(
-                        Icons.settings,
-                        color: BuyandByeAppTheme.orangeMiFonce,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    return StreamBuilder<dynamic>(
+        stream: ProviderUserInfo().returnData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            myID = snapshot.data['id'];
+            myFirstName = snapshot.data['fname'];
+            myLastName = snapshot.data['lname'];
+            myProfilePic = snapshot.data['imgUrl'];
+            myEmail = snapshot.data['email'];
+            myPhone = snapshot.data['phone'];
+            customerID = snapshot.data['customerId'];
+            apple = snapshot.data['providers']['Apple'];
+            facebook = snapshot.data['providers']['Facebook'];
+            mail = snapshot.data['providers']['Mail'];
+            google = snapshot.data['providers']['Google'];
+            getPaymentInfo(customerID);
+          }
+          return Scaffold(
             backgroundColor: BuyandByeAppTheme.white,
-            automaticallyImplyLeading: false,
-            elevation: 0.0,
-            bottomOpacity: 0.0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back,
-                color: BuyandByeAppTheme.orange,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            actions: [
-              // Boutons pour modifier les informations du commerçant
-              Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isVisible = !isVisible;
-                      });
-                    },
-                    icon: const Icon(Icons.edit_rounded,
-                        color: BuyandByeAppTheme.orange),
-                  ))
-            ],
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.only(left: 16, top: 40, right: 16),
-            // Affiche les informations
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 95,
-                  width: 95,
-                  child: Stack(
-                    children: <Widget>[
-                      // Affiche l'image de profil
-                      Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: myProfilePic != ""
-                              ? Image.network(myProfilePic!)
-                              : Shimmer.fromColors(
-                                  child: Stack(
-                                    children: [
-                                      Center(
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                              .size
-                                              .width,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  baseColor: Colors.grey[300]!,
-                                  highlightColor: Colors.grey[100]!,
-                                ),
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(50.0),
+              child: AppBar(
+                title: RichText(
+                  text: const TextSpan(
+                    children: [
+                      TextSpan(
+                          text: 'Mes Informations',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: BuyandByeAppTheme.orangeMiFonce,
+                            fontWeight: FontWeight.bold,
+                          )),
+                      WidgetSpan(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Icon(
+                            Icons.settings,
+                            color: BuyandByeAppTheme.orangeMiFonce,
+                            size: 25,
+                          ),
                         ),
                       ),
-                      // Boutons de changement d'image quand on est en mode modification
-                      isVisible
-                          ? const SizedBox.shrink()
-                          : Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    width: 3,
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                  ),
-                                  color: BuyandByeAppTheme.orange,
-                                ),
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  icon: const Icon(Icons.edit,
-                                      color: Colors.white, size: 14),
-                                  onPressed: () {},
-                                ),
-                              )),
                     ],
                   ),
                 ),
-                const SizedBox(height: 50),
-                const Divider(thickness: 0.5, color: Colors.black),
-                const SizedBox(height: 20),
-                // De base, affiche les informations du commerçant
-                Visibility(
-                    visible: isVisible,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Nom :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                backgroundColor: BuyandByeAppTheme.white,
+                automaticallyImplyLeading: false,
+                elevation: 0.0,
+                bottomOpacity: 0.0,
+                leading: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: BuyandByeAppTheme.orange,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                actions: [
+                  // Boutons pour modifier les informations du commerçant
+                  Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isVisible = !isVisible;
+                          });
+                        },
+                        icon: const Icon(Icons.edit_rounded, color: BuyandByeAppTheme.orange),
+                      ))
+                ],
+              ),
+            ),
+            body: SingleChildScrollView(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(left: 16, top: 40, right: 16),
+                // Affiche les informations
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 95,
+                      width: 95,
+                      child: Stack(
+                        children: <Widget>[
+                          // Affiche l'image de profil
+                          Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: myProfilePic != ""
+                                  ? Image.network(myProfilePic!)
+                                  : Shimmer.fromColors(
+                                      child: Stack(
+                                        children: [
+                                          Center(
+                                            child: Container(
+                                              width: MediaQuery.of(context).size.width,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                    ),
+                            ),
+                          ),
+                          // Boutons de changement d'image quand on est en mode modification
+                          isVisible
+                              ? const SizedBox.shrink()
+                              : Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    height: 30,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        width: 3,
+                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                      ),
+                                      color: BuyandByeAppTheme.orange,
+                                    ),
+                                    child: IconButton(
+                                      padding: EdgeInsets.zero,
+                                      icon: const Icon(Icons.edit, color: Colors.white, size: 14),
+                                      onPressed: () {},
+                                    ),
+                                  )),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    const Divider(thickness: 0.5, color: Colors.black),
+                    const SizedBox(height: 20),
+                    // De base, affiche les informations du commerçant
+                    Visibility(
+                        visible: isVisible,
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            const Text("Nom :", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 20),
                             myLastName == ''
                                 ? Shimmer.fromColors(
@@ -307,9 +288,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       children: [
                                         Center(
                                           child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
+                                            width: MediaQuery.of(context).size.width,
                                             height: 30,
                                             decoration: const BoxDecoration(
                                               color: Colors.white,
@@ -323,9 +302,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   )
                                 : Text(myLastName!),
                             const SizedBox(height: 20),
-                            const Text("Prénom :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            const Text("Prénom :", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 20),
                             myFirstName == ''
                                 ? Shimmer.fromColors(
@@ -333,9 +310,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       children: [
                                         Center(
                                           child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
+                                            width: MediaQuery.of(context).size.width,
                                             height: 30,
                                             decoration: const BoxDecoration(
                                               color: Colors.white,
@@ -349,9 +324,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   )
                                 : Text(myFirstName!),
                             const SizedBox(height: 20),
-                            const Text("E-mail :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            const Text("E-mail :", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 20),
                             myEmail == ''
                                 ? Shimmer.fromColors(
@@ -359,9 +332,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       children: [
                                         Center(
                                           child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
+                                            width: MediaQuery.of(context).size.width,
                                             height: 30,
                                             decoration: const BoxDecoration(
                                               color: Colors.white,
@@ -375,9 +346,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   )
                                 : Text(myEmail!),
                             const SizedBox(height: 20),
-                            const Text("Numéro de téléphone :",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            const Text("Numéro de téléphone :", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 20),
                             myPhone == ''
                                 ? Shimmer.fromColors(
@@ -385,9 +354,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       children: [
                                         Center(
                                           child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
+                                            width: MediaQuery.of(context).size.width,
                                             height: 30,
                                             decoration: const BoxDecoration(
                                               color: Colors.white,
@@ -402,18 +369,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 : myPhone == ""
                                     ? RichText(
                                         text: TextSpan(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2,
+                                          style: Theme.of(context).textTheme.bodyText2,
                                           children: const [
-                                            TextSpan(
-                                                text:
-                                                    'Aucun numéro enregistré.\n\nEnregistrez en un éditant votre profil en appuyant sur le  '),
+                                            TextSpan(text: 'Aucun numéro enregistré.\n\nEnregistrez en un éditant votre profil en appuyant sur le  '),
                                             WidgetSpan(
                                               child: Padding(
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 2.0),
+                                                padding: EdgeInsets.symmetric(horizontal: 2.0),
                                                 child: Icon(Icons.edit_rounded),
                                               ),
                                             ),
@@ -429,16 +390,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Dissocier Facebook",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.facebook,
                                           onPressed: () async {
-                                            await AuthMethods.instance
-                                                .unlinkFacebook();
-                                            showMessage("Lien Facebook",
-                                                "Votre compte Facebook a bien été dissocié !");
+                                            await AuthMethods.instance.unlinkFacebook();
+                                            showMessage("Lien Facebook", "Votre compte Facebook a bien été dissocié !");
                                             setState(() {
-                                              facebook = "false";
+                                              facebook = false;
                                             });
                                           })
                                     ],
@@ -447,49 +405,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Associer Facebook",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.facebook,
                                           onPressed: () async {
                                             try {
-                                              await AuthMethods.instance
-                                                  .linkExistingToFacebook();
-                                              showMessage("Lien Facebook",
-                                                  "Votre compte Facebook a bien été lié !");
+                                              await AuthMethods.instance.linkExistingToFacebook();
+                                              showMessage("Lien Facebook", "Votre compte Facebook a bien été lié !");
                                               setState(() {
-                                                facebook = "true";
+                                                facebook = true;
                                               });
                                             } catch (e) {
                                               if (e is FirebaseAuthException) {
                                                 print(e);
-                                                if (e.code ==
-                                                    'credential-already-in-use') {
+                                                if (e.code == 'credential-already-in-use') {
                                                   String erreur =
                                                       "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
-                                                  showMessage(
-                                                      "Adresse mail déjà utilisée",
-                                                      erreur);
+                                                  showMessage("Adresse mail déjà utilisée", erreur);
                                                 }
                                               }
                                             }
                                           })
                                     ],
                                   ),
-                            google == "true"
+                            google == true
                                 ? Row(
                                     children: [
                                       SignInButton(
                                           btnText: "Dissocier Google",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.google,
                                           onPressed: () async {
-                                            await AuthMethods.instance
-                                                .unlinkGoogle();
-                                            showMessage("Lien Google",
-                                                "Votre compte Google a bien été dissocié !");
+                                            await AuthMethods.instance.unlinkGoogle();
+                                            showMessage("Lien Google", "Votre compte Google a bien été dissocié !");
                                             setState(() {
-                                              google = "false";
+                                              google = false;
                                             });
                                           })
                                     ],
@@ -498,28 +447,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Associer Google",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.google,
                                           onPressed: () async {
                                             try {
-                                              await AuthMethods.instance
-                                                  .linkExistingToGoogle();
-                                              showMessage("Lien Google",
-                                                  "Votre compte Google a bien été lié !");
+                                              await AuthMethods.instance.linkExistingToGoogle();
+                                              showMessage("Lien Google", "Votre compte Google a bien été lié !");
                                               setState(() {
-                                                google = "true";
+                                                google = true;
                                               });
                                             } catch (e) {
                                               if (e is FirebaseAuthException) {
                                                 print(e);
-                                                if (e.code ==
-                                                    'credential-already-in-use') {
+                                                if (e.code == 'credential-already-in-use') {
                                                   String erreur =
                                                       "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
-                                                  showMessage(
-                                                      "Adresse mail déjà utilisée",
-                                                      erreur);
+                                                  showMessage("Adresse mail déjà utilisée", erreur);
                                                 }
                                               }
                                             }
@@ -531,8 +474,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Dissocier Mail",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.mail,
                                           onPressed: () async {
                                             try {
@@ -540,13 +482,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             } catch (e) {
                                               if (e is FirebaseAuthException) {
                                                 print(e);
-                                                if (e.code ==
-                                                    'credential-already-in-use') {
+                                                if (e.code == 'credential-already-in-use') {
                                                   String erreur =
                                                       "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
-                                                  showMessage(
-                                                      "Adresse mail déjà utilisée",
-                                                      erreur);
+                                                  showMessage("Adresse mail déjà utilisée", erreur);
                                                 }
                                               }
                                             }
@@ -557,8 +496,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Associer Mail",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.mail,
                                           onPressed: () async {
                                             try {
@@ -566,13 +504,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             } catch (e) {
                                               if (e is FirebaseAuthException) {
                                                 print(e);
-                                                if (e.code ==
-                                                    'credential-already-in-use') {
+                                                if (e.code == 'credential-already-in-use') {
                                                   String erreur =
                                                       "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
-                                                  showMessage(
-                                                      "Adresse mail déjà utilisée",
-                                                      erreur);
+                                                  showMessage("Adresse mail déjà utilisée", erreur);
                                                 }
                                               }
                                             }
@@ -584,17 +519,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Dissocier Apple",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.apple,
                                           onPressed: () async {
                                             try {
-                                              await AuthMethods.instance
-                                                  .unlinkApple();
-                                              showMessage("Lien Apple",
-                                                  "Votre compte Apple a bien été dissocié !");
+                                              await AuthMethods.instance.unlinkApple();
+                                              showMessage("Lien Apple", "Votre compte Apple a bien été dissocié !");
                                               setState(() {
-                                                apple = "false";
+                                                apple = false;
                                               });
                                             } catch (e) {
                                               if (e is FirebaseAuthException) {
@@ -608,33 +540,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     children: [
                                       SignInButton(
                                           btnText: "Associer Apple",
-                                          imagePosition: ImagePosition
-                                              .left, // left or right
+                                          imagePosition: ImagePosition.left, // left or right
                                           buttonType: ButtonType.apple,
                                           onPressed:
                                               () {} /*async {
-                                            try {
-                                              await AuthMethods.instance
-                                                  .linkExistingToApple();
-                                              showMessage("Lien Apple",
-                                                  "Votre compte Apple a bien été lié !");
-                                              setState(() {
-                                                apple = "true";
-                                              });
-                                            } catch (e) {
-                                              if (e is FirebaseAuthException) {
-                                                print(e);
-                                                if (e.code ==
-                                                    'credential-already-in-use') {
-                                                  String erreur =
-                                                      "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
-                                                  showMessage(
-                                                      "Adresse mail déjà utilisée",
-                                                      erreur);
+                                                try {
+                                                  await AuthMethods.instance
+                                                      .linkExistingToApple();
+                                                  showMessage("Lien Apple",
+                                                      "Votre compte Apple a bien été lié !");
+                                                  setState(() {
+                                                    apple = "true";
+                                                  });
+                                                } catch (e) {
+                                                  if (e is FirebaseAuthException) {
+                                                    print(e);
+                                                    if (e.code ==
+                                                        'credential-already-in-use') {
+                                                      String erreur =
+                                                          "Un compte existe déjà avec cette adresse mail, veuillez le Dissocier ou bien contactez le support.";
+                                                      showMessage(
+                                                          "Adresse mail déjà utilisée",
+                                                          erreur);
+                                                    }
+                                                  }
                                                 }
-                                              }
-                                            }
-                                          }*/
+                                              }*/
                                           )
                                     ],
                                   ),
@@ -650,41 +581,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       onTap: () async {
                                         // generate a new token here
                                         final sessionToken = const Uuid().v4();
-                                        final Suggestion result =
-                                            await showSearch(
+                                        final Suggestion result = await showSearch(
                                           context: context,
                                           delegate: AddressSearch(sessionToken),
                                         ) as Suggestion;
                                         // This will change the text displayed in the TextField
-                                        final placeDetails =
-                                            await PlaceApiProvider(sessionToken)
-                                                .getPlaceDetailFromId(
-                                                    result.placeId!);
+                                        final placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId!);
 
                                         setState(() {
                                           controller.text = result.description!;
-                                          streetNumber =
-                                              placeDetails.streetNumber!;
+                                          streetNumber = placeDetails.streetNumber!;
                                           street = placeDetails.street!;
                                           city = placeDetails.city!;
                                           zipCode = placeDetails.zipCode!;
-                                          currentAddressLocation =
-                                              "$streetNumber $street, $city ";
+                                          currentAddressLocation = "$streetNumber $street, $city ";
                                         });
 
-                                        final query =
-                                            "$streetNumber $street , $city";
+                                        final query = "$streetNumber $street , $city";
 
-                                        List<geocoder.Location> locations =
-                                            await geocoder
-                                                .locationFromAddress(query);
+                                        List<geocoder.Location> locations = await geocoder.locationFromAddress(query);
                                         var first = locations.first;
 
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PageAddressNext(
+                                                builder: (context) => PageAddressNext(
                                                       lat: first.latitude,
                                                       long: first.longitude,
                                                       adresse: query,
@@ -698,89 +619,53 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                             myID != ""
                                 ? StreamBuilder<dynamic>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection("users")
-                                        .doc(myID)
-                                        .collection("Address")
-                                        .snapshots(),
+                                    stream: ProviderGetAddresses().returnData(),
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
                                         if (snapshot.data.docs.length > 0) {
                                           return ListView.builder(
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
+                                              physics: const NeverScrollableScrollPhysics(),
                                               shrinkWrap: true,
-                                              itemCount:
-                                                  snapshot.data.docs.length,
+                                              itemCount: snapshot.data.docs.length,
                                               itemBuilder: (context, index) {
                                                 return Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment.start,
                                                   children: [
                                                     SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width -
-                                                              50,
+                                                      width: MediaQuery.of(context).size.width - 50,
                                                       child: InkWell(
                                                         onTap: () async {},
                                                         child: Row(
                                                           children: [
                                                             Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
-                                                                const SizedBox(
-                                                                    height: 30),
+                                                                const SizedBox(height: 30),
                                                                 Text(
-                                                                  snapshot.data
-                                                                          .docs[index]
-                                                                      [
-                                                                      "addressName"],
+                                                                  snapshot.data.docs[index]["addressName"],
                                                                 ),
-                                                                const SizedBox(
-                                                                    height: 5),
+                                                                const SizedBox(height: 5),
                                                                 SizedBox(
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width -
-                                                                      100,
+                                                                  width: MediaQuery.of(context).size.width - 100,
                                                                   child: Text(
-                                                                    snapshot.data
-                                                                            .docs[index]
-                                                                        [
-                                                                        "address"],
+                                                                    snapshot.data.docs[index]["address"],
                                                                   ),
                                                                 ),
                                                               ],
                                                             ),
                                                             Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .end,
+                                                              mainAxisAlignment: MainAxisAlignment.end,
                                                               children: [
                                                                 IconButton(
-                                                                  icon: const Icon(Icons
-                                                                      .more_vert),
-                                                                  onPressed:
-                                                                      () {
-                                                                    final action =
-                                                                        CupertinoActionSheet(
-                                                                      actions: <
-                                                                          Widget>[
+                                                                  icon: const Icon(Icons.more_vert),
+                                                                  onPressed: () {
+                                                                    final action = CupertinoActionSheet(
+                                                                      actions: <Widget>[
                                                                         CupertinoActionSheetAction(
-                                                                          child:
-                                                                              const Text("Modifier l'adresse"),
-                                                                          isDefaultAction:
-                                                                              true,
-                                                                          onPressed:
-                                                                              () {
+                                                                          child: const Text("Modifier l'adresse"),
+                                                                          isDefaultAction: true,
+                                                                          onPressed: () {
                                                                             Navigator.of(context).pop(false);
                                                                             Navigator.push(
                                                                               context,
@@ -800,19 +685,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                           },
                                                                         ),
                                                                         CupertinoActionSheetAction(
-                                                                            child: const Text(
-                                                                                "Supprimer mon adresse"),
-                                                                            isDestructiveAction:
-                                                                                true,
-                                                                            onPressed:
-                                                                                () async {
+                                                                            child: const Text("Supprimer mon adresse"),
+                                                                            isDestructiveAction: true,
+                                                                            onPressed: () async {
                                                                               final bool delete = await DatabaseMethods().deleteAddress(
                                                                                 snapshot.data.docs[index]["idDoc"],
                                                                               );
                                                                               setState(() {
                                                                                 if (delete == false) {
                                                                                   Navigator.of(context).pop(false);
-                                                                                  showMessage("Suppression impossible", "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.");
+                                                                                  showMessage("Suppression impossible",
+                                                                                      "Vous ne pouvez pas supprimer votre adresse, vous devez impérativement en avoir une ! Ajoutez-en une autre puis réessayez de la supprimer.");
                                                                                 } else {
                                                                                   Navigator.of(context).pop(false);
                                                                                   showMessage("Suppression adresse", "Votre adresse a bien été supprimé !");
@@ -820,23 +703,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                               });
                                                                             }),
                                                                       ],
-                                                                      cancelButton:
-                                                                          CupertinoActionSheetAction(
-                                                                        child: const Text(
-                                                                            "Annuler"),
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.pop(
-                                                                              context);
+                                                                      cancelButton: CupertinoActionSheetAction(
+                                                                        child: const Text("Annuler"),
+                                                                        onPressed: () {
+                                                                          Navigator.pop(context);
                                                                         },
                                                                       ),
                                                                     );
-                                                                    showCupertinoModalPopup(
-                                                                        context:
-                                                                            context,
-                                                                        builder:
-                                                                            (context) =>
-                                                                                action);
+                                                                    showCupertinoModalPopup(context: context, builder: (context) => action);
                                                                   },
                                                                 ),
                                                               ],
@@ -855,28 +729,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               Row(
                                                 children: [
                                                   SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width -
-                                                            50,
+                                                    width: MediaQuery.of(context).size.width - 50,
                                                     child: RichText(
                                                       text: TextSpan(
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText2,
+                                                        style: Theme.of(context).textTheme.bodyText2,
                                                         children: const [
                                                           TextSpan(
                                                               text:
                                                                   "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
                                                           WidgetSpan(
                                                             child: Padding(
-                                                              padding: EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      2.0),
-                                                              child: Icon(
-                                                                  Icons.add),
+                                                              padding: EdgeInsets.symmetric(horizontal: 2.0),
+                                                              child: Icon(Icons.add),
                                                             ),
                                                           ),
                                                         ],
@@ -894,10 +758,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             children: [
                                               Center(
                                                 child: Container(
-                                                  width:
-                                                      MediaQuery.of(context)
-                                                          .size
-                                                          .width,
+                                                  width: MediaQuery.of(context).size.width,
                                                   height: 30,
                                                   decoration: const BoxDecoration(
                                                     color: Colors.white,
@@ -918,9 +779,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ListTile(
                                           title: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               height: 30,
                                               decoration: const BoxDecoration(
                                                 color: Colors.red,
@@ -931,9 +790,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ListTile(
                                           title: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               height: 30,
                                               decoration: const BoxDecoration(
                                                 color: Colors.red,
@@ -944,9 +801,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ListTile(
                                           title: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               height: 30,
                                               decoration: const BoxDecoration(
                                                 color: Colors.red,
@@ -970,192 +825,109 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                             const SizedBox(height: 20),
                             paymentIntentData != null
-                                ? (paymentIntentData != null &&
-                                        paymentIntentData!['paymentMethods']
-                                                    ['data']
-                                                .length !=
-                                            0)
+                                ? (paymentIntentData != null && paymentIntentData!['paymentMethods']['data'].length != 0)
                                     ? ListView.builder(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
+                                        physics: const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount:
-                                            paymentIntentData!['paymentMethods']
-                                                    ['data']
-                                                .length,
+                                        itemCount: paymentIntentData!['paymentMethods']['data'].length,
                                         itemBuilder: (context, index) {
-                                          nameCard = paymentIntentData![
-                                                      'paymentMethods']['data']
-                                                  [index]['billing_details']
-                                              ['name'];
+                                          nameCard = paymentIntentData!['paymentMethods']['data'][index]['billing_details']['name'];
                                           return paymentIntentData != null
                                               ? Column(
                                                   children: [
                                                     ListTile(
-                                                      leading: paymentIntentData![
-                                                                              'paymentMethods']
-                                                                          [
-                                                                          'data']
-                                                                      [
-                                                                      index]['card']
-                                                                  ['brand'] ==
-                                                              "mastercard"
-                                                          ? Image.network(
-                                                              "https://logos-marques.com/wp-content/uploads/2021/07/Mastercard-logo.png",
-                                                              width: 50,
-                                                              height: 50)
+                                                      leading: paymentIntentData!['paymentMethods']['data'][index]['card']['brand'] == "mastercard"
+                                                          ? Image.network("https://logos-marques.com/wp-content/uploads/2021/07/Mastercard-logo.png",
+                                                              width: 50, height: 50)
                                                           : Image.network(
                                                               "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png",
                                                               width: 50,
                                                               height: 50,
                                                             ),
-                                                      title: const Text("Card Name",
+                                                      title: const Text(
+                                                        "Card Name",
                                                         // Erreur : type 'Null' is not a subtype of 'String'
                                                         // nameCard == ''
                                                         //     ? "Aucun nom"
                                                         //     : nameCard as String,
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20.0),
+                                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                                                       ),
                                                       subtitle: Text(
                                                         "****" +
-                                                            paymentIntentData!['paymentMethods']
-                                                                        ['data']
-                                                                    [index]['card']
-                                                                ['last4'] +
+                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['last4'] +
                                                             ' ' +
                                                             '\nExp: ' +
-                                                            paymentIntentData!['paymentMethods']['data']
-                                                                            [index]
-                                                                        ['card']
-                                                                    [
-                                                                    'exp_month']
-                                                                .toString() +
+                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_month'].toString() +
                                                             '/' +
-                                                            paymentIntentData!['paymentMethods']
-                                                                            ['data']
-                                                                        [
-                                                                        index]['card']
-                                                                    ['exp_year']
-                                                                .toString(),
-                                                        style: const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 15.0),
+                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_year'].toString(),
+                                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
                                                       ),
                                                       trailing: IconButton(
-                                                        icon: const Icon(
-                                                            Icons.more_vert),
+                                                        icon: const Icon(Icons.more_vert),
                                                         onPressed: () async {
                                                           // Navigator.of(context)
                                                           //               .pop();
 
                                                           showAdaptiveActionSheet(
                                                             context: context,
-                                                            title: const Text(
-                                                                'Modification informations bancaires'),
+                                                            title: const Text('Modification informations bancaires'),
 
-                                                            actions: <
-                                                                BottomSheetAction>[
+                                                            actions: <BottomSheetAction>[
                                                               BottomSheetAction(
-                                                                title:
-                                                                    const Text(
+                                                                title: const Text(
                                                                   'Modifier les informations de ma carte',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .blue,
+                                                                  style: TextStyle(
+                                                                    color: Colors.blue,
                                                                   ),
                                                                 ),
                                                                 onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop(
-                                                                          false);
-                                                                  Navigator
-                                                                      .push(
+                                                                  Navigator.of(context).pop(false);
+                                                                  Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                      builder:
-                                                                          (context) =>
-                                                                              PageCBEdit(
-                                                                        customerID:
-                                                                            customerID,
-                                                                        idCard: paymentIntentData!['paymentMethods']['data'][index]
-                                                                            [
-                                                                            'id'],
-                                                                        expYear:
-                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_year'],
-                                                                        expMonth:
-                                                                            paymentIntentData!['paymentMethods']['data'][index]['card']['exp_month'],
-                                                                        nameCard:
-                                                                            paymentIntentData!['paymentMethods']['data'][index]['billing_details']['name'],
+                                                                      builder: (context) => PageCBEdit(
+                                                                        customerID: customerID,
+                                                                        idCard: paymentIntentData!['paymentMethods']['data'][index]['id'],
+                                                                        expYear: paymentIntentData!['paymentMethods']['data'][index]['card']['exp_year'],
+                                                                        expMonth: paymentIntentData!['paymentMethods']['data'][index]['card']['exp_month'],
+                                                                        nameCard: paymentIntentData!['paymentMethods']['data'][index]['billing_details']
+                                                                            ['name'],
                                                                       ),
                                                                     ),
                                                                   );
                                                                 },
                                                               ),
                                                               BottomSheetAction(
-                                                                  title:
-                                                                      const Text(
+                                                                  title: const Text(
                                                                     'Supprimer ma carte',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .red,
+                                                                    style: TextStyle(
+                                                                      color: Colors.red,
                                                                     ),
                                                                   ),
-                                                                  onPressed:
-                                                                      () async {
-                                                                    String id = paymentIntentData!['paymentMethods']
-                                                                            [
-                                                                            'data']
-                                                                        [
-                                                                        index]['id'];
+                                                                  onPressed: () async {
+                                                                    String id = paymentIntentData!['paymentMethods']['data'][index]['id'];
                                                                     final url =
                                                                         "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?idCard=${paymentIntentData!['paymentMethods']['data'][index]['id']}";
 
-                                                                    await http
-                                                                        .post(
-                                                                      Uri.parse(
-                                                                          url),
+                                                                    await http.post(
+                                                                      Uri.parse(url),
                                                                       headers: {
-                                                                        'Content-Type':
-                                                                            'application/json',
+                                                                        'Content-Type': 'application/json',
                                                                       },
-                                                                      body: json
-                                                                          .encode({
-                                                                        'a':
-                                                                            'a',
+                                                                      body: json.encode({
+                                                                        'a': 'a',
                                                                       }),
                                                                     );
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                    showMessage(
-                                                                        "Suppression carte",
-                                                                        "Votre carte a bien été supprimé !");
+                                                                    Navigator.of(context).pop();
+                                                                    showMessage("Suppression carte", "Votre carte a bien été supprimé !");
 
-                                                                    for (var i =
-                                                                            0;
-                                                                        i < paymentIntentData!['paymentMethods']['data'].length;
-                                                                        i++) {
-                                                                      if (paymentIntentData!['paymentMethods']['data']
-                                                                              [
-                                                                              i] ==
-                                                                          id) {}
+                                                                    for (var i = 0; i < paymentIntentData!['paymentMethods']['data'].length; i++) {
+                                                                      if (paymentIntentData!['paymentMethods']['data'][i] == id) {}
                                                                     }
-                                                                    List data =
-                                                                        paymentIntentData!['paymentMethods']
-                                                                            [
-                                                                            'data'];
-                                                                    data.removeAt(
-                                                                        index);
+                                                                    List data = paymentIntentData!['paymentMethods']['data'];
+                                                                    data.removeAt(index);
 
-                                                                    setState(
-                                                                        () {});
+                                                                    setState(() {});
                                                                   }),
                                                             ],
                                                             cancelAction: CancelAction(
@@ -1173,14 +945,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       ListTile(
                                                         title: Center(
                                                           child: Container(
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
+                                                            width: MediaQuery.of(context).size.width,
                                                             height: 30,
-                                                            decoration:
-                                                                const BoxDecoration(
+                                                            decoration: const BoxDecoration(
                                                               color: Colors.red,
                                                             ),
                                                           ),
@@ -1189,14 +956,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       ListTile(
                                                         title: Center(
                                                           child: Container(
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
+                                                            width: MediaQuery.of(context).size.width,
                                                             height: 30,
-                                                            decoration:
-                                                                const BoxDecoration(
+                                                            decoration: const BoxDecoration(
                                                               color: Colors.red,
                                                             ),
                                                           ),
@@ -1205,14 +967,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       ListTile(
                                                         title: Center(
                                                           child: Container(
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
+                                                            width: MediaQuery.of(context).size.width,
                                                             height: 30,
-                                                            decoration:
-                                                                const BoxDecoration(
+                                                            decoration: const BoxDecoration(
                                                               color: Colors.red,
                                                             ),
                                                           ),
@@ -1221,20 +978,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     ],
                                                   ),
                                                   baseColor: Colors.grey[300]!,
-                                                  highlightColor:
-                                                      Colors.grey[100]!,
+                                                  highlightColor: Colors.grey[100]!,
                                                 );
                                         },
                                       )
                                     : RichText(
                                         text: TextSpan(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2,
+                                          style: Theme.of(context).textTheme.bodyText2,
                                           children: const [
-                                            TextSpan(
-                                                text:
-                                                    "Aucun moyens de paiement enregistrés.\n\nEnregistrez en un lors d'un achat ! "),
+                                            TextSpan(text: "Aucun moyens de paiement enregistrés.\n\nEnregistrez en un lors d'un achat ! "),
                                           ],
                                         ),
                                       )
@@ -1244,9 +996,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ListTile(
                                           title: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               height: 30,
                                               decoration: const BoxDecoration(
                                                 color: Colors.red,
@@ -1257,9 +1007,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ListTile(
                                           title: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               height: 30,
                                               decoration: const BoxDecoration(
                                                 color: Colors.red,
@@ -1270,9 +1018,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ListTile(
                                           title: Center(
                                             child: Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               height: 30,
                                               decoration: const BoxDecoration(
                                                 color: Colors.red,
@@ -1296,12 +1042,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       onPressed: () {
                                         showCupertinoDialog(
                                           context: context,
-                                          builder: (context) =>
-                                              CupertinoAlertDialog(
-                                            title:
-                                                const Text("Suppression du compte"),
-                                            content: const Text(
-                                                "Souhaitez-vous réellement supprimer votre compte ?"),
+                                          builder: (context) => CupertinoAlertDialog(
+                                            title: const Text("Suppression du compte"),
+                                            content: const Text("Souhaitez-vous réellement supprimer votre compte ?"),
                                             actions: [
                                               // Close the dialog
                                               CupertinoButton(
@@ -1312,53 +1055,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               CupertinoButton(
                                                 child: const Text(
                                                   'Suppression',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
+                                                  style: TextStyle(color: Colors.red),
                                                 ),
                                                 onPressed: () async {
-                                                  final url =
-                                                      "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=$customerID";
+                                                  final url = "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_customer?customers=$customerID";
 
-                                                  final response =
-                                                      await http.post(
+                                                  final response = await http.post(
                                                     Uri.parse(url),
                                                     headers: {
-                                                      'Content-Type':
-                                                          'application/json',
+                                                      'Content-Type': 'application/json',
                                                     },
                                                     body: json.encode({
                                                       'a': 'a',
                                                     }),
                                                   );
-                                                  paymentIntentData =
-                                                      json.decode(response.body
-                                                          .toString());
-                                                  User user = await AuthMethods
-                                                      .instance
-                                                      .getCurrentUser();
+                                                  paymentIntentData = json.decode(response.body.toString());
+                                                  User user = await AuthMethods.instance.getCurrentUser();
 
                                                   user.delete();
-                                                  await DatabaseMethods.instance
-                                                      .deleteUser(
-                                                          user.uid, customerID);
-                                                  SharedPreferences
-                                                      preferences =
-                                                      await SharedPreferences
-                                                          .getInstance();
+                                                  await DatabaseMethods.instance.deleteUser(user.uid, customerID);
+                                                  SharedPreferences preferences = await SharedPreferences.getInstance();
                                                   await preferences.clear();
-                                                  AuthMethods()
-                                                      .signOut()
-                                                      .then((s) {
+                                                  AuthMethods().signOut().then((s) {
                                                     AuthMethods.toogleNavBar();
                                                   });
-                                                  Navigator.of(context)
-                                                      .pushAndRemoveUntil(
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const PageLogin()),
-                                                          (Route<dynamic>
-                                                                  route) =>
-                                                              false);
+                                                  Navigator.of(context).pushAndRemoveUntil(
+                                                      MaterialPageRoute(builder: (context) => const PageLogin()), (Route<dynamic> route) => false);
                                                 },
                                               )
                                             ],
@@ -1376,50 +1098,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         return showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
-                                            title:
-                                                const Text("Suppression du compte"),
-                                            content: const Text(
-                                                "Souhaitez-vous réellement supprimer votre compte ?"),
+                                            title: const Text("Suppression du compte"),
+                                            content: const Text("Souhaitez-vous réellement supprimer votre compte ?"),
                                             actions: <Widget>[
                                               TextButton(
                                                 child: const Text("Annuler"),
-                                                onPressed: () =>
-                                                    Navigator.of(context)
-                                                        .pop(false),
+                                                onPressed: () => Navigator.of(context).pop(false),
                                               ),
                                               TextButton(
                                                 child: const Text(
                                                   'Suppression',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
+                                                  style: TextStyle(color: Colors.red),
                                                 ),
                                                 onPressed: () async {
-                                                  User user = await AuthMethods
-                                                      .instance
-                                                      .getCurrentUser();
+                                                  User user = await AuthMethods.instance.getCurrentUser();
 
                                                   user.delete();
-                                                  await DatabaseMethods.instance
-                                                      .deleteUser(
-                                                          user.uid, customerID);
-                                                  SharedPreferences
-                                                      preferences =
-                                                      await SharedPreferences
-                                                          .getInstance();
+                                                  await DatabaseMethods.instance.deleteUser(user.uid, customerID);
+                                                  SharedPreferences preferences = await SharedPreferences.getInstance();
                                                   await preferences.clear();
-                                                  AuthMethods()
-                                                      .signOut()
-                                                      .then((s) {
+                                                  AuthMethods().signOut().then((s) {
                                                     AuthMethods.toogleNavBar();
                                                   });
-                                                  Navigator.of(context)
-                                                      .pushAndRemoveUntil(
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const PageLogin()),
-                                                          (Route<dynamic>
-                                                                  route) =>
-                                                              false);
+                                                  Navigator.of(context).pushAndRemoveUntil(
+                                                      MaterialPageRoute(builder: (context) => const PageLogin()), (Route<dynamic> route) => false);
                                                 },
                                               ),
                                             ],
@@ -1430,25 +1132,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   ),
                             const SizedBox(height: 20),
                           ]),
-                    )),
-                // Affiche les champs de texte pour modifier les informations
-                // lorsque le bouton est pressé
-                Visibility(
-                    visible: !isVisible,
-                    child: ModifyProfile(
-                        myFirstName!, myLastName!, myEmail!, myPhone!, myID!))
-              ],
+                        )),
+                    // Affiche les champs de texte pour modifier les informations
+                    // lorsque le bouton est pressé
+                    Visibility(visible: !isVisible, child: ModifyProfile(myFirstName!, myLastName!, myEmail!, myPhone!, myID!))
+                  ],
+                ),
+                // ),
+              ),
             ),
-            // ),
-          ),
-        ),
-      );
+          );
+        });
   }
 }
 
 class ModifyProfile extends StatefulWidget {
-  const ModifyProfile(
-      this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myId, {Key? key}) : super(key: key);
+  const ModifyProfile(this.myFirstName, this.myLastName, this.myEmail, this.myPhone, this.myId, {Key? key}) : super(key: key);
   final String myFirstName, myLastName, myEmail, myPhone, myId;
   @override
   _ModifyProfileState createState() => _ModifyProfileState();
@@ -1504,20 +1203,11 @@ class _ModifyProfileState extends State<ModifyProfile> {
                   child: MaterialButton(
                     onPressed: () {
                       // Si un champ est vide, on envoi la valeur déjà présente
-                      var lname = lnameField.text == ""
-                          ? widget.myLastName
-                          : lnameField.text;
-                      var fname = fnameField.text == ""
-                          ? widget.myFirstName
-                          : fnameField.text;
-                      var email = emailField.text == ""
-                          ? widget.myEmail
-                          : emailField.text;
-                      var phone = phoneField.text == ""
-                          ? widget.myPhone
-                          : phoneField.text;
-                      DatabaseMethods().updateUserInfo(
-                          widget.myId, lname, fname, email, phone);
+                      var lname = lnameField.text == "" ? widget.myLastName : lnameField.text;
+                      var fname = fnameField.text == "" ? widget.myFirstName : fnameField.text;
+                      var email = emailField.text == "" ? widget.myEmail : emailField.text;
+                      var phone = phoneField.text == "" ? widget.myPhone : phoneField.text;
+                      DatabaseMethods().updateUserInfo(widget.myId, lname, fname, email, phone);
                       Navigator.pop(context);
                     },
                     child: const Text("Confirmer"),
@@ -1531,16 +1221,13 @@ class _ModifyProfileState extends State<ModifyProfile> {
   }
 
   // Fonction d'affichage des champs de texte
-  Widget buildTextField(String labelText, String placeholder, fieldController,
-      bool capitalization) {
+  Widget buildTextField(String labelText, String placeholder, fieldController, bool capitalization) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: TextField(
         controller: fieldController,
         autocorrect: false,
-        textCapitalization: capitalization
-            ? TextCapitalization.sentences
-            : TextCapitalization.none,
+        textCapitalization: capitalization ? TextCapitalization.sentences : TextCapitalization.none,
         decoration: InputDecoration(
             contentPadding: const EdgeInsets.only(bottom: 3),
             labelText: labelText,

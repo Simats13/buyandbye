@@ -8,9 +8,9 @@ import 'package:intl/intl.dart';
 class HistoryDetails extends StatefulWidget {
   @override
   _HistoryDetailsState createState() => _HistoryDetailsState();
-  const HistoryDetails(this.userid, this.commandId, this.statut, this.horodatage,
+  const HistoryDetails(this.docId, this.commandId, this.statut, this.horodatage,
       this.shopID, this.prix, this.livraison, this.adresse, {Key? key}) : super(key: key);
-  final String? userid, commandId, shopID, adresse;
+  final String? docId, commandId, shopID, adresse;
   final int? statut, livraison;
   final Timestamp? horodatage;
   final double? prix;
@@ -89,7 +89,7 @@ class _HistoryDetailsState extends State<HistoryDetails> {
         ),
         body: FutureBuilder(
             future: DatabaseMethods()
-                .getPurchaseDetails("users", widget.userid, widget.commandId),
+                .getPurchaseDetails(widget.docId, widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 String date = getDate(widget.horodatage);

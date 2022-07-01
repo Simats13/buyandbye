@@ -1,13 +1,12 @@
 import 'dart:io';
 
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/pages/page_bienvenue.dart';
 import 'package:buyandbye/templates/pages/page_fidelite.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/compte/constants.dart';
 import 'package:buyandbye/templates/compte/help.dart';
 import 'package:buyandbye/templates/compte/user_history.dart';
@@ -25,31 +24,17 @@ class PageCompte extends StatefulWidget {
 }
 
 class _PageCompteState extends State<PageCompte> {
-  String? userid, myProfilePicture, fname, lname, email;
-
-  @override
-  void initState() {
-    super.initState();
-    getMyInfo();
-  }
-
-  getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
-    userid = user.uid;
-
-    setState(() {});
-  }
+  String? myProfilePicture, fname, lname;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<dynamic>(
-        stream: DatabaseMethods().getMyInfo2(userid),
+        stream: ProviderUserInfo().returnData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             myProfilePicture = snapshot.data["imgUrl"];
             fname = snapshot.data["fname"];
             lname = snapshot.data["lname"];
-            email = snapshot.data["email"];
           }
           return Scaffold(
               backgroundColor: BuyandByeAppTheme.white,
@@ -138,11 +123,7 @@ class _PageCompteState extends State<PageCompte> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PageFidelite(
-                              firstName: fname,
-                              lastName: lname,
-                              eMail: email,
-                            ),
+                            builder: (context) => const PageFidelite(),
                           ),
                         );
                       }),
@@ -191,7 +172,7 @@ class _PageCompteState extends State<PageCompte> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Help(true, email),
+                          builder: (context) => const Help(true),
                         ),
                       );
                     },

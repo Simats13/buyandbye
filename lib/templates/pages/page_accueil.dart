@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/pages/user_address.dart';
@@ -18,6 +19,7 @@ import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:buyandbye/templates/pages/page_detail.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:buyandbye/theme/styles.dart';
@@ -37,14 +39,7 @@ class _PageAccueilState extends State<PageAccueil> {
   late bool permissionChecked;
   bool chargementChecked = false;
 
-  String? currentAddress,
-      currentAddressLocation = "",
-      streetNumber,
-      street,
-      city,
-      zipCode,
-      idAddress,
-      userid;
+  String? currentAddress, currentAddressLocation = "", streetNumber, street, city, zipCode, idAddress, userid;
   double latitude = 0, longitude = 0, currentLatitude = 0, currentLongitude = 0;
   late Geoflutterfire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
@@ -71,11 +66,9 @@ class _PageAccueilState extends State<PageAccueil> {
     geo = Geoflutterfire();
     GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
     stream = radius.switchMap((rad) {
-      var collectionReference =
-          FirebaseFirestore.instance.collection('magasins');
+      var collectionReference = FirebaseFirestore.instance.collection('magasins');
 
-      return geo.collection(collectionRef: collectionReference).within(
-          center: center, radius: 10, field: 'position', strictMode: true);
+      return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
     });
   }
 
@@ -117,9 +110,7 @@ class _PageAccueilState extends State<PageAccueil> {
     //  bool docExists = await DatabaseMethods().checkIfDocExists(userid);
 
     _locationData = await location.getLocation();
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(
-            _locationData.latitude!, _locationData.longitude!);
+    List<geocoder.Placemark> addresses = await geocoder.placemarkFromCoordinates(_locationData.latitude!, _locationData.longitude!);
     var first = addresses.first;
 
     setState(() {
@@ -138,12 +129,10 @@ class _PageAccueilState extends State<PageAccueil> {
   getCoordinates() async {
     final User user = await AuthMethods().getCurrentUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getChosenAddress(userid);
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(latitude, longitude);
+    List<geocoder.Placemark> addresses = await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
     currentAddressLocation = "${first.name}, ${first.locality}";
@@ -165,253 +154,45 @@ class _PageAccueilState extends State<PageAccueil> {
     var size = MediaQuery.of(context).size;
     positionCheck();
 
-    return chargementChecked ? CupertinoPageScaffold(
-      child: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            PreferredSize(
-              preferredSize: const Size.fromHeight(10),
-              child: CupertinoSliverNavigationBar(
-                middle: Container(
-                  height: 45,
-                  width: MediaQuery.of(context).size.width - 70,
-                  decoration: BoxDecoration(
-                    color: textFieldColor,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.location_on,
-                            color: BuyandByeAppTheme.orangeMiFonce),
-                        const SizedBox(
-                          width: 10,
+    return chargementChecked
+        ? CupertinoPageScaffold(
+            child: NestedScrollView(
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  PreferredSize(
+                    preferredSize: const Size.fromHeight(10),
+                    child: CupertinoSliverNavigationBar(
+                      middle: Container(
+                        height: 45,
+                        width: MediaQuery.of(context).size.width - 70,
+                        decoration: BoxDecoration(
+                          color: textFieldColor,
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        SizedBox(
-                          height: 40,
-                          child: InkWell(
-                            onTapCancel: () {
-                              Navigator.of(context).pop();
-                            },
-                            onTap: () {
-                              affichageAddress();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text(
-                                currentAddressLocation!,
-                                style: const TextStyle(fontSize: 13.5),
-                                textAlign: TextAlign.left,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                trailing: Container(
-                  padding: const EdgeInsets.only(
-                    left: 6,
-                    right: 6,
-                  ),
-                  child: IconButton(
-                    icon: const Center(
-                      child: Icon(Icons.shopping_cart,
-                          color: BuyandByeAppTheme.orangeMiFonce
-                          // size: 22,
-                          ),
-                    ),
-                    onPressed: () {
-                      affichageCart();
-                    },
-                  ),
-                ),
-                largeTitle: RichText(
-                  text: TextSpan(
-                    // style: Theme.of(context).textTheme.bodyText2,
-                    children: [
-                      const TextSpan(
-                          text: 'Bienvenue ',
-                          style: TextStyle(
-                            fontSize: 25,
-                            color: BuyandByeAppTheme.orangeMiFonce,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      TextSpan(
-                        text: username,
-                        style: const TextStyle(
-                          fontSize: 23,
-                          color: BuyandByeAppTheme.blackElectrik,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ];
-        },
-        body: StreamBuilder(
-          stream: stream,
-          builder: (BuildContext context,
-              AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-
-            if (!snapshot.hasData) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    ColorLoader3(
-                      radius: 15.0,
-                      dotRadius: 6.0,
-                    ),
-                    Text("Chargement, veuillez patienter"),
-                  ],
-                ),
-              );
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: ColorLoader3(
-                  radius: 15.0,
-                  dotRadius: 6.0,
-                ),
-              );
-            }
-            if (snapshot.data!.isNotEmpty) {
-              return ListView(
-                padding: const EdgeInsets.all(0.0),
-                children: [
-                  const SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Slider bons plans
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Les bons plans du moment",
-                          style: customTitle,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Des bons plans à $city  🤲",
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderAccueil1(latitude, longitude),
-                      ),
-
-                      const Center(
-                          child: Text(
-                        "Sponsorisé",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20.00),
-                      )),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      //trait gris de séparation
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      // Slider près de chez vous
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Près de chez vous",
-                          style: customTitle,
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "-3km 📍",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderAccueil2(latitude, longitude),
-                      ),
-                      //trait gris de séparation
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      // Slider plus à découvrir
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "Plus à découvrir",
-                          style: customTitle,
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: Text(
-                          "-10km 🗺️",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderAccueil3(latitude, longitude),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      //trait gris de séparation
-                      Container(
-                        width: size.width,
-                        height: 10,
-                        decoration: BoxDecoration(color: textFieldColor),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-
-                      // Slider favoris
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                        child: RichText(
-                          text: TextSpan(
-                            style: Theme.of(context).textTheme.bodyText2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
                             children: [
-                              TextSpan(
-                                text: 'Mes magasins préférés',
-                                style: customTitle,
+                              const Icon(Icons.location_on, color: BuyandByeAppTheme.orangeMiFonce),
+                              const SizedBox(
+                                width: 10,
                               ),
-                              const WidgetSpan(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  child: Icon(
-                                    Icons.favorite,
-                                    color: Colors.red,
-                                    size: 25,
+                              SizedBox(
+                                height: 40,
+                                child: InkWell(
+                                  onTapCancel: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  onTap: () {
+                                    affichageAddress();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: Text(
+                                      currentAddressLocation!,
+                                      style: const TextStyle(fontSize: 13.5),
+                                      textAlign: TextAlign.left,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -419,106 +200,311 @@ class _PageAccueilState extends State<PageAccueil> {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: SliderFavorite(latitude, longitude, userid),
-                      ),
-                      // Text(
-                      //   "    Vous avez acheté chez eux récemment",
-                      //   style: customTitle,
-                      // ),
-                      // Container(
-                      //   padding: EdgeInsets.all(20),
-                      //   child: SliderAccueil4(latitude, longitude),
-                      //   ),
-                      // SizedBox(
-                      //   height: 20,
-                      // ),
-                      // Container(
-                      //   width: size.width,
-                      //   height: 10,
-                      //   decoration: BoxDecoration(color: textFieldColor),
-                      // ),
-                      // SizedBox(
-                      //   height: 20,
-                      // ),
-                      // Center(
-                      //   child: GestureDetector(
-                      //     onTap: () {
-                      //       affichageAllStores();
-                      //     },
-                      //     child: Container(
-                      //       height: 50,
-                      //       width: 210,
-                      //       decoration: BoxDecoration(
-                      //           borderRadius: BorderRadius.circular(20),
-                      //           color: BuyandByeAppTheme.black_electrik),
-                      //       child: Text(
-                      //         "Afficher tous les commerçants",
-                      //         style: TextStyle(color: white),
-                      //       ),
-                      //       alignment: Alignment.center,
-                      //     ),
-                      //   ),
-                      // ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            } else {
-              return ListView(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  ),
-                  Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/images/splash_2.png',
-                        width: 300,
-                        height: 300,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
-                          style: TextStyle(
-                            fontSize: 18,
-                            // color: Colors.grey[700]
+                      trailing: Container(
+                        padding: const EdgeInsets.only(
+                          left: 6,
+                          right: 6,
+                        ),
+                        child: IconButton(
+                          icon: const Center(
+                            child: Icon(Icons.shopping_cart, color: BuyandByeAppTheme.orangeMiFonce
+                                // size: 22,
+                                ),
                           ),
-                          textAlign: TextAlign.justify,
+                          onPressed: () {
+                            affichageCart();
+                          },
                         ),
                       ),
-                    ],
-                  )),
-                ],
-              );
-            }
-          },
-        ),
-      ),
-    ) : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    ColorLoader3(
-                      radius: 15.0,
-                      dotRadius: 6.0,
+                      largeTitle: RichText(
+                        text: TextSpan(
+                          // style: Theme.of(context).textTheme.bodyText2,
+                          children: [
+                            const TextSpan(
+                                text: 'Bienvenue ',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: BuyandByeAppTheme.orangeMiFonce,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            TextSpan(
+                              text: username,
+                              style: const TextStyle(
+                                fontSize: 23,
+                                color: BuyandByeAppTheme.blackElectrik,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    Text("Chargement, veuillez patienter"),
-                  ],
-                ));
+                  ),
+                ];
+              },
+              body: StreamBuilder(
+                stream: stream,
+                builder: (BuildContext context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          ColorLoader3(
+                            radius: 15.0,
+                            dotRadius: 6.0,
+                          ),
+                          Text("Chargement, veuillez patienter"),
+                        ],
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: ColorLoader3(
+                        radius: 15.0,
+                        dotRadius: 6.0,
+                      ),
+                    );
+                  }
+                  if (snapshot.data!.isNotEmpty) {
+                    return ListView(
+                      padding: const EdgeInsets.all(0.0),
+                      children: [
+                        const SizedBox(height: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Slider bons plans
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Les bons plans du moment",
+                                style: customTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Des bons plans à $city  🤲",
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderAccueil1(latitude, longitude),
+                            ),
+
+                            const Center(
+                                child: Text(
+                              "Sponsorisé",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.00),
+                            )),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // Slider près de chez vous
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Près de chez vous",
+                                style: customTitle,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "-3km 📍",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderAccueil2(latitude, longitude),
+                            ),
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // Slider plus à découvrir
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "Plus à découvrir",
+                                style: customTitle,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: Text(
+                                "-10km 🗺️",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderAccueil3(latitude, longitude),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            //trait gris de séparation
+                            Container(
+                              width: size.width,
+                              height: 10,
+                              decoration: BoxDecoration(color: textFieldColor),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            // Slider favoris
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                  children: [
+                                    TextSpan(
+                                      text: 'Mes magasins préférés',
+                                      style: customTitle,
+                                    ),
+                                    const WidgetSpan(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                                        child: Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
+                                          size: 25,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: SliderFavorite(latitude, longitude, userid),
+                            ),
+                            // Text(
+                            //   "    Vous avez acheté chez eux récemment",
+                            //   style: customTitle,
+                            // ),
+                            // Container(
+                            //   padding: EdgeInsets.all(20),
+                            //   child: SliderAccueil4(latitude, longitude),
+                            //   ),
+                            // SizedBox(
+                            //   height: 20,
+                            // ),
+                            // Container(
+                            //   width: size.width,
+                            //   height: 10,
+                            //   decoration: BoxDecoration(color: textFieldColor),
+                            // ),
+                            // SizedBox(
+                            //   height: 20,
+                            // ),
+                            // Center(
+                            //   child: GestureDetector(
+                            //     onTap: () {
+                            //       affichageAllStores();
+                            //     },
+                            //     child: Container(
+                            //       height: 50,
+                            //       width: 210,
+                            //       decoration: BoxDecoration(
+                            //           borderRadius: BorderRadius.circular(20),
+                            //           color: BuyandByeAppTheme.black_electrik),
+                            //       child: Text(
+                            //         "Afficher tous les commerçants",
+                            //         style: TextStyle(color: white),
+                            //       ),
+                            //       alignment: Alignment.center,
+                            //     ),
+                            //   ),
+                            // ),
+
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  } else {
+                    return ListView(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                        Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Image.asset(
+                              'assets/images/splash_2.png',
+                              width: 300,
+                              height: 300,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text(
+                                "Aucun commerce n'est disponible pour le moment. Vérifiez de nouveau un peu plus tard, lorsque les établisements auront ouvert leurs portes.",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  // color: Colors.grey[700]
+                                ),
+                                textAlign: TextAlign.justify,
+                              ),
+                            ),
+                          ],
+                        )),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          )
+        : Center(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              ColorLoader3(
+                radius: 15.0,
+                dotRadius: 6.0,
+              ),
+              Text("Chargement, veuillez patienter"),
+            ],
+          ));
   }
 
   @override
@@ -560,8 +546,7 @@ class _PageAccueilState extends State<PageAccueil> {
           return Align(
               alignment: Alignment.topCenter,
               child: Container(
-                constraints: BoxConstraints(
-                    minHeight: size.height / 2.5, maxHeight: 600),
+                constraints: BoxConstraints(minHeight: size.height / 2.5, maxHeight: 600),
                 margin: const EdgeInsets.only(top: 100, left: 12, right: 12),
                 child: const UserAddress(),
               ));
@@ -571,10 +556,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
 // ignore: must_be_immutable
 class SliderAccueil1 extends StatefulWidget {
-  SliderAccueil1(
-    this.latitude,
-    this.longitude, {Key? key}
-  ) : super(key: key);
+  SliderAccueil1(this.latitude, this.longitude, {Key? key}) : super(key: key);
   double? latitude;
   double? longitude;
   @override
@@ -596,14 +578,10 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
     setState(() {
       geo = Geoflutterfire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
+      GeoFirePoint center = geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
-        var collectionReference = FirebaseFirestore.instance
-            .collection('magasins')
-            .where("sponsored", isEqualTo: true);
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins').where("sponsored", isEqualTo: true);
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -702,10 +680,7 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
 // ignore: must_be_immutable
 class SliderAccueil2 extends StatefulWidget {
-  SliderAccueil2(
-    this.latitude,
-    this.longitude, {Key? key}
-  ) : super(key: key);
+  SliderAccueil2(this.latitude, this.longitude, {Key? key}) : super(key: key);
   double? latitude;
   double? longitude;
   @override
@@ -724,13 +699,10 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
     setState(() {
       geo = Geoflutterfire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
+      GeoFirePoint center = geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
-        var collectionReference =
-            FirebaseFirestore.instance.collection('magasins');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 3, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins');
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 3, field: 'position', strictMode: true);
       });
     });
   }
@@ -829,10 +801,7 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
 // ignore: must_be_immutable
 class SliderAccueil3 extends StatefulWidget {
-  SliderAccueil3(
-    this.latitude,
-    this.longitude, {Key? key}
-  ) : super(key: key);
+  SliderAccueil3(this.latitude, this.longitude, {Key? key}) : super(key: key);
   double? latitude;
   double? longitude;
   @override
@@ -850,13 +819,10 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
     setState(() {
       geo = Geoflutterfire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
+      GeoFirePoint center = geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
-        var collectionReference =
-            FirebaseFirestore.instance.collection('magasins');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins');
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -955,11 +921,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
 // ignore: must_be_immutable
 class SliderFavorite extends StatefulWidget {
-  SliderFavorite(
-    this.latitude,
-    this.longitude,
-    this.userID, {Key? key}
-  ) : super(key: key);
+  SliderFavorite(this.latitude, this.longitude, this.userID, {Key? key}) : super(key: key);
   double latitude;
   double longitude;
   String? userID;
@@ -978,15 +940,10 @@ class _SliderFavoriteState extends State<SliderFavorite> {
 
     setState(() {
       geo = Geoflutterfire();
-      GeoFirePoint center =
-          geo!.point(latitude: widget.latitude, longitude: widget.longitude);
+      GeoFirePoint center = geo!.point(latitude: widget.latitude, longitude: widget.longitude);
       stream = radius.switchMap((rad) {
-        var collectionReference = FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userID)
-            .collection('liked');
-        return geo!.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('users').doc(widget.userID).collection('liked');
+        return geo!.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -1143,14 +1100,11 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                             MaterialPageRoute(
                               builder: (context) => PageDetail(
                                 img: documents[carouselItem]['imgUrl'],
-                                colorStore: documents[carouselItem]
-                                    ['colorStore'],
+                                colorStore: documents[carouselItem]['colorStore'],
                                 name: documents[carouselItem]['name'],
-                                description: documents[carouselItem]
-                                    ['description'],
+                                description: documents[carouselItem]['description'],
                                 adresse: documents[carouselItem]['adresse'],
-                                clickAndCollect: documents[carouselItem]
-                                    ['ClickAndCollect'],
+                                clickAndCollect: documents[carouselItem]['ClickAndCollect'],
                                 livraison: documents[carouselItem]['livraison'],
                                 sellerID: documents[carouselItem]['id'],
                                 horairesOuverture: snapshot.data[carouselItem]['horairesOuverture'],
@@ -1160,33 +1114,22 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
+                            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
-                                boxShadow: const [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 4,
-                                      offset: Offset(4, 4))
-                                ]),
+                                boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 4, offset: Offset(4, 4))]),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height / 10,
+                                  height: MediaQuery.of(context).size.height / 10,
                                   child: Image.network(i),
                                 ),
                                 Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 10, top: 40),
-                                    child: Text(documents[carouselItem]["name"],
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700))),
+                                    padding: const EdgeInsets.only(bottom: 10, top: 40),
+                                    child: Text(documents[carouselItem]["name"], style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700))),
                               ],
                             )));
                   });
@@ -1240,13 +1183,10 @@ class _AllStoresState extends State<AllStores> {
       setState(() {
         position = value;
         geo = Geoflutterfire();
-        GeoFirePoint center = geo.point(
-            latitude: position.latitude, longitude: position.longitude);
+        GeoFirePoint center = geo.point(latitude: position.latitude, longitude: position.longitude);
         stream = radius.switchMap((rad) {
-          var collectionReference =
-              FirebaseFirestore.instance.collection('magasins');
-          return geo.collection(collectionRef: collectionReference).within(
-              center: center, radius: 50, field: 'position', strictMode: true);
+          var collectionReference = FirebaseFirestore.instance.collection('magasins');
+          return geo.collection(collectionRef: collectionReference).within(center: center, radius: 50, field: 'position', strictMode: true);
         });
       });
     });
@@ -1260,8 +1200,7 @@ class _AllStoresState extends State<AllStores> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
@@ -1289,14 +1228,12 @@ class _AllStoresState extends State<AllStores> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Icon(
                                           Icons.location_on,
@@ -1357,8 +1294,7 @@ class _AllStoresState extends State<AllStores> {
                                         height: 300,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                       ),
                                     ],
@@ -1403,16 +1339,11 @@ class _AllStoresState extends State<AllStores> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[index]['imgUrl'],
                                         name: snapshot.data[index]['name'],
-                                        colorStore: snapshot.data[index]
-                                            ['colorStore'],
-                                        description: snapshot.data[index]
-                                            ['description'],
-                                        adresse: snapshot.data[index]
-                                            ['adresse'],
-                                        clickAndCollect: snapshot.data[index]
-                                            ['ClickAndCollect'],
-                                        livraison: snapshot.data[index]
-                                            ['livraison'],
+                                        colorStore: snapshot.data[index]['colorStore'],
+                                        description: snapshot.data[index]['description'],
+                                        adresse: snapshot.data[index]['adresse'],
+                                        clickAndCollect: snapshot.data[index]['ClickAndCollect'],
+                                        livraison: snapshot.data[index]['livraison'],
                                         sellerID: snapshot.data[index]['id'],
                                         horairesOuverture: snapshot.data[index]['horairesOuverture'],
                                       )));
@@ -1438,9 +1369,7 @@ class _AllStoresState extends State<AllStores> {
                               height: 5,
                             ),
                             Text(snapshot.data[index]['description'],
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500)),
+                                textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                             const SizedBox(
                               height: 15,
                             ),

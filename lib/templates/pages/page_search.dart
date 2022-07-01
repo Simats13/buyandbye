@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/json/menu_json.dart';
@@ -312,7 +312,9 @@ class _PageSearchState extends State<PageSearch> {
                 }
               },
             ),
-            _searchTerm.text.isNotEmpty ? Container() : const CategoryStore()
+            _searchTerm.text.isNotEmpty ? Container() : const CategoryStore(),
+          const Text("Counter :"),
+          const Count(),
           ],
         ),
       ),

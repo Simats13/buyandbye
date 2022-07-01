@@ -54,11 +54,7 @@ class MapUtils {
   static Future<void> openMap(double latitude, double longitude) async {
     /*String googleUrl = Uri.encodeFull(
         'https://www.google.com/maps/search/?api=1&query=43.6889085,4.2724933');*/
-    var googleUri = Uri(
-      scheme: 'https',
-      host: 'www.google.com',
-      path: 'maps/search/?api=1&query=43.6889085,4.2724933'
-    );
+    var googleUri = Uri(scheme: 'https', host: 'www.google.com', path: 'maps/search/?api=1&query=43.6889085,4.2724933');
     if (await canLaunchUrl(googleUri)) {
       await launchUrl(googleUri);
     } else {
@@ -71,16 +67,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   double cartTotal = 0.0;
   double cartDeliver = 0.0;
   String mainCategorie = "";
-  String? myID,
-      myName,
-      myProfilePic,
-      myUserName,
-      myEmail,
-      selectedUserToken,
-      name1,
-      message,
-      menuDropDownValue,
-      dropdownValue;
+  String? myID, myName, myProfilePic, myUserName, myEmail, selectedUserToken, name1, message, menuDropDownValue, dropdownValue;
   Stream? usersStream, chatRoomsStream;
   String? userid;
   String? adresseGoogleUrl;
@@ -99,15 +86,9 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   bool horairesIsVisible = false;
   bool disableListCategories = true;
   final List<ImageProvider> _imageProviders = [
-    Image.network(
-            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD2.jpg")
-        .image,
-    Image.network(
-            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD3.jpg")
-        .image,
-    Image.network(
-            "http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD4.jpg")
-        .image,
+    Image.network("http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD2.jpg").image,
+    Image.network("http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD3.jpg").image,
+    Image.network("http://le80.fr/wp-content/uploads/2017/03/menu-le_80-2019-HD4.jpg").image,
   ];
   @override
   void setState(fn) {
@@ -142,8 +123,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   getSellerInfo() async {
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getMagasinInfo(widget.sellerID);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getMagasinInfo(widget.sellerID);
     selectedUserToken = "${querySnapshot.docs[0]["FCMToken"]}";
     mainCategorie = "${querySnapshot.docs[0]["type"]}";
     adresseGoogleUrl = "${querySnapshot.docs[0]["adresse"]}";
@@ -182,11 +162,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
   }
 
   categoriesInDb() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection("magasins")
-        .doc(widget.sellerID)
-        .collection("produits")
-        .get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("magasins").doc(widget.sellerID).collection("produits").get();
 
     if (querySnapshot.docs.isNotEmpty) {
       // Pour chaque produit dans la bdd, ajoute le nom de la catégorie s'il n'est
@@ -248,11 +224,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   Widget getFooter() {
     var pimpMyStore = widget.colorStore;
-    var googleUri = Uri(
-      scheme: 'https',
-      host: 'www.google.com',
-      path: 'maps/search/?api=1&query=$adresseGoogleUrl"'
-    );
+    var googleUri = Uri(scheme: 'https', host: 'www.google.com', path: 'maps/search/?api=1&query=$adresseGoogleUrl"');
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -275,8 +247,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
             child: const Text("VOIR LE NUMÉRO"),
             style: ElevatedButton.styleFrom(
                 primary: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
-                shadowColor:
-                    Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                shadowColor: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
                 )),
@@ -306,8 +277,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color:
-                          Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
+                      color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -319,8 +289,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     ),
                   ),
                   onPressed: () async {
-                    checkFavoriteShop =
-                        await DatabaseMethods().checkFavoriteShop();
+                    checkFavoriteShop = await DatabaseMethods().checkFavoriteShop();
                     Navigator.pop(context);
                   },
                 ),
@@ -336,8 +305,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: Color(int.parse("0x$pimpMyStore"))
-                                    .withOpacity(0.5),
+                                color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
@@ -349,8 +317,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               ),
                             ),
                             onPressed: () async {
-                              await DatabaseMethods().addFavoriteShop(
-                                  myID!, widget.sellerID, true);
+                              await DatabaseMethods().addFavoriteShop(myID!, widget.sellerID, true);
                               setState(() {
                                 loved = !loved;
                               });
@@ -359,8 +326,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                 duration: const Duration(seconds: 2),
                                 title: 'Favoris',
                                 subtitle: 'Ajouté au favoris',
-                                configuration:
-                                    const IconConfiguration(icon: Icons.favorite),
+                                configuration: const IconConfiguration(icon: Icons.favorite),
                               );
                             },
                           )
@@ -369,18 +335,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: Color(int.parse("0x$pimpMyStore"))
-                                    .withOpacity(0.5),
+                                color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
-                                child: Icon(Icons.favorite,
-                                    size: 20, color: Colors.white),
+                                child: Icon(Icons.favorite, size: 20, color: Colors.white),
                               ),
                             ),
                             onPressed: () async {
-                              await DatabaseMethods().addFavoriteShop(
-                                  myID, widget.sellerID, false);
+                              await DatabaseMethods().addFavoriteShop(myID, widget.sellerID, false);
                               setState(() {
                                 loved = !loved;
                               });
@@ -389,8 +352,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                 duration: const Duration(seconds: 2),
                                 title: 'Favoris',
                                 subtitle: 'Enlevé des favoris',
-                                configuration: const IconConfiguration(
-                                    icon: Icons.favorite_border),
+                                configuration: const IconConfiguration(icon: Icons.favorite_border),
                               );
                             },
                           ),
@@ -399,8 +361,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Color(int.parse("0x$pimpMyStore"))
-                              .withOpacity(0.5),
+                          color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                           shape: BoxShape.circle,
                         ),
                         child: const Center(
@@ -435,9 +396,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       width: size.width,
                       height: 200,
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
+                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
                         child: Image(
                           image: NetworkImage(widget.img!),
                           fit: BoxFit.cover,
@@ -483,12 +442,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         width: 3,
                                       ),
                                       Icon(
-                                        widget.clickAndCollect!
-                                            ? Icons.check_circle
-                                            : Icons.highlight_off,
-                                        color: widget.clickAndCollect!
-                                            ? Colors.green
-                                            : Colors.red,
+                                        widget.clickAndCollect! ? Icons.check_circle : Icons.highlight_off,
+                                        color: widget.clickAndCollect! ? Colors.green : Colors.red,
                                         size: 17,
                                       ),
                                     ],
@@ -517,12 +472,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         width: 3,
                                       ),
                                       Icon(
-                                        widget.livraison!
-                                            ? Icons.check_circle
-                                            : Icons.highlight_off,
-                                        color: widget.livraison!
-                                            ? Colors.green
-                                            : Colors.red,
+                                        widget.livraison! ? Icons.check_circle : Icons.highlight_off,
+                                        color: widget.livraison! ? Colors.green : Colors.red,
                                         size: 17,
                                       ),
                                     ],
@@ -536,8 +487,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                               Map<String, dynamic> chatRoomInfoMap = {
                                 "users": [widget.sellerID, myID],
                               };
-                              DatabaseMethods().createChatRoom(
-                                  widget.sellerID! + myID!, chatRoomInfoMap);
+                              DatabaseMethods().createChatRoom(widget.sellerID! + myID!, chatRoomInfoMap);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -545,10 +495,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                           myID, //ID DE L'UTILISATEUR
                                           myName, // NOM DE L'UTILISATEUR
                                           selectedUserToken,
-                                          widget
-                                              .sellerID, // TOKEN DU CORRESPONDANT
-                                          widget.sellerID! +
-                                              myID!, //ID DE LA CONV
+                                          widget.sellerID, // TOKEN DU CORRESPONDANT
+                                          widget.sellerID! + myID!, //ID DE LA CONV
                                           widget.name, // NOM DU CORRESPONDANT
                                           "", // LES COMMERCANTS N'ONT PAS DE LNAME
                                           widget.img, // IMAGE DU CORRESPONDANT
@@ -557,8 +505,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             },
                             child: Icon(
                               Icons.message,
-                              color: Color(int.parse("0x$pimpMyStore"))
-                                  .withOpacity(0.8),
+                              color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
                               size: 25,
                             ),
                           )
@@ -705,8 +652,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                 SvgPicture.asset(
                                   "assets/icons/pin_icon.svg",
                                   width: 15,
-                                  color: Color(int.parse("0x$pimpMyStore"))
-                                      .withOpacity(0.8),
+                                  color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
                                 ),
                                 const SizedBox(
                                   width: 8,
@@ -739,8 +685,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                             children: [
                               Icon(
                                 Icons.watch_later_rounded,
-                                color: Color(int.parse("0x$pimpMyStore"))
-                                    .withOpacity(0.8),
+                                color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
                                 size: 17,
                               ),
                               const SizedBox(
@@ -750,8 +695,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                 children: [
                                   InkWell(
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text(
                                           "Horaires d'ouverture",
@@ -760,20 +704,15 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         Icon(
                                           //Si la suite est affichée, la flèche pointe vers le bas
                                           //Sinon elle pointe vers la gauche
-                                          horairesIsVisible
-                                              ? Icons.arrow_drop_down
-                                              : Icons.arrow_left,
+                                          horairesIsVisible ? Icons.arrow_drop_down : Icons.arrow_left,
                                           size: 25,
-                                          color: Color(
-                                                  int.parse("0x$pimpMyStore"))
-                                              .withOpacity(0.8),
+                                          color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.8),
                                         ),
                                       ],
                                     ),
                                     onTap: () {
                                       setState(() {
-                                        horairesIsVisible =
-                                            !horairesIsVisible;
+                                        horairesIsVisible = !horairesIsVisible;
                                       });
                                     },
                                   ),
@@ -783,22 +722,25 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           ),
                           Visibility(
                             visible: horairesIsVisible,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
+                            child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                               const SizedBox(height: 10),
-                              Text("Lundi:       ${widget.horairesOuverture!['Lundi']['Matin'][0]}h à ${widget.horairesOuverture!['Lundi']['Matin'][1]}h - ${widget.horairesOuverture!['Lundi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Lundi']['Après-midi'][1]}h"),
+                              Text(
+                                  "Lundi:       ${widget.horairesOuverture!['Lundi']['Matin'][0]}h à ${widget.horairesOuverture!['Lundi']['Matin'][1]}h - ${widget.horairesOuverture!['Lundi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Lundi']['Après-midi'][1]}h"),
                               const SizedBox(height: 5),
-                              Text("Mardi:       ${widget.horairesOuverture!['Mardi']['Matin'][0]}h à ${widget.horairesOuverture!['Mardi']['Matin'][1]}h - ${widget.horairesOuverture!['Mardi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mardi']['Après-midi'][1]}h"),
+                              Text(
+                                  "Mardi:       ${widget.horairesOuverture!['Mardi']['Matin'][0]}h à ${widget.horairesOuverture!['Mardi']['Matin'][1]}h - ${widget.horairesOuverture!['Mardi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mardi']['Après-midi'][1]}h"),
                               const SizedBox(height: 5),
-                              Text("Mercredi:  ${widget.horairesOuverture!['Mercredi']['Matin'][0]}h à ${widget.horairesOuverture!['Mercredi']['Matin'][1]}h - ${widget.horairesOuverture!['Mercredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mercredi']['Après-midi'][1]}h"),
+                              Text(
+                                  "Mercredi:  ${widget.horairesOuverture!['Mercredi']['Matin'][0]}h à ${widget.horairesOuverture!['Mercredi']['Matin'][1]}h - ${widget.horairesOuverture!['Mercredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Mercredi']['Après-midi'][1]}h"),
                               const SizedBox(height: 5),
-                              Text("Jeudi:        ${widget.horairesOuverture!['Jeudi']['Matin'][0]}h à ${widget.horairesOuverture!['Jeudi']['Matin'][1]}h - ${widget.horairesOuverture!['Jeudi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Jeudi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),                              
-                              Text("Vendredi:   ${widget.horairesOuverture!['Vendredi']['Matin'][0]}h à ${widget.horairesOuverture!['Vendredi']['Matin'][1]}h - ${widget.horairesOuverture!['Vendredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Vendredi']['Après-midi'][1]}h"),
-                              const SizedBox(height: 5),                              
+                              Text(
+                                  "Jeudi:        ${widget.horairesOuverture!['Jeudi']['Matin'][0]}h à ${widget.horairesOuverture!['Jeudi']['Matin'][1]}h - ${widget.horairesOuverture!['Jeudi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Jeudi']['Après-midi'][1]}h"),
+                              const SizedBox(height: 5),
+                              Text(
+                                  "Vendredi:   ${widget.horairesOuverture!['Vendredi']['Matin'][0]}h à ${widget.horairesOuverture!['Vendredi']['Matin'][1]}h - ${widget.horairesOuverture!['Vendredi']['Après-midi'][0]}h à ${widget.horairesOuverture!['Vendredi']['Après-midi'][1]}h"),
+                              const SizedBox(height: 5),
                               const Text("Samedi:          Fermé                  "),
-                              const SizedBox(height: 5),                              
+                              const SizedBox(height: 5),
                               const Text("Dimanche:      Fermé                  "),
                               const SizedBox(height: 5),
                             ]),
@@ -822,8 +764,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                       const SizedBox(height: 15),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                           primary: Color(
                             int.parse("0x$pimpMyStore"),
                           ).withOpacity(0.5),
@@ -863,9 +804,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                   child: Center(
                                     child: TextButton(
                                       style: TextButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30)),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                                         primary: Color(
                                           int.parse("0x$pimpMyStore"),
                                         ).withOpacity(0.2),
@@ -874,24 +813,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         setState(() {
                                           menuDropDownValue = name;
                                         });
-                                        if (menuDropDownValue ==
-                                                listOfMenu[1] ||
-                                            menuDropDownValue ==
-                                                listOfMenu[2]) {
+                                        if (menuDropDownValue == listOfMenu[1] || menuDropDownValue == listOfMenu[2]) {
                                           setState(() {
                                             disableListCategories = false;
                                           });
                                         }
-                                        if (menuDropDownValue ==
-                                            listOfMenu[0]) {
+                                        if (menuDropDownValue == listOfMenu[0]) {
                                           setState(() {
                                             disableListCategories = true;
                                           });
                                         }
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 15, right: 15),
+                                        padding: const EdgeInsets.only(left: 15, right: 15),
                                         child: Text(
                                           name,
                                           style: TextStyle(
@@ -903,10 +837,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                                 : Color(
                                                     int.parse("0x$pimpMyStore"),
                                                   ).withOpacity(0.8),
-                                            fontWeight:
-                                                menuDropDownValue == name
-                                                    ? FontWeight.bold
-                                                    : FontWeight.w500,
+                                            fontWeight: menuDropDownValue == name ? FontWeight.bold : FontWeight.w500,
                                           ),
                                         ),
                                       ),
@@ -920,119 +851,90 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
                       isRestaurant
                           ? const SizedBox.shrink()
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                  Visibility(
-                                      visible: disableListCategories,
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 15,
-                                          ),
-                                          listCategorie
-                                              ? const Text(
-                                                  "Catégories",
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                )
-                                              : Container(),
-                                        ],
-                                      )),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                          : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Visibility(
+                                  visible: disableListCategories,
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      listCategorie
+                                          ? const Text(
+                                              "Catégories",
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            )
+                                          : Container(),
+                                    ],
+                                  )),
+                              const SizedBox(
+                                height: 10,
+                              ),
 
-                                  //menu affichage des produits à partir d'une catégorie
-                                  Visibility(
-                                      visible: disableListCategories,
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          children: [
-                                            for (String name
-                                                in listOfCategories)
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  right: 15,
-                                                ),
-                                                child: Container(
-                                                  height: 40,
-                                                  decoration: BoxDecoration(
-                                                    color: Color(
-                                                      int.parse(
-                                                          "0x$pimpMyStore"),
+                              //menu affichage des produits à partir d'une catégorie
+                              Visibility(
+                                  visible: disableListCategories,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        for (String name in listOfCategories)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 15,
+                                            ),
+                                            child: Container(
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: Color(
+                                                  int.parse("0x$pimpMyStore"),
+                                                ).withOpacity(0.2),
+                                                borderRadius: BorderRadius.circular(30),
+                                              ),
+                                              child: Center(
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                                    primary: Color(
+                                                      int.parse("0x$pimpMyStore"),
                                                     ).withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
                                                   ),
-                                                  child: Center(
-                                                    child: TextButton(
-                                                      style:
-                                                          TextButton.styleFrom(
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        30)),
-                                                        primary: Color(
-                                                          int.parse(
-                                                              "0x$pimpMyStore"),
-                                                        ).withOpacity(0.2),
-                                                      ),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          dropdownValue = name;
-                                                        });
-                                                      },
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                left: 15,
-                                                                right: 15),
-                                                        child: Text(
-                                                          name,
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            color: dropdownValue ==
-                                                                    name
-                                                                ? Color(
-                                                                    int.parse(
-                                                                        "0x$pimpMyStore"),
-                                                                  ).withOpacity(
-                                                                    1)
-                                                                : Color(
-                                                                    int.parse(
-                                                                        "0x$pimpMyStore"),
-                                                                  ).withOpacity(
-                                                                    0.8),
-                                                            fontWeight:
-                                                                dropdownValue == name
-                                                                    ? FontWeight
-                                                                        .bold
-                                                                    : FontWeight
-                                                                        .w500,
-                                                          ),
-                                                        ),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      dropdownValue = name;
+                                                    });
+                                                  },
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(left: 15, right: 15),
+                                                    child: Text(
+                                                      name,
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: dropdownValue == name
+                                                            ? Color(
+                                                                int.parse("0x$pimpMyStore"),
+                                                              ).withOpacity(1)
+                                                            : Color(
+                                                                int.parse("0x$pimpMyStore"),
+                                                              ).withOpacity(0.8),
+                                                        fontWeight: dropdownValue == name ? FontWeight.bold : FontWeight.w500,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              )
-                                          ],
-                                        ),
-                                      )),
+                                              ),
+                                            ),
+                                          )
+                                      ],
+                                    ),
+                                  )),
 
-                                  Visibility(
-                                      visible: disableListCategories,
-                                      child: const SizedBox(
-                                        height: 15,
-                                      )),
-                                ]),
+                              Visibility(
+                                  visible: disableListCategories,
+                                  child: const SizedBox(
+                                    height: 15,
+                                  )),
+                            ]),
                       // Container(
                       //   width: size.width,
                       //   decoration: BoxDecoration(
@@ -1087,40 +989,23 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                                         height: size.height / 20,
                                         width: size.width / 3,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color:
-                                              Color(int.parse("0x$pimpMyStore"))
-                                                  .withOpacity(0.5),
+                                          borderRadius: BorderRadius.circular(20),
+                                          color: Color(int.parse("0x$pimpMyStore")).withOpacity(0.5),
                                         ),
                                         child: MaterialButton(
-                                            child: const Center(
-                                                child: Text("Voir le menu",
-                                                    style: TextStyle(
-                                                        color: Colors.white))),
+                                            child: const Center(child: Text("Voir le menu", style: TextStyle(color: Colors.white))),
                                             onPressed: () {
-                                              MultiImageProvider
-                                                  multiImageProvider =
-                                                  MultiImageProvider(
-                                                      _imageProviders);
-                                              showImageViewerPager(
-                                                  context, multiImageProvider,
-                                                  immersive: false);
+                                              MultiImageProvider multiImageProvider = MultiImageProvider(_imageProviders);
+                                              showImageViewerPager(context, multiImageProvider, immersive: false);
                                             })),
                                     const SizedBox(height: 30),
                                   ],
                                 )
                               : const SizedBox.shrink(),
 
-                          menuDropDownValue == listOfMenu[0]
-                              ? affichageMenuProduits()
-                              : Container(),
-                          menuDropDownValue == listOfMenu[1]
-                              ? affichageMenuRecommandation()
-                              : Container(),
-                          menuDropDownValue == listOfMenu[2]
-                              ? affichageMenuMeilleuresVentes()
-                              : Container(),
+                          menuDropDownValue == listOfMenu[0] ? affichageMenuProduits() : Container(),
+                          menuDropDownValue == listOfMenu[1] ? affichageMenuRecommandation() : Container(),
+                          menuDropDownValue == listOfMenu[2] ? affichageMenuMeilleuresVentes() : Container(),
 
                           const SizedBox(height: 30),
                           // Row(
@@ -1185,8 +1070,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
 
   Widget produits(String? selectedCategorie) {
     return StreamBuilder<dynamic>(
-        stream: DatabaseMethods()
-            .getVisibleProducts(widget.sellerID, selectedCategorie),
+        stream: DatabaseMethods().getVisibleProducts(widget.sellerID, selectedCategorie),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const CircularProgressIndicator();
           if (snapshot.data.docs.length == 0) {
@@ -1196,11 +1080,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
               padding: EdgeInsets.zero,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  childAspectRatio: 1,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20),
+              gridDelegate:
+                  const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 200, childAspectRatio: 1, mainAxisSpacing: 20, crossAxisSpacing: 20),
               itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index) {
                 var money = snapshot.data.docs[index]['prix'];
@@ -1211,14 +1092,10 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                           MaterialPageRoute(
                               builder: (context) => PageProduit(
                                     userid: userid,
-                                    imagesList: snapshot.data.docs[index]
-                                        ['images'],
-                                    nomProduit: snapshot.data.docs[index]
-                                        ['nom'],
-                                    descriptionProduit: snapshot
-                                        .data.docs[index]['description'],
-                                    prixProduit: snapshot.data.docs[index]
-                                        ['prix'],
+                                    imagesList: snapshot.data.docs[index]['images'],
+                                    nomProduit: snapshot.data.docs[index]['nom'],
+                                    descriptionProduit: snapshot.data.docs[index]['description'],
+                                    prixProduit: snapshot.data.docs[index]['prix'],
                                     img: widget.img,
                                     name: widget.name,
                                     description: widget.description,
@@ -1231,29 +1108,19 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                     },
                     child: Container(
                         // margin: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: BuyandByeAppTheme.whiteGrey,
-                            borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.network(
-                              (snapshot.data! as QuerySnapshot).docs[index]
-                                  ["images"][0],
+                              (snapshot.data! as QuerySnapshot).docs[index]["images"][0],
                               width: MediaQuery.of(context).size.width,
                               height: 100,
                             ),
                             const SizedBox(height: 5),
-                            Text(
-                                (snapshot.data! as QuerySnapshot).docs[index]
-                                    ['nom'],
-                                style: const TextStyle(
-                                    fontSize: 16,
-                                    color: BuyandByeAppTheme.grey)),
+                            Text((snapshot.data! as QuerySnapshot).docs[index]['nom'], style: const TextStyle(fontSize: 16, color: BuyandByeAppTheme.grey)),
                             const SizedBox(height: 5),
-                            Text("$money€",
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500)),
+                            Text("$money€", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                           ],
                         )));
               });
@@ -1278,18 +1145,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
           const SizedBox(width: 15),
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
         ],
@@ -1301,18 +1164,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
           const SizedBox(width: 15),
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
         ],
@@ -1338,18 +1197,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
           const SizedBox(width: 15),
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
         ],
@@ -1361,18 +1216,14 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
           const SizedBox(width: 15),
           Container(
             height: 160,
             width: 160,
-            decoration: BoxDecoration(
-                color: BuyandByeAppTheme.whiteGrey,
-                borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: BuyandByeAppTheme.whiteGrey, borderRadius: BorderRadius.circular(10)),
             child: const Center(child: Text("Design uniquement")),
           ),
         ],
@@ -1529,18 +1380,14 @@ class _ReservationPageState extends State<ReservationPage> {
                               height: 40,
                               width: 100,
                               decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 108, 112, 109)
-                                    .withOpacity(0.2),
+                                color: const Color.fromARGB(255, 108, 112, 109).withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: Center(
                                 child: TextButton(
                                   style: TextButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    primary: const Color.fromARGB(255, 108, 112, 109)
-                                        .withOpacity(0.2),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                    primary: const Color.fromARGB(255, 108, 112, 109).withOpacity(0.2),
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -1548,21 +1395,15 @@ class _ReservationPageState extends State<ReservationPage> {
                                     });
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 15, right: 15),
+                                    padding: const EdgeInsets.only(left: 15, right: 15),
                                     child: Text(
                                       name,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: horairesDropDownValue == name
-                                            ? const Color.fromARGB(255, 45, 46, 45)
-                                                .withOpacity(1)
-                                            : const Color.fromARGB(255, 89, 92, 90)
-                                                .withOpacity(0.9),
-                                        fontWeight:
-                                            horairesDropDownValue == name
-                                                ? FontWeight.bold
-                                                : FontWeight.w500,
+                                            ? const Color.fromARGB(255, 45, 46, 45).withOpacity(1)
+                                            : const Color.fromARGB(255, 89, 92, 90).withOpacity(0.9),
+                                        fontWeight: horairesDropDownValue == name ? FontWeight.bold : FontWeight.w500,
                                       ),
                                     ),
                                   ),
@@ -1581,12 +1422,7 @@ class _ReservationPageState extends State<ReservationPage> {
               ListView(
                 shrinkWrap: true,
                 children: [
-                  const Center(
-                      child: Text("Pour combien ?",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18))),
+                  const Center(child: Text("Pour combien ?", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 18))),
                   const SizedBox(height: 15),
                   NumberTicker(
                     controller: controller1,
@@ -1597,9 +1433,7 @@ class _ReservationPageState extends State<ReservationPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color.fromARGB(255, 108, 112, 109))),
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 108, 112, 109))),
                         onPressed: () {
                           controller1.number = controller1.number - 1;
                         },
@@ -1607,9 +1441,7 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color.fromARGB(255, 108, 112, 109))),
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 108, 112, 109))),
                         onPressed: () {
                           controller1.number = controller1.number + 1;
                         },
@@ -1624,8 +1456,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 children: [
                   ElevatedButton(
                     style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color.fromARGB(255, 244, 67, 54)),
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 244, 67, 54)),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ))),
@@ -1636,8 +1467,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                   ElevatedButton(
                     style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color.fromARGB(255, 25, 144, 55)),
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 25, 144, 55)),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ))),

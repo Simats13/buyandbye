@@ -7,9 +7,7 @@ import 'package:buyandbye/templates/Pages/chatscreen.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 class DetailCommande extends StatefulWidget {
-  const DetailCommande(this.ref, this.statut, this.date, this.total,
-      this.livraisonNb, this.sellerId, this.clientId, this.commandId,
-      {Key? key})
+  const DetailCommande(this.ref, this.statut, this.date, this.total, this.livraisonNb, this.sellerId, this.clientId, this.commandId, {Key? key})
       : super(key: key);
   final String? date, sellerId, clientId, commandId;
   final int? ref, statut, livraisonNb;
@@ -152,8 +150,7 @@ class _DetailCommandeState extends State<DetailCommande> {
           ),
         ),
         body: FutureBuilder(
-            future: DatabaseMethods().getPurchaseDetails(
-                "magasins", widget.sellerId, widget.commandId),
+            future: DatabaseMethods().getPurchaseDetails(widget.sellerId, widget.commandId),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 int nbArticles = (snapshot.data! as QuerySnapshot).docs.length;
@@ -163,9 +160,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                   children: [
                     // const SizedBox(height: 10),
                     const SizedBox(height: 20),
-                    Text("Commande n°" + widget.ref.toString(),
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w700)),
+                    Text("Commande n°" + widget.ref.toString(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 10),
                     // Appelle de la fonction pour déterminer le message de statut de la commande
                     defStatut(widget.statut, widget.livraisonNb),
@@ -177,9 +172,7 @@ class _DetailCommandeState extends State<DetailCommande> {
                       children: [
                         const SizedBox(width: 20),
                         // Mot "article" au singulier s'il n'y en a qu'un dans la commande
-                        nbArticles < 2
-                            ? const Text("1 article")
-                            : Text((nbArticles).toString() + " articles"),
+                        nbArticles < 2 ? const Text("1 article") : Text((nbArticles).toString() + " articles"),
                       ],
                     ),
                     ListView.builder(
@@ -190,26 +183,17 @@ class _DetailCommandeState extends State<DetailCommande> {
                       itemBuilder: (context, index) {
                         // Appelle la classe d'affichage des produits
                         // pour chaque produit dans la commande
-                        return Detail(
-                            widget.sellerId,
-                            (snapshot.data! as QuerySnapshot).docs[index]
-                                ["produit"],
-                            (snapshot.data! as QuerySnapshot).docs[index]
-                                ["quantite"]);
+                        return Detail(widget.sellerId, (snapshot.data! as QuerySnapshot).docs[index]["produit"],
+                            (snapshot.data! as QuerySnapshot).docs[index]["quantite"]);
                       },
                     ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                            "Total : " + widget.total.toStringAsFixed(2) + "€"),
-                        const SizedBox(width: 10)
-                      ],
+                      children: [Text("Total : " + widget.total.toStringAsFixed(2) + "€"), const SizedBox(width: 10)],
                     ),
                     // Appel de la classe pour afficher les informations du client
-                    UserInfo(widget.clientId, widget.livraisonNb, widget.statut,
-                        widget.commandId, widget.commandId, widget.sellerId)
+                    UserInfo(widget.clientId, widget.livraisonNb, widget.statut, widget.commandId, widget.commandId, widget.sellerId)
                   ],
                 ));
               } else {
@@ -221,8 +205,7 @@ class _DetailCommandeState extends State<DetailCommande> {
 
 // Affiche le détail de chaque produit commandé
 class Detail extends StatefulWidget {
-  const Detail(this.sellerId, this.productId, this.quantite, {Key? key})
-      : super(key: key);
+  const Detail(this.sellerId, this.productId, this.quantite, {Key? key}) : super(key: key);
   final String? sellerId, productId;
   final int? quantite;
   @override
@@ -233,24 +216,16 @@ class _DetailState extends State<Detail> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<dynamic>(
-        stream:
-            DatabaseMethods().getOneProduct(widget.sellerId, widget.productId),
+        stream: DatabaseMethods().getOneProduct(widget.sellerId, widget.productId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             // Affiche les informations du produit
             return Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20),
                     // ignore: prefer_const_literals_to_create_immutables
-                    boxShadow: [
-                      const BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 4,
-                          offset: Offset(4, 4))
-                    ]),
+                    boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 4, offset: Offset(4, 4))]),
                 child: Column(
                   children: [
                     const SizedBox(height: 15),
@@ -268,12 +243,9 @@ class _DetailState extends State<Detail> {
                           // Affiche en colonne le nom et la référence du produit commandé
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(snapshot.data["nom"],
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w700)),
+                            Text(snapshot.data["nom"], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 30),
-                            Text("Réf : " +
-                                snapshot.data["reference"].toString()),
+                            Text("Réf : " + snapshot.data["reference"].toString()),
                           ],
                         ),
                       ),
@@ -302,10 +274,7 @@ class _DetailState extends State<Detail> {
 
 // Affiche les informations de l'acheteur
 class UserInfo extends StatefulWidget {
-  const UserInfo(this.clientId, this.livraisonNb, this.statut, this.commId,
-      this.documentId, this.sellerId,
-      {Key? key})
-      : super(key: key);
+  const UserInfo(this.clientId, this.livraisonNb, this.statut, this.commId, this.documentId, this.sellerId, {Key? key}) : super(key: key);
   final String? clientId, commId, documentId, sellerId;
   final int? livraisonNb, statut;
 
@@ -355,11 +324,7 @@ class _UserInfoState extends State<UserInfo> {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            Text((snapshot.data! as QuerySnapshot).docs[0]
-                                    ["fname"] +
-                                " " +
-                                (snapshot.data! as QuerySnapshot).docs[0]
-                                    ["lname"]),
+                            Text((snapshot.data! as QuerySnapshot).docs[0]["fname"] + " " + (snapshot.data! as QuerySnapshot).docs[0]["lname"]),
                             const SizedBox(width: 25),
                             // Bouton pour ouvrir le chat avec le client
                             IconButton(
@@ -370,16 +335,12 @@ class _UserInfoState extends State<UserInfo> {
                                         builder: (context) => ChatRoom(
                                             widget.sellerId!,
                                             myUserName,
-                                            (snapshot.data! as QuerySnapshot)
-                                                .docs[0]["FCMToken"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["FCMToken"],
                                             widget.clientId!,
                                             widget.sellerId! + widget.clientId!,
-                                            (snapshot.data! as QuerySnapshot)
-                                                .docs[0]["fname"],
-                                            (snapshot.data! as QuerySnapshot)
-                                                .docs[0]["lname"],
-                                            (snapshot.data! as QuerySnapshot)
-                                                .docs[0]["imgUrl"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["fname"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["lname"],
+                                            (snapshot.data! as QuerySnapshot).docs[0]["imgUrl"],
                                             myProfilePic,
                                             "client")));
                               },
@@ -388,11 +349,9 @@ class _UserInfoState extends State<UserInfo> {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                            (snapshot.data! as QuerySnapshot).docs[0]["phone"]),
+                        Text((snapshot.data! as QuerySnapshot).docs[0]["phone"]),
                         const SizedBox(height: 20),
-                        Text(
-                            (snapshot.data! as QuerySnapshot).docs[0]["email"]),
+                        Text((snapshot.data! as QuerySnapshot).docs[0]["email"]),
                         const SizedBox(height: 10),
                       ],
                     ),
@@ -400,8 +359,7 @@ class _UserInfoState extends State<UserInfo> {
                 ),
               ),
               // Affiche les boutons en fonction du statut de la commande
-              displayButtons(widget.statut, widget.sellerId, widget.clientId,
-                  widget.commId, context),
+              displayButtons(widget.statut, widget.sellerId, widget.clientId, widget.commId, context),
               const SizedBox(height: 50)
             ],
           );

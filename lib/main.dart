@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Pages/page_first_connection.dart';
 import 'package:buyandbye/templates/pages/page_accueil.dart';
 import 'package:buyandbye/templates/pages/page_bienvenue.dart';
@@ -10,7 +11,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:buyandbye/model/infowindow.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Connexion/Login/page_login.dart';
 import 'package:buyandbye/templates/accueil.dart';
@@ -34,12 +34,16 @@ void main() async {
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     badge: true,
   );
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => InfoWindowsModel(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => UserId()),
+      ChangeNotifierProvider(create: (_) => TestProvider()),
+      ChangeNotifierProvider(create: (_) => ProviderUserInfo()),
+      ChangeNotifierProvider(create: (_) => ProviderGetOrders()),
+      ChangeNotifierProvider(create: (_) => ProviderGetAddresses()),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -51,8 +55,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool checkEmailVerification = false;
-
-  // Future _future = DatabaseMethods().getCart();
 
   @override
   void initState() {
@@ -72,24 +74,18 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        routes: <String, WidgetBuilder>{
-          '/Accueil': (BuildContext context) => const PageAccueil()
-        },
+        routes: <String, WidgetBuilder>{'/Accueil': (BuildContext context) => const PageAccueil()},
         title: "Buy&Bye",
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
-          }),
+          pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder(), TargetPlatform.iOS: CupertinoPageTransitionsBuilder()}),
           brightness: Brightness.light,
           // primaryColor: Colors.red,
         ),
         darkTheme: ThemeData(
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
-          }),
+          pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder(), TargetPlatform.iOS: CupertinoPageTransitionsBuilder()}),
           brightness: Brightness.light,
           // additional settings go here
         ),
@@ -134,7 +130,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // return const PageBienvenue();
     return FutureBuilder(
         future: AuthMethods().getCurrentUser(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
@@ -144,12 +139,8 @@ class _MainScreenState extends State<MainScreen> {
             checkIfDocumentExists(snapshot.data.uid);
             if (docExists == true) {
               return StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(snapshot.data.uid)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                stream: FirebaseFirestore.instance.collection("users").doc(snapshot.data.uid).snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   if (snapshot.hasData) {
                     final user = snapshot.data;
                     if (user!['emailVerified'] == false) {
@@ -164,15 +155,11 @@ class _MainScreenState extends State<MainScreen> {
                   }
                 },
               );
-              //Recherche de l'id dans la table magasins
+              // Recherche de l'id dans la table magasins
             } else {
               return StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("magasins")
-                      .doc(snapshot.data.uid)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  stream: FirebaseFirestore.instance.collection("magasins").doc(snapshot.data.uid).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data!['emailVerified'] == true) {
                         return const NavBar();

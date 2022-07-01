@@ -1,7 +1,6 @@
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/compte/history_details.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
@@ -16,20 +15,7 @@ class UserHistory extends StatefulWidget {
 }
 
 class _UserHistoryState extends State<UserHistory> {
-  String? userid;
-
-  @override
-  void initState() {
-    super.initState();
-    getMyInfo();
-  }
-
-  getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
-    userid = user.uid;
-
-    setState(() {});
-  }
+  String userid = UserId().returnData();
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +63,7 @@ class _UserHistoryState extends State<UserHistory> {
         ),
       ),
       body: FutureBuilder<dynamic>(
-        future: DatabaseMethods().getPurchase("users", userid),
+        future: ProviderGetOrders().returnData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Shimmer.fromColors(
@@ -104,40 +90,39 @@ class _UserHistoryState extends State<UserHistory> {
           }
           if (snapshot.hasData) {
             return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 30, top: 30),
               child: snapshot.data.docs.length > 0
                   ? ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (context, index) {
-                        String shopId = snapshot.data.docs[index]["shopID"];
-                        String commandId = snapshot.data.docs[index]["id"];
-                        // Appelle la fonction d'affichage des commandes pour chaque client qui a commandé dans la boutique
-                        return UserCommand(shopId, commandId, userid);
+                        String shopId = snapshot.data.docs[index]["users"][0];
+                        String docId = snapshot.data.docs[index].id;
+                        String userId = snapshot.data.docs[index]["users"][1];
+                        // Appelle la fonction d'affichage des commandes
+                        return UserCommands(shopId, userId, docId);
                       },
                     )
                   : Center(
                       child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.shopping_cart_rounded,
-                        color: Colors.grey[700],
-                        size: 64,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Vous n'avez aucune commande.\n\nVous pouvez commander n'importe quel produit depuis la page d'un magasin.",
-                          style: TextStyle(
-                              fontSize: 18, color: Colors.grey[700]),
-                          textAlign: TextAlign.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.shopping_cart_rounded,
+                          color: Colors.grey[700],
+                          size: 64,
                         ),
-                      ),
-                    ],
-                  )),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            "Vous n'avez aucune commande.\n\nVous pouvez commander n'importe quel produit depuis la page d'un magasin.",
+                            style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    )),
             );
           } else {
             return Shimmer.fromColors(
@@ -168,27 +153,56 @@ class _UserHistoryState extends State<UserHistory> {
   }
 }
 
-class UserCommand extends StatefulWidget {
-  const UserCommand(this.shopId, this.commandId, this.userid, {Key? key}) : super(key: key);
-  final String? shopId, commandId, userid;
+// Récupère les commandes chez un commerçant en particulier
+class UserCommands extends StatefulWidget {
+  const UserCommands(this.shopId, this.userId, this.docId, {Key? key}) : super(key: key);
+  final String shopId, userId, docId;
   @override
-  _UserCommandState createState() => _UserCommandState();
+  _UserCommandsState createState() => _UserCommandsState();
 }
 
-class _UserCommandState extends State<UserCommand> {
-  late String shopName /*, address*/;
+class _UserCommandsState extends State<UserCommands> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<dynamic>(
+        future: FirebaseFirestore.instance.collection('commonData').doc(widget.docId).collection('commands').get(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                return UserCommandDetails(widget.shopId, widget.userId, widget.docId, snapshot.data.docs[index].id);
+              },
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
+        });
+  }
+}
+
+// Affiche le détail d'une commande
+class UserCommandDetails extends StatefulWidget {
+  const UserCommandDetails(this.shopId, this.userId, this.docId, this.commandId, {Key? key}) : super(key: key);
+  final String shopId, userId, docId, commandId;
+
+  @override
+  State<UserCommandDetails> createState() => _UserCommandDetailsState();
+}
+
+class _UserCommandDetailsState extends State<UserCommandDetails> {
+  String? shopName;
   String formatTimestamp(var timestamp) {
     var format = DateFormat('d/MM/y');
     return format.format(timestamp.toDate());
   }
 
+  // Récupère le nom du magasin de la commande
   getShopInfos(sellerId) async {
-    var querySnapshot = await FirebaseFirestore.instance
-        .collection("magasins")
-        .where("id", isEqualTo: sellerId)
-        .get();
+    var querySnapshot = await FirebaseFirestore.instance.collection("magasins").where("id", isEqualTo: sellerId).get();
     shopName = "${querySnapshot.docs[0]["name"]}";
-    // address = "${querySnapshot.docs[0]["adresse"]}";
     if (mounted) {
       setState(() {});
     }
@@ -198,17 +212,13 @@ class _UserCommandState extends State<UserCommand> {
   Widget build(BuildContext context) {
     getShopInfos(widget.shopId);
     return FutureBuilder<dynamic>(
-        future: DatabaseMethods()
-            .getCommandDetails(widget.userid, widget.commandId),
+        future: DatabaseMethods().getCommandDetails(widget.docId, widget.commandId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            //int? statut = snapshot.data!.data()["statut"];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(formatTimestamp(snapshot.data["horodatage"]),
-                    style:
-                        const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                Text(formatTimestamp(snapshot.data["horodatage"]), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
                 MaterialButton(
                   padding: EdgeInsets.zero,
@@ -216,15 +226,8 @@ class _UserCommandState extends State<UserCommand> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HistoryDetails(
-                            widget.userid,
-                            widget.commandId,
-                            snapshot.data['statut'],
-                            snapshot.data["horodatage"],
-                            widget.shopId,
-                            snapshot.data["prix"],
-                            snapshot.data["livraison"],
-                            snapshot.data["adresse"]),
+                        builder: (context) => HistoryDetails(widget.docId, widget.commandId, snapshot.data['statut'], snapshot.data["horodatage"],
+                            widget.shopId, snapshot.data["prix"], snapshot.data["livraison"], snapshot.data["adresse"]),
                       ),
                     );
                   },
@@ -232,50 +235,32 @@ class _UserCommandState extends State<UserCommand> {
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 4,
-                              offset: Offset(4, 4))
-                        ]),
+                        boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 4, offset: Offset(4, 4))]),
                     child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Column(
                           children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        shopName,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
-                                      snapshot.data["articles"] == 1
-                                          ? Text(snapshot.data["articles"]
-                                                  .toString() +
-                                              " article")
-                                          : Text(snapshot.data["articles"]
-                                                  .toString() +
-                                              " articles"),
-                                    ],
-                                  ),
                                   Text(
-                                    snapshot.data["prix"].toStringAsFixed(2) +
-                                        "€",
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700),
-                                  )
-                                ]),
-                                const SizedBox(height: 15),
+                                    shopName.toString(),
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                  ),
+                                  const SizedBox(height: 30),
+                                  // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
+                                  snapshot.data["articles"] == 1
+                                      ? Text(snapshot.data["articles"].toString() + " article")
+                                      : Text(snapshot.data["articles"].toString() + " articles"),
+                                ],
+                              ),
+                              Text(
+                                snapshot.data["prix"].toStringAsFixed(2) + "€",
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                              )
+                            ]),
+                            const SizedBox(height: 15),
                             Center(
                                 child: Text(snapshot.data['statut'] == 0
                                     ? "Statut : En attente"
@@ -284,55 +269,6 @@ class _UserCommandState extends State<UserCommand> {
                                         : "Statut : Terminé")),
                           ],
                         )
-                        // child: Column(children: [
-                        //   Row(
-                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //     children: [
-                        //       Row(
-                        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //         children: [
-                        //           Column(
-                        //             crossAxisAlignment: CrossAxisAlignment.start,
-                        //             children: [
-                        //               Text(
-                        //                 shopName,
-                        //                 style: TextStyle(
-                        //                     fontSize: 16,
-                        //                     fontWeight: FontWeight.w700),
-                        //               ),
-                        //               SizedBox(height: 60),
-                        //               // Ecrit au singulier ou au pluriel selon le nombre d'article(s)
-                        //               snapshot.data["articles"] == 1
-                        //                   ? Text(snapshot.data["articles"]
-                        //                           .toString() +
-                        //                       " article")
-                        //                   : Text(snapshot.data["articles"]
-                        //                           .toString() +
-                        //                       " articles"),
-                        //             ],
-                        //           ),
-                        //           Column(
-                        //             children: [
-                        //               Text(
-                        //                 snapshot.data["prix"].toStringAsFixed(2) +
-                        //                     "€",
-                        //                 style: TextStyle(
-                        //                     fontSize: 14,
-                        //                     fontWeight: FontWeight.w700),
-                        //               )
-                        //             ],
-                        //           ),
-                        //         ],
-                        //       ),
-                        //       Center(
-                        //           child: Text(snapshot.data['statut'] == 0
-                        //               ? "Statut : En attente"
-                        //               : snapshot.data['statut'] == 1
-                        //                   ? "Statut : En cours"
-                        //                   : "Statut : Terminé")),
-                        //     ],
-                        //   ),
-                        // ]),
                         ),
                   ),
                 ),
