@@ -21,6 +21,8 @@ const ChartHistory = ({ data, theme, user }) => {
         scrollToBottom();
     }, [data.length, scrollToBottom]);
 
+    console.log(data);
+
     return (
         <Grid item xs={12}>
             <Grid container spacing={gridSpacing} ref={wrapper}>

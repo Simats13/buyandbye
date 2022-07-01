@@ -5,7 +5,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { Chip, Divider, Grid, List, ListItemButton, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 import { query, collection, where, limit, QuerySnapshot, doc, orderBy } from 'firebase/firestore';
-import { useFirestoreDocument, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useFirestoreDocumentData, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
 // project imports
 import UserAvatar from './UserAvatar';
 
@@ -15,103 +15,69 @@ import useAuth from 'hooks/useAuth';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUserData, sellerID }) => {
+const UserList = ({ setUserData, userInfo, data, sellerID }) => {
     const dispatch = useDispatch();
     const [client, setClient] = useState([]);
-    const [userInfo, setUserInfo] = useState([]);
-    const { users } = useSelector((state) => state.chat);
-    const { db, user } = useAuth();
-    const ref = query(collection(db, 'commonData'), where('users', 'array-contains', sellerID), orderBy('timestamp', 'desc'));
-
-    const queryClient = useFirestoreQueryData(['commonData'], ref, { subscribe: true });
-
-    const lastClientId = queryClient.data?.length > 0 ? queryClient.data[0].users[1] : null;
-
-    // console.log(userTestInfo);
-    useEffect(() => {
-        setClient(queryClient);
-    }, []);
-
-    useEffect(() => {
-        dispatch(getUsers(sellerID));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        setUserInfo(users);
-    }, [users]);
-
-    if (queryClient.isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    console.log(queryClient.data);
-
-    // queryClient.data.map((data) => setUserInfo(doc(db, 'users', data.users[1])));
-    // if (queryClient.isLoading) {
-    //     return <div>Loading...</div>;
-    // }
-    console.log(userInfo);
 
     // eslint-disable-next-line no-unused-expressions
     return (
         <List component="nav">
-            {queryClient.data.map((userSelect, index) => (
-                <Fragment key={sellerID + userSelect.users[1]}>
-                    <ListItemButton
-                        onClick={() => {
-                            dispatch(getAllUserChats(sellerID + userSelect.users[1]));
-                            dispatch(getUserWithID(userSelect.users[1] ? '' : ''));
-                        }}
-                    >
-                        <ListItemAvatar>
-                            <UserAvatar user={userInfo[index] ? '' : ''} />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={
-                                <Grid container alignItems="center" spacing={1} component="span">
-                                    <Grid item xs zeroMinWidth component="span">
-                                        <Typography
-                                            variant="h5"
-                                            color="inherit"
-                                            component="span"
-                                            sx={{
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap',
-                                                display: 'block'
-                                            }}
-                                        >
-                                            {`${userInfo[index].name ? '' : ''}`}
-                                        </Typography>
+            {data.map((userSelect, index) => (
+                <>
+                    <Fragment key={sellerID + userSelect.users[1]}>
+                        <ListItemButton
+                            onClick={() => {
+                                setUserData('hello from userList');
+                            }}
+                        >
+                            <ListItemAvatar>
+                                <UserAvatar user={userInfo[index] ? '' : ''} />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={
+                                    <Grid container alignItems="center" spacing={1} component="span">
+                                        <Grid item xs zeroMinWidth component="span">
+                                            <Typography
+                                                variant="h5"
+                                                color="inherit"
+                                                component="span"
+                                                sx={{
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    display: 'block'
+                                                }}
+                                            >
+                                                {`${userInfo[index].name}`}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item component="span">
+                                            <Typography component="span" variant="subtitle2">
+                                                {
+                                                    // eslint-disable-next-line no-underscore-dangle
+                                                    new Date(userSelect.timestamp.seconds * 1000).toLocaleString()
+                                                }
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item component="span">
-                                        <Typography component="span" variant="subtitle2">
-                                            {
-                                                // eslint-disable-next-line no-underscore-dangle
-                                                new Date(userSelect.timestamp.seconds * 1000).toLocaleString()
-                                            }
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                            }
-                            secondary={
-                                <Grid container alignItems="center" spacing={1} component="span">
-                                    <Grid item xs zeroMinWidth component="span">
-                                        <Typography
-                                            variant="caption"
-                                            component="span"
-                                            sx={{
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap',
-                                                display: 'block'
-                                            }}
-                                        >
-                                            {userSelect.lastMessage}
-                                        </Typography>
-                                    </Grid>
-                                    {/* <Grid item component="span">
+                                }
+                                secondary={
+                                    <Grid container alignItems="center" spacing={1} component="span">
+                                        <Grid item xs zeroMinWidth component="span">
+                                            <Typography
+                                                variant="caption"
+                                                component="span"
+                                                sx={{
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    display: 'block'
+                                                }}
+                                            >
+                                                {userSelect.lastMessage}
+                                            </Typography>
+                                        </Grid>
+                                        {/* <Grid item component="span">
                                         {user.unReadChatCount !== 0 && (
                                             <Chip
                                                 label={user.unReadChatCount}
@@ -127,12 +93,13 @@ const UserList = ({ setUserData, sellerID }) => {
                                             />
                                         )}
                                     </Grid> */}
-                                </Grid>
-                            }
-                        />
-                    </ListItemButton>
-                    <Divider />
-                </Fragment>
+                                    </Grid>
+                                }
+                            />
+                        </ListItemButton>
+                        <Divider />
+                    </Fragment>
+                </>
             ))}
         </List>
     );

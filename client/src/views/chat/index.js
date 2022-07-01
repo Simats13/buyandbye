@@ -43,7 +43,8 @@ import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
 import MoodTwoToneIcon from '@mui/icons-material/MoodTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import useAuth from 'hooks/useAuth';
-import { useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useFirestoreDocumentData, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useQueries } from 'react-query';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -77,13 +78,14 @@ const Chat = () => {
     const { db } = useAuth();
     const dispatch = useDispatch();
     const { user } = useAuth();
-    const [sellerData, setSellerData] = useState({});
 
     const [userData, setUserData] = useState([]); // Information sur l'utilisateur
 
     const [data, setData] = useState([]); // Message de la conversation
 
-    const { chats, userInfo } = useSelector((state) => state.chat);
+    const [messages, setMessages] = useState([]); // Message de la conversation]
+
+    const { chats, users } = useSelector((state) => state.chat);
 
     const { userWithID } = useSelector((state) => state.user);
 
@@ -94,6 +96,32 @@ const Chat = () => {
     const queryClient = useFirestoreQueryData(['commonData'], ref, { subscribe: true });
 
     const lastClientId = queryClient.data?.length > 0 ? queryClient.data[0].users[1] : null;
+
+    useEffect(() => {
+        dispatch(getUsers(user.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        setUserData(users);
+    }, [users]);
+
+    useEffect(() => {
+        if (queryClient.isSuccess) {
+            setData(queryClient.data);
+        }
+    }, [queryClient, data]);
+
+    const refChats = doc(db, 'commonData', user.id + lastClientId, 'messages');
+
+    const queryChats = useFirestoreDocumentData(['commonData', user.id + lastClientId, 'messages'], refChats, { subscribe: true });
+
+    useEffect(() => {
+        if (queryChats.isSuccess) {
+            setMessages(queryChats.data);
+            console.log(messages);
+        }
+    }, [queryChats, messages]);
 
     const handleClickSort = (event) => {
         setAnchorEl(event?.currentTarget);
@@ -119,40 +147,6 @@ const Chat = () => {
     React.useEffect(() => {
         setOpenChatDrawer(!matchDownSM);
     }, [matchDownSM]);
-
-    useEffect(() => {
-        setSellerData(userWithID);
-    }, [userWithID]);
-
-    useEffect(() => {
-        // hide left drawer when email app opens
-        dispatch(getUsers(user.id));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        setUserData(userInfo);
-    }, [userInfo]);
-
-    useEffect(() => {
-        // hide left drawer when email app opens
-        dispatch(getAllUserChats(user.id + lastClientId));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        setData(queryClient);
-    }, []);
-
-    // useEffect(() => {
-    //     const q = query(collection(db, 'commonData'), where('users', 'array-contains', user.id), orderBy('timestamp', 'desc'));
-    //     const unsuscribe = getDocs(q, (querySnapshot) => {
-    //         querySnapshot.docs.map((doc) => doc);
-    //     });
-    //     return () => {
-    //         unsuscribe();
-    //     };
-    // }, []);
 
     // handle new message form
     const [message, setMessage] = useState('');
@@ -198,19 +192,16 @@ const Chat = () => {
         setAnchorElEmoji(null);
     };
 
-    if (queryClient.isLoading) {
-        return <div>Chargement...</div>;
-    }
-
     if (!data) return <Typography>Chargement des messages...</Typography>;
 
-    return (
+    return queryClient.isSuccess ? (
         <Box sx={{ display: 'flex' }}>
             <ChatDrawer
                 openChatDrawer={openChatDrawer}
                 handleDrawerOpen={handleDrawerOpen}
-                clientData={queryClient}
+                data={data}
                 setUserData={setUserData}
+                userInfo={userData}
             />
             <Main theme={theme} open={openChatDrawer}>
                 <Grid container spacing={gridSpacing}>
@@ -282,7 +273,7 @@ const Chat = () => {
                                 <PerfectScrollbar
                                     style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 275 }}
                                 >
-                                    {/* <CardContent>
+                                    <CardContent>
                                         <ChartHistory
                                             theme={theme}
                                             handleUserDetails={handleUserChange}
@@ -290,7 +281,7 @@ const Chat = () => {
                                             user={user}
                                             data={data}
                                         />
-                                    </CardContent> */}
+                                    </CardContent>
                                 </PerfectScrollbar>
                                 <Grid item xs={12}>
                                     <Grid container spacing={1} alignItems="center">
@@ -371,6 +362,8 @@ const Chat = () => {
                 </Grid>
             </Main>
         </Box>
+    ) : (
+        <div>Chargement des Messages</div>
     );
 };
 
