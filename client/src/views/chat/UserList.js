@@ -15,16 +15,16 @@ import useAuth from 'hooks/useAuth';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen }) => {
-    const dispatch = useDispatch();
-    const [client, setClient] = useState([]);
-
+const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen, lastOpen }) => {
     const { db } = useAuth();
 
-    const Test = ({ userID, messageData }) => {
+    console.log('data', data);
+
+    const UserListInfo = ({ userID, messageData }) => {
         const ref = doc(db, 'users', userID);
         const userInfos = useFirestoreDocumentData(['users', userID], ref);
 
+        console.log('userID_UserList', userID);
         return userInfos.isSuccess ? (
             <>
                 <ListItemAvatar>
@@ -52,7 +52,12 @@ const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen }) => {
                                 <Typography component="span" variant="subtitle2">
                                     {
                                         // eslint-disable-next-line no-underscore-dangle
-                                        new Date(messageData.timestamp.seconds * 1000).toLocaleString()
+                                        new Date(messageData.timestamp.seconds * 1000).toLocaleTimeString(navigator.language, {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            day: '2-digit',
+                                            month: '2-digit'
+                                        })
                                     }
                                 </Typography>
                             </Grid>
@@ -110,7 +115,7 @@ const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen }) => {
                                 setLastOpen(userSelect.users[1]);
                             }}
                         >
-                            <Test userID={userSelect.users[1]} messageData={userSelect} />
+                            <UserListInfo userID={userSelect.users[1]} messageData={userSelect} />
                         </ListItemButton>
                         <Divider />
                     </Fragment>

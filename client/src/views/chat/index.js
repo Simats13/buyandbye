@@ -98,7 +98,9 @@ const Chat = () => {
     const queryClient = useFirestoreQueryData(['commonData'], ref, { subscribe: true });
 
     useEffect(() => {
-        setLastOpen(queryClient.data?.length > 0 ? queryClient.data[0].users[1] : null);
+        if (queryClient.isSuccess && lastOpen.length === 0) {
+            setLastOpen(queryClient.data[0].users[1]);
+        }
     }, [queryClient, lastOpen]);
 
     useEffect(() => {
@@ -155,6 +157,7 @@ const Chat = () => {
 
     // handle new message form
     const [message, setMessage] = useState('');
+
     const handleOnSend = () => {
         setMessage('');
         const d = {
@@ -162,15 +165,15 @@ const Chat = () => {
         };
         const newMessage = {
             idFrom: user.id,
-            idTo: userData.id,
+            idTo: lastOpen,
             message,
             isread: false,
             sentByClient: false,
             type: 'text',
             timestamp: d
         };
-        setData((prevState) => [...prevState, newMessage]);
-        dispatch(insertChat(newMessage, user.id + userData.id));
+        // setData((prevState) => [...prevState, newMessage]);
+        dispatch(insertChat(newMessage, user.id + lastOpen));
     };
 
     const handleEnter = (event) => {
@@ -208,6 +211,7 @@ const Chat = () => {
                 setUserData={setUserData}
                 userInfo={userData}
                 setLastOpen={setLastOpen}
+                lastOpen={lastOpen}
             />
             <Main theme={theme} open={openChatDrawer}>
                 <Grid container spacing={gridSpacing}>
