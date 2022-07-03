@@ -13,6 +13,7 @@ import {
     DialogContent,
     DialogTitle,
     Fab,
+    FormControlLabel,
     Grid,
     Input,
     InputAdornment,
@@ -20,6 +21,7 @@ import {
     MenuItem,
     Select,
     Slide,
+    Switch,
     TextField,
     Typography
 } from '@mui/material';
@@ -27,10 +29,15 @@ import {
 // project imports
 import { gridSpacing } from 'store/constant';
 import AnimateButton from 'ui-component/extended/AnimateButton';
+import * as yup from 'yup';
 
 // assets
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
+import { dispatch } from 'store';
+import { addProducts } from 'store/slices/product';
+import { useFormik } from 'formik';
+import { openSnackbar } from 'store/slices/snackbar';
 
 // styles
 const ImageWrapper = styled('div')(({ theme }) => ({
@@ -98,13 +105,17 @@ function getStyles(name, personName, theme) {
 
 // ==============================|| PRODUCT ADD DIALOG ||============================== //
 
-const ProductAdd = ({ open, handleCloseDialog }) => {
+const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
     const theme = useTheme();
-
     // handle category change dropdown
-    const [currency, setCurrency] = useState('2');
+    const [category, setCategory] = useState('');
+
+    // useEffect(() => {
+    //     setCategory('Electroménager' || []);
+    // }, [category]);
+
     const handleSelectChange = (event) => {
-        setCurrency(event?.target.value);
+        setCategory(event?.target.value);
     };
     // set image upload progress
     const [progress, setProgress] = useState(0);
@@ -136,6 +147,50 @@ const ProductAdd = ({ open, handleCloseDialog }) => {
         setPersonName(event?.target.value);
     };
 
+    const validationSchema = yup.object({
+        productName: yup.string().required('Veuillez mettre un nom à votre produit'),
+        productDescription: yup.string().required('Veuillez mettre une description à votre produit'),
+        productPrice: yup.number().required('Veuillez mettre un prix à votre produit'),
+        productCategory: yup.string().required('Veuillez mettre une catégorie à votre produit'),
+        productReference: yup.string().required('Veuillez mettre une référence à votre produit'),
+        productQuantity: yup.number().required('Veuillez mettre une quantité à votre produit'),
+        productBrand: yup.string().required('Veuillez renseigner la marque de votre produit'),
+        productWeight: yup.number().required('Veuillez mettre un poids à votre produit')
+    });
+    const formik = useFormik({
+        validationSchema,
+        initialValues: {
+            productName: '',
+            productDescription: '',
+            productCategory: category || 'Electroménager',
+            productReference: '',
+            productPrice: '',
+            productDiscount: '',
+            productQuantity: '',
+            productBrand: '',
+            productWeight: '',
+            productVisibility: false
+        },
+        enableReinitialize: true,
+        onSubmit: (resetForm) => {
+            console.log(formik.values);
+            dispatch(addProducts(sellerID, formik.values));
+            handleCloseDialog();
+            resetForm();
+            dispatch(
+                openSnackbar({
+                    open: true,
+                    message: 'Votre produit a bien été ajouté',
+                    variant: 'alert',
+                    alert: {
+                        color: 'success'
+                    },
+                    close: false
+                })
+            );
+        }
+    });
+
     return (
         <Dialog
             open={open}
@@ -156,150 +211,192 @@ const ProductAdd = ({ open, handleCloseDialog }) => {
         >
             {open && (
                 <>
-                    <DialogTitle>Ajouter un Produit</DialogTitle>
-                    <DialogContent>
-                        <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-                            <Grid item xs={12}>
-                                <TextField id="outlined-basic1" fullWidth label="Nom du Produit*" />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField id="outlined-basic2" fullWidth multiline rows={3} label="Description" />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="standard-select-currency"
-                                    select
-                                    label="Categorie du Produit*"
-                                    value={currency}
-                                    fullWidth
-                                    onChange={handleSelectChange}
-                                    helperText="Veuillez choisir une categorie"
-                                >
-                                    {categories.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField id="outlined-basic3" fullWidth label="Reférence*" value="" />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Prix*"
-                                    id="filled-start-adornment1"
-                                    value=""
-                                    InputProps={{ startAdornment: <InputAdornment position="start">€</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Réduction"
-                                    id="filled-start-adornment2"
-                                    value=""
-                                    InputProps={{ startAdornment: <InputAdornment position="start">%</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Quantité*"
-                                    id="quantity"
-                                    value=""
-                                    InputProps={{ startAdornment: <InputAdornment position="start">0</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    label="Marque*"
-                                    id="brand"
-                                    value=""
-                                    InputProps={{ startAdornment: <InputAdornment position="start">Ex : Apple</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                                <TextField
-                                    value=""
-                                    label="Poids"
-                                    InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" align="left">
-                                            Images du Produit*
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <div>
-                                            <TextField type="file" id="file-upload" fullWidth label="Enter SKU" sx={{ display: 'none' }} />
-                                            <InputLabel
-                                                htmlFor="file-upload"
-                                                sx={{
-                                                    background: theme.palette.background.default,
-                                                    py: 3.75,
-                                                    px: 0,
-                                                    textAlign: 'center',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    mb: 3,
-                                                    '& > svg': {
-                                                        verticalAlign: 'sub',
-                                                        mr: 0.5
-                                                    }
-                                                }}
-                                            >
-                                                <CloudUploadIcon /> Déposer vos images
-                                            </InputLabel>
-                                        </div>
+                    <form onSubmit={formik.handleSubmit}>
+                        <DialogTitle>Ajouter un Produit</DialogTitle>
+                        <DialogContent>
+                            <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        id="productName"
+                                        label="Nom du produit*"
+                                        multiline
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productName}
+                                        placeholder="Ex : Iphone 11 Pro Max"
+                                        error={formik.touched.productName && Boolean(formik.errors.productName)}
+                                        helperText={formik.touched.productName && formik.errors.productName}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="productDescription"
+                                        fullWidth
+                                        multiline
+                                        rows={3}
+                                        label="Description"
+                                        placeholder="Ex : Voici la description de mon produit"
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productDescription}
+                                        error={formik.touched.productDescription && Boolean(formik.errors.productDescription)}
+                                        helperText={formik.touched.productDescription && formik.errors.productDescription}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="productCategory"
+                                        select
+                                        value={formik.values.productCategory}
+                                        label="Categorie du Produit*"
+                                        fullWidth
+                                        onChange={handleSelectChange}
+                                        error={formik.touched.productCategory && Boolean(formik.errors.productCategory)}
+                                        helperText={formik.touched.productCategory && formik.errors.productCategory}
+                                    >
+                                        {tags.map((name) => (
+                                            <MenuItem value={name}>{name}</MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        id="productReference"
+                                        label="Reference du produit*"
+                                        multiline
+                                        placeholder="Ex : FR103D"
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productReference}
+                                        error={formik.touched.productReference && Boolean(formik.errors.productReference)}
+                                        helperText={formik.touched.productReference && formik.errors.productReference}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        label="Prix*"
+                                        id="productPrice"
+                                        placeholder="Ex : 100"
+                                        onChange={formik.handleChange}
+                                        multiline
+                                        defaultValue={formik.values.productPrice}
+                                        error={formik.touched.productPrice && Boolean(formik.errors.productPrice)}
+                                        helperText={formik.touched.productPrice && formik.errors.productPrice}
+                                        InputProps={{ endAdornment: <InputAdornment position="start">€</InputAdornment> }}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        id="productDiscount"
+                                        label="Réduction"
+                                        multiline
+                                        placeholder="Ex : 10"
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productDiscount}
+                                        error={formik.touched.productDiscount && Boolean(formik.errors.productDiscount)}
+                                        helperText={formik.touched.productDiscount && formik.errors.productDiscount}
+                                        InputProps={{ endAdornment: <InputAdornment position="start">%</InputAdornment> }}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        placeholder="Ex : 15"
+                                        id="productQuantity"
+                                        multiline
+                                        label="Quantité*"
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productQuantity}
+                                        error={formik.touched.productQuantity && Boolean(formik.errors.productQuantity)}
+                                        helperText={formik.touched.productQuantity && formik.errors.productQuantity}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        id="productBrand"
+                                        label="Marque du produit*"
+                                        multiline
+                                        onChange={formik.handleChange}
+                                        defaultValue={formik.values.productBrand}
+                                        error={formik.touched.productBrand && Boolean(formik.errors.productBrand)}
+                                        helperText={formik.touched.productBrand && formik.errors.productBrand}
+                                        placeholder="Ex : Apple"
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <TextField
+                                        id="productWeight"
+                                        placeholder="Ex : 10"
+                                        multiline
+                                        defaultValue={formik.values.productWeight}
+                                        onChange={formik.handleChange}
+                                        label="Poids"
+                                        InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
+                                        error={formik.touched.productWeight && Boolean(formik.errors.productWeight)}
+                                        helperText={formik.touched.productWeight && formik.errors.productWeight}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                id="productVisibility"
+                                                onChange={formik.handleChange}
+                                                error={formik.values.toString()}
+                                            />
+                                        }
+                                        label="Visibilité du produit"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Grid container spacing={1}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="subtitle1" align="left">
+                                                Images du Produit*
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <div>
+                                                <TextField
+                                                    type="file"
+                                                    id="file-upload"
+                                                    fullWidth
+                                                    label="Enter SKU"
+                                                    sx={{ display: 'none' }}
+                                                />
+                                                <InputLabel
+                                                    htmlFor="file-upload"
+                                                    sx={{
+                                                        background: theme.palette.background.default,
+                                                        py: 3.75,
+                                                        px: 0,
+                                                        textAlign: 'center',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        mb: 3,
+                                                        '& > svg': {
+                                                            verticalAlign: 'sub',
+                                                            mr: 0.5
+                                                        }
+                                                    }}
+                                                >
+                                                    <CloudUploadIcon /> Déposer vos images
+                                                </InputLabel>
+                                            </div>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" align="left">
-                                            Tags
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <div>
-                                            <Select
-                                                id="demo-multiple-chip"
-                                                multiple
-                                                fullWidth
-                                                value={personName}
-                                                onChange={handleTagSelectChange}
-                                                input={<Input id="select-multiple-chip" />}
-                                                renderValue={(selected) => (
-                                                    <div>
-                                                        {typeof selected !== 'string' &&
-                                                            selected.map((value) => <Chip key={value} label={value} />)}
-                                                    </div>
-                                                )}
-                                                MenuProps={MenuProps}
-                                            >
-                                                {tagNames.map((name) => (
-                                                    <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                                                        {name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button variant="text" color="error" onClick={handleCloseDialog}>
-                            Fermer
-                        </Button>
-                        <AnimateButton>
-                            <Button variant="contained">Créer</Button>
-                        </AnimateButton>
-                    </DialogActions>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button variant="text" color="error" onClick={handleCloseDialog}>
+                                Fermer
+                            </Button>
+                            <AnimateButton>
+                                <Button variant="contained" type="submit" style={{ color: 'white' }}>
+                                    Ajouter
+                                </Button>
+                            </AnimateButton>
+                        </DialogActions>
+                    </form>
                 </>
             )}
         </Dialog>

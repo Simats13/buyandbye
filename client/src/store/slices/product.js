@@ -10,10 +10,10 @@ import { dispatch } from '../index';
 const initialState = {
     error: null,
     products: [],
-    product: null
-    // relatedProducts: [],
-    // reviews: [],
-    // addresses: []
+    product: null,
+    delete: null,
+    add: null,
+    edit: null
 };
 
 const slice = createSlice({
@@ -25,45 +25,17 @@ const slice = createSlice({
             state.error = action.payload;
         },
 
-        // GET PRODUCTS
-        getProductsSuccess(state, action) {
-            state.products = action.payload;
+        getDeleteSuccess(state, action) {
+            state.delete = action.payload;
         },
 
-        // // FILTER PRODUCTS
-        // filterProductsSuccess(state, action) {
-        //     state.products = action.payload;
-        // },
+        getAddSuccess(state, action) {
+            state.add = action.payload;
+        },
 
-        // // GET PRODUCT
-        getProductSuccess(state, action) {
-            state.product = action.payload;
+        getEditSuccess(state, action) {
+            state.edit = action.payload;
         }
-
-        // // GET RELATED PRODUCTS
-        // getRelatedProductsSuccess(state, action) {
-        //     state.relatedProducts = action.payload;
-        // },
-
-        // // GET PRODUCT REVIEWS
-        // getProductReviewsSuccess(state, action) {
-        //     state.reviews = action.payload;
-        // },
-
-        // // GET ADDRESSES
-        // getAddressesSuccess(state, action) {
-        //     state.addresses = action.payload;
-        // },
-
-        // // ADD ADDRESS
-        // addAddressSuccess(state, action) {
-        //     state.addresses = action.payload;
-        // },
-
-        // // EDIT ADDRESS
-        // editAddressSuccess(state, action) {
-        //     state.addresses = action.payload;
-        // }
     }
 });
 
@@ -83,77 +55,33 @@ export function getProducts(id) {
     };
 }
 
-export function filterProducts(filter) {
+export function deleteProducts(id, idProduct) {
     return async () => {
         try {
-            const response = await axios.post('/api/products/filter', { filter });
-            dispatch(slice.actions.filterProductsSuccess(response.data));
+            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/api/shops/${id}/products/${idProduct}`);
+            dispatch(slice.actions.getDeleteSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }
     };
 }
 
-export function getProduct(idShop, idProduct) {
+export function addProducts(id, data) {
     return async () => {
         try {
-            const response = await axios.post('/api/product/details', { idProduct, idShop });
-            dispatch(slice.actions.getProductSuccess(response.data));
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shops/${id}/products`, data);
+            dispatch(slice.actions.getAddSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }
     };
 }
 
-export function getRelatedProducts(id) {
+export function editProducts(id, idProduct, data) {
     return async () => {
         try {
-            const response = await axios.post('/api/product/related', { id });
-            dispatch(slice.actions.getRelatedProductsSuccess(response.data));
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
-export function getProductReviews() {
-    return async () => {
-        try {
-            const response = await axios.get('/api/review/list');
-            dispatch(slice.actions.getProductReviewsSuccess(response.data.productReviews));
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
-export function getAddresses() {
-    return async () => {
-        try {
-            const response = await axios.get('/api/address/list');
-            dispatch(slice.actions.getAddressesSuccess(response.data.address));
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
-export function addAddress(address) {
-    return async () => {
-        try {
-            const response = await axios.post('/api/address/new', address);
-            dispatch(slice.actions.addAddressSuccess(response.data.address));
-        } catch (error) {
-            dispatch(slice.actions.hasError(error));
-        }
-    };
-}
-
-export function editAddress(address) {
-    return async () => {
-        try {
-            const response = await axios.post('/api/address/edit', address);
-            dispatch(slice.actions.editAddressSuccess(response.data.address));
+            const response = await axios.patch(`${process.env.REACT_APP_API_URL}/api/shops/${id}/products/${idProduct}`, data);
+            dispatch(slice.actions.getEditSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
         }

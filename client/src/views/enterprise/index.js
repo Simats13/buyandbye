@@ -211,9 +211,7 @@ const Enterprise = () => {
             })
         );
     }
-    // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
-    // console.log('infoEnterprise', infoEnterprise);
-    // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
+
     const [values, setValues] = useState('');
     React.useEffect(() => {
         setValues(data.mainCategorie || []);
@@ -277,7 +275,7 @@ const Enterprise = () => {
                                 autoComplete
                                 includeInputInList
                                 filterSelectedOptions
-                                value={value}
+                                value={formik.values.enterpriseAdress}
                                 onChange={(event, newValue) => {
                                     setOptions(newValue ? [newValue, ...options] : options);
                                     setValue(newValue);

@@ -34,7 +34,8 @@ const ChartHistory = ({ data, theme, user }) => {
                                             sx={{
                                                 display: 'inline-block',
                                                 float: 'right',
-                                                bgcolor: theme.palette.mode === 'dark' ? 'grey.600' : theme.palette.primary.light
+                                                bgcolor:
+                                                    theme.palette.mode === 'dark' ? theme.palette.dark[900] : theme.palette.secondary.light
                                             }}
                                         >
                                             <CardContent sx={{ p: 2, pb: '16px !important', width: 'fit-content', ml: 'auto' }}>
@@ -78,8 +79,7 @@ const ChartHistory = ({ data, theme, user }) => {
                                             sx={{
                                                 display: 'inline-block',
                                                 float: 'left',
-                                                background:
-                                                    theme.palette.mode === 'dark' ? theme.palette.dark[900] : theme.palette.secondary.light
+                                                background: theme.palette.mode === 'dark' ? 'grey.600' : theme.palette.primary.light
                                             }}
                                         >
                                             <CardContent sx={{ p: 2, pb: '16px !important' }}>

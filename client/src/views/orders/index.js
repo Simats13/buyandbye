@@ -421,7 +421,12 @@ const Commands = () => {
                                         <TableCell align="center">
                                             {
                                                 // eslint-disable-next-line no-underscore-dangle
-                                                new Date(row.horodatage._seconds * 1000).toLocaleString()
+                                                new Date(row.horodatage._seconds * 1000).toLocaleTimeString(navigator.language, {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    day: '2-digit',
+                                                    month: '2-digit'
+                                                })
                                             }
                                         </TableCell>
                                         <TableCell align="center">

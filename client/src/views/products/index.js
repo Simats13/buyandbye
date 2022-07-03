@@ -53,6 +53,9 @@ import useAuth from 'hooks/useAuth';
 import ProductAdd from './ProductAdd';
 import ProductEdit from './Edit';
 import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
+import DeleteDialog from './Delete';
+import { collection, query, where } from 'firebase/firestore';
+import { useFirestoreQueryData } from '@react-query-firebase/firestore';
 
 const prodImage = require.context('assets/images/e-commerce', true);
 
@@ -237,7 +240,7 @@ const Product = () => {
     const [search, setSearch] = React.useState('');
     const [rows, setRows] = React.useState([]);
     const { products } = useSelector((state) => state.product);
-    const { user } = useAuth();
+    const { user, db } = useAuth();
     const [data, setData] = React.useState([]);
     const { enterprise } = useSelector((state) => state.enterprise);
 
@@ -283,19 +286,17 @@ const Product = () => {
         setAnchorEl(null);
     };
 
-    React.useEffect(() => {
-        setRows(products);
-    }, [products]);
+    const refProducts = query(collection(db, `magasins/${user.id}/produits`));
+
+    const queryProducts = useFirestoreQueryData([`magasins/${user.id}/produits`], refProducts, {
+        subscribe: true
+    });
 
     React.useEffect(() => {
-        dispatch(getProducts(user.id));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // React.useEffect(() => {
-    //     getData().then((res) => setRows(res));
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
+        if (queryProducts.isSuccess) {
+            setRows(queryProducts.data);
+        }
+    }, [rows, queryProducts]);
 
     const handleSearch = (event) => {
         const newString = event?.target.value;
@@ -388,7 +389,7 @@ const Product = () => {
     const isSelected = (name) => selected.indexOf(name) !== -1;
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    return (
+    return queryProducts.isSuccess ? (
         <MainCard title="Liste des produits" content={false}>
             <CardContent>
                 <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
@@ -426,7 +427,7 @@ const Product = () => {
 
                         <Tooltip title="Ajouter un Produit">
                             <Fab
-                                color="primary"
+                                style={{ color: 'white', backgroundColor: '#FD5822' }}
                                 size="small"
                                 onClick={handleClickOpenDialogAdd}
                                 sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
@@ -434,7 +435,7 @@ const Product = () => {
                                 <AddIcon fontSize="small" />
                             </Fab>
                         </Tooltip>
-                        <ProductAdd open={openAdd} handleCloseDialog={handleCloseDialogAdd} />
+                        <ProductAdd open={openAdd} tags={tagsCompany} sellerID={user.id} handleCloseDialog={handleCloseDialogAdd} />
                     </Grid>
                 </Grid>
             </CardContent>
@@ -457,7 +458,7 @@ const Product = () => {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => {
                                 if (typeof row === 'number') return null;
-                                const isItemSelected = isSelected(row.name);
+                                const isItemSelected = isSelected(row.nom);
                                 const labelId = `enhanced-table-checkbox-${index}`;
                                 return (
                                     <TableRow
@@ -468,7 +469,7 @@ const Product = () => {
                                         key={index}
                                         selected={isItemSelected}
                                     >
-                                        <TableCell padding="checkbox" sx={{ pl: 3 }} onClick={(event) => handleClick(event, row.name)}>
+                                        <TableCell padding="checkbox" sx={{ pl: 3 }} onClick={(event) => handleClick(event, row.nom)}>
                                             <Checkbox
                                                 color="primary"
                                                 checked={isItemSelected}
@@ -482,10 +483,10 @@ const Product = () => {
                                             component="th"
                                             id={labelId}
                                             scope="row"
-                                            onClick={(event) => handleClick(event, row.name)}
+                                            onClick={(event) => handleClick(event, row.nom)}
                                             sx={{ cursor: 'pointer' }}
                                         >
-                                            <Avatar src={row.image} size="md" variant="rounded" />
+                                            <Avatar src={row.images[0]} size="md" variant="rounded" />
                                         </TableCell>
                                         <TableCell component="th" id={labelId} scope="row" sx={{ cursor: 'pointer' }}>
                                             <Typography
@@ -497,40 +498,38 @@ const Product = () => {
                                                     textDecoration: 'none'
                                                 }}
                                             >
-                                                {row.name}
+                                                {row.nom}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell align="left">{row.quantity}</TableCell>
-                                        <TableCell align="right">{row.price} €</TableCell>
+                                        <TableCell align="left">{row.quantite}</TableCell>
+                                        <TableCell align="right">{row.prix} €</TableCell>
                                         {/* <TableCell align="right">${row.salePrice}</TableCell> */}
                                         <TableCell align="center">
                                             <Chip
                                                 size="small"
-                                                label={row.visibility ? 'Visible' : 'Masqué'}
-                                                chipcolor={row.visibility ? 'success' : 'error'}
+                                                label={row.visible ? 'Visible' : 'Masqué'}
+                                                chipcolor={row.visible ? 'success' : 'error'}
                                                 sx={{ borderRadius: '4px', textTransform: 'capitalize' }}
                                             />
                                         </TableCell>
                                         <TableCell align="center" sx={{ pr: 3 }}>
-                                            <IconButton
-                                                onClick={() => handleClickOpenDialogEdit(products[index])}
-                                                color="primary"
-                                                size="large"
-                                            >
+                                            <IconButton onClick={() => handleClickOpenDialogEdit(row)} color="primary" size="large">
                                                 <EditIcon sx={{ fontSize: '1.3rem' }} />
-                                            </IconButton>
-                                            <IconButton
-                                                onClick={() => handleClickOpenDialogEdit(products[index])}
-                                                color="secondary"
-                                                size="large"
-                                            >
-                                                <DeleteIcon sx={{ fontSize: '1.3rem' }} />
                                             </IconButton>
                                             <ProductEdit
                                                 open={openEdit}
                                                 data={infoEdit}
                                                 tags={tagsCompany}
+                                                sellerID={user.id}
                                                 handleCloseDialog={handleCloseDialogEdit}
+                                            />
+                                            <DeleteDialog
+                                                idProduct={row.id}
+                                                idSeller={user.id}
+                                                setRows={setRows}
+                                                products={products}
+                                                indexProducts={index}
+                                                handleCloseDialog={handleCloseDialogAdd}
                                             />
                                         </TableCell>
                                     </TableRow>
@@ -560,6 +559,8 @@ const Product = () => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
         </MainCard>
+    ) : (
+        <div>Chargement des produits</div>
     );
 };
 

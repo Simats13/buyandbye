@@ -13,6 +13,7 @@ import {
     DialogContent,
     DialogTitle,
     Fab,
+    FormControlLabel,
     Grid,
     Input,
     InputAdornment,
@@ -20,6 +21,7 @@ import {
     MenuItem,
     Select,
     Slide,
+    Switch,
     TextField,
     Typography
 } from '@mui/material';
@@ -34,6 +36,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import { Form, Formik, useFormik } from 'formik';
 import { dispatch } from 'store';
+import { editProducts } from 'store/slices/product';
+import { openSnackbar } from 'store/slices/snackbar';
 
 // styles
 const ImageWrapper = styled('div')(({ theme }) => ({
@@ -81,16 +85,17 @@ function getStyles(name, personName, theme) {
 
 // ==============================|| PRODUCT ADD DIALOG ||============================== //
 
-const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
+const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
     const theme = useTheme();
     // handle category change dropdown
-    const [currency, setCurrency] = useState('2');
+    const [category, setCategory] = useState('2');
 
     useEffect(() => {
-        setCurrency(data.category || []);
-    }, [data.category]);
+        setCategory(data.categorie || []);
+    }, [data.categorie]);
+
     const handleSelectChange = (event) => {
-        setCurrency(event?.target.value);
+        setCategory(event?.target.value);
     };
     // set image upload progress
     const [progress, setProgress] = useState(0);
@@ -133,23 +138,35 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
         productBrand: yup.string().required('Product brand is required'),
         productWeight: yup.number().required('Product weight is required')
     });
-
     const formik = useFormik({
         // validationSchema,
         initialValues: {
-            productName: data.name || '',
+            productName: data.nom || '',
             productDescription: data.description || '',
-            productCategory: currency || '',
+            productCategory: category || '',
             productReference: data.reference || 0,
-            productPrice: data.price || 0,
+            productPrice: data.prix || 0,
             productDiscount: data.discount || 0,
-            productQuantity: data.quantity || 0,
+            productQuantity: data.quantite || 0,
             productBrand: data.brand || '',
-            productWeight: data.weight || 0
+            productWeight: data.weight || 0,
+            productVisibility: data.visible || 0
         },
         enableReinitialize: true,
         onSubmit: () => {
-            console.log(formik.values);
+            dispatch(editProducts(sellerID, data.id, formik.values));
+            handleCloseDialog();
+            dispatch(
+                openSnackbar({
+                    open: true,
+                    message: 'Vos modifications ont été enregistrées avec succès',
+                    variant: 'alert',
+                    alert: {
+                        color: 'success'
+                    },
+                    close: false
+                })
+            );
         }
     });
 
@@ -179,8 +196,9 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
                             <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
                                 <Grid item xs={12}>
                                     <TextField
-                                        id="outlined-basic1"
+                                        id="productName"
                                         fullWidth
+                                        multiline
                                         label="Nom du Produit*"
                                         onChange={formik.handleChange}
                                         value={formik.values.productName}
@@ -216,6 +234,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
                                         id="outlined-basic3"
                                         fullWidth
                                         label="Reférence*"
+                                        multiline
                                         onChange={formik.handleChange}
                                         value={formik.values.productReference}
                                     />
@@ -225,7 +244,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
                                         label="Prix*"
                                         id="filled-start-adornment1"
                                         onChange={formik.handleChange}
-                                        value={formik.values.productPrice}
+                                        multiline
                                         defaultValue={formik.values.productPrice}
                                         InputProps={{ endAdornment: <InputAdornment position="start">€</InputAdornment> }}
                                     />
@@ -233,7 +252,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         label="Réduction"
-                                        id="filled-start-adornment2"
+                                        multiline
                                         onChange={formik.handleChange}
                                         defaultValue={formik.values.productDiscount}
                                         InputProps={{ endAdornment: <InputAdornment position="start">%</InputAdornment> }}
@@ -241,29 +260,43 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        multiline
                                         label="Quantité*"
-                                        id="quantity"
-                                        defaultValue={formik.values.productQuantity}
-                                        value={formik.values.productQuantity}
                                         onChange={formik.handleChange}
-                                        placeholder="0"
+                                        defaultValue={formik.values.productQuantity}
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        id="productBrand"
                                         label="Marque du produit*"
-                                        id="brand"
-                                        defaultValue={formik.values.productBrand}
+                                        multiline
                                         onChange={formik.handleChange}
+                                        defaultValue={formik.values.productBrand}
                                         placeholder="Ex : Apple"
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        id="weight"
+                                        multiline
                                         defaultValue={formik.values.productWeight}
                                         onChange={formik.handleChange}
                                         label="Poids"
                                         InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={formik.values.productVisibility}
+                                                id="productVisibility"
+                                                onChange={formik.handleChange}
+                                                error={formik.values.toString()}
+                                            />
+                                        }
+                                        label="Visibilité du produit"
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -311,7 +344,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags }) => {
                                 Fermer
                             </Button>
                             <AnimateButton>
-                                <Button variant="contained" type="submit">
+                                <Button variant="contained" type="submit" style={{ color: 'white' }}>
                                     Modifier
                                 </Button>
                             </AnimateButton>
