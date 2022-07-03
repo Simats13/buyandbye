@@ -172,7 +172,7 @@ const Chat = () => {
             type: 'text',
             timestamp: d
         };
-        // setData((prevState) => [...prevState, newMessage]);
+        setMessages((prevState) => [...prevState, newMessage]);
         dispatch(insertChat(newMessage, user.id + lastOpen));
     };
 
