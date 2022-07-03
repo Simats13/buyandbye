@@ -5,6 +5,7 @@ import 'package:buyandbye/theme/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:buyandbye/templates/widgets/cupertinoAppbar_pageDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/theme/colors.dart';
