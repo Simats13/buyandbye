@@ -59,6 +59,7 @@ export function getUsers(id) {
 export function getUserWithID(id) {
     return async () => {
         try {
+            console.log(id);
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${id}/`);
             dispatch(slice.actions.getUserSuccess(response.data));
         } catch (error) {

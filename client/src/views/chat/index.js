@@ -31,7 +31,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import Avatar from 'ui-component/extended/Avatar';
 import { appDrawerWidth as drawerWidth, gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
-import { getAllUserChats, getUsers, insertChat } from 'store/slices/chat';
+import { getAllUserChats, getUsers, insertChat, getUserWithID } from 'store/slices/chat';
 // assets
 import AttachmentTwoToneIcon from '@mui/icons-material/AttachmentTwoTone';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
@@ -43,7 +43,7 @@ import SendTwoToneIcon from '@mui/icons-material/SendTwoTone';
 import MoodTwoToneIcon from '@mui/icons-material/MoodTwoTone';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import useAuth from 'hooks/useAuth';
-import { useFirestoreDocumentData, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { useFirestoreDocument, useFirestoreDocumentData, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
 import { useQueries } from 'react-query';
 
 const avatarImage = require.context('assets/images/users', true);
@@ -85,11 +85,11 @@ const Chat = () => {
 
     const [messages, setMessages] = useState([]); // Message de la conversation]
 
-    const [lastOpen, setLastOpen] = useState([]);
+    const [lastOpen, setLastOpen] = useState('');
 
-    const { chats, users } = useSelector((state) => state.chat);
+    const [userInformations, setUserInformations] = useState([]); // Information sur l'utilisateur
 
-    const { userWithID } = useSelector((state) => state.user);
+    const { users } = useSelector((state) => state.chat);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -199,9 +199,43 @@ const Chat = () => {
     const handleCloseEmoji = () => {
         setAnchorElEmoji(null);
     };
+    const Header = ({ lastOpen }) => {
+        const refUsers = doc(db, 'users', lastOpen);
+        const queryInfos = useFirestoreDocumentData(['users', lastOpen], refUsers);
+
+        useEffect(() => {
+            if (queryInfos.isSuccess) {
+                setUserInformations(queryInfos.data);
+            }
+        }, [queryInfos, userInformations]);
+
+        return queryInfos.isSuccess ? (
+            <Grid item>
+                <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
+                    <Grid item>
+                        <Avatar alt={userInformations.fname + userInformations.lname} src={userInformations.imgUrl} />
+                    </Grid>
+                    <Grid item sm zeroMinWidth>
+                        <Grid container spacing={0} alignItems="center">
+                            <Grid item xs={12}>
+                                <Typography variant="h4" component="div">
+                                    {userInformations.fname} {userInformations.lname}
+                                    {userInformations.online_status && <AvatarStatus status={userInformations.online_status} />}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="subtitle2">Dernière connexion {data.lastMessage}</Typography>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        ) : (
+            <div>Chargement</div>
+        );
+    };
 
     if (!data) return <Typography>Chargement des messages...</Typography>;
-
     return queryClient.isSuccess ? (
         <Box sx={{ display: 'flex' }}>
             <ChatDrawer
@@ -229,28 +263,7 @@ const Chat = () => {
                                                 <MenuRoundedIcon />
                                             </IconButton>
                                         </Grid>
-                                        <Grid item>
-                                            <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
-                                                <Grid item>
-                                                    <Avatar alt={userData.fname + userData.lname} src={userData.imgUrl} />
-                                                </Grid>
-                                                <Grid item sm zeroMinWidth>
-                                                    <Grid container spacing={0} alignItems="center">
-                                                        <Grid item xs={12}>
-                                                            <Typography variant="h4" component="div">
-                                                                {userData.fname} {userData.lname}
-                                                                {userData.online_status && <AvatarStatus status={userData.online_status} />}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={12}>
-                                                            <Typography variant="subtitle2">
-                                                                Dernière connexion {data.lastMessage}
-                                                            </Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                </Grid>
-                                            </Grid>
-                                        </Grid>
+                                        {lastOpen ? <Header lastOpen={lastOpen} /> : <div>Chargement</div>}
                                         <Grid item sm zeroMinWidth />
                                         <Grid item>
                                             <IconButton onClick={handleClickSort} size="large">
