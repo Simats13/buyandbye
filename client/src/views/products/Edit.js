@@ -206,7 +206,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
-                                        id="outlined-basic2"
+                                        id="productDescription"
                                         fullWidth
                                         multiline
                                         rows={3}
@@ -217,7 +217,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
-                                        id="standard-select-currency"
+                                        id="productCategory"
                                         select
                                         label="Categorie du Produit*"
                                         value={formik.values.productCategory}
@@ -231,7 +231,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField
-                                        id="outlined-basic3"
+                                        id="productReference"
                                         fullWidth
                                         label="Reférence*"
                                         multiline
@@ -242,7 +242,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         label="Prix*"
-                                        id="filled-start-adornment1"
+                                        id="productPrice"
                                         onChange={formik.handleChange}
                                         multiline
                                         defaultValue={formik.values.productPrice}
@@ -252,6 +252,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         label="Réduction"
+                                        id="productDiscount"
                                         multiline
                                         onChange={formik.handleChange}
                                         defaultValue={formik.values.productDiscount}
@@ -260,6 +261,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        id="productQuantity"
                                         multiline
                                         label="Quantité*"
                                         onChange={formik.handleChange}
@@ -269,6 +271,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         id="productBrand"
+                                        name="productBrand"
                                         label="Marque du produit*"
                                         multiline
                                         onChange={formik.handleChange}
@@ -278,7 +281,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
-                                        id="weight"
+                                        id="productWeight"
                                         multiline
                                         defaultValue={formik.values.productWeight}
                                         onChange={formik.handleChange}

@@ -217,10 +217,6 @@ const Enterprise = () => {
         setValues(data.mainCategorie || []);
     }, [data.mainCategorie]);
 
-    // useEffect(() => {
-    //     set
-    // });
-
     const formik = useFormik({
         validationSchema,
         initialValues: {
@@ -234,13 +230,24 @@ const Enterprise = () => {
             clickAndCollect: data.ClickAndCollect || false,
             delivery: data.livraison || false,
             isPhoneVisible: data.isPhoneVisible || false,
-            tagsEnterprise: values || []
+            tagsEnterprise: values || [],
+            colorEnterprise: data.color || ''
         },
         enableReinitialize: true,
         onSubmit: () => {
             console.log(formik.values);
             dispatch(editEnterpriseInfo(user.id, formik.values));
-            dispatch(setEnterpriseUpdate(infoEnterprise));
+            dispatch(
+                openSnackbar({
+                    open: true,
+                    message: 'Vos modifications ont été enregistrées avec succès',
+                    variant: 'alert',
+                    alert: {
+                        color: 'success'
+                    },
+                    close: false
+                })
+            );
         }
     });
     return (

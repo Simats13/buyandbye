@@ -24,7 +24,7 @@ export default function DeleteDialog({ idProduct, idSeller, setRows, products, i
 
     const handleDelete = () => {
         dispatch(deleteProducts(idSeller, idProduct));
-        handleCloseDialog();
+        setOpen(false);
     };
 
     return (

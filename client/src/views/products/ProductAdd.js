@@ -155,7 +155,13 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
         productReference: yup.string().required('Veuillez mettre une référence à votre produit'),
         productQuantity: yup.number().required('Veuillez mettre une quantité à votre produit'),
         productBrand: yup.string().required('Veuillez renseigner la marque de votre produit'),
-        productWeight: yup.number().required('Veuillez mettre un poids à votre produit')
+        productWeight: yup.number().required('Veuillez mettre un poids à votre produit'),
+        productDiscount: yup
+            .number()
+            .required('Veuillez mettre un pourcentage de réduction à votre produit')
+            .min(0)
+            .max(100)
+            .typeError('Veuillez mettre un pourcentage entre 0 et 100 de réduction à votre produit')
     });
     const formik = useFormik({
         validationSchema,
@@ -172,11 +178,10 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
             productVisibility: false
         },
         enableReinitialize: true,
-        onSubmit: (resetForm) => {
+        onSubmit: () => {
             console.log(formik.values);
             dispatch(addProducts(sellerID, formik.values));
             handleCloseDialog();
-            resetForm();
             dispatch(
                 openSnackbar({
                     open: true,

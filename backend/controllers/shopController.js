@@ -221,6 +221,7 @@ const addProduct = async (req, res, next) => {
                 weight: data.productWeight,
                 discount: data.productDiscount,
                 visible: data.productVisibility,
+                brand: data.productBrand,
             });
             await firestore.collection('magasins').doc(id).update({
                 produits: adminFirebase.firestore.FieldValue.arrayUnion({
