@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/main.dart';
+import 'package:buyandbye/templates/widgets/splashscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

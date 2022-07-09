@@ -369,25 +369,12 @@ class DatabaseMethods {
       }
 
 
-
-  Future checkFavoriteShop() async {
-    final User user = await AuthMethods().getCurrentUser();
-    final userid = user.uid;
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").doc(userid).collection("liked").get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   Future checkFavoriteShopSeller(String? sellerID) async {
     final User user = await AuthMethods().getCurrentUser();
     final userID = user.uid;
 
     QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection("users").where("id", isEqualTo: userID).where("loved", arrayContains: sellerID).get();
+        await FirebaseFirestore.instance.collection("users").doc(userID).collection("loved").where("id", isEqualTo: sellerID).get();
     if (querySnapshot.docs.isEmpty) {
       return true;
     } else {

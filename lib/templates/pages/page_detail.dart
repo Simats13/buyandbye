@@ -330,7 +330,7 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
                   ),
                   onPressed: () async {
                     checkFavoriteShop =
-                        await DatabaseMethods().checkFavoriteShop();
+                        await DatabaseMethods().checkFavoriteShopSeller(widget.sellerID);
                     Navigator.pop(context);
                   },
                 ),
