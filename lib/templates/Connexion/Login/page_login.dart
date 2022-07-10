@@ -94,7 +94,8 @@ class _PageLoginState extends State<PageLogin> {
             children: [
               SafeArea(
                   child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+                icon:
+                    const Icon(Icons.arrow_back, color: Colors.black, size: 28),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -139,26 +140,15 @@ class _PageLoginState extends State<PageLogin> {
                           buttonType: ButtonType.facebook,
                           onPressed: () async {
                             try {
-                              await AuthMethods.instance
+                              bool facebookCheck = await AuthMethods.instance
                                   .signInWithFacebook(context);
-      
-                              bool checkEmail = await (AuthMethods.instance
-                                  .checkEmailVerification() as FutureOr<bool>);
-      
-                              if (checkEmail == false) {
-                                showMessage("Vérification du mail",
-                                    "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
-                                isCreated = true;
-                                await _preferences.setBool(
-                                    _keyCreatedUser, isCreated!);
-                                SharedPreferenceHelper()
-                                    .saveUserCreated(isCreated!);
-                              } else {
-                                isCreated = false;
-                                await _preferences.setBool(
-                                    _keyCreatedUser, isCreated!);
-                                SharedPreferenceHelper()
-                                    .saveUserCreated(isCreated!);
+                              if (facebookCheck == true) {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            const MainScreen()),
+                                    (Route<dynamic> route) => false);
                               }
                             } catch (e) {
                               if (e is FirebaseAuthException) {
@@ -182,9 +172,9 @@ class _PageLoginState extends State<PageLogin> {
                                 showMessage("Adresse mail non validé",
                                     "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                               } else {
-                                bool googleCheck =
-                                    await AuthMethods.instance.signInwithGoogle();
-      
+                                bool googleCheck = await AuthMethods.instance
+                                    .signInwithGoogle();
+
                                 if (googleCheck == true) {
                                   Navigator.pushAndRemoveUntil(
                                       context,
@@ -325,7 +315,8 @@ class _PageLoginState extends State<PageLogin> {
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (BuildContext context) => const MyApp()),
+                                    builder: (BuildContext context) =>
+                                        const MyApp()),
                                 (Route<dynamic> route) => false);
                           }).catchError((e) {
                             switch (e.code) {

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "731468105971-5fe2k8l8jn7j0hpsoau8ssgf2dch1ob9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.buyandbye.off",
+            "certificate_hash": "0fcc4bdb4c74ce0700e3d97353c13145a07afb3d"
+          }
+        },
+        {
           "client_id": "731468105971-damnslig57t4lq7qpp0q9jbb1g1i39nh.apps.googleusercontent.com",
           "client_type": 3
         }

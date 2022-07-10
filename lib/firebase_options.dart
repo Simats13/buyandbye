@@ -16,13 +16,25 @@ import 'package:flutter/foundation.dart'
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
+    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -40,7 +52,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAdXsD6kFwGBa1uCCrIZh5B_4T-XdE0A-c',
     appId: '1:731468105971:android:899ba317831e0f53034f86',
@@ -48,29 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'oficium-11bf9',
     databaseURL: 'https://oficium-11bf9-default-rtdb.firebaseio.com',
     storageBucket: 'oficium-11bf9.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA-E7xlrOZFut3UNJiXpSdSpm_dd0wk8EI',
-    appId: '1:731468105971:ios:0926886df1f95c37034f86',
-    messagingSenderId: '731468105971',
-    projectId: 'oficium-11bf9',
-    databaseURL: 'https://oficium-11bf9-default-rtdb.firebaseio.com',
-    storageBucket: 'oficium-11bf9.appspot.com',
-    androidClientId: '731468105971-60hi7vjunbdtgc4us2npdu5g6b1ubm56.apps.googleusercontent.com',
-    iosClientId: '731468105971-a46m5ndjt4603j3cd74tcl1f5f187ts0.apps.googleusercontent.com',
-    iosBundleId: 'com.buyandbye.off',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAZ6TCUCvhwZp-tZRApayX80_I9q0TnWxo',
-    appId: '1:731468105971:ios:cdb6202f9528fc86034f86',
-    messagingSenderId: '731468105971',
-    projectId: 'oficium-11bf9',
-    databaseURL: 'https://oficium-11bf9-default-rtdb.firebaseio.com',
-    storageBucket: 'oficium-11bf9.appspot.com',
-    androidClientId: '731468105971-60hi7vjunbdtgc4us2npdu5g6b1ubm56.apps.googleusercontent.com',
-    iosClientId: '731468105971-cklnqelbr6d48mth7cqpmnoitlqiml3i.apps.googleusercontent.com',
-    iosBundleId: 'com.buyandbye.buyandbye',
   );
 }
