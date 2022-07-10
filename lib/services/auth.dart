@@ -171,19 +171,20 @@ class AuthMethods {
 
           bool docExists = await (DatabaseMethods()
               .checkIfDocExists(userDetails.uid) as FutureOr<bool>);
-          const url = "https://api.stripe.com/v1/customers";
 
-          var secret =
-              'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
-
-          Map<String, String> headers = {
-            'Authorization': 'Bearer $secret',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          };
-          var response = await http.post(Uri.parse(url), headers: headers);
-          paymentIntentData = json.decode(response.body);
 
           if (docExists == false) {
+            const url = "https://api.stripe.com/v1/customers";
+
+            var secret =
+                'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+            Map<String, String> headers = {
+              'Authorization': 'Bearer $secret',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            };
+            var response = await http.post(Uri.parse(url), headers: headers);
+            paymentIntentData = json.decode(response.body);
             Map<String, dynamic> userInfoMap = {
               "id": userDetails.uid,
               "email": userDetails.email,

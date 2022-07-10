@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "731468105971-dhfgpj59c3jlpd83o08rb7mematnhnf9.apps.googleusercontent.com",
+          "client_id": "731468105971-1gs7ds3orodb4r1qaddblbjeag2mlofj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.buyandbye.off",
-            "certificate_hash": "5b4d495bd661dd4659d885c31c2922f10b99652d"
+            "certificate_hash": "0fcc4bdb4c74ce0700e3d97353c13145a07afb3d"
           }
         },
         {
@@ -29,7 +29,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDulLvB415_SqiQgFoKVvFlPmMRWwui1xA"
+          "current_key": "AIzaSyDY27Q-VmJrrobIkEVgBxLxIO13UczJQDA"
         }
       ],
       "services": {
@@ -43,7 +43,7 @@
               "client_id": "731468105971-4l2vi1a7gsp0sfav44g3ago61r2rp05q.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.oficihome.test"
+                "bundle_id": "com.buyandbye.off"
               }
             }
           ]
