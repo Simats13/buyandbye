@@ -45,6 +45,7 @@ class PlaceApiProvider {
   static const String iosKey = 'AIzaSyDdnevI_6sCr0LvfpC4y9_wevsSequKsdk';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
+
   Future<List<Suggestion>?> fetchSuggestions(String input, String lang) async {
     final request =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=address&language=$lang&components=country:fr&key=$apiKey&sessiontoken=$sessionToken';

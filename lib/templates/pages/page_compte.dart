@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:buyandbye/services/provider.dart';
+import 'package:buyandbye/templates/compte/mes_reservations.dart';
 import 'package:buyandbye/templates/pages/page_bienvenue.dart';
 import 'package:buyandbye/templates/pages/page_fidelite.dart';
+import 'package:buyandbye/theme/colors.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,7 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PageCompte extends StatefulWidget {
   const PageCompte({Key? key}) : super(key: key);
@@ -105,12 +108,12 @@ class _PageCompteState extends State<PageCompte> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            const Icon(Icons.redeem,
+                            const Icon(Icons.restaurant_menu,
                                 size: 35,
                                 color: BuyandByeAppTheme.orangeMiFonce),
                             const SizedBox(width: 40),
                             Text(
-                              'Compte Fidélité',
+                              'Mes Réservations',
                               style: kTitleTextStyle.copyWith(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15,
@@ -123,7 +126,7 @@ class _PageCompteState extends State<PageCompte> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PageFidelite(),
+                            builder: (context) => const MesReservations(),
                           ),
                         );
                       }),
@@ -168,13 +171,8 @@ class _PageCompteState extends State<PageCompte> {
                     thickness: 1,
                   ),
                   MaterialButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Help(true),
-                        ),
-                      );
+                    onPressed: () async {
+                      await launch("https://gestion.buyandbye.fr/contact");
                     },
                     child: Container(
                       height: 75,
@@ -316,43 +314,64 @@ class _PageCompteState extends State<PageCompte> {
             fit: BoxFit.contain,
           ),
         ),
-        child: Column(
+        child: Stack(
+          alignment: AlignmentDirectional.bottomStart,
           children: [
-            Container(
-              constraints: BoxConstraints(maxWidth: 299),
-              margin: EdgeInsets.fromLTRB(10, 25, 0, 0),
-              alignment: Alignment.centerLeft,
-              child: const Text("Points Obtenus",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w300,
-                  )),
+            Column(
+              children: [
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 299),
+                  margin: const EdgeInsets.fromLTRB(10, 25, 0, 0),
+                  alignment: Alignment.centerLeft,
+                  child: const Text("Points Obtenus",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300,
+                      )),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 299),
+                  margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  alignment: Alignment.centerLeft,
+                  child: const Text("180 pts",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                      )),
+                ),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 299),
+                  margin: const EdgeInsets.fromLTRB(0, 25, 10, 0),
+                  alignment: Alignment.bottomRight,
+                  child: Text("$fname $lname",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      )),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            Container(
-              constraints: BoxConstraints(maxWidth: 299),
-              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-              alignment: Alignment.centerLeft,
-              child: const Text("180 pts",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                  )),
-            ),
-            Container(
-              constraints: BoxConstraints(maxWidth: 299),
-              margin: EdgeInsets.fromLTRB(0, 25, 10, 0),
-              alignment: Alignment.bottomRight,
-              child: Text("$fname $lname",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  )),
+            Positioned(
+              right: 220,
+              top: 95,
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PageFidelite(),
+                    ),
+                  );
+                },
+                child: const Icon(LineAwesomeIcons.info_circle,
+                    size: 25, color: Colors.white),
+              ),
             ),
           ],
         ),

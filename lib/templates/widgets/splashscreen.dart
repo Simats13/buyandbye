@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
           // user not logged ==> Login Screen
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (_) => const PageLogin()),
+              MaterialPageRoute(builder: (_) => const PageBienvenue()),
               (route) => false);
         }
     });
