@@ -313,8 +313,6 @@ class _PageSearchState extends State<PageSearch> {
               },
             ),
             _searchTerm.text.isNotEmpty ? Container() : const CategoryStore(),
-          const Text("Counter :"),
-          const Count(),
           ],
         ),
       ),

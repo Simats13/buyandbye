@@ -53,6 +53,9 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(
+              height: 35,
+            ),
             Image.asset('assets/logo/logo.png'),
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation(Colors.white),
