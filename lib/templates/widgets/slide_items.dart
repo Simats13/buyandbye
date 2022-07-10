@@ -178,26 +178,6 @@ class _SlideItemState extends State<SlideItem> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Row(
-                          children: [
-                            for (String categorie in widget.mainCategorie)
-                              Card(
-                                shadowColor: Colors.grey.withOpacity(0.2),
-                                color: Colors.grey.withOpacity(0.2),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4.0)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(3.0),
-                                  child: Text(" $categorie "),
-                                ),
-                              )
-                          ],
-                        )),
-                  ),
                 ],
               ),
             ),

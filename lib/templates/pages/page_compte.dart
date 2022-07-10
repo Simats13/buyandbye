@@ -40,64 +40,93 @@ class _PageCompteState extends State<PageCompte> {
             lname = snapshot.data["lname"];
           }
           return Scaffold(
-              backgroundColor: BuyandByeAppTheme.white,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(50.0),
-                child: AppBar(
-                    title: RichText(
-                      text: const TextSpan(
-                        children: [
-                          TextSpan(
-                              text: 'Mon Compte',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: BuyandByeAppTheme.orangeMiFonce,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ],
-                      ),
+            backgroundColor: BuyandByeAppTheme.white,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(50.0),
+              child: AppBar(
+                  title: RichText(
+                    text: const TextSpan(
+                      children: [
+                        TextSpan(
+                            text: 'Mon Compte',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: BuyandByeAppTheme.orangeMiFonce,
+                              fontWeight: FontWeight.bold,
+                            )),
+                      ],
                     ),
-                    backgroundColor: BuyandByeAppTheme.white,
-                    automaticallyImplyLeading: false,
-                    elevation: 0.0,
-                    bottomOpacity: 0.0,
-                    actions: [
-                      SizedBox(
-                        height: 70,
-                        width: 70,
-                        child: MaterialButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const EditProfilePage(),
+                  ),
+                  backgroundColor: BuyandByeAppTheme.white,
+                  automaticallyImplyLeading: false,
+                  elevation: 0.0,
+                  bottomOpacity: 0.0,
+                  actions: [
+                    SizedBox(
+                      height: 70,
+                      width: 70,
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditProfilePage(),
+                            ),
+                          );
+                        },
+                        child: Stack(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                myProfilePicture ??
+                                    "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
                               ),
-                            );
-                          },
-                          child: Stack(
-                            children: <Widget>[
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: Image.network(
-                                  myProfilePicture ??
-                                      "https://cdn.iconscout.com/icon/free/png-256/account-avatar-profile-human-man-user-30448.png",
-                                ),
-                              )
-                            ],
-                          ),
+                            )
+                          ],
                         ),
                       ),
-                    ]),
-              ),
-              body: ListView(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(20),
-                children: <Widget>[
+                    ),
+                  ]),
+            ),
+            body: ListView(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              // padding: const EdgeInsets.all(20),
+              children: <Widget>[
+                            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PageFidelite(),
+                          ),
+                        );
+                    },
+                    child: Container(
+                      height: 24,
+                      width: 24,
+                      decoration:
+                          const BoxDecoration(shape: BoxShape.circle),
+                      child: const Icon(LineAwesomeIcons.info_circle,
+                          size: 25, color: BuyandByeAppTheme.orangeMiFonce),
+                    ),
+                  ),
+                ),
+              ],
+            ),
                   membershipCard(),
                   const SizedBox(
                     height: 10,
                   ),
+                              Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Column(
+                children: [
                   MaterialButton(
                       child: Container(
                         height: 75,
@@ -109,8 +138,7 @@ class _PageCompteState extends State<PageCompte> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             const Icon(Icons.restaurant_menu,
-                                size: 35,
-                                color: BuyandByeAppTheme.orangeMiFonce),
+                                size: 35, color: BuyandByeAppTheme.orangeMiFonce),
                             const SizedBox(width: 40),
                             Text(
                               'Mes Réservations',
@@ -213,8 +241,7 @@ class _PageCompteState extends State<PageCompte> {
                             actions: <Widget>[
                               TextButton(
                                 child: const Text("Annuler"),
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
+                                onPressed: () => Navigator.of(context).pop(false),
                               ),
                               TextButton(
                                 child: const Text("Déconnexion"),
@@ -253,20 +280,16 @@ class _PageCompteState extends State<PageCompte> {
                                       child: const Text('Déconnexion'),
                                       onPressed: () async {
                                         SharedPreferences preferences =
-                                            await SharedPreferences
-                                                .getInstance();
+                                            await SharedPreferences.getInstance();
                                         await preferences.clear();
                                         AuthMethods().signOut().then((s) {
                                           AuthMethods.toogleNavBar();
                                         });
-                                        Navigator.of(
-                                                context)
-                                            .pushAndRemoveUntil(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const PageBienvenue()),
-                                                (Route<dynamic> route) =>
-                                                    false);
+                                        Navigator.of(context).pushAndRemoveUntil(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const PageBienvenue()),
+                                            (Route<dynamic> route) => false);
                                       },
                                     )
                                   ],
@@ -297,7 +320,11 @@ class _PageCompteState extends State<PageCompte> {
                     ),
                   ),
                 ],
-              ));
+              ),
+            ),
+              ],
+            ),
+          );
         });
   }
 
@@ -314,64 +341,43 @@ class _PageCompteState extends State<PageCompte> {
             fit: BoxFit.contain,
           ),
         ),
-        child: Stack(
-          alignment: AlignmentDirectional.bottomStart,
+        child: Column(
           children: [
-            Column(
-              children: [
-                Container(
-                  constraints: const BoxConstraints(maxWidth: 299),
-                  margin: const EdgeInsets.fromLTRB(10, 25, 0, 0),
-                  alignment: Alignment.centerLeft,
-                  child: const Text("Points Obtenus",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300,
-                      )),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Container(
-                  constraints: const BoxConstraints(maxWidth: 299),
-                  margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  alignment: Alignment.centerLeft,
-                  child: const Text("180 pts",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      )),
-                ),
-                Container(
-                  constraints: const BoxConstraints(maxWidth: 299),
-                  margin: const EdgeInsets.fromLTRB(0, 25, 10, 0),
-                  alignment: Alignment.bottomRight,
-                  child: Text("$fname $lname",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      )),
-                ),
-              ],
+            Container(
+              constraints: const BoxConstraints(maxWidth: 299),
+              margin: const EdgeInsets.fromLTRB(15, 25, 0, 0),
+              alignment: Alignment.centerLeft,
+              child: const Text("Points Obtenus",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300,
+                  )),
             ),
-            Positioned(
-              right: 220,
-              top: 95,
-              child: MaterialButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PageFidelite(),
-                    ),
-                  );
-                },
-                child: const Icon(LineAwesomeIcons.info_circle,
-                    size: 25, color: Colors.white),
-              ),
+            const SizedBox(
+              height: 8,
+            ),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 299),
+              margin: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+              alignment: Alignment.centerLeft,
+              child: const Text("180 pts",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  )),
+            ),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 299),
+              margin: const EdgeInsets.fromLTRB(0, 20, 10, 0),
+              alignment: Alignment.bottomRight,
+              child: Text("$fname $lname",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  )),
             ),
           ],
         ),
