@@ -24,12 +24,12 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
-      case TargetPlatform.iOS:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
+          'DefaultFirebaseOptions have not been configured for android - '
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
+      case TargetPlatform.iOS:
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -52,12 +52,15 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAdXsD6kFwGBa1uCCrIZh5B_4T-XdE0A-c',
-    appId: '1:731468105971:android:899ba317831e0f53034f86',
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDqO05PRkcMGPtAhtarTIsvGQZ9-ZjRD1c',
+    appId: '1:731468105971:ios:0926886df1f95c37034f86',
     messagingSenderId: '731468105971',
     projectId: 'oficium-11bf9',
     databaseURL: 'https://oficium-11bf9-default-rtdb.firebaseio.com',
     storageBucket: 'oficium-11bf9.appspot.com',
+    androidClientId: '731468105971-5fe2k8l8jn7j0hpsoau8ssgf2dch1ob9.apps.googleusercontent.com',
+    iosClientId: '731468105971-a46m5ndjt4603j3cd74tcl1f5f187ts0.apps.googleusercontent.com',
+    iosBundleId: 'com.buyandbye.off',
   );
 }
