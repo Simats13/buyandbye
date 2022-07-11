@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:buyandbye/firebase_options.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Pages/page_first_connection.dart';
@@ -30,7 +31,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
