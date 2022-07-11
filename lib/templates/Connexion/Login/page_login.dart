@@ -141,7 +141,7 @@ class _PageLoginState extends State<PageLogin> {
                           onPressed: () async {
                             try {
                               bool facebookCheck = await AuthMethods.instance
-                                  .signInWithFacebook(context);
+                                  .signInWithFacebook();
                               if (facebookCheck == true) {
                                 Navigator.pushAndRemoveUntil(
                                     context,

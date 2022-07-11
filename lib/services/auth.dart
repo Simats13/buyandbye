@@ -154,9 +154,7 @@ class AuthMethods {
   }
 
   // Connexion via Facebook
-  Future signInWithFacebook(
-    BuildContext context,
-  ) async {
+  Future signInWithFacebook({Function? success, ValueChanged<String>? fail}) async {
     try {
       final LoginResult result = await FacebookAuth.instance.login();
 

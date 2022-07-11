@@ -67,11 +67,16 @@ class _UserAddressState extends State<UserAddress> {
     }
   }
 
-  String _textReplace(String str) {
+  String _textReplace(str) {
     str = str.replaceAll('Avenue', 'Av');
     str = str.replaceAll('Boulevard', 'Bd');
     str = str.replaceAll('Chemin', 'Ch');
     str = str.replaceAll('Impasse', 'Imp');
+    str = str.replaceAll('Place', 'Pl');
+    str = str.replaceAll('Square', 'Sq');
+    str = str.replaceAll('Traverse', 'Tr');
+    str = str.replaceAll('Quai', 'Q');
+    str = str.replaceAll('Route', 'Rte');
     return str;
   }
 
@@ -188,7 +193,7 @@ class _UserAddressState extends State<UserAddress> {
                       setState(() {
                         controller.text = result.description!;
                         streetNumber = placeDetails.streetNumber;
-                        street = placeDetails.street;
+                        street = _textReplace(placeDetails.street);
                         city = placeDetails.city;
                         zipCode = placeDetails.zipCode;
                       });
@@ -208,7 +213,7 @@ class _UserAddressState extends State<UserAddress> {
                               builder: (context) => PageAddressNext(
                                     lat: first.latitude,
                                     long: first.longitude,
-                                    adresse: result.description,
+                                    adresse: _textReplace(result.description),
                                   )));
                     }
                   },

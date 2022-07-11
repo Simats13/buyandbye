@@ -658,15 +658,15 @@ class DatabaseMethods {
       idProduit = i['id'];
     }
 
-    await FirebaseFirestore.instance.collection('commands').doc(idCommand).set({
-      "shop": idCommercant,
-      "buyer": userid,
-      "article": totalProduct.toInt(),
-      "date": DateTime.now(),
-    });
+    // await FirebaseFirestore.instance.collection('comonData').doc().collection('commands').doc(idCommand).set({
+    //   "shop": idCommercant,
+    //   "buyer": userid,
+    //   "article": totalProduct.toInt(),
+    //   "date": DateTime.now(),
+    // });
 
     //MET LES NOUVELLES INFORMATIONS DANS LA BDD DE L'UTILISATEUR
-    await FirebaseFirestore.instance.collection('users').doc(userid).collection("commands").doc(idCommand).set({
+    await FirebaseFirestore.instance.collection('commonData').doc(idCommercant! + userid).collection("commands").doc(idCommand).set({
       "articles": totalProduct.toInt(),
       "horodatage": DateTime.now(),
       "id": idCommand,
@@ -678,18 +678,18 @@ class DatabaseMethods {
       "shopID": idCommercant
     });
 
-    //MET LES NOUVELLES INFORMATIONS DANS LA BDD DU COMMERCANT
-    await FirebaseFirestore.instance.collection('magasins').doc(idCommercant).collection("commands").doc(idCommand).set({
-      "articles": totalProduct.toInt(),
-      "horodatage": DateTime.now(),
-      "id": idCommand,
-      "livraison": deliveryChoose.toInt(),
-      "prix": amount,
-      "statut": 0.toInt(),
-      "reference": ref["commandNb"].toInt(),
-      "adresse": userAdress,
-      "clientID": userid
-    });
+    // //MET LES NOUVELLES INFORMATIONS DANS LA BDD DU COMMERCANT
+    // await FirebaseFirestore.instance.collection('magasins').doc(idCommercant).collection("commands").doc(idCommand).set({
+    //   "articles": totalProduct.toInt(),
+    //   "horodatage": DateTime.now(),
+    //   "id": idCommand,
+    //   "livraison": deliveryChoose.toInt(),
+    //   "prix": amount,
+    //   "statut": 0.toInt(),
+    //   "reference": ref["commandNb"].toInt(),
+    //   "adresse": userAdress,
+    //   "clientID": userid
+    // });
 
     //UPDATE LA TABLE MAGASIN, INCREMENTE LE NOMBRE DE COMMANDES
     await FirebaseFirestore.instance.collection('magasins').doc(idCommercant).update({"commandNb": ref["commandNb"] + 1});

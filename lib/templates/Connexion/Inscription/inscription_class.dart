@@ -117,43 +117,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 20),
                 // Sélection du type d'utilisateur
-                Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                  ToggleButtons(
-                    color: Colors.black.withOpacity(0.60),
-                    selectedColor: const Color(0xFF6200EE),
-                    selectedBorderColor: const Color(0xFF6200EE),
-                    fillColor: const Color(0xFF6200EE).withOpacity(0.08),
-                    splashColor: const Color(0xFF6200EE).withOpacity(0.12),
-                    hoverColor: const Color(0xFF6200EE).withOpacity(0.04),
-                    borderRadius: BorderRadius.circular(4.0),
-                    constraints: const BoxConstraints(minHeight: 36.0),
-                    isSelected: userType,
-                    onPressed: (index) {
-                      // Respond to button selection
-                      setState(() {
-                        for (int buttonIndex = 0;
-                            buttonIndex < userType.length;
-                            buttonIndex++) {
-                          if (buttonIndex == index) {
-                            userType[buttonIndex] = true;
-                          } else {
-                            userType[buttonIndex] = false;
-                          }
-                        }
-                      });
-                    },
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text('Client'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text('Commerçant'),
-                      ),
-                    ],
-                  )
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ToggleButtons(
+                        color: Colors.black.withOpacity(0.60),
+                        selectedColor: const Color(0xFF6200EE),
+                        selectedBorderColor: const Color(0xFF6200EE),
+                        fillColor: const Color(0xFF6200EE).withOpacity(0.08),
+                        splashColor: const Color(0xFF6200EE).withOpacity(0.12),
+                        hoverColor: const Color(0xFF6200EE).withOpacity(0.04),
+                        borderRadius: BorderRadius.circular(4.0),
+                        constraints: const BoxConstraints(minHeight: 36.0),
+                        isSelected: userType,
+                        onPressed: (index) {
+                          // Respond to button selection
+                          setState(() {
+                            for (int buttonIndex = 0;
+                                buttonIndex < userType.length;
+                                buttonIndex++) {
+                              if (buttonIndex == index) {
+                                userType[buttonIndex] = true;
+                              } else {
+                                userType[buttonIndex] = false;
+                              }
+                            }
+                          });
+                        },
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('Client'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('Commerçant'),
+                          ),
+                        ],
+                      )
+                    ]),
                 // Partie inscription
                 // Masquée si aucun des types d'utilisateur n'est sélectionné
                 Visibility(
@@ -172,7 +174,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ? SignInButton.mini(
                                       buttonType: ButtonType.apple,
                                       onPressed: () async {
-                                        dynamic user = await AuthMethods.instance
+                                        dynamic user = await AuthMethods
+                                            .instance
                                             .signInWithApple(context);
                                         if (user != null) {
                                           Navigator.pushAndRemoveUntil(
@@ -189,28 +192,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   buttonType: ButtonType.facebook,
                                   onPressed: () async {
                                     try {
-                                      await AuthMethods.instance
-                                          .signInWithFacebook(context);
-      
-                                      bool checkEmail = await (AuthMethods
-                                              .instance
-                                              .checkEmailVerification()
-                                          as FutureOr<bool>);
-      
-                                      if (checkEmail == false) {
-                                        showMessage("Vérification du mail",
-                                            "Votre adresse mail n'est pas vérifiée, veuillez la vérifier en cliquant sur le mail qui vous a été envoyé.");
-                                        isCreated = true;
-                                        await _preferences.setBool(
-                                            _keyCreatedUser, isCreated!);
-                                        SharedPreferenceHelper()
-                                            .saveUserCreated(isCreated!);
-                                      } else {
-                                        isCreated = false;
-                                        await _preferences.setBool(
-                                            _keyCreatedUser, isCreated!);
-                                        SharedPreferenceHelper()
-                                            .saveUserCreated(isCreated!);
+
+                                      bool googleCheck = await AuthMethods.instance
+                                          .signInWithFacebook();
+
+                                      if (googleCheck == true) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const MyApp(),
+                                          ),
+                                        );
                                       }
                                     } catch (e) {
                                       if (e is FirebaseAuthException) {
@@ -238,12 +230,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         bool googleCheck = await AuthMethods
                                             .instance
                                             .signInwithGoogle();
-      
+
                                         if (googleCheck == true) {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => const MyApp(),
+                                              builder: (context) =>
+                                                  const MyApp(),
                                             ),
                                           );
                                         }
@@ -329,15 +322,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   icon: Text(
                                     "@",
                                     style: TextStyle(
-                                        color:
-                                            BuyandByeAppTheme.kLightPrimaryColor,
+                                        color: BuyandByeAppTheme
+                                            .kLightPrimaryColor,
                                         fontSize: 24,
                                         fontWeight: FontWeight.w700),
                                   )),
                               onSaved: (input) => _email = input,
                             ),
                             // Champ MOT DE PASSE
-      
+
                             TextFormField(
                               // ignore: missing_return
                               validator: (input) {

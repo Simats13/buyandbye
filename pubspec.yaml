@@ -48,7 +48,7 @@ dependencies:
   theme_provider:
   get:
   google_maps_flutter:
-  sign_in_with_apple: ^3.2.0
+  sign_in_with_apple:
   flutter_local_notifications:
   geolocator:
   clippy_flutter: ^2.0.0-nullsafety.1
