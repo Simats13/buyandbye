@@ -176,7 +176,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       onPressed: () async {
                                         dynamic user = await AuthMethods
                                             .instance
-                                            .signInWithApple(context);
+                                            .signInWithApple();
                                         if (user != null) {
                                           Navigator.pushAndRemoveUntil(
                                               context,

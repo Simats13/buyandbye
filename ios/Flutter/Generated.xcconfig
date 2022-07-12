@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/hugo/Documents/flutter
-FLUTTER_APPLICATION_PATH=/Users/hugo/Documents/buyandbye
+FLUTTER_ROOT=/Volumes/Externe/flutter
+FLUTTER_APPLICATION_PATH=/Volumes/Externe/buyandbye
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_TARGET=/Volumes/Externe/buyandbye/lib/main.dart
 FLUTTER_BUILD_DIR=build
@@ -9,6 +9,6 @@ FLUTTER_BUILD_NUMBER=1
 EXCLUDED_ARCHS[sdk=iphonesimulator*]=i386 arm64
 DART_DEFINES=RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ==
 DART_OBFUSCATION=false
-TRACK_WIDGET_CREATION=false
-TREE_SHAKE_ICONS=true
-PACKAGE_CONFIG=/Users/hugo/Documents/buyandbye/.dart_tool/package_config.json
+TRACK_WIDGET_CREATION=true
+TREE_SHAKE_ICONS=false
+PACKAGE_CONFIG=/Volumes/Externe/buyandbye/.dart_tool/package_config.json

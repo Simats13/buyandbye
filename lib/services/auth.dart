@@ -154,7 +154,8 @@ class AuthMethods {
   }
 
   // Connexion via Facebook
-  Future signInWithFacebook({Function? success, ValueChanged<String>? fail}) async {
+  Future signInWithFacebook(
+      {Function? success, ValueChanged<String>? fail}) async {
     try {
       final LoginResult result = await FacebookAuth.instance.login();
 
@@ -257,7 +258,7 @@ class AuthMethods {
 
   // Connexion via Apple
   // ignore: missing_return
-  Future signInWithApple(context) async {
+  Future signInWithApple() async {
     final rawNonce = generateNonce();
     final nonce = sha256ofString(rawNonce);
     try {
@@ -331,9 +332,8 @@ class AuthMethods {
               .update({
             "providers.Apple": true, //Facebook
           });
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => const MyApp()));
         }
+        return true;
       }
 
       return firebaseUser;
@@ -594,7 +594,10 @@ class AuthMethods {
         'FCMToken': token,
       });
     } else {
-      await FirebaseFirestore.instance.collection('magasins').doc(userID).update({
+      await FirebaseFirestore.instance
+          .collection('magasins')
+          .doc(userID)
+          .update({
         'FCMToken': token,
       });
     }

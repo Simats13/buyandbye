@@ -124,14 +124,14 @@ class _PageLoginState extends State<PageLogin> {
                           ? SignInButton.mini(
                               buttonType: ButtonType.apple,
                               onPressed: () async {
-                                dynamic user = await AuthMethods.instance
-                                    .signInWithApple(context);
-                                if (user != null) {
+                                bool appleCheck = await AuthMethods.instance
+                                    .signInWithApple();
+                                if (appleCheck == true) {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
                                           builder: (BuildContext context) =>
-                                              const Accueil()),
+                                              const MainScreen()),
                                       (Route<dynamic> route) => false);
                                 }
                               })
