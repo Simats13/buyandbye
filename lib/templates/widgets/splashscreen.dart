@@ -1,7 +1,7 @@
 import 'dart:async';
-
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/services/provider.dart';
+import 'package:buyandbye/services/sellers_provider.dart';
 import 'package:buyandbye/templates/Connexion/Login/page_login.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/pages/page_bienvenue.dart';
@@ -10,6 +10,7 @@ import 'package:buyandbye/templates_commercant/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -87,53 +88,59 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: AuthMethods().getCurrentUser(),
+        future: ProviderUserId().returnUser(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           // Si l'utilisateur existe et que son uid n'est pas nul
           if (snapshot.hasData && snapshot.data.uid != null) {
             // Si l'id n'existe pas dans la collection users, on vérifie dans celle des magasins
             checkIfDocumentExists(snapshot.data.uid);
             if (docExists == true) {
-              return StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(snapshot.data.uid)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    final user = snapshot.data;
-                    if (user!['emailVerified'] == false) {
-                      return const PageLogin();
-                    } else if (user['firstConnection'] == true) {
-                      return const PageFirstConnection();
-                    } else {
-                      return const Accueil();
-                    }
-                  } else {
-                    return const PageLogin();
-                  }
-                },
-              );
-              // Recherche de l'id dans la table magasins
-            } else {
-              return StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("magasins")
-                      .doc(snapshot.data.uid)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+              return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider(create: (_) => ProviderUserId()),
+                  ChangeNotifierProvider(create: (_) => ProviderUserInfo()),
+                  ChangeNotifierProvider(create: (_) => ProviderGetOrders()),
+                  ChangeNotifierProvider(create: (_) => ProviderGetAddresses()),
+                ],
+                child: StreamBuilder<DocumentSnapshot>(
+                  stream: ProviderUserInfo().returnData(),
+                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
-                      if (snapshot.data!['emailVerified'] == true) {
-                        return const NavBar();
-                      } else {
+                      final user = snapshot.data;
+                      if (user!['emailVerified'] == false) {
                         return const PageLogin();
+                      } else if (user['firstConnection'] == true) {
+                        return const PageFirstConnection();
+                      } else {
+                        return const Accueil();
                       }
                     } else {
                       return const PageLogin();
                     }
-                  });
+                  },
+                ),
+              );
+              // Recherche de l'id dans la table magasins
+            } else {
+              return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider(create: (_) => ProviderSellerId()),
+                  ChangeNotifierProvider(create: (_) => ProviderSellerInfo()),
+                ],
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: ProviderSellerInfo().returnData(),
+                    builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data!['emailVerified'] == true) {
+                          return const NavBar();
+                        } else {
+                          return const PageLogin();
+                        }
+                      } else {
+                        return const PageLogin();
+                      }
+                    }),
+              );
             }
             // Si l'utilisateur n'existe pas ou que son uid est nul
           } else {
