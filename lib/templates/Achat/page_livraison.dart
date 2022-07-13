@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Achat/page_resume.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/page_address_edit.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -66,7 +66,7 @@ class _PageLivraisonState extends State<PageLivraison> {
   }
 
   userID() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     userName = "${querySnapshot.docs[0]["fname"]} ${querySnapshot.docs[0]["lname"]}";
