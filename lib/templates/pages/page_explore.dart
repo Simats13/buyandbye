@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Pages/page_detail.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
@@ -96,7 +95,7 @@ class _PageExploreState extends State<PageExplore> {
 
   userID() async {
     label = await SharedPreferenceHelper().getLabelSliderUser() ?? "";
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     var userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getChosenAddress(userid);
