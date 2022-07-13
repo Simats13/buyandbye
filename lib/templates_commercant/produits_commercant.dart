@@ -1,5 +1,5 @@
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates_commercant/detail_produit.dart';
 import 'package:buyandbye/templates_commercant/new_product.dart';
@@ -33,7 +33,7 @@ class _ProductsState extends State<Products> {
 
   // Récupère les informations de l'utilisateur courant dans la bdd
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     return user.uid;
   }
 
