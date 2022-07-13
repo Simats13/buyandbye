@@ -1,14 +1,6 @@
 import 'dart:async';
-
-import 'package:buyandbye/firebase_options.dart';
-import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/services/provider.dart';
-import 'package:buyandbye/templates/Pages/page_first_connection.dart';
 import 'package:buyandbye/templates/pages/page_accueil.dart';
-import 'package:buyandbye/templates/pages/page_bienvenue.dart';
 import 'package:buyandbye/templates/widgets/splashscreen.dart';
-import 'package:buyandbye/templates_commercant/nav_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,7 +10,6 @@ import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/templates/Connexion/Login/page_login.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/widgets/notification_controllers.dart';
-import 'package:provider/provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
@@ -37,16 +28,7 @@ void main() async {
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     badge: true,
   );
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => UserId()),
-      ChangeNotifierProvider(create: (_) => TestProvider()),
-      ChangeNotifierProvider(create: (_) => ProviderUserInfo()),
-      ChangeNotifierProvider(create: (_) => ProviderGetOrders()),
-      ChangeNotifierProvider(create: (_) => ProviderGetAddresses()),
-    ],
-    child: const MyApp(),
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
