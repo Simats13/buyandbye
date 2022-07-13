@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -32,7 +32,7 @@ class _PageMessagerieState extends State<PageMessagerie>
   }
 
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     myID = userid;
     myUserName = user.displayName;
@@ -168,7 +168,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   String? profilePicUrl, name, token, userid, myThumbnail, chatRoomId;
 
   getThisUserInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     var querySnapshot = await DatabaseMethods().getMagasinInfo(widget.sellerID);
     name = "${querySnapshot.docs[0]["name"]}";
@@ -178,7 +178,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   }
 
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     myThumbnail = "${querySnapshot.docs[0]["imgUrl"]}";
