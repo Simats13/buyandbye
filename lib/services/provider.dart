@@ -1,4 +1,3 @@
-import 'package:buyandbye/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -32,18 +31,22 @@ class Count extends StatelessWidget {
 }
 
 // Récupère l'identifiant de l'utiisateur connecté et le renvoie
-class UserId with ChangeNotifier, DiagnosticableTreeMixin {
+class ProviderUserId with ChangeNotifier, DiagnosticableTreeMixin {
   final User? _user = FirebaseAuth.instance.currentUser;
   User? get userId => _user;
 
   returnData() {
     return _user?.uid;
   }
+
+  returnUser() async {
+    return _user;
+  }
 }
 
 // Récupère les infos de l'utilisateur et les affiche
 class ProviderUserInfo with ChangeNotifier, DiagnosticableTreeMixin {
-  final Stream _userInfo = FirebaseFirestore.instance.collection('users').doc(UserId().returnData()).snapshots();
+  final Stream _userInfo = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).snapshots();
   Stream get userInfo => _userInfo;
 
   dynamic returnData() {
@@ -70,7 +73,7 @@ class ProviderGetFAQ with ChangeNotifier, DiagnosticableTreeMixin {
 
 // Récupère les commandes de l'utilisateur et les affiche
 class ProviderGetOrders with ChangeNotifier, DiagnosticableTreeMixin {
-  final Future _orders = FirebaseFirestore.instance.collection('commonData').where('users', arrayContains: UserId().returnData()).get();
+  final Future _orders = FirebaseFirestore.instance.collection('commonData').where('users', arrayContains: ProviderUserId().returnData()).get();
   Future get orders => _orders;
 
   Future returnData() {
@@ -80,10 +83,19 @@ class ProviderGetOrders with ChangeNotifier, DiagnosticableTreeMixin {
 
 // Récupère les adresses de l'utilisateur et les affiche
 class ProviderGetAddresses with ChangeNotifier, DiagnosticableTreeMixin {
-  final Stream _addresses = FirebaseFirestore.instance.collection('users').doc(UserId().returnData()).collection('Address').snapshots();
+  final Stream _addresses = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).collection('Address').snapshots();
   Stream get addresses => _addresses;
 
   Stream returnData() {
     return _addresses;
+  }
+}
+
+class ProviderGetCart with ChangeNotifier, DiagnosticableTreeMixin {
+  final Future _cart = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).collection('cart').get();
+  Future get cart => _cart;
+
+  Future returnData() {
+    return _cart;
   }
 }
