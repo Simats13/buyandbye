@@ -1,11 +1,11 @@
 // ignore_for_file: file_names
 
+import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
-import 'package:buyandbye/services/auth.dart';
 import 'package:shimmer/shimmer.dart';
 
 class EditProfileComPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _EditProfileComPageState extends State<EditProfileComPage> {
   }
 
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getMagasinInfo(userid);
