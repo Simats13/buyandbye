@@ -1,11 +1,9 @@
 import 'dart:io';
-
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
-import 'package:buyandbye/theme/colors.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,7 +41,7 @@ class _UserAddressState extends State<UserAddress> {
       currentLocationLongitude = 0;
 
   LocationData? _locationData;
-  Location location = new Location();
+  Location location = Location();
   bool permissionChecked = false;
   bool chargementChecked = false;
 
@@ -137,7 +135,7 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   getCoordinates() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getChosenAddress(userid);
