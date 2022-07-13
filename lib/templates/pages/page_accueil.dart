@@ -13,13 +13,12 @@ import 'package:geocoding/geocoding.dart' as geocoder;
 
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
 import 'package:buyandbye/templates/pages/page_detail.dart';
 import 'package:buyandbye/theme/colors.dart';
 import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:buyandbye/theme/styles.dart';
 import 'package:buyandbye/services/database.dart';
@@ -33,7 +32,6 @@ class PageAccueil extends StatefulWidget {
 }
 
 class _PageAccueilState extends State<PageAccueil> {
-  late LocationData _locationData;
   Location location = Location();
   late bool permissionChecked;
   bool chargementChecked = false;
@@ -115,7 +113,7 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   getCoordinates() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getChosenAddress(userid);
@@ -147,7 +145,7 @@ class _PageAccueilState extends State<PageAccueil> {
 
   String? username;
   userinfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
     username = "${appBarUser.docs[0]['fname']} 👋";
