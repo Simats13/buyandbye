@@ -2,12 +2,12 @@
 
 import 'dart:async';
 
+import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
-import 'package:buyandbye/services/auth.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseMethods {
@@ -22,16 +22,12 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance.collection("users").where("id", isEqualTo: userid).get();
   }
 
-  Stream getMyInfo2(userId) {
-    return FirebaseFirestore.instance.collection("users").doc(userId).snapshots();
-  }
-
   Future deleteUser(String userID, customerID) async {
     return await FirebaseFirestore.instance.collection("users").doc(userID).delete();
   }
 
   Future deleteAddress(String? idDoc) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot _myDoc = await FirebaseFirestore.instance.collection("users").doc(userid).collection("Address").get();
     List<DocumentSnapshot> _myDocCount = _myDoc.docs;
@@ -161,7 +157,7 @@ class DatabaseMethods {
 
   Future getUsers() async {
     //List usersList = [];
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
 
     await FirebaseFirestore.instance.collection("users").doc(userid).get();
@@ -273,7 +269,7 @@ class DatabaseMethods {
   }
 
   Future<QuerySnapshot> getCart() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").doc(userid).collection("cart").get();
 
@@ -281,7 +277,7 @@ class DatabaseMethods {
   }
 
   Future<QuerySnapshot> getCartProducts(String? sellerID) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection("users").doc(userid).collection("cart").doc(sellerID).collection('products').get();
@@ -290,7 +286,7 @@ class DatabaseMethods {
   }
 
   Future checkCartEmpty() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").doc(userid).collection("cart").get();
 
@@ -320,7 +316,7 @@ class DatabaseMethods {
   }
 
   Future checkCartProductEmpty(sellerID) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection("users").doc(userid).collection("cart").doc(sellerID).collection('products').get();
@@ -370,7 +366,7 @@ class DatabaseMethods {
 
 
   Future checkFavoriteShopSeller(String? sellerID) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userID = user.uid;
 
     QuerySnapshot querySnapshot =
@@ -390,7 +386,7 @@ class DatabaseMethods {
  */
 
   Future addCart(String? nomProduit, num? prixProduit, String imgProduit, int amount, String? idCommercant, String? idProduit) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     bool checkEmpty = await DatabaseMethods().checkCartEmpty();
 
@@ -408,7 +404,7 @@ class DatabaseMethods {
       });
       return true;
     } else {
-      var docId = await FirebaseFirestore.instance.collection('users').doc(userid).collection('cart').get();
+      var docId = await ProviderGetCart().returnData();
       QueryDocumentSnapshot doc = docId.docs[0];
       DocumentReference docRef = doc.reference;
 
@@ -429,7 +425,7 @@ class DatabaseMethods {
   }
 
   // Future countCart() async {
-  //   final User user = await AuthMethods().getCurrentUser();
+  //   final User user = await ProviderUserId().returnUser();
   //   final userid = user.uid;
   //   QuerySnapshot _myDoc = await FirebaseFirestore.instance
   //       .collection("users")
@@ -442,7 +438,7 @@ class DatabaseMethods {
 
   Future addAdresses(
       String? buildingDetails, String? buildingName, String? familyName, String? adressTitle, double? longitude, double? latitude, String? address) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     String iD = const Uuid().v4();
 
@@ -488,7 +484,7 @@ class DatabaseMethods {
     String? address,
     String? id,
   ) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance.collection('users').doc(userid).collection('Address').doc(id).update({
       'addressName': adressTitle,
@@ -502,7 +498,7 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getAllAddress() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return FirebaseFirestore.instance.collection("users").doc(userid).collection("Address").snapshots();
   }
@@ -601,7 +597,7 @@ class DatabaseMethods {
   }
 
   Future deleteCartProduct(String nomProduit, sellerID) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     await FirebaseFirestore.instance.collection('users').doc(userid).collection('cart').doc(sellerID).collection('products').doc(nomProduit).delete();
     bool checkEmpty = await DatabaseMethods().checkCartProductEmpty(sellerID);
@@ -612,7 +608,7 @@ class DatabaseMethods {
   }
 
   Future deleteCart(String? sellerID) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     var querySnapshots = await FirebaseFirestore.instance.collection('users').doc(userid).collection('cart').doc(sellerID).collection('products').get();
     for (var doc in querySnapshots.docs) {
@@ -623,13 +619,13 @@ class DatabaseMethods {
   }
 
   Future moneyCart(num prixProduit) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance.collection('users').doc(userid).collection('cart').where("prixProduit", isEqualTo: prixProduit).get();
   }
 
   Future allCartMoney(String? idCommercant) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance
         .collection('users')
@@ -644,7 +640,7 @@ class DatabaseMethods {
   Future acceptPayment(String? idCommercant, double deliveryChoose, double? amount, String? userAdress, String idCommand) async {
     int totalProduct = 0;
     String idProduit = "";
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
 
     //RECUPERE LA REFERENCE DANS LE DOCUMENT DU MAGASIN
@@ -714,25 +710,25 @@ class DatabaseMethods {
   }
 
   Future accountpremium() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance.collection('magasins').doc(userid).update({"premium": true});
   }
 
   Future accountfree() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance.collection('magasins').doc(userid).update({"premium": false});
   }
 
   Future badgeStream() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return FirebaseFirestore.instance.collection('users').doc(userid).collection('chatlist').doc(userid).snapshots();
   }
 
   Future colorMyStore(String myColorChoice, String myColorChoiceName) async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance.collection('magasins').doc(userid).update({"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
   }
