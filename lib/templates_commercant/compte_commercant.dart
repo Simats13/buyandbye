@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/pages/page_bienvenue.dart';
 import 'package:buyandbye/templates_commercant/membership_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,7 +33,7 @@ class _CompteCommercantState extends State<CompteCommercant> {
   }
 
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
 
     setState(() {});
