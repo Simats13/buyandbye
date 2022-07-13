@@ -8,7 +8,6 @@ import 'package:buyandbye/templates/Pages/page_address_edit.dart';
 import 'package:buyandbye/templates/Pages/page_address_next.dart';
 import 'package:buyandbye/templates/Connexion/Login/page_login.dart';
 import 'package:buyandbye/templates/Pages/place_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -385,7 +384,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             const SizedBox(height: 20),
                             const Divider(thickness: 0.5, color: Colors.black),
                             const Text("Méthode de connexion"),
-                            facebook == "true"
+                            facebook == true
                                 ? Row(
                                     children: [
                                       SignInButton(
@@ -469,7 +468,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           })
                                     ],
                                   ),
-                            mail == "true"
+                            mail == true
                                 ? Row(
                                     children: [
                                       SignInButton(
@@ -514,7 +513,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           })
                                     ],
                                   ),
-                            apple == "true"
+                            apple == true
                                 ? Row(
                                     children: [
                                       SignInButton(
@@ -1070,7 +1069,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     }),
                                                   );
                                                   paymentIntentData = json.decode(response.body.toString());
-                                                  User user = await AuthMethods.instance.getCurrentUser();
+                                                  User user = await ProviderUserId().returnUser();
 
                                                   user.delete();
                                                   await DatabaseMethods.instance.deleteUser(user.uid, customerID);
@@ -1111,7 +1110,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   style: TextStyle(color: Colors.red),
                                                 ),
                                                 onPressed: () async {
-                                                  User user = await AuthMethods.instance.getCurrentUser();
+                                                  User user = await ProviderUserId().returnUser();
 
                                                   user.delete();
                                                   await DatabaseMethods.instance.deleteUser(user.uid, customerID);
