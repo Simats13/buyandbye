@@ -1,8 +1,8 @@
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 
 // Retourne la liste des catégories où le commerçant a entré au moins un produit
@@ -40,7 +40,7 @@ class _AccueilCommercantState extends State<AccueilCommercant> {
 
   // Récupère les informations de l'utilisateur courant dans la bdd
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getMagasinInfo(userid);
