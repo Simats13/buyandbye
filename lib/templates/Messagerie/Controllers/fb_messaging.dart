@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Messagerie/Model/const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -58,7 +58,7 @@ class NotificationController {
   }
 
   Future<void> updateTokenToServer() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
