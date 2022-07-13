@@ -1,3 +1,4 @@
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/fb_messaging.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/image_controller.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/utils.dart';
@@ -8,7 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Widgets/loader.dart';
 
@@ -33,7 +33,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
   }
 
   getMyInfoFromSharedPreference() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     myID = userid;
     myName = user.displayName;
@@ -131,7 +131,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
   bool isActive = false;
   getThisUserInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     QuerySnapshot querySnapshot2 = await DatabaseMethods().getMagasinInfo(userid);
     myProfilePicUrl = "${querySnapshot2.docs[0]["imgUrl"]}";
