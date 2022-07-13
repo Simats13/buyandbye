@@ -1,4 +1,4 @@
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Achat/page_livraison.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
@@ -39,7 +39,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
     QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
     customerID = "${querySnapshot.docs[0]["customerId"]}";
