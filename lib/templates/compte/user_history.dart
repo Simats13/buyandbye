@@ -15,7 +15,7 @@ class UserHistory extends StatefulWidget {
 }
 
 class _UserHistoryState extends State<UserHistory> {
-  String userid = UserId().returnData();
+  String userid = ProviderUserId().returnData();
 
   @override
   Widget build(BuildContext context) {
