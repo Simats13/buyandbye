@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:buyandbye/services/auth.dart';
 import 'package:buyandbye/services/database.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/common_widgets.dart';
 import 'package:buyandbye/templates/Pages/page_address_edit.dart';
 import 'package:buyandbye/templates/Pages/page_address_next.dart';
@@ -37,7 +37,7 @@ class _PageFirstConnectionState extends State<PageFirstConnection> {
 
   final formKey = GlobalKey<FormState>();
   userId() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
   }
 
