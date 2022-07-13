@@ -1,4 +1,4 @@
-import 'package:buyandbye/services/auth.dart';
+import 'package:buyandbye/services/provider.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/page_detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,7 +39,7 @@ class _PageCategorieState extends State<PageCategorie> {
   }
 
   getUserInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     var userid = user.uid;
     QuerySnapshot querySnapshot =
         await DatabaseMethods().getChosenAddress(userid);
