@@ -1,7 +1,7 @@
+import 'package:buyandbye/services/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
-import 'package:buyandbye/services/auth.dart';
 
 class MembershipStore extends StatefulWidget {
   const MembershipStore({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class _MembershipStore extends State<MembershipStore> {
   }
 
   getMyInfo() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     userid = user.uid;
 
     setState(() {});
