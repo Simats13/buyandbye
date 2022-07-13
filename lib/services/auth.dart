@@ -1,8 +1,7 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:buyandbye/services/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,7 +10,6 @@ import 'package:firebase_messaging/firebase_messaging.dart' as messasing;
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:buyandbye/main.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:crypto/crypto.dart';
 
@@ -23,11 +21,6 @@ class AuthMethods {
   static late Function toogleNavBar;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-
-  //get current user
-  getCurrentUser() async {
-    return auth.currentUser;
-  }
 
   Future loginGoogle({Function? success, ValueChanged<String>? fail}) async {
     try {
@@ -344,14 +337,14 @@ class AuthMethods {
 
   // Envoie un email à l'adresse email enregistrée
   Future<void> sendEmailVerification() async {
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     user.sendEmailVerification();
   }
 
   // Vérifie si l'adresse email a été vérifié, si oui alors il modifie dans la base de donnée le champe emailVerified en true,
   // Sinon il renvoie false
   Future checkEmailVerification() async {
-    User? user = await AuthMethods().getCurrentUser();
+    User? user = await ProviderUserId().returnUser();
     if (user != null) {
       FirebaseFirestore.instance.collection("users").doc(user.uid).update({
         "emailVerified": true,
@@ -363,7 +356,7 @@ class AuthMethods {
   // Lie un compte identifé avec Facebook avec un compte Google
   Future linkExistingToGoogle() async {
     // //get currently logged in user
-    final User existingUser = await AuthMethods().getCurrentUser();
+    final User existingUser = await ProviderUserId().returnUser();
 
     //get the credentials of the new linking account
     final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -393,7 +386,7 @@ class AuthMethods {
 
   Future linkExistingToFacebook() async {
     // //get currently logged in user
-    final User existingUser = await AuthMethods().getCurrentUser();
+    final User existingUser = await ProviderUserId().returnUser();
     final LoginResult result = await FacebookAuth.instance.login();
 
     final AuthCredential facebookCredential =
@@ -418,7 +411,7 @@ class AuthMethods {
     List<apple.Scope> scopes = const [],
   }) async {
     //get currently logged in user
-    final User existingUser = await AuthMethods().getCurrentUser();
+    final User existingUser = await ProviderUserId().returnUser();
 
     final resulte = await apple.AppleSignIn.performRequests(
         [apple.AppleIdRequest(requestedScopes: scopes)]);
@@ -445,7 +438,7 @@ class AuthMethods {
   } */
 
   Future unlinkGoogle() async {
-    final User existingUser = await AuthMethods().getCurrentUser();
+    final User existingUser = await ProviderUserId().returnUser();
 
     User linkauthresult = await existingUser.unlink("google.com");
     FirebaseFirestore.instance
@@ -458,7 +451,7 @@ class AuthMethods {
   }
 
   Future unlinkApple() async {
-    final User existingUser = await AuthMethods().getCurrentUser();
+    final User existingUser = await ProviderUserId().returnUser();
 
     User linkauthresult = await existingUser.unlink("apple.com");
     FirebaseFirestore.instance
@@ -471,7 +464,7 @@ class AuthMethods {
   }
 
   Future unlinkFacebook() async {
-    final User existingUser = await AuthMethods().getCurrentUser();
+    final User existingUser = await ProviderUserId().returnUser();
     User linkauthresult = await existingUser.unlink("facebook.com");
     FirebaseFirestore.instance
         .collection("users")
@@ -487,7 +480,7 @@ class AuthMethods {
       String _email, String _password, String? _fname, String? _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
 
     const url = "https://api.stripe.com/v1/customers";
@@ -522,8 +515,6 @@ class AuthMethods {
     final User user = (await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password))
         .user!;
-    print(user.displayName);
-    print('Connexion réussie : $user');
     return user;
   }
 
@@ -531,7 +522,7 @@ class AuthMethods {
       String _email, String _password, String? _fname, String? _lname) async {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password);
-    final User user = await AuthMethods().getCurrentUser();
+    final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     // Map<String, dynamic> userInfoMap = {
     //   "ClickAndCollect": true,
