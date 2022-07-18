@@ -13,6 +13,7 @@ const Products = Loadable(lazy(() => import('views/products')));
 const Commands = Loadable(lazy(() => import('views/orders')));
 const Chat = Loadable(lazy(() => import('views/chat')));
 const Users = Loadable(lazy(() => import('views/users')));
+const OrderDetails = Loadable(lazy(() => import('views/OrderDetails')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -51,6 +52,10 @@ const MainRoutes = {
         {
             path: '/users',
             element: <Users />
+        },
+        {
+            path: '/details-commande',
+            element: <OrderDetails />
         }
     ]
 };

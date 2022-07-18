@@ -29,11 +29,11 @@ const upload = multer({
 router.post('/shops', addShop);
 router.get('/shops', getAllShops);
 router.get('/shops/:id', getShop);
-router.patch('/shops/:id',upload.single('banniere'), updateShop); 
+router.post('/shops/:id',upload.single('newPhotoEnterprise'), updateShop); 
 router.delete('/shops/:id', deleteShop);
   
 router.get('/shops/:id/products', getAllProducts);
-router.patch('/shops/:id/products/:idProduct',upload.single('new_image'),updateProduct);
+router.post('/shops/:id/products/:idProduct',upload.single('newPhotoEnterprise'),updateProduct);
 router.delete('/shops/:id/products/:idProduct',deleteProduct);
 router.post('/shops/:id/products',upload.single('add_image'),addProduct); 
 

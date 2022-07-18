@@ -43,6 +43,7 @@ import SubCard from 'ui-component/cards/SubCard';
 import useConfig from 'hooks/useConfig';
 import throttle from 'lodash/throttle';
 import parse from 'autosuggest-highlight/parse';
+import PreviewImage from './PreviewImage';
 
 // Schéma de validation des champs du formulaire
 
@@ -55,8 +56,6 @@ const validationSchema = yup.object({
     description: yup.string().required('Veuillez entrer une description'),
     siretNumber: yup.string().required('Veuillez entrer le numéro de SIRET')
 });
-
-const GOOGLE_MAPS_API_KEY = 'AIzaSyDdnevI_6sCr0LvfpC4y9_wevsSequKsdk';
 
 function loadScript(src, position, id) {
     if (!position) {
@@ -89,17 +88,17 @@ const Enterprise = () => {
     const [options, setOptions] = React.useState([]);
     const loaded = React.useRef(false);
 
-    if (typeof window !== 'undefined' && !loaded.current) {
-        if (!document.querySelector('#google-maps')) {
-            loadScript(
-                `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&region=fr`,
-                document.querySelector('head'),
-                'google-maps'
-            );
-        }
+    // if (typeof window !== 'undefined' && !loaded.current) {
+    //     if (!document.querySelector('#google-maps')) {
+    //         loadScript(
+    //             `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places&region=fr`,
+    //             document.querySelector('head'),
+    //             'google-maps'
+    //         );
+    //     }
 
-        loaded.current = true;
-    }
+    //     loaded.current = true;
+    // }
 
     const fetch = React.useMemo(
         () =>
@@ -114,6 +113,9 @@ const Enterprise = () => {
 
         if (!autocompleteService.current && window.google) {
             autocompleteService.current = new window.google.maps.places.AutocompleteService();
+
+            // console.log(`lat=${autocompleteService.getPlace().geometry.location.lat()}`);
+            // console.log(autocompleteService.getPlace().geometry.location.toUrlValue(6));
         }
         if (!autocompleteService.current) {
             return undefined;
@@ -211,7 +213,6 @@ const Enterprise = () => {
             })
         );
     }
-
     const [values, setValues] = useState('');
     React.useEffect(() => {
         setValues(data.mainCategorie || []);
@@ -231,12 +232,21 @@ const Enterprise = () => {
             delivery: data.livraison || false,
             isPhoneVisible: data.isPhoneVisible || false,
             tagsEnterprise: values || [],
-            colorEnterprise: data.color || ''
+            colorEnterprise: data.color || '',
+            oldPhotoEnterprise: data.imgUrl || '',
+            newPhotoEnterprise: null
         },
         enableReinitialize: true,
         onSubmit: () => {
-            console.log(formik.values);
-            dispatch(editEnterpriseInfo(user.id, formik.values));
+            const formData = new FormData();
+            formData.append('newPhotoEnterprise', formik.values.newPhotoEnterprise);
+            formData.append('data', JSON.stringify(formik.values));
+            console.log(formData.values);
+            // eslint-disable-next-line no-restricted-syntax
+            for (const pair of formData.entries()) {
+                console.log(`${pair[0]}, ${pair[1]}`);
+            }
+            dispatch(editEnterpriseInfo(user.id, formik.values, formData));
             dispatch(
                 openSnackbar({
                     open: true,
@@ -252,7 +262,7 @@ const Enterprise = () => {
     });
     return (
         <MainCard title="Information de l'entreprise">
-            <form onSubmit={formik.handleSubmit}>
+            <form method="post" onSubmit={formik.handleSubmit} encType="multipart/form-data">
                 <Grid item xs={12}>
                     <Grid container spacing={2} alignItems="left">
                         <Grid item xs={12}>
@@ -277,12 +287,13 @@ const Enterprise = () => {
                                 id="enterpriseAdress"
                                 // sx={{ width: 300 }}
                                 getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
+                                noOptionsText="Aucune adresse trouvée"
                                 filterOptions={(x) => x}
                                 options={options}
                                 autoComplete
                                 includeInputInList
                                 filterSelectedOptions
-                                value={formik.values.enterpriseAdress}
+                                // value={formik.values.enterpriseAdress}
                                 onChange={(event, newValue) => {
                                     setOptions(newValue ? [newValue, ...options] : options);
                                     setValue(newValue);
@@ -475,14 +486,15 @@ const Enterprise = () => {
                             <InputLabel>Bannière de la boutique</InputLabel>
                             <TextField
                                 type="file"
-                                id="file-upload"
+                                id="newPhotoEnterprise"
+                                name="newPhotoEnterprise"
                                 fullWidth
                                 label="Enter SKU"
                                 sx={{ display: 'none' }}
-                                onChange={formik.handleChange}
+                                onChange={(e) => formik.setFieldValue('newPhotoEnterprise', e.target.files[0])}
                             />
                             <InputLabel
-                                htmlFor="file-upload"
+                                htmlFor="newPhotoEnterprise"
                                 sx={{
                                     background: theme.palette.background.default,
                                     py: 3.75,
@@ -497,38 +509,41 @@ const Enterprise = () => {
                                     }
                                 }}
                             >
-                                <MainCard content={false} border={false} boxShadow>
-                                    <CardMedia
-                                        component="img"
-                                        image={data.imgUrl}
-                                        height="150"
-                                        style={{ filter: 'blur(5px)' }}
-                                        title="Banniere Entreprise"
-                                        sx={{ borderRadius: `${borderRadius}px`, overflow: 'hidden' }}
-                                    />
-                                    <Typography
-                                        align="center"
-                                        variant="h3"
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            position: 'absolute',
-                                            top: '50%',
-                                            width: '100%',
-                                            textAlign: 'center',
-                                            // color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)',
-                                            fontWeight: 'bold'
-                                        }}
-                                        gutterBottom
-                                    >
-                                        <CloudUploadOutlined
-                                            fontSize="large"
-                                            color="primary"
-                                            sx={{ color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)' }}
+                                {formik.values.newPhotoEnterprise === null ? (
+                                    <MainCard content={false} border={false} boxShadow>
+                                        <CardMedia
+                                            component="img"
+                                            image={formik.values.oldPhotoEnterprise}
+                                            height="150"
+                                            style={{ filter: 'blur(5px)' }}
+                                            title="Banniere Entreprise"
+                                            sx={{ borderRadius: `${borderRadius}px`, overflow: 'hidden' }}
                                         />
-                                    </Typography>
-                                </MainCard>
+                                        <Typography
+                                            align="center"
+                                            variant="h3"
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                position: 'absolute',
+                                                top: '50%',
+                                                width: '100%',
+                                                textAlign: 'center',
+                                                // color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)',
+                                                fontWeight: 'bold'
+                                            }}
+                                            gutterBottom
+                                        >
+                                            <CloudUploadOutlined
+                                                fontSize="large"
+                                                color="primary"
+                                                sx={{ color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)' }}
+                                            />
+                                        </Typography>
+                                    </MainCard>
+                                ) : null}
+                                {formik.values.newPhotoEnterprise && <PreviewImage files={formik.values.newPhotoEnterprise} />}
                             </InputLabel>
                         </Grid>
                         <Grid item xs={12}>

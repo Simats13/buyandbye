@@ -121,21 +121,22 @@ const updateShop = async (req, res, next) => {
     try {
         const id = req.params.id;    
         const shop =  firestore.collection('magasins').doc(id);
+        const data = JSON.parse(req.body.data);
         if(!req.file) {
             await shop.update({
-                name: req.body.enterpriseName,
-                adresse: req.body.enterpriseAdress,
-                email: req.body.emailEnterprise,
-                phone: req.body.enterprisePhone,
-                description: req.body.description,
-                ClickAndCollect: req.body.clickAndCollect,
-                livraison: req.body.delivery,
-                isPhoneVisible: req.body.isPhoneVisible,
-                siretNumber: req.body.siretNumber,
-                tvaNumber: req.body.tvaNumber,
-                mainCategorie: req.body.tagsEnterprise,
+                name: data.enterpriseName,
+                adresse: data.enterpriseAdress,
+                email: data.emailEnterprise,
+                phone: data.enterprisePhone,
+                description: data.description,
+                ClickAndCollect: data.clickAndCollect,
+                livraison: data.delivery,
+                isPhoneVisible: data.isPhoneVisible,
+                siretNumber: data.siretNumber,
+                tvaNumber: data.tvaNumber,
+                mainCategorie: data.tagsEnterprise,
                 // colorStore: data.colorStore.substring(1),
-                // imgUrl:data.old_banniere, 
+                imgUrl:data.oldPhotoEnterprise, 
                 // 'position.latitude': data.latitude,
                 // 'position.longitude': data.longitude,
             });
@@ -159,23 +160,21 @@ const updateShop = async (req, res, next) => {
             
             blobWriter.on('finish',async ()  => {
                 await shop.update({
-                    Fname: data.ownerFirstName,
-                    Lname: data.ownerLastName,
-                    name: data.companyName,
-                    adresse: data.autocomplete,
-                    email: data.email,
-                    phone: data.phone,
+                    name: data.enterpriseName,
+                    adresse: data.enterpriseAdress,
+                    email: data.emailEnterprise,
+                    phone: data.enterprisePhone,
                     description: data.description,
-                    ClickAndCollect: data.clickandcollect,
-                    livraison: data.livraison,
+                    ClickAndCollect: data.clickAndCollect,
+                    livraison: data.delivery,
                     isPhoneVisible: data.isPhoneVisible,
-                    mainCategorie: data.tagsCompany,
                     siretNumber: data.siretNumber,
                     tvaNumber: data.tvaNumber,
-                    colorStore: data.colorStore.substring(1),
+                    mainCategorie: data.tagsEnterprise,
+                    // colorStore: data.colorStore.substring(1),
                     imgUrl: downloadUrl, 
-                    'position.latitude': data.latitude,
-                    'position.longitude': data.longitude,
+                    // 'position.latitude': data.latitude,
+                    // 'position.longitude': data.longitude,
                 });  
                return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
                 // res.redirect('/entreprise/'); 

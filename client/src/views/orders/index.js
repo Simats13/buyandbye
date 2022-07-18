@@ -30,6 +30,7 @@ import Chip from 'ui-component/extended/Chip';
 import MainCard from 'ui-component/cards/MainCard';
 import { useDispatch, useSelector } from 'store';
 import { getOrders } from 'store/slices/customer';
+import { Link } from 'react-router-dom';
 
 // assets
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -365,7 +366,7 @@ const Commands = () => {
                                 /** Make sure no display bugs if row isn't an OrderData object */
                                 if (typeof row === 'number') return null;
 
-                                const isItemSelected = isSelected(row.name);
+                                const isItemSelected = isSelected(row.id);
                                 const labelId = `enhanced-table-checkbox-${index}`;
 
                                 return (
@@ -377,7 +378,7 @@ const Commands = () => {
                                         key={index}
                                         selected={isItemSelected}
                                     >
-                                        <TableCell padding="checkbox" sx={{ pl: 3 }} onClick={(event) => handleClick(event, row.name)}>
+                                        <TableCell padding="checkbox" sx={{ pl: 3 }} onClick={(event) => handleClick(event, row.id)}>
                                             <Checkbox
                                                 color="primary"
                                                 checked={isItemSelected}
@@ -390,7 +391,7 @@ const Commands = () => {
                                             component="th"
                                             id={labelId}
                                             scope="row"
-                                            onClick={(event) => handleClick(event, row.name)}
+                                            onClick={(event) => handleClick(event, row.id)}
                                             sx={{ cursor: 'pointer' }}
                                         >
                                             <Typography
@@ -405,7 +406,7 @@ const Commands = () => {
                                             component="th"
                                             id={labelId}
                                             scope="row"
-                                            onClick={(event) => handleClick(event, row.name)}
+                                            onClick={(event) => handleClick(event, row.id)}
                                             sx={{ cursor: 'pointer' }}
                                         >
                                             <Typography
@@ -413,7 +414,7 @@ const Commands = () => {
                                                 sx={{ color: theme.palette.mode === 'dark' ? 'grey.600' : 'grey.900' }}
                                             >
                                                 {' '}
-                                                {row.name}{' '}
+                                                {row.id}{' '}
                                             </Typography>
                                         </TableCell>
                                         <TableCell>{row.prix}</TableCell>
@@ -435,12 +436,20 @@ const Commands = () => {
                                             {row.statut === 1 && <Chip label="En cours" size="small" chipcolor="primary" />}
                                         </TableCell>
                                         <TableCell align="center" sx={{ pr: 3 }}>
-                                            <IconButton color="primary" size="large">
+                                            <IconButton
+                                                color="primary"
+                                                size="large"
+                                                LinkComponent={Link}
+                                                to={{
+                                                    pathname: '/details-commande',
+                                                    state: { row }
+                                                }}
+                                            >
                                                 <VisibilityTwoToneIcon sx={{ fontSize: '1.3rem' }} />
                                             </IconButton>
-                                            <IconButton color="secondary" size="large">
+                                            {/* <IconButton color="secondary" size="large">
                                                 <EditTwoToneIcon sx={{ fontSize: '1.3rem' }} />
-                                            </IconButton>
+                                            </IconButton> */}
                                         </TableCell>
                                     </TableRow>
                                 );

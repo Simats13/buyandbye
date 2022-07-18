@@ -49,10 +49,13 @@ export function getEnterprise(id) {
     };
 }
 
-export function editEnterpriseInfo(id, data) {
+export function editEnterpriseInfo(id, data, formData) {
     return async () => {
         try {
-            const response = await axios.patch(`${process.env.REACT_APP_API_URL}/api/shops/${id}/`, data);
+            console.log(data);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shops/${id}/`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             dispatch(slice.actions.editEnterpriseInfoSuccess(response.data));
         } catch (error) {
             dispatch(slice.actions.hasError(error));
