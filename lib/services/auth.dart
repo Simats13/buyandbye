@@ -105,13 +105,17 @@ class AuthMethods {
 
           updateStripeInfo(paymentIntentData!["id"], userDetails.email,
               userDetails.displayName);
-          print('Login ');
-          return true;
+          final res = {
+            "status": "true",
+            "firstConnection": "true",
+          };
+          return json.encode(res);
         }
       } else {
         //Verifie si l'adresse mail a été vérifiée
         bool checkEmail = await AuthMethods.instance.checkEmailVerification();
-        print("checkEmail : " + checkEmail.toString());
+        bool checkFirstConnection =
+            await (AuthMethods.instance.checkFirstConnection());
 
         if (checkEmail) {
           FirebaseFirestore.instance
@@ -123,7 +127,11 @@ class AuthMethods {
             },
           );
         }
-        return true;
+        final res = {
+          "status": "true",
+          "firstConnection": checkFirstConnection,
+        };
+        return json.encode(res);
       }
     } catch (e) {
       print(e.toString());
@@ -203,10 +211,17 @@ class AuthMethods {
                 userDetails.displayName);
             //Envoie un mail de confirmation d'adresse mail
             sendEmailVerification();
+            final res = {
+              "status": "true",
+              "firstConnection": "true",
+            };
+            return json.encode(res);
           } else {
             //Verifie si l'adresse mail a été vérifiée
             bool checkEmail = await (AuthMethods.instance
                 .checkEmailVerification() as FutureOr<bool>);
+            bool checkFirstConnection =
+                await (AuthMethods.instance.checkFirstConnection());
 
             if (checkEmail) {
               FirebaseFirestore.instance
@@ -216,10 +231,12 @@ class AuthMethods {
                 "providers.Facebook": true, //Facebook
               });
             }
-            return true;
+            final res = {
+              "status": "true",
+              "firstConnection": checkFirstConnection,
+            };
+            return json.encode(res);
           }
-
-          return userCredential.user!.displayName;
 
         case LoginStatus.cancelled:
 
@@ -263,7 +280,6 @@ class AuthMethods {
         ],
         nonce: nonce,
       );
-      print(appleCredential.authorizationCode);
 
       // Create an OAuthCredential from the credential returned by Apple.
       final oauthCredential = OAuthProvider("apple.com").credential(
@@ -278,21 +294,32 @@ class AuthMethods {
           '${appleCredential.givenName} ${appleCredential.familyName}';
       final userEmail = '${appleCredential.email}';
 
-      final firebaseUser = authResult.user!;
-      print(displayName);
-      await firebaseUser.updateDisplayName(displayName);
-      await firebaseUser.updateEmail(userEmail);
+      final firebaseUser = authResult.user;
 
-      bool docExists = await (DatabaseMethods()
-          .checkIfDocExists(firebaseUser.uid) as FutureOr<bool>);
-
+      bool docExists =
+          await DatabaseMethods().checkIfDocExists(firebaseUser!.uid);
       if (docExists == false) {
+        await firebaseUser.updateDisplayName(displayName);
+        await firebaseUser.updateEmail(userEmail);
+        print('ALL READY EXISTS');
+        const url = "https://api.stripe.com/v1/customers";
+
+        var secret =
+            'sk_test_51Ida2rD6J4doB8CzdZn86VYvrau3UlTVmHIpp8rJlhRWMK34rehGQOxcrzIHwXfpSiHbCrZpzP8nNFLh2gybmb5S00RkMpngY8';
+
+        Map<String, String> headers = {
+          'Authorization': 'Bearer $secret',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        var response = await http.post(Uri.parse(url), headers: headers);
+        paymentIntentData = json.decode(response.body);
         Map<String, dynamic> userInfoMap = {
           "id": firebaseUser.uid,
-          "email": firebaseUser.email,
-          "fname": firebaseUser.displayName,
-          "lname": firebaseUser.displayName,
-          "imgUrl": firebaseUser.photoURL,
+          "email": userEmail,
+          "fname": appleCredential.givenName,
+          "lname": appleCredential.familyName,
+          "imgUrl":
+              'https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/assets%2FNo_image_available.svg.png?alt=media',
           "customerId": paymentIntentData!["id"],
           "firstConnection": true,
           "providers": {
@@ -309,27 +336,37 @@ class AuthMethods {
           "phone": ""
         };
         DatabaseMethods().addInfoToDB("users", firebaseUser.uid, userInfoMap);
-        updateStripeInfo(paymentIntentData!["id"], firebaseUser.email,
-            firebaseUser.displayName);
+        updateStripeInfo(paymentIntentData!["id"], userEmail, displayName);
         //Envoie un mail de confirmation d'adresse mail
-        sendEmailVerification();
+        // sendEmailVerification();
+        final res = {
+          "status": "true",
+          "firstConnection": "true",
+        };
+        return json.encode(res);
       } else {
         //Verifie si l'adresse mail a été vérifiée
-        bool checkEmail = await (AuthMethods.instance.checkEmailVerification()
-            as FutureOr<bool>);
-
+        bool checkEmail = await (AuthMethods.instance.checkEmailVerification());
+        bool checkFirstConnection =
+            await (AuthMethods.instance.checkFirstConnection());
         if (checkEmail) {
           FirebaseFirestore.instance
               .collection("users")
               .doc(firebaseUser.uid)
               .update({
-            "providers.Apple": true, //Facebook
+            "providers.Apple": true, //Apple
           });
+
+          // print(checkFirstConnection);
+
+          final res = {
+            "status": "true",
+            "firstConnection": checkFirstConnection,
+          };
+          return json.encode(res);
         }
         return true;
       }
-
-      return firebaseUser;
     } catch (e) {
       print(e);
     }
@@ -351,6 +388,19 @@ class AuthMethods {
       });
     }
     return true;
+  }
+
+  Future checkFirstConnection() async {
+    User? user = await ProviderUserId().returnUser();
+    var userInfo = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get();
+    if (userInfo.data()!["firstConnection"] == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // Lie un compte identifé avec Facebook avec un compte Google
@@ -407,25 +457,30 @@ class AuthMethods {
   }
 
   // TODO refaire la fonction Lier Apple
-  /*Future linkExistingToApple({
-    List<apple.Scope> scopes = const [],
-  }) async {
+  Future linkExistingToApple() async {
     //get currently logged in user
     final User existingUser = await ProviderUserId().returnUser();
-
-    final resulte = await apple.AppleSignIn.performRequests(
-        [apple.AppleIdRequest(requestedScopes: scopes)]);
-
-    final appleIdCredential = resulte.credential;
-    final oAuthProvider = OAuthProvider('apple.com');
-    final credential = oAuthProvider.credential(
-      idToken: String.fromCharCodes(appleIdCredential.identityToken),
-      accessToken: String.fromCharCodes(appleIdCredential.authorizationCode),
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+    // Request credential for the currently signed in Apple account.
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: nonce,
     );
 
+    // Create an OAuthCredential from the credential returned by Apple.
+    final oauthCredential = OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: rawNonce,
+    );
+
+    
     //now link these credentials with the existing user
     UserCredential linkauthresult =
-        await existingUser.linkWithCredential(credential);
+        await existingUser.linkWithCredential(oauthCredential);
 
     FirebaseFirestore.instance
         .collection("users")
@@ -434,8 +489,8 @@ class AuthMethods {
       "providers.Apple": true, //Facebook
     });
 
-    return linkauthresult.user.displayName;
-  } */
+    return linkauthresult.user!.displayName;
+  }
 
   Future unlinkGoogle() async {
     final User existingUser = await ProviderUserId().returnUser();
