@@ -53,3 +53,5 @@ test/
 web/
 android/local.properties
 ios/.DS_Store
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
