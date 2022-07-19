@@ -69,7 +69,8 @@ export function deleteProducts(id, idProduct) {
 export function addProducts(id, data) {
     return async () => {
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shops/${id}/products`, data, {
+            console.log(data);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shops/${id}/products/`, data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             dispatch(slice.actions.getAddSuccess(response.data));

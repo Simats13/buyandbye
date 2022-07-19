@@ -212,7 +212,7 @@ const addProduct = async (req, res, next) => {
     try {
         const id = req.params.id;   
         const docRef = firestore.collection('magasins').doc(id).collection("produits").doc();
-        var data = JSON.parse(req.body);
+        var data = JSON.parse(req.body.data);
         console.log(data);
         var images = [];
         images.push("https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/assets%2FNo_image_available.svg.png");
@@ -323,7 +323,7 @@ const updateProduct = async (req, res, next) => {
         console.log(data);
 
         var images = [];
-        images.push(data.currentImageInput);
+        images.push(data.productPhoto);
 
         
 

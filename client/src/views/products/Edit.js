@@ -75,16 +75,7 @@ const MenuProps = {
     }
 };
 
-// tags list & style
-const tagNames = ['Html', 'Scss', 'Js', 'React', 'Ionic', 'Angular', 'css', 'Php', 'View'];
-
-function getStyles(name, personName, theme) {
-    return {
-        fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
-    };
-}
-
-// ==============================|| PRODUCT ADD DIALOG ||============================== //
+// ==============================|| PRODUCT EDIT  ||============================== //
 
 const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
     const theme = useTheme();
@@ -122,12 +113,6 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
         };
     }, []);
 
-    // handle tag select
-    const [personName, setPersonName] = useState([]);
-    const handleTagSelectChange = (event) => {
-        setPersonName(event?.target.value);
-    };
-
     const validationSchema = yup.object({
         productName: yup.string().required('Product name is required'),
         productDescription: yup.string().required('Product description is required'),
@@ -142,7 +127,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
 
     const fileTypes = ['JPG', 'PNG', 'JPEG'];
     const formik = useFormik({
-        // validationSchema,
+        validationSchema,
         initialValues: {
             productName: data.nom || '',
             productDescription: data.description || '',
@@ -154,7 +139,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
             productBrand: data.brand || '',
             productWeight: data.weight || 0,
             productVisibility: data.visible || 0,
-            productPhoto: data.photo,
+            productPhoto: data.images[0] || [],
             newPhotoProduct: null
         },
         enableReinitialize: true,
@@ -233,7 +218,9 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                         onChange={handleSelectChange}
                                     >
                                         {tags.map((name) => (
-                                            <MenuItem value={name}>{name}</MenuItem>
+                                            <MenuItem key={name} value={name}>
+                                                {name}
+                                            </MenuItem>
                                         ))}
                                     </TextField>
                                 </Grid>
@@ -349,7 +336,10 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
 
 ProductEdit.propTypes = {
     open: PropTypes.bool,
-    handleCloseDialog: PropTypes.func
+    handleCloseDialog: PropTypes.func,
+    data: PropTypes.object,
+    tags: PropTypes.array,
+    sellerID: PropTypes.string
 };
 
 export default ProductEdit;

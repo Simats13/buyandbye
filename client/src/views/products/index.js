@@ -46,18 +46,14 @@ import FileCopyIcon from '@mui/icons-material/FileCopyTwoTone';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import EditIcon from '@mui/icons-material/Edit';
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
-import { openSnackbar } from 'store/slices/snackbar';
-import axios from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import ProductAdd from './ProductAdd';
 import ProductEdit from './Edit';
 import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
 import DeleteDialog from './Delete';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query } from 'firebase/firestore';
 import { useFirestoreQueryData } from '@react-query-firebase/firestore';
-
-const prodImage = require.context('assets/images/e-commerce', true);
+import loader from '../../assets/images/loader.gif';
 
 // table sort
 function descendingComparator(a, b, orderBy) {
@@ -389,7 +385,7 @@ const Product = () => {
     const isSelected = (name) => selected.indexOf(name) !== -1;
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    return queryProducts.isSuccess ? (
+    return (
         <MainCard title="Liste des produits" content={false}>
             <CardContent>
                 <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
@@ -441,112 +437,127 @@ const Product = () => {
             </CardContent>
 
             {/* table */}
-            <TableContainer>
-                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                        numSelected={selected.length}
-                        order={order}
-                        orderBy={orderBy}
-                        onSelectAllClick={handleSelectAllClick}
-                        onRequestSort={handleRequestSort}
-                        rowCount={rows.length}
-                        theme={theme}
-                        selected={selected}
-                    />
-                    <TableBody>
-                        {stableSort(rows, getComparator(order, orderBy))
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row, index) => {
-                                if (typeof row === 'number') return null;
-                                const isItemSelected = isSelected(row.nom);
-                                const labelId = `enhanced-table-checkbox-${index}`;
-                                return (
-                                    <TableRow
-                                        hover
-                                        role="checkbox"
-                                        aria-checked={isItemSelected}
-                                        tabIndex={-1}
-                                        key={index}
-                                        selected={isItemSelected}
-                                    >
-                                        <TableCell padding="checkbox" sx={{ pl: 3 }} onClick={(event) => handleClick(event, row.nom)}>
-                                            <Checkbox
-                                                color="primary"
-                                                checked={isItemSelected}
-                                                inputProps={{
-                                                    'aria-labelledby': labelId
-                                                }}
-                                            />
-                                        </TableCell>
-                                        <TableCell
-                                            align="center"
-                                            component="th"
-                                            id={labelId}
-                                            scope="row"
-                                            onClick={(event) => handleClick(event, row.nom)}
-                                            sx={{ cursor: 'pointer' }}
+            {queryProducts.isSuccess ? (
+                <TableContainer>
+                    <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+                        <EnhancedTableHead
+                            numSelected={selected.length}
+                            order={order}
+                            orderBy={orderBy}
+                            onSelectAllClick={handleSelectAllClick}
+                            onRequestSort={handleRequestSort}
+                            rowCount={rows.length}
+                            theme={theme}
+                            selected={selected}
+                        />
+
+                        <TableBody>
+                            {stableSort(rows, getComparator(order, orderBy))
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((row, index) => {
+                                    if (typeof row === 'number') return null;
+                                    const isItemSelected = isSelected(row.nom);
+                                    const labelId = `enhanced-table-checkbox-${index}`;
+                                    return (
+                                        <TableRow
+                                            hover
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={index}
+                                            selected={isItemSelected}
                                         >
-                                            <Avatar src={row.images[0]} size="md" variant="rounded" />
-                                        </TableCell>
-                                        <TableCell component="th" id={labelId} scope="row" sx={{ cursor: 'pointer' }}>
-                                            <Typography
-                                                component={Link}
-                                                to={`/e-commerce/product-details/${row.id}`}
-                                                variant="subtitle1"
-                                                sx={{
-                                                    color: theme.palette.mode === 'dark' ? theme.palette.grey[600] : 'grey.900',
-                                                    textDecoration: 'none'
-                                                }}
+                                            <TableCell padding="checkbox" sx={{ pl: 3 }} onClick={(event) => handleClick(event, row.nom)}>
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={isItemSelected}
+                                                    inputProps={{
+                                                        'aria-labelledby': labelId
+                                                    }}
+                                                />
+                                            </TableCell>
+                                            <TableCell
+                                                align="center"
+                                                component="th"
+                                                id={labelId}
+                                                scope="row"
+                                                onClick={(event) => handleClick(event, row.nom)}
+                                                sx={{ cursor: 'pointer' }}
                                             >
-                                                {row.nom}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="left">{row.quantite}</TableCell>
-                                        <TableCell align="right">{row.prix} €</TableCell>
-                                        {/* <TableCell align="right">${row.salePrice}</TableCell> */}
-                                        <TableCell align="center">
-                                            <Chip
-                                                size="small"
-                                                label={row.visible ? 'Visible' : 'Masqué'}
-                                                chipcolor={row.visible ? 'success' : 'error'}
-                                                sx={{ borderRadius: '4px', textTransform: 'capitalize' }}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="center" sx={{ pr: 3 }}>
-                                            <IconButton onClick={() => handleClickOpenDialogEdit(row)} color="primary" size="large">
-                                                <EditIcon sx={{ fontSize: '1.3rem' }} />
-                                            </IconButton>
-                                            <ProductEdit
-                                                open={openEdit}
-                                                data={infoEdit}
-                                                tags={tagsCompany}
-                                                sellerID={user.id}
-                                                handleCloseDialog={handleCloseDialogEdit}
-                                            />
-                                            <DeleteDialog
-                                                idProduct={row.id}
-                                                idSeller={user.id}
-                                                setRows={setRows}
-                                                products={products}
-                                                indexProducts={index}
-                                                handleCloseDialog={handleCloseDialogAdd}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        {emptyRows > 0 && (
-                            <TableRow
-                                style={{
-                                    height: 53 * emptyRows
-                                }}
-                            >
-                                <TableCell colSpan={6} />
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                                <Avatar src={row.images[0]} size="md" variant="rounded" />
+                                            </TableCell>
+                                            <TableCell component="th" id={labelId} scope="row" sx={{ cursor: 'pointer' }}>
+                                                <Typography
+                                                    component={Link}
+                                                    to={`/e-commerce/product-details/${row.id}`}
+                                                    variant="subtitle1"
+                                                    sx={{
+                                                        color: theme.palette.mode === 'dark' ? theme.palette.grey[600] : 'grey.900',
+                                                        textDecoration: 'none'
+                                                    }}
+                                                >
+                                                    {row.nom}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="left">{row.quantite}</TableCell>
+                                            <TableCell align="right">{row.prix} €</TableCell>
+                                            {/* <TableCell align="right">${row.salePrice}</TableCell> */}
+                                            <TableCell align="center">
+                                                <Chip
+                                                    size="small"
+                                                    label={row.visible ? 'Visible' : 'Masqué'}
+                                                    chipcolor={row.visible ? 'success' : 'error'}
+                                                    sx={{ borderRadius: '4px', textTransform: 'capitalize' }}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ pr: 3 }}>
+                                                <IconButton onClick={() => handleClickOpenDialogEdit(row)} color="primary" size="large">
+                                                    <EditIcon sx={{ fontSize: '1.3rem' }} key={row.id} />
+                                                </IconButton>
+                                                <ProductEdit
+                                                    key={row.id}
+                                                    open={openEdit}
+                                                    data={row}
+                                                    tags={tagsCompany}
+                                                    sellerID={user.id}
+                                                    handleCloseDialog={handleCloseDialogEdit}
+                                                />
+                                                <DeleteDialog
+                                                    idProduct={row.id}
+                                                    idSeller={user.id}
+                                                    setRows={setRows}
+                                                    products={products}
+                                                    indexProducts={index}
+                                                    handleCloseDialog={handleCloseDialogAdd}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            {emptyRows > 0 && (
+                                <TableRow
+                                    style={{
+                                        height: 53 * emptyRows
+                                    }}
+                                >
+                                    <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            ) : (
+                <>
+                    <Grid container justifyContent="center" alignItems="center" justifyItems="center">
+                        <img src={loader} alt="loader" />
+                    </Grid>
+                    <Grid container justifyContent="center" alignItems="center" justifyItems="center">
+                        <Typography variant="h6" sx={{ color: 'grey.900' }}>
+                            Chargement des Produits, veuillez patienter...
+                        </Typography>
+                    </Grid>
+                </>
+            )}
 
             {/* table pagination */}
             <TablePagination
@@ -557,10 +568,10 @@ const Product = () => {
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                labelDisplayedRows={({ from, to, count }) => `${from}-${to} sur ${count}`}
+                labelRowsPerPage="Lignes par page"
             />
         </MainCard>
-    ) : (
-        <div>Chargement des produits</div>
     );
 };
 

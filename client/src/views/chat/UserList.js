@@ -1,30 +1,26 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, Fragment } from 'react';
+import { Fragment } from 'react';
 
 // material-ui
-import { Chip, Divider, Grid, List, ListItemButton, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Divider, Grid, List, ListItemButton, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
-import { query, collection, where, limit, QuerySnapshot, doc, orderBy } from 'firebase/firestore';
-import { useFirestoreDocumentData, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
+import { doc } from 'firebase/firestore';
+import { useFirestoreDocumentData } from '@react-query-firebase/firestore';
 // project imports
 import UserAvatar from './UserAvatar';
 
-import { useDispatch, useSelector } from 'store';
-import { getUsers, getAllUserChats, getUserWithID } from 'store/slices/chat';
+// import { useDispatch, useSelector } from 'store';
+// import { getUsers, getAllUserChats, getUserWithID } from 'store/slices/chat';
 import useAuth from 'hooks/useAuth';
 
 // ==============================|| CHAT USER LIST ||============================== //
 
-const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen, lastOpen }) => {
+const UserList = ({ data, sellerID, setLastOpen }) => {
     const { db } = useAuth();
-
-    console.log('data', data);
 
     const UserListInfo = ({ userID, messageData }) => {
         const ref = doc(db, 'users', userID);
         const userInfos = useFirestoreDocumentData(['users', userID], ref);
-
-        console.log('userID_UserList', userID);
         return userInfos.isSuccess ? (
             <>
                 <ListItemAvatar>
@@ -104,21 +100,25 @@ const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen, lastOpen
         );
     };
 
+    UserListInfo.propTypes = {
+        userID: PropTypes.string.isRequired,
+        messageData: PropTypes.object.isRequired
+    };
+
     // eslint-disable-next-line no-unused-expressions
     return (
         <List component="nav">
             {data.map((userSelect, index) => (
                 <>
-                    <Fragment key={sellerID + userSelect.users[1]}>
-                        <ListItemButton
-                            onClick={() => {
-                                setLastOpen(userSelect.users[1]);
-                            }}
-                        >
-                            <UserListInfo userID={userSelect.users[1]} messageData={userSelect} />
-                        </ListItemButton>
-                        <Divider />
-                    </Fragment>
+                    <ListItemButton
+                        key={index + 1}
+                        onClick={() => {
+                            setLastOpen(userSelect.users[1]);
+                        }}
+                    >
+                        <UserListInfo key={index} userID={userSelect.users[1]} messageData={userSelect} />
+                    </ListItemButton>
+                    <Divider />
                 </>
             ))}
         </List>
@@ -126,7 +126,9 @@ const UserList = ({ setUserData, userInfo, data, sellerID, setLastOpen, lastOpen
 };
 
 UserList.propTypes = {
-    setUserData: PropTypes.func
+    data: PropTypes.array,
+    sellerID: PropTypes.string,
+    setLastOpen: PropTypes.func
 };
 
 export default UserList;

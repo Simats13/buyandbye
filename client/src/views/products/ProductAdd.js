@@ -265,7 +265,9 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
                                         helperText={formik.touched.productCategory && formik.errors.productCategory}
                                     >
                                         {tags.map((name) => (
-                                            <MenuItem value={name}>{name}</MenuItem>
+                                            <MenuItem key={name} value={name}>
+                                                {name}
+                                            </MenuItem>
                                         ))}
                                     </TextField>
                                 </Grid>

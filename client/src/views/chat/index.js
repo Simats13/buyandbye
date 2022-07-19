@@ -32,6 +32,7 @@ import Avatar from 'ui-component/extended/Avatar';
 import { appDrawerWidth as drawerWidth, gridSpacing } from 'store/constant';
 import { useDispatch, useSelector } from 'store';
 import { getAllUserChats, getUsers, insertChat, getUserWithID } from 'store/slices/chat';
+
 // assets
 import AttachmentTwoToneIcon from '@mui/icons-material/AttachmentTwoTone';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
@@ -45,6 +46,7 @@ import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import useAuth from 'hooks/useAuth';
 import { useFirestoreDocument, useFirestoreDocumentData, useFirestoreQuery, useFirestoreQueryData } from '@react-query-firebase/firestore';
 import { useQueries } from 'react-query';
+import loader from '../../assets/images/loader.gif';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -172,7 +174,7 @@ const Chat = () => {
             type: 'text',
             timestamp: d
         };
-        setMessages((prevState) => [...prevState, newMessage]);
+        // setMessages((prevState) => [...prevState, newMessage]);
         dispatch(insertChat(newMessage, user.id + lastOpen));
     };
 
@@ -200,7 +202,7 @@ const Chat = () => {
         setAnchorElEmoji(null);
     };
     const Header = ({ lastOpen }) => {
-        const refUsers = doc(db, 'users', lastOpen);
+        const refUsers = lastOpen ? doc(db, 'users', lastOpen) : {};
         const queryInfos = useFirestoreDocumentData(['users', lastOpen], refUsers);
 
         useEffect(() => {
@@ -213,7 +215,7 @@ const Chat = () => {
             <Grid item>
                 <Grid container spacing={2} alignItems="center" sx={{ flexWrap: 'nowrap' }}>
                     <Grid item>
-                        <Avatar alt={userInformations.fname + userInformations.lname} src={userInformations.imgUrl} />
+                        <Avatar alt="userImage" src={userInformations.imgUrl} />
                     </Grid>
                     <Grid item sm zeroMinWidth>
                         <Grid container spacing={0} alignItems="center">
@@ -231,12 +233,24 @@ const Chat = () => {
                 </Grid>
             </Grid>
         ) : (
-            <div>Chargement</div>
+            <div>Chargement du nom d&apos;utilisateur</div>
         );
     };
 
-    if (!data) return <Typography>Chargement des messages...</Typography>;
-    return queryClient.isSuccess ? (
+    if (!data)
+        return (
+            <>
+                <Grid container justifyContent="center" alignItems="center" justifyItems="center">
+                    <img src={loader} alt="loader" />
+                </Grid>
+                <Grid container justifyContent="center" alignItems="center" justifyItems="center">
+                    <Typography variant="h6" sx={{ color: 'grey.900' }}>
+                        Chargement des messages, veuillez patienter...
+                    </Typography>
+                </Grid>
+            </>
+        );
+    return (
         <Box sx={{ display: 'flex' }}>
             <ChatDrawer
                 openChatDrawer={openChatDrawer}
@@ -263,7 +277,7 @@ const Chat = () => {
                                                 <MenuRoundedIcon />
                                             </IconButton>
                                         </Grid>
-                                        {lastOpen ? <Header lastOpen={lastOpen} /> : <div>Chargement</div>}
+                                        <Header lastOpen={lastOpen} />
                                         <Grid item sm zeroMinWidth />
                                         <Grid item>
                                             <IconButton onClick={handleClickSort} size="large">
@@ -296,15 +310,28 @@ const Chat = () => {
                                 <PerfectScrollbar
                                     style={{ width: '100%', height: 'calc(100vh - 440px)', overflowX: 'hidden', minHeight: 275 }}
                                 >
-                                    <CardContent>
-                                        <ChartHistory
-                                            theme={theme}
-                                            handleUserDetails={handleUserChange}
-                                            handleDrawerOpen={handleDrawerOpen}
-                                            user={user}
-                                            data={messages}
-                                        />
-                                    </CardContent>
+                                    {queryClient.isSuccess ? (
+                                        <CardContent>
+                                            <ChartHistory
+                                                theme={theme}
+                                                handleUserDetails={handleUserChange}
+                                                handleDrawerOpen={handleDrawerOpen}
+                                                user={user}
+                                                data={messages}
+                                            />
+                                        </CardContent>
+                                    ) : (
+                                        <>
+                                            <Grid container justifyContent="center" alignItems="center" justifyItems="center">
+                                                <img src={loader} alt="loader" />
+                                            </Grid>
+                                            <Grid container justifyContent="center" alignItems="center" justifyItems="center">
+                                                <Typography variant="h6" sx={{ color: 'grey.900' }}>
+                                                    Chargement des messages, veuillez patienter...
+                                                </Typography>
+                                            </Grid>
+                                        </>
+                                    )}
                                 </PerfectScrollbar>
                                 <Grid item xs={12}>
                                     <Grid container spacing={1} alignItems="center">
@@ -385,8 +412,6 @@ const Chat = () => {
                 </Grid>
             </Main>
         </Box>
-    ) : (
-        <div>Chargement des Messages</div>
     );
 };
 
