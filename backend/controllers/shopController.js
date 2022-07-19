@@ -10,6 +10,8 @@ const multer = require('multer')
 const axios = require('axios');
 const Chats = require('../models/chats');
 const Messages = require('../models/messages');
+const NodeGeocoder = require('node-geocoder');
+const config = require('../config');
 
 const upload = multer({
     storage: multer.memoryStorage()
@@ -122,6 +124,14 @@ const updateShop = async (req, res, next) => {
         const id = req.params.id;    
         const shop =  firestore.collection('magasins').doc(id);
         const data = JSON.parse(req.body.data);
+        const options = {
+            provider: 'google',
+            httpAdapter: 'https', // Default
+            apiKey: config.maps_api, // for Mapquest, OpenCage, Google Premier
+            formatter: null // 'gpx', 'string', ...
+          };
+        const geocoder = NodeGeocoder(options);
+        const geores = await geocoder.geocode(data.enterpriseAdress);
         if(!req.file) {
             await shop.update({
                 name: data.enterpriseName,
@@ -135,10 +145,10 @@ const updateShop = async (req, res, next) => {
                 siretNumber: data.siretNumber,
                 tvaNumber: data.tvaNumber,
                 mainCategorie: data.tagsEnterprise,
-                // colorStore: data.colorStore.substring(1),
+                colorStore: data.colorEnterprise,
                 imgUrl:data.oldPhotoEnterprise, 
-                // 'position.latitude': data.latitude,
-                // 'position.longitude': data.longitude,
+                'position.geopoint.latitude': geores[0].latitude,
+                'position.geopoint.longitude': geores[0].longitude,
             });
            return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
         } else {
@@ -171,10 +181,10 @@ const updateShop = async (req, res, next) => {
                     siretNumber: data.siretNumber,
                     tvaNumber: data.tvaNumber,
                     mainCategorie: data.tagsEnterprise,
-                    // colorStore: data.colorStore.substring(1),
+                    colorStore: data.colorEnterprise,
                     imgUrl: downloadUrl, 
-                    // 'position.latitude': data.latitude,
-                    // 'position.longitude': data.longitude,
+                    'position.latitude': geores[0].latitude,
+                    'position.longitude': geores[0].longitude,
                 });  
                return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
                 // res.redirect('/entreprise/'); 

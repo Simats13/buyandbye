@@ -52,7 +52,6 @@ export function getEnterprise(id) {
 export function editEnterpriseInfo(id, data, formData) {
     return async () => {
         try {
-            console.log(data);
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shops/${id}/`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });

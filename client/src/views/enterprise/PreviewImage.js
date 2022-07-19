@@ -15,7 +15,7 @@ const PreviewImage = ({ files }) => {
     return preview ? (
         <>
             {preview ? (
-                <MainCard content={false} border={false} boxShadow>
+                <MainCard content={false} border={false} boxShadow style={{ cursor: 'pointer' }}>
                     <CardMedia
                         component="img"
                         image={preview}

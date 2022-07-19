@@ -23,27 +23,25 @@ import {
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import InputLabel from 'ui-component/extended/Form/InputLabel';
-import { gridSpacing } from 'store/constant';
 import { openSnackbar } from 'store/slices/snackbar';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { useDispatch, useSelector } from 'store';
 import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
 // assets
-import LockTwoToneIcon from '@mui/icons-material/LockTwoTone';
-import LinkTwoToneIcon from '@mui/icons-material/LinkTwoTone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import axios from '../../utils/axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import useAuth from 'hooks/useAuth';
 import { CloudUploadOutlined } from '@mui/icons-material';
 import { useTheme } from '@mui/styles';
-import { TwitterPicker } from 'react-color';
-import SubCard from 'ui-component/cards/SubCard';
+import { CirclePicker } from 'react-color';
 import useConfig from 'hooks/useConfig';
 import throttle from 'lodash/throttle';
 import parse from 'autosuggest-highlight/parse';
 import PreviewImage from './PreviewImage';
+import { FileUploader } from 'react-drag-drop-files';
+
+const fileTypes = ['JPG', 'PNG'];
 
 // Schéma de validation des champs du formulaire
 
@@ -56,18 +54,6 @@ const validationSchema = yup.object({
     description: yup.string().required('Veuillez entrer une description'),
     siretNumber: yup.string().required('Veuillez entrer le numéro de SIRET')
 });
-
-function loadScript(src, position, id) {
-    if (!position) {
-        return;
-    }
-
-    const script = document.createElement('script');
-    script.setAttribute('async', '');
-    script.setAttribute('id', id);
-    script.src = src;
-    position.appendChild(script);
-}
 
 const autocompleteService = { current: null };
 
@@ -84,21 +70,15 @@ const Enterprise = () => {
     const tagsCompany = [];
 
     const [value, setValue] = React.useState(null);
+    const [values, setValues] = useState('');
+    const [color, setColor] = useState('');
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState([]);
-    const loaded = React.useRef(false);
 
-    // if (typeof window !== 'undefined' && !loaded.current) {
-    //     if (!document.querySelector('#google-maps')) {
-    //         loadScript(
-    //             `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places&region=fr`,
-    //             document.querySelector('head'),
-    //             'google-maps'
-    //         );
-    //     }
-
-    //     loaded.current = true;
-    // }
+    const [file, setFile] = useState(null);
+    const handleChange = (file) => {
+        setFile(file);
+    };
 
     const fetch = React.useMemo(
         () =>
@@ -113,9 +93,6 @@ const Enterprise = () => {
 
         if (!autocompleteService.current && window.google) {
             autocompleteService.current = new window.google.maps.places.AutocompleteService();
-
-            // console.log(`lat=${autocompleteService.getPlace().geometry.location.lat()}`);
-            // console.log(autocompleteService.getPlace().geometry.location.toUrlValue(6));
         }
         if (!autocompleteService.current) {
             return undefined;
@@ -167,16 +144,6 @@ const Enterprise = () => {
     } else if (data.type === 'Service') {
         console.log('Salon');
     }
-    const twitterStyle = {
-        default: {
-            input: {
-                display: 'none'
-            },
-            hash: {
-                display: 'none'
-            }
-        }
-    };
 
     React.useEffect(() => {
         setData(enterprise);
@@ -213,16 +180,24 @@ const Enterprise = () => {
             })
         );
     }
-    const [values, setValues] = useState('');
+
     React.useEffect(() => {
         setValues(data.mainCategorie || []);
     }, [data.mainCategorie]);
+
+    React.useEffect(() => {
+        setValue(data.adresse || '');
+    }, [data.adresse]);
+
+    React.useEffect(() => {
+        setColor(data.colorStore || '');
+    }, [data.colorStore]);
 
     const formik = useFormik({
         validationSchema,
         initialValues: {
             enterpriseName: data.name || '',
-            enterpriseAdress: data.adresse || '',
+            enterpriseAdress: value || '',
             siretNumber: data.siretNumber || '',
             tvaNumber: data.tvaNumber || '',
             description: data.description || '',
@@ -232,7 +207,7 @@ const Enterprise = () => {
             delivery: data.livraison || false,
             isPhoneVisible: data.isPhoneVisible || false,
             tagsEnterprise: values || [],
-            colorEnterprise: data.color || '',
+            colorEnterprise: color || '',
             oldPhotoEnterprise: data.imgUrl || '',
             newPhotoEnterprise: null
         },
@@ -241,11 +216,6 @@ const Enterprise = () => {
             const formData = new FormData();
             formData.append('newPhotoEnterprise', formik.values.newPhotoEnterprise);
             formData.append('data', JSON.stringify(formik.values));
-            console.log(formData.values);
-            // eslint-disable-next-line no-restricted-syntax
-            for (const pair of formData.entries()) {
-                console.log(`${pair[0]}, ${pair[1]}`);
-            }
             dispatch(editEnterpriseInfo(user.id, formik.values, formData));
             dispatch(
                 openSnackbar({
@@ -293,10 +263,13 @@ const Enterprise = () => {
                                 autoComplete
                                 includeInputInList
                                 filterSelectedOptions
-                                // value={formik.values.enterpriseAdress}
+                                value={value}
                                 onChange={(event, newValue) => {
                                     setOptions(newValue ? [newValue, ...options] : options);
-                                    setValue(newValue);
+                                    if (newValue) {
+                                        setValue(newValue.description);
+                                    }
+                                    // console.log(newValue.description);
                                 }}
                                 onInputChange={(event, newInputValue) => {
                                     setInputValue(newInputValue);
@@ -349,13 +322,6 @@ const Enterprise = () => {
                                 onChange={formik.handleChange}
                                 error={formik.touched.siretNumber && Boolean(formik.errors.siretNumber)}
                                 helperText={formik.touched.siretNumber && formik.errors.siretNumber}
-                                // InputProps={{
-                                //     endAdornment: (
-                                //         <InputAdornment position="end">
-                                //             <LockTwoToneIcon />
-                                //         </InputAdornment>
-                                //     )
-                                // }}
                             />
                         </Grid>
                         <Grid item xs={12} lg={6}>
@@ -462,7 +428,19 @@ const Enterprise = () => {
                         </Grid>
                         <Grid item xs={12} lg={6}>
                             <InputLabel>Couleur de la boutique</InputLabel>
-                            <TwitterPicker styles={twitterStyle} onChange={formik.handleChange} />
+                            <CirclePicker
+                                id="colorEnterprise"
+                                name="colorEnterprise"
+                                color={`#${color}`}
+                                // onChangeComplete={color}
+                                onChangeComplete={(colors) => {
+                                    setColor(colors.hex.substring(1));
+                                }}
+                                // onChange={(colorChoose) => {
+                                //     setColor(colorChoose.hex);
+                                // }}
+                                // onChange={formik.handleChange}
+                            />
                         </Grid>
                         <Grid item xs={12} lg={6}>
                             <Grid container direction="column" spacing={3}>
@@ -471,10 +449,12 @@ const Enterprise = () => {
                                     <Autocomplete
                                         id="tagsEnterprise"
                                         name="tagsEnterprise"
-                                        multiple
+                                        // eslint-disable-next-line react/jsx-boolean-value
+                                        multiple={true}
                                         options={tagsCompany}
                                         value={values}
-                                        limitTags={3}
+                                        limitTags={2}
+                                        getOptionDisabled={(option) => values.length >= 3}
                                         isOptionEqualToValue={(option, value) => option === value}
                                         renderInput={(params) => <TextField {...params} />}
                                         onChange={(_, value) => setValues(value)}
@@ -484,67 +464,55 @@ const Enterprise = () => {
                         </Grid>
                         <Grid item lg={12} md={12} sm={12} xs={12}>
                             <InputLabel>Bannière de la boutique</InputLabel>
-                            <TextField
-                                type="file"
-                                id="newPhotoEnterprise"
+
+                            <FileUploader
+                                handleChange={(e) => formik.setFieldValue('newPhotoEnterprise', e)}
                                 name="newPhotoEnterprise"
-                                fullWidth
-                                label="Enter SKU"
-                                sx={{ display: 'none' }}
-                                onChange={(e) => formik.setFieldValue('newPhotoEnterprise', e.target.files[0])}
+                                types={fileTypes}
+                                label="Ajouter/Remplacer la bannière"
+                                hoverTitle="Déposer l'image"
+                                classes="hello"
+                                // eslint-disable-next-line react/no-children-prop
+                                children={
+                                    <>
+                                        {formik.values.newPhotoEnterprise === null ? (
+                                            <MainCard content={false} border={false} boxShadow style={{ cursor: 'pointer' }}>
+                                                <CardMedia
+                                                    component="img"
+                                                    image={formik.values.oldPhotoEnterprise}
+                                                    height="150"
+                                                    style={{ filter: 'blur(5px)' }}
+                                                    title="Banniere Entreprise"
+                                                    sx={{ borderRadius: `${borderRadius}px`, overflow: 'hidden' }}
+                                                />
+                                                <Typography
+                                                    align="center"
+                                                    variant="h3"
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        position: 'absolute',
+                                                        top: '50%',
+                                                        width: '100%',
+                                                        textAlign: 'center',
+                                                        // color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                    gutterBottom
+                                                >
+                                                    <CloudUploadOutlined
+                                                        fontSize="large"
+                                                        color="primary"
+                                                        sx={{ color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)' }}
+                                                    />
+                                                </Typography>
+                                            </MainCard>
+                                        ) : null}
+                                        {formik.values.newPhotoEnterprise && <PreviewImage files={formik.values.newPhotoEnterprise} />}
+                                    </>
+                                }
                             />
-                            <InputLabel
-                                htmlFor="newPhotoEnterprise"
-                                sx={{
-                                    background: theme.palette.background.default,
-                                    py: 3.75,
-                                    px: 0,
-                                    textAlign: 'center',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    mb: 3,
-                                    '& > svg': {
-                                        verticalAlign: 'sub',
-                                        mr: 0.5
-                                    }
-                                }}
-                            >
-                                {formik.values.newPhotoEnterprise === null ? (
-                                    <MainCard content={false} border={false} boxShadow>
-                                        <CardMedia
-                                            component="img"
-                                            image={formik.values.oldPhotoEnterprise}
-                                            height="150"
-                                            style={{ filter: 'blur(5px)' }}
-                                            title="Banniere Entreprise"
-                                            sx={{ borderRadius: `${borderRadius}px`, overflow: 'hidden' }}
-                                        />
-                                        <Typography
-                                            align="center"
-                                            variant="h3"
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                position: 'absolute',
-                                                top: '50%',
-                                                width: '100%',
-                                                textAlign: 'center',
-                                                // color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)',
-                                                fontWeight: 'bold'
-                                            }}
-                                            gutterBottom
-                                        >
-                                            <CloudUploadOutlined
-                                                fontSize="large"
-                                                color="primary"
-                                                sx={{ color: 'linear-gradient(225deg, #FF7643 0%, #FF4B33 100%)' }}
-                                            />
-                                        </Typography>
-                                    </MainCard>
-                                ) : null}
-                                {formik.values.newPhotoEnterprise && <PreviewImage files={formik.values.newPhotoEnterprise} />}
-                            </InputLabel>
                         </Grid>
                         <Grid item xs={12}>
                             <Stack direction="row" justifyContent="flex-end">

@@ -14,7 +14,8 @@ const {
     PROJECT_ID,
     STORAGE_BUCKET,
     MESSAGING_SENDER_ID,
-    APP_ID
+    APP_ID,
+    GOOGLE_MAPS_GEOCODER_API_KEY
 } = process.env;
 
 assert(PORT, 'PORT is required');
@@ -24,6 +25,7 @@ module.exports = {
     port: PORT,
     host: HOST,
     url: HOST_URL,
+    maps_api: GOOGLE_MAPS_GEOCODER_API_KEY,
     firebaseConfig: {
         apiKey: API_KEY,
         authDomain: AUTH_DOMAIN,
