@@ -38,6 +38,7 @@ import { dispatch } from 'store';
 import { addProducts } from 'store/slices/product';
 import { useFormik } from 'formik';
 import { openSnackbar } from 'store/slices/snackbar';
+import { FileUploader } from 'react-drag-drop-files';
 
 // styles
 const ImageWrapper = styled('div')(({ theme }) => ({
@@ -109,6 +110,7 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
     const theme = useTheme();
     // handle category change dropdown
     const [category, setCategory] = useState('');
+    const fileTypes = ['JPG', 'PNG', 'JPEG'];
 
     // useEffect(() => {
     //     setCategory('Electroménager' || []);
@@ -164,7 +166,7 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
             .typeError('Veuillez mettre un pourcentage entre 0 et 100 de réduction à votre produit')
     });
     const formik = useFormik({
-        validationSchema,
+        // validationSchema,
         initialValues: {
             productName: '',
             productDescription: '',
@@ -175,12 +177,16 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
             productQuantity: '',
             productBrand: '',
             productWeight: '',
-            productVisibility: false
+            productVisibility: false,
+            productPhoto: null
         },
         enableReinitialize: true,
         onSubmit: () => {
-            console.log(formik.values);
-            dispatch(addProducts(sellerID, formik.values));
+            const formData = new FormData();
+            formData.append('productPhoto', formik.values.productPhoto);
+            formData.append('data', JSON.stringify(formik.values));
+            console.log(formData);
+            dispatch(addProducts(sellerID, formData));
             handleCloseDialog();
             dispatch(
                 openSnackbar({
@@ -359,33 +365,13 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <div>
-                                                <TextField
-                                                    type="file"
-                                                    id="file-upload"
-                                                    fullWidth
-                                                    label="Enter SKU"
-                                                    sx={{ display: 'none' }}
-                                                />
-                                                <InputLabel
-                                                    htmlFor="file-upload"
-                                                    sx={{
-                                                        background: theme.palette.background.default,
-                                                        py: 3.75,
-                                                        px: 0,
-                                                        textAlign: 'center',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        mb: 3,
-                                                        '& > svg': {
-                                                            verticalAlign: 'sub',
-                                                            mr: 0.5
-                                                        }
-                                                    }}
-                                                >
-                                                    <CloudUploadIcon /> Déposer vos images
-                                                </InputLabel>
-                                            </div>
+                                            <FileUploader
+                                                handleChange={(e) => formik.setFieldValue('productPhoto', e)}
+                                                name="productPhoto"
+                                                types={fileTypes}
+                                                label="Ajouter/Remplacer la bannière"
+                                                hoverTitle="Déposer l'image"
+                                            />
                                         </Grid>
                                     </Grid>
                                 </Grid>

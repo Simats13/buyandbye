@@ -33,9 +33,9 @@ router.post('/shops/:id',upload.single('newPhotoEnterprise'), updateShop);
 router.delete('/shops/:id', deleteShop);
   
 router.get('/shops/:id/products', getAllProducts);
-router.post('/shops/:id/products/:idProduct',upload.single('newPhotoEnterprise'),updateProduct);
+router.patch('/shops/:id/products/:idProduct',upload.single('newPhotoProduct'),updateProduct);
 router.delete('/shops/:id/products/:idProduct',deleteProduct);
-router.post('/shops/:id/products',upload.single('add_image'),addProduct); 
+router.post('/shops/:id/products',upload.single('productPhoto'),addProduct); 
 
 router.get('/chat/user/:id',getChats);
 router.get('/chat/user/:id/messages',getMessages);

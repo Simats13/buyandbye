@@ -41,7 +41,7 @@ import parse from 'autosuggest-highlight/parse';
 import PreviewImage from './PreviewImage';
 import { FileUploader } from 'react-drag-drop-files';
 
-const fileTypes = ['JPG', 'PNG'];
+const fileTypes = ['JPG', 'PNG', 'JPEG'];
 
 // Schéma de validation des champs du formulaire
 

@@ -212,7 +212,7 @@ const addProduct = async (req, res, next) => {
     try {
         const id = req.params.id;   
         const docRef = firestore.collection('magasins').doc(id).collection("produits").doc();
-        var data = req.body;
+        var data = JSON.parse(req.body);
         console.log(data);
         var images = [];
         images.push("https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/assets%2FNo_image_available.svg.png");
@@ -271,33 +271,38 @@ const addProduct = async (req, res, next) => {
                 await docRef.set({
                     id: docRef.id,
                     nom: data.productName,
-                    prix: parseFloat(data.price),
-                    description: data.description,
-                    categorie: data.category,
-                    quantite: data.quantity,
-                    images: images, 
-                    reference: data.reference,
-                    visible: data.visibility,
+                    prix: parseFloat(data.productPrice),
+                    description: data.productDescription,
+                    categorie: data.productCategory,
+                    quantite: data.productQuantity,
+                    images:images, 
+                    reference: data.productReference,
+                    weight: data.productWeight,
+                    discount: data.productDiscount,
+                    visible: data.productVisibility,
+                    brand: data.productBrand,
                 });
         
                 await firestore.collection('magasins').doc(id).update({
                     produits: adminFirebase.firestore.FieldValue.arrayUnion({
                         id: docRef.id,
                         nom: data.productName,
-                        categorie:data.category,
+                        categorie:data.productCategory,
                     }),
                 });
                 return res.status(200).json({
-                    id:id,
-                    idProduct: docRef.id,
+                    id: docRef.id,
                     nom: data.productName,
-                    prix: parseFloat(data.price),
-                    description: data.description,
-                    categorie: data.category,
-                    quantite: data.quantity,
+                    prix: parseFloat(data.productPrice),
+                    description: data.productDescription,
+                    categorie: data.productCategory,
+                    quantite: data.productQuantity,
                     images:images, 
-                    reference: data.reference,
-                    visible: data.visibility,
+                    reference: data.productReference,
+                    weight: data.productWeight,
+                    discount: data.productDiscount,
+                    visible: data.productVisibility,
+                    brand: data.productBrand,
                  });
             });
             
@@ -305,7 +310,7 @@ const addProduct = async (req, res, next) => {
         }
 
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(400).send(error);
     }
 }
 
@@ -314,11 +319,12 @@ const updateProduct = async (req, res, next) => {
     try {
         const id = req.params.id;    
         const idProduct = req.params.idProduct;
-        var data = req.body;
-        console.log(req.body);
+        var data = JSON.parse(req.body.data);
+        console.log(data);
 
         var images = [];
         images.push(data.currentImageInput);
+
         
 
         if(!req.file) {
@@ -333,7 +339,7 @@ const updateProduct = async (req, res, next) => {
                 brand: data.productBrand,
                 weight: parseFloat(data.productWeight),
                 visible: data.productVisibility,
-                // images:images,
+                images:images,
             });
            
     
@@ -359,7 +365,7 @@ const updateProduct = async (req, res, next) => {
 
   
            return res.status(200).json({
-                sucess: 'Produit modifié avec succès',
+                success: 'Produit modifié avec succès',
             });
         } else {
             const blob = firebase.storage().bucket().file(`products/${id}/${idProduct}/1`); 
@@ -379,12 +385,15 @@ const updateProduct = async (req, res, next) => {
             blobWriter.on('finish',async ()  => {
                 await firestore.collection('magasins').doc(id).collection("produits").doc(idProduct).update({
                     nom: data.productName,
-                    prix: parseFloat(data.price),
-                    description: data.description,
-                    categorie: data.category,
-                    quantite: data.quantity,
-                    reference: data.reference,
-                    visible: data.visibility,
+                    prix: parseFloat(data.productPrice),
+                    description: data.productDescription,
+                    categorie: data.productCategory,
+                    reference: data.productReference,
+                    quantite: parseFloat(data.productQuantity),
+                    discount: parseFloat(data.productDiscount),
+                    brand: data.productBrand,
+                    weight: parseFloat(data.productWeight),
+                    visible: data.productVisibility,
                     images:images,
                 });
                
@@ -402,19 +411,22 @@ const updateProduct = async (req, res, next) => {
                     produits: adminFirebase.firestore.FieldValue.arrayRemove(found),
                 });
                 found.nom = data.productName;
-                found.categorie = data.category;
+                found.categorie = data.productCategory;
         
                 await firestore.collection('magasins').doc(id).update({
                     produits: adminFirebase.firestore.FieldValue.arrayUnion(found),
                 });
                 return res.status(200).json({
                     nom: data.productName,
-                    prix: parseFloat(data.price),
-                    description: data.description,
-                    categorie: data.category,
-                    quantite: data.quantity,
-                    reference: data.reference,
-                    visible: data.visibility,
+                    prix: parseFloat(data.productPrice),
+                    description: data.productDescription,
+                    categorie: data.productCategory,
+                    reference: data.productReference,
+                    quantite: parseFloat(data.productQuantity),
+                    discount: parseFloat(data.productDiscount),
+                    brand: data.productBrand,
+                    weight: parseFloat(data.productWeight),
+                    visible: data.productVisibility,
                     images:images,
                  });
             });

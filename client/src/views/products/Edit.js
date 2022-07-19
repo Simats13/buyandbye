@@ -38,6 +38,7 @@ import { Form, Formik, useFormik } from 'formik';
 import { dispatch } from 'store';
 import { editProducts } from 'store/slices/product';
 import { openSnackbar } from 'store/slices/snackbar';
+import { FileUploader } from 'react-drag-drop-files';
 
 // styles
 const ImageWrapper = styled('div')(({ theme }) => ({
@@ -138,6 +139,8 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
         productBrand: yup.string().required('Product brand is required'),
         productWeight: yup.number().required('Product weight is required')
     });
+
+    const fileTypes = ['JPG', 'PNG', 'JPEG'];
     const formik = useFormik({
         // validationSchema,
         initialValues: {
@@ -150,11 +153,16 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
             productQuantity: data.quantite || 0,
             productBrand: data.brand || '',
             productWeight: data.weight || 0,
-            productVisibility: data.visible || 0
+            productVisibility: data.visible || 0,
+            productPhoto: data.photo,
+            newPhotoProduct: null
         },
         enableReinitialize: true,
         onSubmit: () => {
-            dispatch(editProducts(sellerID, data.id, formik.values));
+            const formData = new FormData();
+            formData.append('newPhotoProduct', formik.values.newPhotoProduct);
+            formData.append('data', JSON.stringify(formik.values));
+            dispatch(editProducts(sellerID, data.id, formData));
             handleCloseDialog();
             dispatch(
                 openSnackbar({
@@ -310,33 +318,13 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <div>
-                                                <TextField
-                                                    type="file"
-                                                    id="file-upload"
-                                                    fullWidth
-                                                    label="Enter SKU"
-                                                    sx={{ display: 'none' }}
-                                                />
-                                                <InputLabel
-                                                    htmlFor="file-upload"
-                                                    sx={{
-                                                        background: theme.palette.background.default,
-                                                        py: 3.75,
-                                                        px: 0,
-                                                        textAlign: 'center',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        mb: 3,
-                                                        '& > svg': {
-                                                            verticalAlign: 'sub',
-                                                            mr: 0.5
-                                                        }
-                                                    }}
-                                                >
-                                                    <CloudUploadIcon /> Déposer vos images
-                                                </InputLabel>
-                                            </div>
+                                            <FileUploader
+                                                handleChange={(e) => formik.setFieldValue('newPhotoProduct', e)}
+                                                name="newPhotoProduct"
+                                                types={fileTypes}
+                                                label="Ajouter/Remplacer la bannière"
+                                                hoverTitle="Déposer l'image"
+                                            />
                                         </Grid>
                                     </Grid>
                                 </Grid>
