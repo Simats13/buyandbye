@@ -52,3 +52,4 @@ README.md
 test/
 web/
 android/local.properties
+ios/.DS_Store
