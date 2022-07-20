@@ -53,10 +53,12 @@ class _PageProduitState extends State<PageProduit> {
     String imgProduit = widget.imagesList![0];
     int amount = 1;
 
-    bool checkProductsExists = await DatabaseMethods().checkIfProductsExists(
-        widget.userid!, widget.idCommercant, widget.idProduit);
+    print(widget.userid!);
+    print(widget.idCommercant);
+    print(widget.idProduit);
+    bool checkProductsExists = await DatabaseMethods().checkIfProductsExists(widget.userid!, widget.idCommercant, widget.idProduit);
 
-    if (checkProductsExists == true) {
+    if (checkProductsExists) {
       DocumentSnapshot ds = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userid)
@@ -67,28 +69,16 @@ class _PageProduitState extends State<PageProduit> {
           .get();
       Map? getDocs = ds.data() as Map?;
       amount = getDocs!['amount'];
-      DatabaseMethods().addItem(
-          widget.userid, widget.idCommercant, widget.idProduit, amount + 1);
+      DatabaseMethods().addItem(widget.userid, widget.idCommercant, widget.idProduit, amount + 1);
       Navigator.of(context).pop();
     } else {
-      bool addProductToCart = await DatabaseMethods().addCart(
-          nomProduit,
-          prixProduit,
-          imgProduit,
-          amount,
-          widget.idCommercant,
-          widget.idProduit);
+      bool addProductToCart = await DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit, amount, widget.idCommercant, widget.idProduit);
 
       if (addProductToCart == false) {
-        var docId = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userid)
-            .collection('cart')
-            .get();
+        var docId = await FirebaseFirestore.instance.collection('users').doc(widget.userid).collection('cart').get();
         QueryDocumentSnapshot doc = docId.docs[0];
         DocumentReference docRef = doc.reference;
-        var querySnapshot =
-            await DatabaseMethods().getMagasinInfo(docRef.id);
+        var querySnapshot = await DatabaseMethods().getMagasinInfo(docRef.id);
         String sellerNameCart = "${querySnapshot.docs[0]["name"]}";
         Platform.isIOS
             ? showCupertinoDialog(
@@ -111,13 +101,7 @@ class _PageProduitState extends State<PageProduit> {
                       ),
                       onPressed: () async {
                         await DatabaseMethods().deleteCart(docRef.id);
-                        await DatabaseMethods().addCart(
-                            nomProduit,
-                            prixProduit,
-                            imgProduit,
-                            amount,
-                            widget.idCommercant,
-                            widget.idProduit);
+                        await DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit, amount, widget.idCommercant, widget.idProduit);
                         Navigator.of(context).pop();
 
                         Navigator.of(context).pop();
@@ -144,13 +128,7 @@ class _PageProduitState extends State<PageProduit> {
                       ),
                       onPressed: () async {
                         await DatabaseMethods().deleteCart(docRef.id);
-                        await DatabaseMethods().addCart(
-                            nomProduit,
-                            prixProduit,
-                            imgProduit,
-                            amount,
-                            widget.idCommercant,
-                            widget.idProduit);
+                        await DatabaseMethods().addCart(nomProduit, prixProduit, imgProduit, amount, widget.idCommercant, widget.idProduit);
                         Navigator.of(context).pop();
                         Navigator.of(context).pop();
                       },
@@ -185,66 +163,60 @@ class _PageProduitState extends State<PageProduit> {
 
   Widget successfullAddCart() {
     return Scaffold(
-      body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.center,
-              child: Stack(
-                children: <Widget>[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Icon(
-                      Icons.add_shopping_cart,
-                      size: 50,
-                      color: Colors.green.shade300,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 80,
-            ),
-            const Text(
-              "Produit ajouté au panier !",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              height: 48,
-              width: 250,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.black,
-              ),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  child: Text(
-                    'Revenir aux produits',
-                    style: TextStyle(
-                        color: white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
+      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        Container(
+          alignment: Alignment.center,
+          child: Stack(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Icon(
+                  Icons.add_shopping_cart,
+                  size: 50,
+                  color: Colors.green.shade300,
                 ),
               ),
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 80,
+        ),
+        const Text(
+          "Produit ajouté au panier !",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          height: 48,
+          width: 250,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.black,
+          ),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              child: Text(
+                'Revenir aux produits',
+                style: TextStyle(color: white, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
-          ]),
+          ),
+        ),
+      ]),
     );
   }
 
   int carouselItem = 0;
   @override
   Widget build(BuildContext context) {
-    var carouselList =
-        Iterable<int>.generate(widget.imagesList!.length).toList();
+    var carouselList = Iterable<int>.generate(widget.imagesList!.length).toList();
     String? nomVendeur = widget.name;
     var money = widget.prixProduit;
 
@@ -276,8 +248,7 @@ class _PageProduitState extends State<PageProduit> {
             CarouselSlider(
                 options: CarouselOptions(
                     height: 200,
-                    enableInfiniteScroll:
-                        widget.imagesList!.length > 1 ? true : false,
+                    enableInfiniteScroll: widget.imagesList!.length > 1 ? true : false,
                     onPageChanged: (index, reason) {
                       setState(() {
                         carouselItem = index;
@@ -297,9 +268,7 @@ class _PageProduitState extends State<PageProduit> {
               for (int i = 0; i < widget.imagesList!.length; i++)
                 Container(
                     margin: const EdgeInsets.only(left: 5, right: 5),
-                    child: Icon(Icons.circle_rounded,
-                        size: 12,
-                        color: carouselItem == i ? Colors.black : Colors.grey))
+                    child: Icon(Icons.circle_rounded, size: 12, color: carouselItem == i ? Colors.black : Colors.grey))
             ]),
             // Affichage des autres informations du produit
             Container(
@@ -313,13 +282,11 @@ class _PageProduitState extends State<PageProduit> {
                       children: <Widget>[
                         Text(
                           widget.nomProduit!,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                         Text(
                           "$money€",
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),
@@ -331,8 +298,7 @@ class _PageProduitState extends State<PageProduit> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Vendeur : $nomVendeur",
-                      style:
-                          const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
                     ),
                   ),
                   Padding(

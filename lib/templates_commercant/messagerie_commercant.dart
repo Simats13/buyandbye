@@ -135,7 +135,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     userid = user.uid;
     QuerySnapshot querySnapshot2 = await DatabaseMethods().getMagasinInfo(userid);
     myProfilePicUrl = "${querySnapshot2.docs[0]["imgUrl"]}";
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(widget.clientID);
+    QuerySnapshot querySnapshot = await ProviderUserInfo().returnData();
     fname = "${querySnapshot.docs[0]["fname"]}";
     lname = "${querySnapshot.docs[0]["lname"]}";
     idTest = "${querySnapshot.docs[0]["id"]}";

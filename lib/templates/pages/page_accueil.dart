@@ -36,19 +36,8 @@ class _PageAccueilState extends State<PageAccueil> {
   late bool permissionChecked;
   bool chargementChecked = false;
 
-  String? currentLocationAddress,
-      currentAddress = "",
-      locationCity,
-      streetNumber,
-      street,
-      city,
-      zipCode,
-      idAddress,
-      userid;
-  double latitude = 0,
-      longitude = 0,
-      currentLocationLatitude = 0,
-      currentLocationLongitude = 0;
+  String? currentLocationAddress, currentAddress = "", locationCity, streetNumber, street, city, zipCode, idAddress, userid;
+  double latitude = 0, longitude = 0, currentLocationLatitude = 0, currentLocationLongitude = 0;
   late GeoFlutterFire geo;
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
@@ -92,7 +81,6 @@ class _PageAccueilState extends State<PageAccueil> {
         return false;
       }
     }
-    print(localisationActive);
 
     permissionAutorise = await location.hasPermission();
     if (permissionAutorise == PermissionStatus.denied) {
@@ -115,12 +103,10 @@ class _PageAccueilState extends State<PageAccueil> {
   getCoordinates() async {
     final User user = await ProviderUserId().returnUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
+    QuerySnapshot querySnapshot = await DatabaseMethods().getChosenAddress(userid);
     latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
     longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(latitude, longitude);
+    List<geocoder.Placemark> addresses = await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
     currentAddress = "${first.name}, ${first.locality}";
@@ -135,11 +121,9 @@ class _PageAccueilState extends State<PageAccueil> {
     final geo = GeoFlutterFire();
     GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
     stream = radius.switchMap((rad) {
-      var collectionReference =
-          FirebaseFirestore.instance.collection('magasins');
+      var collectionReference = FirebaseFirestore.instance.collection('magasins');
 
-      return geo.collection(collectionRef: collectionReference).within(
-          center: center, radius: 10, field: 'position', strictMode: true);
+      return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
     });
   }
 
@@ -147,8 +131,8 @@ class _PageAccueilState extends State<PageAccueil> {
   userinfo() async {
     final User user = await ProviderUserId().returnUser();
     userid = user.uid;
-    QuerySnapshot appBarUser = await DatabaseMethods().getMyInfo(userid);
-    username = "${appBarUser.docs[0]['fname']} 👋";
+    dynamic appBarUser = await ProviderUserInfo().returnData();
+    username = "jife" + " 👋";
   }
 
   Widget getBody() {
@@ -158,8 +142,7 @@ class _PageAccueilState extends State<PageAccueil> {
     return chargementChecked
         ? CupertinoPageScaffold(
             child: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
                   PreferredSize(
                     preferredSize: const Size.fromHeight(10),
@@ -175,8 +158,7 @@ class _PageAccueilState extends State<PageAccueil> {
                           padding: const EdgeInsets.all(12),
                           child: Row(
                             children: [
-                              const Icon(Icons.location_on,
-                                  color: BuyandByeAppTheme.orangeMiFonce),
+                              const Icon(Icons.location_on, color: BuyandByeAppTheme.orangeMiFonce),
                               const SizedBox(
                                 width: 10,
                               ),
@@ -210,8 +192,7 @@ class _PageAccueilState extends State<PageAccueil> {
                         ),
                         child: IconButton(
                           icon: const Center(
-                            child: Icon(Icons.shopping_cart,
-                                color: BuyandByeAppTheme.orangeMiFonce
+                            child: Icon(Icons.shopping_cart, color: BuyandByeAppTheme.orangeMiFonce
                                 // size: 22,
                                 ),
                           ),
@@ -248,8 +229,7 @@ class _PageAccueilState extends State<PageAccueil> {
               },
               body: StreamBuilder(
                 stream: stream,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
                   if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   }
@@ -307,8 +287,7 @@ class _PageAccueilState extends State<PageAccueil> {
                             const Center(
                                 child: Text(
                               "Sponsorisé",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20.00),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.00),
                             )),
                             const SizedBox(
                               height: 15,
@@ -398,8 +377,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                     ),
                                     const WidgetSpan(
                                       child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 5.0),
+                                        padding: EdgeInsets.symmetric(horizontal: 5.0),
                                         child: Icon(
                                           Icons.favorite,
                                           color: Colors.red,
@@ -413,8 +391,7 @@ class _PageAccueilState extends State<PageAccueil> {
                             ),
                             Container(
                               padding: const EdgeInsets.all(20),
-                              child:
-                                  SliderFavorite(latitude, longitude, userid),
+                              child: SliderFavorite(latitude, longitude, userid),
                             ),
                             // Text(
                             //   "    Vous avez acheté chez eux récemment",
@@ -554,8 +531,7 @@ class _PageAccueilState extends State<PageAccueil> {
           return Align(
               alignment: Alignment.topCenter,
               child: Container(
-                constraints: BoxConstraints(
-                    minHeight: size.height / 2.5, maxHeight: 600),
+                constraints: BoxConstraints(minHeight: size.height / 2.5, maxHeight: 600),
                 margin: const EdgeInsets.only(top: 100, left: 12, right: 12),
                 child: const UserAddress(),
               ));
@@ -589,14 +565,10 @@ class _SliderAccueil1State extends State<SliderAccueil1> {
 
     setState(() {
       final geo = GeoFlutterFire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
+      GeoFirePoint center = geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
-        var collectionReference = FirebaseFirestore.instance
-            .collection('magasins')
-            .where("sponsored", isEqualTo: true);
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins').where("sponsored", isEqualTo: true);
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -714,13 +686,10 @@ class _SliderAccueil2State extends State<SliderAccueil2> {
 
     setState(() {
       final geo = GeoFlutterFire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
+      GeoFirePoint center = geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
-        var collectionReference =
-            FirebaseFirestore.instance.collection('magasins');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 3, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins');
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 3, field: 'position', strictMode: true);
       });
     });
   }
@@ -837,13 +806,10 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
     setState(() {
       final geo = GeoFlutterFire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
+      GeoFirePoint center = geo.point(latitude: widget.latitude!, longitude: widget.longitude!);
       stream = radius.switchMap((rad) {
-        var collectionReference =
-            FirebaseFirestore.instance.collection('magasins');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins');
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -942,8 +908,7 @@ class _SliderAccueil3State extends State<SliderAccueil3> {
 
 // ignore: must_be_immutable
 class SliderFavorite extends StatefulWidget {
-  SliderFavorite(this.latitude, this.longitude, this.userID, {Key? key})
-      : super(key: key);
+  SliderFavorite(this.latitude, this.longitude, this.userID, {Key? key}) : super(key: key);
   double latitude;
   double longitude;
   String? userID;
@@ -962,15 +927,10 @@ class _SliderFavoriteState extends State<SliderFavorite> {
     super.initState();
     setState(() {
       final geo = GeoFlutterFire();
-      GeoFirePoint center =
-          geo.point(latitude: widget.latitude, longitude: widget.longitude);
+      GeoFirePoint center = geo.point(latitude: widget.latitude, longitude: widget.longitude);
       stream = radius.switchMap((rad) {
-        Query collectionReference = FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userID)
-            .collection('loved');
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        Query collectionReference = FirebaseFirestore.instance.collection('users').doc(widget.userID).collection('loved');
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -1013,10 +973,7 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                 itemCount: snapshot1.data.length,
                 itemBuilder: (context, index) {
                   return StreamBuilder<dynamic>(
-                      stream: FirebaseFirestore.instance
-                          .collection('magasins')
-                          .doc(snapshot1.data[index]["id"])
-                          .snapshots(),
+                      stream: FirebaseFirestore.instance.collection('magasins').doc(snapshot1.data[index]["id"]).snapshots(),
                       builder: (context, snapshot2) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 10.0),
@@ -1027,11 +984,9 @@ class _SliderFavoriteState extends State<SliderFavorite> {
                               description: snapshot2.data["description"],
                               livraison: snapshot2.data["livraison"],
                               sellerID: snapshot2.data["id"],
-                              horairesOuverture:
-                                  snapshot2.data["horairesOuverture"],
+                              horairesOuverture: snapshot2.data["horairesOuverture"],
                               colorStore: snapshot2.data["colorStore"],
-                              clickAndCollect:
-                                  snapshot2.data["ClickAndCollect"],
+                              clickAndCollect: snapshot2.data["ClickAndCollect"],
                               mainCategorie: snapshot2.data["mainCategorie"]),
                         );
                       });
@@ -1127,52 +1082,36 @@ class _SliderAccueil4State extends State<SliderAccueil4> {
                             MaterialPageRoute(
                               builder: (context) => PageDetail(
                                 img: documents[carouselItem]['imgUrl'],
-                                colorStore: documents[carouselItem]
-                                    ['colorStore'],
+                                colorStore: documents[carouselItem]['colorStore'],
                                 name: documents[carouselItem]['name'],
-                                description: documents[carouselItem]
-                                    ['description'],
+                                description: documents[carouselItem]['description'],
                                 adresse: documents[carouselItem]['adresse'],
-                                clickAndCollect: documents[carouselItem]
-                                    ['ClickAndCollect'],
+                                clickAndCollect: documents[carouselItem]['ClickAndCollect'],
                                 livraison: documents[carouselItem]['livraison'],
                                 sellerID: documents[carouselItem]['id'],
-                                horairesOuverture: snapshot.data[carouselItem]
-                                    ['horairesOuverture'],
+                                horairesOuverture: snapshot.data[carouselItem]['horairesOuverture'],
                               ),
                             ),
                           );
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
-                                boxShadow: const [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 4,
-                                      offset: Offset(4, 4))
-                                ]),
+                                boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 4, offset: Offset(4, 4))]),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height / 10,
+                                  height: MediaQuery.of(context).size.height / 10,
                                   child: Image.network(i),
                                 ),
                                 Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, top: 40),
-                                    child: Text(documents[carouselItem]["name"],
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700))),
+                                    padding: const EdgeInsets.only(bottom: 10, top: 40),
+                                    child: Text(documents[carouselItem]["name"], style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700))),
                               ],
                             )));
                   });
@@ -1226,13 +1165,10 @@ class _AllStoresState extends State<AllStores> {
       setState(() {
         position = value;
         final geo = GeoFlutterFire();
-        GeoFirePoint center = geo.point(
-            latitude: position.latitude, longitude: position.longitude);
+        GeoFirePoint center = geo.point(latitude: position.latitude, longitude: position.longitude);
         stream = radius.switchMap((rad) {
-          var collectionReference =
-              FirebaseFirestore.instance.collection('magasins');
-          return geo.collection(collectionRef: collectionReference).within(
-              center: center, radius: 50, field: 'position', strictMode: true);
+          var collectionReference = FirebaseFirestore.instance.collection('magasins');
+          return geo.collection(collectionRef: collectionReference).within(center: center, radius: 50, field: 'position', strictMode: true);
         });
       });
     });
@@ -1246,8 +1182,7 @@ class _AllStoresState extends State<AllStores> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
@@ -1275,14 +1210,12 @@ class _AllStoresState extends State<AllStores> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Icon(
                                           Icons.location_on,
@@ -1297,8 +1230,7 @@ class _AllStoresState extends State<AllStores> {
                                             onTap: () async {},
                                             child: Container(
                                               width: size.width - 150,
-                                              padding:
-                                                  const EdgeInsets.only(top: 5),
+                                              padding: const EdgeInsets.only(top: 5),
                                               child: const SizedBox(
                                                 height: 10,
                                                 width: 10,
@@ -1344,8 +1276,7 @@ class _AllStoresState extends State<AllStores> {
                                         height: 300,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                       ),
                                     ],
@@ -1390,19 +1321,13 @@ class _AllStoresState extends State<AllStores> {
                                   builder: (context) => PageDetail(
                                         img: snapshot.data[index]['imgUrl'],
                                         name: snapshot.data[index]['name'],
-                                        colorStore: snapshot.data[index]
-                                            ['colorStore'],
-                                        description: snapshot.data[index]
-                                            ['description'],
-                                        adresse: snapshot.data[index]
-                                            ['adresse'],
-                                        clickAndCollect: snapshot.data[index]
-                                            ['ClickAndCollect'],
-                                        livraison: snapshot.data[index]
-                                            ['livraison'],
+                                        colorStore: snapshot.data[index]['colorStore'],
+                                        description: snapshot.data[index]['description'],
+                                        adresse: snapshot.data[index]['adresse'],
+                                        clickAndCollect: snapshot.data[index]['ClickAndCollect'],
+                                        livraison: snapshot.data[index]['livraison'],
                                         sellerID: snapshot.data[index]['id'],
-                                        horairesOuverture: snapshot.data[index]
-                                            ['horairesOuverture'],
+                                        horairesOuverture: snapshot.data[index]['horairesOuverture'],
                                       )));
                         },
                         child: Column(
@@ -1426,9 +1351,7 @@ class _AllStoresState extends State<AllStores> {
                               height: 5,
                             ),
                             Text(snapshot.data[index]['description'],
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500)),
+                                textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                             const SizedBox(
                               height: 15,
                             ),

@@ -68,7 +68,7 @@ class _PageLivraisonState extends State<PageLivraison> {
   userID() async {
     final User user = await ProviderUserId().returnUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    QuerySnapshot querySnapshot = await ProviderUserInfo().returnData();
     userName = "${querySnapshot.docs[0]["fname"]} ${querySnapshot.docs[0]["lname"]}";
   }
 

@@ -1,6 +1,5 @@
 import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/chatscreen.dart';
@@ -285,8 +284,7 @@ class UserInfo extends StatefulWidget {
 class _UserInfoState extends State<UserInfo> {
   String? myUserName, myProfilePic;
   getSellerName() async {
-    final User user = await ProviderUserId().returnUser();
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(user.uid);
+    QuerySnapshot querySnapshot = await ProviderUserInfo().returnData();
     myUserName = "${querySnapshot.docs[0]["name"]}";
     myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
   }
@@ -299,8 +297,8 @@ class _UserInfoState extends State<UserInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: DatabaseMethods().getMyInfo(widget.clientId),
+    return StreamBuilder(
+      stream: ProviderUserInfo().returnData(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(

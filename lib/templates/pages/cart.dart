@@ -19,7 +19,7 @@ class _CartPageState extends State<CartPage> {
   double cartDeliver = 0.0;
 
   String? idCommercant;
-  String? customerID, email, userid;
+  String? email, userid;
 
   @override
   void initState() {
@@ -29,11 +29,13 @@ class _CartPageState extends State<CartPage> {
   }
 
   getMyInfoCart() async {
-    QuerySnapshot querySnapshot = await DatabaseMethods().getCart();
-    if (querySnapshot.docs.isEmpty) {
+    QuerySnapshot querySnapshot = await ProviderGetCart().returnData();
+    print(querySnapshot.docs.isEmpty);
+    if (querySnapshot.docs.isNotEmpty) {
       idCommercant = "empty";
     } else {
-      idCommercant = querySnapshot.docs[0].id;
+      //idCommercant = querySnapshot.docs[0].id;
+      idCommercant = 'dnGbdRAWrPMZYcLK98a5fowRLHJ2';
     }
     setState(() {});
   }
@@ -41,9 +43,6 @@ class _CartPageState extends State<CartPage> {
   getMyInfo() async {
     final User user = await ProviderUserId().returnUser();
     userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
-    customerID = "${querySnapshot.docs[0]["customerId"]}";
-    email = "${querySnapshot.docs[0]["email"]}";
   }
 
   @override
@@ -53,20 +52,8 @@ class _CartPageState extends State<CartPage> {
         borderRadius: BorderRadius.circular(30),
       ),
       child: FutureBuilder<dynamic>(
-          future: DatabaseMethods().allCartMoney(idCommercant),
+          future: DatabaseMethods().allCartMoney(userid, idCommercant),
           builder: (context, snapshot) {
-            // if (snapshot.connectionState == ConnectionState.waiting) {
-            //   return Container(
-            //     constraints: BoxConstraints(maxHeight: 200),
-            //     child: Center(
-            //       child: ColorLoader3(
-            //         radius: 15.0,
-            //         dotRadius: 6.0,
-            //       ),
-            //     ),
-            //     margin: EdgeInsets.only(left: 12, right: 12),
-            //   );
-            // }
             if (!snapshot.hasData) {
               return Container(
                 constraints: const BoxConstraints(maxHeight: 200),
@@ -79,149 +66,151 @@ class _CartPageState extends State<CartPage> {
                 margin: const EdgeInsets.only(left: 12, right: 12),
               );
             }
+            print(idCommercant);
             if (snapshot.data.docs.length > 0) {
-              return ListView.builder(
-                  padding: const EdgeInsets.all(0.0),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: 1,
-                  itemBuilder: (context, index) {
-                    double total = 0.0;
-                    for (var i = 0; i < snapshot.data.docs.length; i++) {
-                      total += snapshot.data.docs[i]["prixProduit"] *
-                          snapshot.data.docs[i]["amount"];
-                    }
-                    cartTotal = total;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: <Widget>[
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          const Text(
-                            "Mon Panier",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 21,
-                            ),
-                          ),
-                          cartItem(),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Sous-Total",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+              return StreamBuilder<dynamic>(
+                  stream: ProviderUserInfo().returnData(),
+                  builder: (context, snapshot2) {
+                    return ListView.builder(
+                        padding: const EdgeInsets.all(0.0),
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 1,
+                        itemBuilder: (context, index) {
+                          double total = 0.0;
+                          for (var i = 0; i < snapshot.data.docs.length; i++) {
+                            total += snapshot.data.docs[i]["prixProduit"] * snapshot.data.docs[i]["amount"];
+                          }
+                          cartTotal = total;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 15,
                                 ),
-                              ),
-                              Text(
-                                cartTotal.toStringAsFixed(2) + "€",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                "Frais de Livraison",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                "1.99€",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Total",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                cartTotal.toStringAsFixed(2) + "€",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PageLivraison(
-                                    email: email,
-                                    idCommercant: idCommercant,
-                                    total: cartTotal,
-                                    customerID: customerID,
+                                const Text(
+                                  "Mon Panier",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 21,
                                   ),
                                 ),
-                              );
-                            },
-                            color: Colors.deepOrangeAccent,
-                            height: 50,
-                            minWidth: MediaQuery.of(context).size.width - 50,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24)),
-                            child: RichText(
-                              text: const TextSpan(
-                                text: 'CHOISIR LE MODE DE LIVRAISON',
-                                style: TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.bold,
+                                cartItem(),
+                                const SizedBox(
+                                  height: 15,
                                 ),
-                                children: [
-                                  WidgetSpan(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 5.0),
-                                      child: Icon(
-                                        Icons.local_shipping,
-                                        color: BuyandByeAppTheme.white,
-                                        size: 20,
+                                const Divider(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Sous-Total",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
                                       ),
                                     ),
+                                    Text(
+                                      cartTotal.toStringAsFixed(2) + "€",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: const [
+                                    Text(
+                                      "Frais de Livraison",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      "1.99€",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Total",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    Text(
+                                      cartTotal.toStringAsFixed(2) + "€",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                MaterialButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PageLivraison(
+                                          email: snapshot2.data["email"],
+                                          idCommercant: idCommercant,
+                                          total: cartTotal,
+                                          customerID: userid,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  color: Colors.deepOrangeAccent,
+                                  height: 50,
+                                  minWidth: MediaQuery.of(context).size.width - 50,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                  child: RichText(
+                                    text: const TextSpan(
+                                      text: 'CHOISIR LE MODE DE LIVRAISON',
+                                      style: TextStyle(
+                                        fontSize: 14.5,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      children: [
+                                        WidgetSpan(
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 5.0),
+                                            child: Icon(
+                                              Icons.local_shipping,
+                                              color: BuyandByeAppTheme.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                        ],
-                      ),
-                    );
+                          );
+                        });
                   });
             } else {
               cartTotal = 0.0;
@@ -271,8 +260,7 @@ class _CartPageState extends State<CartPage> {
                     double total = 0.0;
 
                     for (var i = 0; i < snapshot.data.docs.length; i++) {
-                      total += snapshot.data.docs[i]["prixProduit"] *
-                          snapshot.data.docs[i]["amount"];
+                      total += snapshot.data.docs[i]["prixProduit"] * snapshot.data.docs[i]["amount"];
                     }
 
                     cartTotal = total;
@@ -287,9 +275,7 @@ class _CartPageState extends State<CartPage> {
                           Container(
                             width: 80,
                             height: 80,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20)),
+                            decoration: BoxDecoration(color: Colors.grey.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
                             child: Center(
                               child: Container(
                                 width: 60,
@@ -316,8 +302,7 @@ class _CartPageState extends State<CartPage> {
                                   width: 100,
                                   child: Text(
                                     snapshot.data.docs[index]["nomProduit"],
-                                    style:
-                                        const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 const SizedBox(
@@ -328,35 +313,22 @@ class _CartPageState extends State<CartPage> {
                                     Container(
                                       height: 30,
                                       width: 30,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
+                                      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
                                       child: IconButton(
-                                        icon: const Icon(Icons.remove,
-                                            color: Colors.black, size: 15),
+                                        icon: const Icon(Icons.remove, color: Colors.black, size: 15),
                                         onPressed: () {
-                                          var itemdelete =
-                                              snapshot.data.docs[index]["id"];
-                                          amount = (snapshot.data.docs[index]
-                                                  ["amount"] -
-                                              1);
-                                          addItem(
-                                              itemdelete, amount, idCommercant);
-                                          if (snapshot.data.docs[index]
-                                                  ["amount"] ==
-                                              1) {
-                                            var itemdelete =
-                                                snapshot.data.docs[index]["id"];
-                                            deleteItem(
-                                                itemdelete, idCommercant);
+                                          var itemdelete = snapshot.data.docs[index]["id"];
+                                          amount = (snapshot.data.docs[index]["amount"] - 1);
+                                          addItem(itemdelete, amount, idCommercant);
+                                          if (snapshot.data.docs[index]["amount"] == 1) {
+                                            var itemdelete = snapshot.data.docs[index]["id"];
+                                            deleteItem(itemdelete, idCommercant);
                                           }
                                         },
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8),
                                       child: Text(
                                         amount.toString(),
                                         style: const TextStyle(
@@ -368,29 +340,20 @@ class _CartPageState extends State<CartPage> {
                                     Container(
                                       height: 30,
                                       width: 30,
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue[300],
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
+                                      decoration: BoxDecoration(color: Colors.blue[300], borderRadius: BorderRadius.circular(4)),
                                       child: IconButton(
-                                        icon: const Icon(Icons.add,
-                                            color: Colors.black, size: 15),
+                                        icon: const Icon(Icons.add, color: Colors.black, size: 15),
                                         onPressed: () {
-                                          var itemdelete =
-                                              snapshot.data.docs[index]["id"];
-                                          amount = (snapshot.data.docs[index]
-                                                  ["amount"] +
-                                              1);
-                                          addItem(
-                                              itemdelete, amount, idCommercant);
+                                          var itemdelete = snapshot.data.docs[index]["id"];
+                                          amount = (snapshot.data.docs[index]["amount"] + 1);
+                                          addItem(itemdelete, amount, idCommercant);
                                         },
                                       ),
                                     ),
                                     const Spacer(),
                                     Text(
                                       allMoneyForProduct.toStringAsFixed(2) + "€",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
                                     )
                                   ],
                                 )

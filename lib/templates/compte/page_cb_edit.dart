@@ -89,7 +89,6 @@ class _PageCBEditState extends State<PageCBEdit> {
     }
     dropdownYear = widget.expYear.toString();
     dropdownMonth = widget.expMonth.toString();
-    print(widget.nameCard);
   }
 
   @override
@@ -315,7 +314,6 @@ class _PageCBEditState extends State<PageCBEdit> {
                                             onSelectedItemChanged: (value) {
                                               setState(() {
                                                 dropdownYear = year[value];
-                                                print(dropdownYear);
                                               });
                                             },
                                             children: [

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/main.dart';
@@ -7,8 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/Connexion/Tools/text_field_container.dart';
-
-import 'package:buyandbye/templates/accueil.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 
 import 'package:buyandbye/services/auth.dart';

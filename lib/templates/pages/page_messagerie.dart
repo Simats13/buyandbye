@@ -111,7 +111,7 @@ class _PageMessagerieState extends State<PageMessagerie>
                               motion: ScrollMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: doNothing,
+                                  onPressed: null,
                                   backgroundColor: Color(0xFFFE4A49),
                                   foregroundColor: Colors.white,
                                   icon: Icons.delete,
@@ -178,9 +178,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   }
 
   getMyInfo() async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getMyInfo(userid);
+    QuerySnapshot querySnapshot = await ProviderUserInfo().returnData();
     myThumbnail = "${querySnapshot.docs[0]["imgUrl"]}";
   }
 
@@ -309,8 +307,4 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     }
     return const SizedBox(width: 0.0, height: 0.0);
   }
-}
-
-void doNothing(BuildContext context) {
-  print("hello");
 }

@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/main.dart';
 import 'package:buyandbye/templates/Connexion/Tools/or_divider.dart';

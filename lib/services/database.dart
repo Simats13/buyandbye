@@ -1,26 +1,17 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
-
 import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geoflutterfire2/geoflutterfire2.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseMethods {
   static DatabaseMethods get instance => DatabaseMethods();
   Map<String, dynamic>? paymentIntentData;
 
-  Future userAuthData(String userId) async {
-    return FirebaseFirestore.instance.collection("users").doc(userId).get();
-  }
 
-  Future<QuerySnapshot> getMyInfo(String? userid) async {
-    return await FirebaseFirestore.instance.collection("users").where("id", isEqualTo: userid).get();
-  }
+  // Future<QuerySnapshot> getMyInfo(String? userid) async {
+  //   return await FirebaseFirestore.instance.collection("users").where("id", isEqualTo: userid).get();
+  // }
 
   Future deleteUser(String userID, customerID) async {
     return await FirebaseFirestore.instance.collection("users").doc(userID).delete();
@@ -78,22 +69,6 @@ class DatabaseMethods {
     return FirebaseFirestore.instance.collection(collection).doc(userid).set(userInfoMap);
   }
 
-  Future<Stream<QuerySnapshot>> getUserByUserName(String username) async {
-    return FirebaseFirestore.instance.collection("users").where("name", isEqualTo: username).snapshots();
-  }
-
-  Future<Stream<QuerySnapshot>> getMessagesByName(String nameMagasin) async {
-    return FirebaseFirestore.instance.collection("users").where("name", isEqualTo: nameMagasin).snapshots();
-  }
-
-  Future addMessage(String chatRoomId, String messageId, Map messageInfoMap) async {
-    return FirebaseFirestore.instance.collection("chatrooms").doc(chatRoomId).collection("chats").doc(messageId).set(messageInfoMap as Map<String, dynamic>);
-  }
-
-  updateLastMessageSend(String chatRoomId, Map lastMessageInfoMap) {
-    return FirebaseFirestore.instance.collection("chatrooms").doc(chatRoomId).update(lastMessageInfoMap as Map<String, Object?>);
-  }
-
   createChatRoom(String chatRoomId, Map chatRoomInfoMap) async {
     final snapShot = await FirebaseFirestore.instance.collection("commonData").doc(chatRoomId).get();
 
@@ -104,15 +79,6 @@ class DatabaseMethods {
       //chatroom does not exists
       return FirebaseFirestore.instance.collection("commonData").doc(chatRoomId).set(chatRoomInfoMap as Map<String, dynamic>);
     }
-  }
-
-  Future<Stream<QuerySnapshot>> getChatRoomMessages(chatRoomId) async {
-    return FirebaseFirestore.instance.collection("commonData").doc(chatRoomId).collection("messages").orderBy("timestamp", descending: true).snapshots();
-  }
-
-  Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String? myUserName = await SharedPreferenceHelper().getUserName();
-    return FirebaseFirestore.instance.collection("commonData").where("users", arrayContains: myUserName).snapshots();
   }
 
   Future updateUserInfo(userId, lname, fname, email, phone) async {
@@ -129,10 +95,6 @@ class DatabaseMethods {
 
   Stream getSellerInfo(userId) {
     return FirebaseFirestore.instance.collection("magasins").doc(userId).snapshots();
-  }
-
-  Future<Stream<QuerySnapshot>> getInfoConv(String myID) async {
-    return FirebaseFirestore.instance.collection('commonData').where("username", arrayContains: myID).snapshots();
   }
 
   Future<QuerySnapshot> getStoreInfo() async {
@@ -153,14 +115,6 @@ class DatabaseMethods {
       print(e.toString());
       return null;
     }
-  }
-
-  Future getUsers() async {
-    //List usersList = [];
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-
-    await FirebaseFirestore.instance.collection("users").doc(userid).get();
   }
 
   Stream getProducts(String? sellerId) {
@@ -227,14 +181,6 @@ class DatabaseMethods {
     return FirebaseFirestore.instance.collection("magasins").doc(sellerId).collection("produits").doc(productId).delete();
   }
 
-  Future<Stream<QuerySnapshot>> searchBarGetStoreInfo(String name) async {
-    return FirebaseFirestore.instance
-        .collection("magasins")
-        .where("nameSearch",
-            isGreaterThanOrEqualTo: name, isLessThan: name.substring(0, name.length - 1) + String.fromCharCode(name.codeUnitAt(name.length - 1) + 1))
-        .snapshots();
-  }
-
   // Récupère toutes les commandes d'un client
   Future getPurchase(userType, userid) async {
     return FirebaseFirestore.instance.collection(userType).doc(userid).collection("commands").orderBy("horodatage", descending: true).get();
@@ -268,14 +214,6 @@ class DatabaseMethods {
     return FirebaseFirestore.instance.collection(userType).doc(userid).collection("commands").doc(commandId).collection("products").snapshots();
   }
 
-  Future<QuerySnapshot> getCart() async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").doc(userid).collection("cart").get();
-
-    return querySnapshot;
-  }
-
   Future<QuerySnapshot> getCartProducts(String? sellerID) async {
     final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
@@ -286,9 +224,7 @@ class DatabaseMethods {
   }
 
   Future checkCartEmpty() async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").doc(userid).collection("cart").get();
+    QuerySnapshot querySnapshot = await ProviderGetCart().returnData();
 
     if (querySnapshot.docs.isEmpty) {
       return true;
@@ -334,43 +270,28 @@ class DatabaseMethods {
     await FirebaseFirestore.instance.collection('magasins').doc(sellerId).collection('commands').doc(commandId).update({"statut": newStatut});
   }
 
-  // ignore: slash_for_doc_comments
-  /**Fonction permettant l'ajout de magasin en favoris
+
+  /* Fonction permettant l'ajout de magasin en favoris
    * Elle récupère l'id de l'utilisateur, l'id du commerçant et si la variable est true ou false
    * Avec ses infos elle ajoute dans la collection de l'utilisateur les informations du magasins et les supprime s'il n'aime plus
    */
 
   Future addFavoriteShop(String? userID, sellerID, bool addFavorite, String? geohash, double latitude, double longitude) async {
     if (addFavorite == true) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .collection("loved")
-          .doc(sellerID)
-          .set({
+      await FirebaseFirestore.instance.collection('users').doc(userID).collection("loved").doc(sellerID).set({
         'id': sellerID,
-        'position': {
-          'geohash': geohash,
-          'geopoint': GeoPoint(latitude, longitude)
-        }
+        'position': {'geohash': geohash, 'geopoint': GeoPoint(latitude, longitude)}
       });
     } else {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .collection("loved")
-          .doc(sellerID)
-          .delete();
-        }
-      }
-
+      await FirebaseFirestore.instance.collection('users').doc(userID).collection("loved").doc(sellerID).delete();
+    }
+  }
 
   Future checkFavoriteShopSeller(String? sellerID) async {
     final User user = await ProviderUserId().returnUser();
     final userID = user.uid;
 
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection("users").doc(userID).collection("loved").where("id", isEqualTo: sellerID).get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").doc(userID).collection("loved").where("id", isEqualTo: sellerID).get();
     if (querySnapshot.docs.isEmpty) {
       return true;
     } else {
@@ -378,8 +299,7 @@ class DatabaseMethods {
     }
   }
 
-// ignore: slash_for_doc_comments
-/**Fonction Ajout d'un produit au panier
+/* Fonction Ajout d'un produit au panier
  * Cette fonction récupère l'id du produit et des infos le concernant, l'ID de l'user et celui du commerçant
  * La fonction vérfie sur le panier est vide, s'il est vide ou non
  * S'il est vide il ajoute un produit du même magasin sinon il proposera à l'utilisateur le vider au profit d'un autre commerçant
@@ -423,18 +343,6 @@ class DatabaseMethods {
       return true;
     }
   }
-
-  // Future countCart() async {
-  //   final User user = await ProviderUserId().returnUser();
-  //   final userid = user.uid;
-  //   QuerySnapshot _myDoc = await FirebaseFirestore.instance
-  //       .collection("users")
-  //       .doc(userid)
-  //       .collection("Address")
-  //       .get();
-  //   List<DocumentSnapshot> _myDocCount = _myDoc.docs;
-  //   print(_myDocCount);
-  // }
 
   Future addAdresses(
       String? buildingDetails, String? buildingName, String? familyName, String? adressTitle, double? longitude, double? latitude, String? address) async {
@@ -497,12 +405,6 @@ class DatabaseMethods {
     });
   }
 
-  Future<Stream<QuerySnapshot>> getAllAddress() async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    return FirebaseFirestore.instance.collection("users").doc(userid).collection("Address").snapshots();
-  }
-
   Future getChosenAddress(userID) async {
     return FirebaseFirestore.instance.collection("users").doc(userID).collection("Address").where("chosen", isEqualTo: true).get();
   }
@@ -532,45 +434,6 @@ class DatabaseMethods {
     }
   }
 
-  Future<void> updateMyChatListValues(String documentID, String myUsername, bool isInRoom) async {
-    var updateData = isInRoom ? {'inRoom': isInRoom, 'badgeCount': 0} : {'inRoom': isInRoom};
-    final DocumentReference result = FirebaseFirestore.instance.collection('chatrooms').doc(documentID).collection('chatlist').doc(myUsername);
-    FirebaseFirestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot snapshot = await transaction.get(result);
-      if (!snapshot.exists) {
-        transaction.set(result, updateData);
-      } else {
-        transaction.update(result, updateData);
-      }
-    });
-
-    int unReadMSGCount = await (DatabaseMethods.instance.getUnreadMSGCount(documentID, myUsername) as FutureOr<int>);
-    FlutterAppBadger.updateBadgeCount(unReadMSGCount);
-  }
-
-  Future updateUserChatListField(String documentID, selectedUserID) async {
-    int userBadgeCount = 0;
-    var isRoom = false;
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('chatrooms').doc(documentID).collection('chatlist').doc(selectedUserID).get();
-
-    if (userDoc.data() != null) {
-      isRoom = userDoc.get('inRoom') ?? false;
-      if (!userDoc['inRoom']) {
-        userBadgeCount = userDoc['badgeCount'];
-        userBadgeCount++;
-      }
-    } else {
-      userBadgeCount++;
-    }
-
-    await FirebaseFirestore.instance
-        .collection('chatrooms')
-        .doc(documentID)
-        .collection('chatlist')
-        .doc(selectedUserID)
-        .set({'badgeCount': isRoom ? 0 : userBadgeCount, 'inRoom': isRoom, 'timestamp': Timestamp.now()});
-  }
-
   Future addItem(String? userID, sellerID, productID, int? amount) async {
     return await FirebaseFirestore.instance
         .collection('users')
@@ -580,20 +443,6 @@ class DatabaseMethods {
         .collection('products')
         .doc(productID)
         .update({"amount": amount});
-  }
-
-  List getLoved(String? userID) {
-    List lovedId = [];
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userID)
-        .get()
-        .then((value) => {
-              value.data()!['loved'].forEach((element) {
-                return lovedId.add(element);
-              })
-            });
-    return lovedId;
   }
 
   Future deleteCartProduct(String nomProduit, sellerID) async {
@@ -618,15 +467,7 @@ class DatabaseMethods {
     await FirebaseFirestore.instance.collection('users').doc(userid).collection('cart').doc(sellerID).delete();
   }
 
-  Future moneyCart(num prixProduit) async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    return await FirebaseFirestore.instance.collection('users').doc(userid).collection('cart').where("prixProduit", isEqualTo: prixProduit).get();
-  }
-
-  Future allCartMoney(String? idCommercant) async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
+  Future allCartMoney(String? userid, idCommercant) async {
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(userid)
@@ -721,41 +562,9 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance.collection('magasins').doc(userid).update({"premium": false});
   }
 
-  Future badgeStream() async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    return FirebaseFirestore.instance.collection('users').doc(userid).collection('chatlist').doc(userid).snapshots();
-  }
-
   Future colorMyStore(String myColorChoice, String myColorChoiceName) async {
     final User user = await ProviderUserId().returnUser();
     final userid = user.uid;
     return await FirebaseFirestore.instance.collection('magasins').doc(userid).update({"colorStore": myColorChoice, "colorStoreName": myColorChoiceName});
   }
-
-  Future allProductsCategory(String categorie, double latitude, longitude) async {
-    GeoFlutterFire geo = GeoFlutterFire();
-    GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
-    var collectionReference = FirebaseFirestore.instance.collection('magasins').where("mainCategorie", isEqualTo: categorie);
-    return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
-  }
-
-  //   Future allProductsCategory1() async {
-  //   List categoryList = [];
-
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection('magasins')
-  //         .get()
-  //         .then((querySnapshot) {
-  //       querySnapshot.docs.forEach((element) {
-  //         categoryList.add(element.data());
-  //       });
-  //     });
-  //     return categoryList;
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return null;
-  //   }
-  // }
 }
