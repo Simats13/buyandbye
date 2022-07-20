@@ -671,7 +671,8 @@ class DatabaseMethods {
       "statut": 0.toInt(),
       "reference": ref["commandNb"].toInt(),
       "adresse": userAdress,
-      "shopID": idCommercant
+      "shopID": idCommercant,
+      "userID": userid,
     });
 
     // //MET LES NOUVELLES INFORMATIONS DANS LA BDD DU COMMERCANT
