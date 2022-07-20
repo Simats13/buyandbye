@@ -30,12 +30,10 @@ class _CartPageState extends State<CartPage> {
 
   getMyInfoCart() async {
     QuerySnapshot querySnapshot = await ProviderGetCart().returnData();
-    print(querySnapshot.docs.isEmpty);
-    if (querySnapshot.docs.isNotEmpty) {
+    if (querySnapshot.docs.isEmpty) {
       idCommercant = "empty";
     } else {
-      //idCommercant = querySnapshot.docs[0].id;
-      idCommercant = 'dnGbdRAWrPMZYcLK98a5fowRLHJ2';
+      idCommercant = querySnapshot.docs[0].id;
     }
     setState(() {});
   }
@@ -66,11 +64,11 @@ class _CartPageState extends State<CartPage> {
                 margin: const EdgeInsets.only(left: 12, right: 12),
               );
             }
-            print(idCommercant);
             if (snapshot.data.docs.length > 0) {
               return StreamBuilder<dynamic>(
                   stream: ProviderUserInfo().returnData(),
                   builder: (context, snapshot2) {
+                    String userName = snapshot.data['fname'] + snapshot.data['lname'];
                     return ListView.builder(
                         padding: const EdgeInsets.all(0.0),
                         physics: const NeverScrollableScrollPhysics(),
@@ -170,11 +168,11 @@ class _CartPageState extends State<CartPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => PageLivraison(
-                                          email: snapshot2.data["email"],
-                                          idCommercant: idCommercant,
-                                          total: cartTotal,
-                                          customerID: userid,
-                                        ),
+                                            email: snapshot2.data["email"],
+                                            idCommercant: idCommercant,
+                                            total: cartTotal,
+                                            customerID: userid,
+                                            userName: userName),
                                       ),
                                     );
                                   },

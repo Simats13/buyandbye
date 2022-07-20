@@ -213,7 +213,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                       fontWeight: FontWeight.bold,
                                     )),
                                 TextSpan(
-                                  text: snapshot.data['fname'] + " 👋",
+                                  text: snapshot.hasData ? snapshot.data['fname'] + " 👋" : "",
                                   style: const TextStyle(
                                     fontSize: 23,
                                     color: BuyandByeAppTheme.blackElectrik,

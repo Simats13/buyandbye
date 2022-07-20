@@ -193,8 +193,7 @@ class _CommandesCommercantState extends State<CommandesCommercant> {
 }
 
 class Command extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
-  const Command(this.clickedCategorie, this.sellerId);
+  const Command(this.clickedCategorie, this.sellerId, {Key? key}) : super(key: key);
   final String? sellerId;
   final int clickedCategorie;
   @override
