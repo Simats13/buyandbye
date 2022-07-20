@@ -74,7 +74,7 @@ const Faqs = () => {
                                         [theme.breakpoints.down('md')]: { fontSize: '1.8125rem', marginTop: '80px' }
                                     }}
                                 >
-                                    FAQs
+                                    FAQ
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}>
@@ -84,7 +84,7 @@ const Faqs = () => {
                                     sx={{ fontWeight: 400, lineHeight: 1.4, [theme.breakpoints.up('md')]: { my: 0, mx: 12.5 } }}
                                     color="white"
                                 >
-                                    Please refer the Frequently ask question for your quick help
+                                    Veuillez vous référer à la FAQ pour plus de détails.
                                 </Typography>
                             </Grid>
                         </Grid>

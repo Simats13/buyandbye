@@ -8,6 +8,9 @@ import Loadable from 'ui-component/Loadable';
 const ContactUs = Loadable(lazy(() => import('views/landing/contact-us/')));
 const PagesLanding = Loadable(lazy(() => import('views/landing')));
 const PricePage = Loadable(lazy(() => import('views/landing/price')));
+const PrivacyPolicy = Loadable(lazy(() => import('views/landing/PrivacyPolicy')));
+const CGU = Loadable(lazy(() => import('views/landing/CGU')));
+const FAQ = Loadable(lazy(() => import('views/landing/Faqs')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const LandingRoutes = {
@@ -24,6 +27,18 @@ const LandingRoutes = {
         {
             path: '/abonnements',
             element: <PricePage />
+        },
+        {
+            path: '/cgu',
+            element: <CGU />
+        },
+        {
+            path: '/privacy-policy',
+            element: <PrivacyPolicy />
+        },
+        {
+            path: '/faq',
+            element: <FAQ />
         }
     ]
 };

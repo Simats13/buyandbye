@@ -244,18 +244,18 @@ const addProduct = async (req, res, next) => {
                 }),
             });
 
-            // return res.status(200).json({
-            //     id:id,
-            //     idProduct: docRef.id,
-            //     nom: data.productName,
-            //     prix: parseFloat(data.price),
-            //     description: data.description,
-            //     categorie: data.category,
-            //     quantite: data.quantity,
-            //     images:images, 
-            //     reference: data.reference,
-            //     visible: data.visibility,
-            //  });
+            return res.status(200).json({
+                id:id,
+                idProduct: docRef.id,
+                nom: data.productName,
+                prix: parseFloat(data.price),
+                description: data.description,
+                categorie: data.category,
+                quantite: data.quantity,
+                images:images, 
+                reference: data.reference,
+                visible: data.visibility,
+             });
         } else {
             const blob = firebase.storage().bucket().file(`products/${id}/${docRef.id}/1`); 
             const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/oficium-11bf9.appspot.com/o/products%2F${id}%2F${docRef.id}%2F1?alt=media`;
@@ -609,7 +609,7 @@ const getAllCommands = async (req, res, next) => {
         const commandesCollection = await firestore.collectionGroup('commands').where('sellerID', '==', id).get()
         const commands = [];
         commandesCollection.forEach(doc => {
-            commands.push(doc.data());      
+            commands.push(doc.data());
         });
         res.send(commands);
     } catch (error) {

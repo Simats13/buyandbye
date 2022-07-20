@@ -46,6 +46,9 @@ const OrderDetails = () => {
     // const location = useLocation();
     // const { row } = location.state;
     // console.log(row);
+    const location = useLocation();
+    const data = location.state;
+    console.log(data);
     // set selected tab
     const [value, setValue] = useState(0);
     const handleChange = (event, newValue) => {
@@ -84,9 +87,9 @@ const OrderDetails = () => {
                     mb: 3
                 }}
             >
-                <Tab icon={<LocalShippingTwoToneIcon />} component={Link} to="#" label="Statut" {...a11yProps(0)} />
-                <Tab icon={<DescriptionTwoToneIcon />} component={Link} to="#" label="Détails" {...a11yProps(2)} />
-                <Tab icon={<ReceiptTwoToneIcon />} component={Link} to="#" label="Facture" {...a11yProps(1)} />
+                <Tab icon={<LocalShippingTwoToneIcon />} component={Link} to="#" label="Statut" state={data} {...a11yProps(0)} />
+                <Tab icon={<DescriptionTwoToneIcon />} component={Link} to="#" label="Détails" state={data} {...a11yProps(2)} />
+                <Tab icon={<ReceiptTwoToneIcon />} component={Link} to="#" label="Facture" state={data} {...a11yProps(1)} />
             </Tabs>
 
             {/* tab - status */}

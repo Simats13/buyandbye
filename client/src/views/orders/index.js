@@ -441,9 +441,9 @@ const Commands = () => {
                                                 size="large"
                                                 LinkComponent={Link}
                                                 to={{
-                                                    pathname: '/details-commande',
-                                                    state: { row }
+                                                    pathname: '/details-commande'
                                                 }}
+                                                state={row}
                                             >
                                                 <VisibilityTwoToneIcon sx={{ fontSize: '1.3rem' }} />
                                             </IconButton>

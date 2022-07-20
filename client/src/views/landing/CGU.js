@@ -25,7 +25,7 @@ const HeaderWrapper = styled('div')(({ theme }) => ({
 
 // ============================|| SAAS PAGES - PRIVCY POLICY ||============================ //
 
-const PrivacyPolicy = () => {
+const CGU = () => {
     const theme = useTheme();
 
     return (
@@ -47,7 +47,7 @@ const PrivacyPolicy = () => {
                                         [theme.breakpoints.down('md')]: { fontSize: '1.8125rem', marginTop: '80px' }
                                     }}
                                 >
-                                    Politique de Confidentialité
+                                    Conditions Générales d&apos;Utilisation
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}>
@@ -179,4 +179,4 @@ const PrivacyPolicy = () => {
     );
 };
 
-export default PrivacyPolicy;
+export default CGU;

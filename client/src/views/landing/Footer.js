@@ -83,9 +83,18 @@ const FooterPage = () => {
             </FooterWrapper>
             <FooterSubWrapper>
                 <Container>
-                    <Typography variant="subtitle2" component="div" color="inherit">
-                        &#169; Buy&Bye 2022
-                    </Typography>
+                    <Grid container alignItems="center" spacing={gridSpacing}>
+                        <Grid item>
+                            <FooterLink href="/cgu" target="_blank" underline="hover">
+                                CGU
+                            </FooterLink>
+                        </Grid>
+                        <Grid item>
+                            <FooterLink href="/privacy-policy" target="_blank" underline="hover">
+                                Politique de confidentialité
+                            </FooterLink>
+                        </Grid>
+                    </Grid>
                 </Container>
             </FooterSubWrapper>
         </>

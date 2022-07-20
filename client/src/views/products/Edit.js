@@ -138,7 +138,7 @@ const ProductEdit = ({ open, handleCloseDialog, data, tags, sellerID }) => {
             productQuantity: data.quantite || 0,
             productBrand: data.brand || '',
             productWeight: data.weight || 0,
-            productVisibility: data.visible || 0,
+            productVisibility: data.visible || false,
             productPhoto: data.images[0] || [],
             newPhotoProduct: null
         },
