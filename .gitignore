@@ -45,14 +45,10 @@ app.*.map.json
 
 # On souhaite upload que les dossiers lib et assets pour pouvoir travailler à plusieurs sur le même dossier
 ios/
+android/
 .metadata
 buyandbye.iml
 pubspec.lock
 README.md
 test/
 web/
-android/
-ios/.DS_Store
-ios/Flutter/flutter_export_environment.sh
-ios/Flutter/Generated.xcconfig
-ios/.symlinks
