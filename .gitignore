@@ -44,14 +44,14 @@ app.*.symbols
 app.*.map.json
 
 # On souhaite upload que les dossiers lib et assets pour pouvoir travailler à plusieurs sur le même dossier
-ios/*
+ios/
 .metadata
 buyandbye.iml
 pubspec.lock
 README.md
 test/
 web/
-android/local.properties
+android/
 ios/.DS_Store
 ios/Flutter/flutter_export_environment.sh
 ios/Flutter/Generated.xcconfig
