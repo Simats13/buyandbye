@@ -24,19 +24,21 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-        if (FirebaseAuth.instance.currentUser != null) {
-          // user already logged in ==> Home Screen
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const Accueil()),
-              (route) => false);
-        } else {
-          // user not logged ==> Login Screen
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const PageBienvenue()),
-              (route) => false);
-        }
+      if (FirebaseAuth.instance.currentUser != null) {
+        print('FirebaseAuth.instance.currentUser');
+        print(FirebaseAuth.instance.currentUser);
+        // user already logged in ==> Home Screen
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const Accueil()),
+            (route) => false);
+      } else {
+        // user not logged ==> Login Screen
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const PageBienvenue()),
+            (route) => false);
+      }
     });
   }
 
@@ -104,7 +106,8 @@ class _MainScreenState extends State<MainScreen> {
                 ],
                 child: StreamBuilder<DocumentSnapshot>(
                   stream: ProviderUserInfo().returnData(),
-                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
                       final user = snapshot.data;
                       if (user!['emailVerified'] == false) {
@@ -129,7 +132,8 @@ class _MainScreenState extends State<MainScreen> {
                 ],
                 child: StreamBuilder<DocumentSnapshot>(
                     stream: ProviderSellerInfo().returnData(),
-                    builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
                       if (snapshot.hasData) {
                         if (snapshot.data!['emailVerified'] == true) {
                           return const NavBar();

@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:buyandbye/helperfun/sharedpref_helper.dart';
 import 'package:buyandbye/main.dart';
+import 'package:buyandbye/templates/accueil.dart';
+import 'package:buyandbye/templates/pages/page_first_connection.dart';
 import 'package:buyandbye/templates/widgets/splashscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -121,15 +124,23 @@ class _PageLoginState extends State<PageLogin> {
                           ? SignInButton.mini(
                               buttonType: ButtonType.apple,
                               onPressed: () async {
-                                bool appleCheck = await AuthMethods.instance
+                                final appleCheck = await AuthMethods.instance
                                     .signInWithApple();
-                                if (appleCheck == true) {
+                                var decodeApple = json.decode(appleCheck);
+                                if (decodeApple['firstConnection'] == false) {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              const MainScreen()),
-                                      (Route<dynamic> route) => false);
+                                          builder: (_) => const Accueil()),
+                                      (route) => false);
+                                } else if (decodeApple['firstConnection'] ==
+                                    true) {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              const PageFirstConnection()),
+                                      (route) => false);
                                 }
                               })
                           : Container(),
@@ -169,16 +180,23 @@ class _PageLoginState extends State<PageLogin> {
                                 showMessage("Adresse mail non validé",
                                     "Vous avez essayé de vous connecter via un autre mode de connexion, veuillez vérifier l'adresse mail avant de vous connectez via ce mode connexion ou lier votre compte depuis l'édition de profil.");
                               } else {
-                                bool googleCheck = await AuthMethods.instance
+                                final googleCheck = await AuthMethods.instance
                                     .signInwithGoogle();
-
-                                if (googleCheck == true) {
+                                var decodeGoogle = json.decode(googleCheck);
+                                if (decodeGoogle['firstConnection'] == false) {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              const MainScreen()),
-                                      (Route<dynamic> route) => false);
+                                          builder: (_) => const Accueil()),
+                                      (route) => false);
+                                } else if (decodeGoogle['firstConnection'] ==
+                                    true) {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              const PageFirstConnection()),
+                                      (route) => false);
                                 }
                               }
                             } catch (e) {

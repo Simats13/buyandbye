@@ -52,3 +52,7 @@ README.md
 test/
 web/
 android/
+ios/.DS_Store
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+ios/.symlinks
