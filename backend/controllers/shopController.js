@@ -130,8 +130,13 @@ const updateShop = async (req, res, next) => {
             apiKey: config.maps_api, // for Mapquest, OpenCage, Google Premier
             formatter: null // 'gpx', 'string', ...
           };
+
         const geocoder = NodeGeocoder(options);
         const geores = await geocoder.geocode(data.enterpriseAdress);
+        // let coords = []
+        // coords.push(new firebase.firestore.GeoPoint(geores[0].latitude,geores[0].longitude));
+        let geoPoint = new adminFirebase.firestore.GeoPoint(geores[0].latitude,geores[0].longitude) 
+
         if(!req.file) {
             await shop.update({
                 name: data.enterpriseName,
@@ -146,9 +151,9 @@ const updateShop = async (req, res, next) => {
                 tvaNumber: data.tvaNumber,
                 mainCategorie: data.tagsEnterprise,
                 colorStore: data.colorEnterprise,
-                imgUrl:data.oldPhotoEnterprise, 
-                'position.geopoint.latitude': geores[0].latitude,
-                'position.geopoint.longitude': geores[0].longitude,
+                imgUrl:data.oldPhotoEnterprise,
+                
+                'position.geopoint': geoPoint
             });
            return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
         } else {
@@ -183,8 +188,7 @@ const updateShop = async (req, res, next) => {
                     mainCategorie: data.tagsEnterprise,
                     colorStore: data.colorEnterprise,
                     imgUrl: downloadUrl, 
-                    'position.latitude': geores[0].latitude,
-                    'position.longitude': geores[0].longitude,
+                    'position.geopoint': geoPoint
                 });  
                return res.status(200).json({status:"success", message:"Votre magasin a bien été modifié"});
                 // res.redirect('/entreprise/'); 
