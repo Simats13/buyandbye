@@ -25,8 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(const Duration(seconds: 2), () {
       if (FirebaseAuth.instance.currentUser != null) {
-        print('FirebaseAuth.instance.currentUser');
-        print(FirebaseAuth.instance.currentUser);
+        // print('FirebaseAuth.instance.currentUser');
+        // print(FirebaseAuth.instance.currentUser);
         // user already logged in ==> Home Screen
         Navigator.pushAndRemoveUntil(
             context,
@@ -103,6 +103,7 @@ class _MainScreenState extends State<MainScreen> {
                   ChangeNotifierProvider(create: (_) => ProviderUserInfo()),
                   ChangeNotifierProvider(create: (_) => ProviderGetOrders()),
                   ChangeNotifierProvider(create: (_) => ProviderGetAddresses()),
+                  ChangeNotifierProvider(create: (_) => GetShops()),
                 ],
                 child: StreamBuilder<DocumentSnapshot>(
                   stream: ProviderUserInfo().returnData(),

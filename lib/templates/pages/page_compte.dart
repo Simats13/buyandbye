@@ -198,7 +198,7 @@ class _PageCompteState extends State<PageCompte> {
                   ),
                   MaterialButton(
                     onPressed: () async {
-                      await launch("https://gestion.buyandbye.fr/contact");
+                      await launch("https://gestion.buyandbye.fr/faq");
                     },
                     child: Container(
                       height: 75,

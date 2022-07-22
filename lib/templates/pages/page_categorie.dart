@@ -10,15 +10,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PageCategorie extends StatefulWidget {
-  const PageCategorie(
-      {Key? key,
-      this.img,
-      this.name,
-      this.description,
-      this.adresse,
-      this.categorie,
-      this.horairesOuverture})
-      : super(key: key);
+  const PageCategorie({Key? key, this.img, this.name, this.description, this.adresse, this.categorie, this.horairesOuverture}) : super(key: key);
 
   final String? img, name, description, adresse, categorie;
   final Map? horairesOuverture;
@@ -28,33 +20,17 @@ class PageCategorie extends StatefulWidget {
 }
 
 class _PageCategorieState extends State<PageCategorie> {
-  double latitude = 0.0, longitude = 0.0;
-
   final radius = BehaviorSubject<double>.seeded(1.0);
   Stream<List<DocumentSnapshot>>? stream;
-  @override
-  void initState() {
-    super.initState();
-    getUserInfo();
-  }
 
-  getUserInfo() async {
-    final User user = await ProviderUserId().returnUser();
-    var userid = user.uid;
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
-    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+  getUserInfo(double latitude, longitude) async {
     setState(() {
       final geo = GeoFlutterFire();
       GeoFirePoint center = geo.point(latitude: latitude, longitude: longitude);
 
       stream = radius.switchMap((rad) {
-        var collectionReference = FirebaseFirestore.instance
-            .collection('magasins')
-            .where("mainCategorie", arrayContains: widget.categorie);
-        return geo.collection(collectionRef: collectionReference).within(
-            center: center, radius: 10, field: 'position', strictMode: true);
+        var collectionReference = FirebaseFirestore.instance.collection('magasins').where("mainCategorie", arrayContains: widget.categorie);
+        return geo.collection(collectionRef: collectionReference).within(center: center, radius: 10, field: 'position', strictMode: true);
       });
     });
   }
@@ -68,7 +44,6 @@ class _PageCategorieState extends State<PageCategorie> {
         child: AppBar(
           title: RichText(
             text: TextSpan(
-              // style: Theme.of(context).textTheme.bodyText2,
               children: [
                 TextSpan(
                     text: widget.categorie,
@@ -103,7 +78,14 @@ class _PageCategorieState extends State<PageCategorie> {
           bottomOpacity: 0.0,
         ),
       ),
-      body: getBody(),
+      body: StreamBuilder<dynamic>(
+          stream: ProviderGetAddresses().returnChosenAddress(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              getUserInfo(snapshot.data['latitude'], snapshot.data['longitude']);
+            }
+            return getBody();
+          }),
     );
   }
 
@@ -123,13 +105,11 @@ class _PageCategorieState extends State<PageCategorie> {
                       ),
                       title: Text(
                         "",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20.0),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                       ),
                       subtitle: Text(
                         "",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15.0),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
                       ),
                     ),
                   ),
@@ -143,8 +123,7 @@ class _PageCategorieState extends State<PageCategorie> {
             return Column(
               children: [
                 ListView.builder(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                   itemCount: snapshot.data.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -190,16 +169,7 @@ class _PageCategorieState extends State<PageCategorie> {
         });
   }
 
-  Widget searchedData(
-      {String? photoUrl,
-      name,
-      description,
-      adresse,
-      clickAndCollect,
-      livraison,
-      colorStore,
-      sellerID,
-      horairesOuverture}) {
+  Widget searchedData({String? photoUrl, name, description, adresse, clickAndCollect, livraison, colorStore, sellerID, horairesOuverture}) {
     return ListTile(
       onTap: () {
         Navigator.push(

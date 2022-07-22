@@ -89,7 +89,15 @@ class ProviderGetAddresses with ChangeNotifier, DiagnosticableTreeMixin {
   Stream returnData() {
     return _addresses;
   }
-}
+
+  // Chosen address
+  final Stream _chosenAddress = FirebaseFirestore.instance.collection("users").doc(ProviderUserId().returnData()).collection("Address").where("chosen", isEqualTo: true).snapshots();
+  Stream get chosenAddress => _chosenAddress;
+
+  Stream returnChosenAddress() {
+    return _chosenAddress;
+  }
+} // ProviderGetAddresses().returnChosenAddress()
 
 class ProviderGetCart with ChangeNotifier, DiagnosticableTreeMixin {
   final Future _cart = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).collection('cart').get();
@@ -97,5 +105,31 @@ class ProviderGetCart with ChangeNotifier, DiagnosticableTreeMixin {
 
   Future returnData() {
     return _cart;
+  }
+}
+
+class GetShops with ChangeNotifier, DiagnosticableTreeMixin {
+  // All shops
+  final CollectionReference _shops = FirebaseFirestore.instance.collection('magasins');
+  CollectionReference get shops => _shops;
+
+  CollectionReference returnData() {
+    return _shops;
+  }
+
+  // Sponsored shops
+  final Query<Map<String, dynamic>> _sponsoredShops = FirebaseFirestore.instance.collection('magasins').where("sponsored", isEqualTo: true);
+  Query<Map<String, dynamic>> get sponsoredShops => _sponsoredShops;
+
+  Query<Map<String, dynamic>> returnDataSponsored() {
+    return _sponsoredShops;
+  }
+
+  // Sponsored shops
+  final Query _lovedShops = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).collection('loved');
+  Query get lovedShops => _lovedShops;
+
+  Query returnDataLoved() {
+    return _lovedShops;
   }
 }

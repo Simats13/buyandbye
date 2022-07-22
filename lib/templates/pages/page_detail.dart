@@ -129,8 +129,8 @@ class _PageDetail extends State<PageDetail> with LocalNotificationView {
     mainCategorie = "${querySnapshot.docs[0]["type"]}";
     adresseGoogleUrl = "${querySnapshot.docs[0]["adresse"]}";
     geohash = "${querySnapshot.docs[0]["position"]["geohash"]}";
-    latitude = double.parse(querySnapshot.docs[0]["position"]["latitude"]);
-    longitude = double.parse(querySnapshot.docs[0]["position"]["longitude"]);
+    latitude = double.parse(querySnapshot.docs[0]["position"]["geopoint"].latitude.toString());
+    longitude = double.parse(querySnapshot.docs[0]["position"]["geopoint"].longitude.toString());
     // Retire les caractères en trop et split les catégories dans une liste
     if (mainCategorie == "Restaurant") {
       isRestaurant = true;

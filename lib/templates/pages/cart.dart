@@ -68,153 +68,156 @@ class _CartPageState extends State<CartPage> {
               return StreamBuilder<dynamic>(
                   stream: ProviderUserInfo().returnData(),
                   builder: (context, snapshot2) {
-                    String userName = snapshot.data['fname'] + snapshot.data['lname'];
-                    return ListView.builder(
-                        padding: const EdgeInsets.all(0.0),
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: 1,
-                        itemBuilder: (context, index) {
-                          double total = 0.0;
-                          for (var i = 0; i < snapshot.data.docs.length; i++) {
-                            total += snapshot.data.docs[i]["prixProduit"] * snapshot.data.docs[i]["amount"];
-                          }
-                          cartTotal = total;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              children: <Widget>[
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                const Text(
-                                  "Mon Panier",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 21,
+                    if (snapshot2.hasData) {
+                      String userName = snapshot2.data["fname"];
+                      return ListView.builder(
+                          padding: const EdgeInsets.all(0.0),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: 1,
+                          itemBuilder: (context, index) {
+                            double total = 0.0;
+                            for (var i = 0; i < snapshot.data.docs.length; i++) {
+                              total += snapshot.data.docs[i]["prixProduit"] * snapshot.data.docs[i]["amount"];
+                            }
+                            cartTotal = total;
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                children: <Widget>[
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                ),
-                                cartItem(),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                const Divider(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      "Sous-Total",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
+                                  const Text(
+                                    "Mon Panier",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 21,
                                     ),
-                                    Text(
-                                      cartTotal.toStringAsFixed(2) + "€",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                  ),
+                                  cartItem(),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  const Divider(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Sous-Total",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: const [
-                                    Text(
-                                      "Frais de Livraison",
-                                      style: TextStyle(
-                                        fontSize: 14,
+                                      Text(
+                                        cartTotal.toStringAsFixed(2) + "€",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      "1.99€",
-                                      style: TextStyle(
-                                        fontSize: 14,
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: const [
+                                      Text(
+                                        "Frais de Livraison",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      "Total",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                      Text(
+                                        "1.99€",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      cartTotal.toStringAsFixed(2) + "€",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                    ],
+                                  ),
+                                  const Divider(),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Total",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 30,
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PageLivraison(
-                                            email: snapshot2.data["email"],
-                                            idCommercant: idCommercant,
-                                            total: cartTotal,
-                                            customerID: userid,
-                                            userName: userName),
+                                      Text(
+                                        cartTotal.toStringAsFixed(2) + "€",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  color: Colors.deepOrangeAccent,
-                                  height: 50,
-                                  minWidth: MediaQuery.of(context).size.width - 50,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                                  child: RichText(
-                                    text: const TextSpan(
-                                      text: 'CHOISIR LE MODE DE LIVRAISON',
-                                      style: TextStyle(
-                                        fontSize: 14.5,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      children: [
-                                        WidgetSpan(
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 5.0),
-                                            child: Icon(
-                                              Icons.local_shipping,
-                                              color: BuyandByeAppTheme.white,
-                                              size: 20,
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  MaterialButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PageLivraison(
+                                              email: snapshot2.data["email"],
+                                              idCommercant: idCommercant,
+                                              total: cartTotal,
+                                              customerID: userid,
+                                              userName: userName),
+                                        ),
+                                      );
+                                    },
+                                    color: Colors.deepOrangeAccent,
+                                    height: 50,
+                                    minWidth: MediaQuery.of(context).size.width - 50,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                    child: RichText(
+                                      text: const TextSpan(
+                                        text: 'CHOISIR LE MODE DE LIVRAISON',
+                                        style: TextStyle(
+                                          fontSize: 14.5,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        children: [
+                                          WidgetSpan(
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(horizontal: 5.0),
+                                              child: Icon(
+                                                Icons.local_shipping,
+                                                color: BuyandByeAppTheme.white,
+                                                size: 20,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                              ],
-                            ),
-                          );
-                        });
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                    } else {
+                      return const SizedBox.shrink();
+                    }
                   });
             } else {
               cartTotal = 0.0;
               return Container(
                 constraints: const BoxConstraints(maxHeight: 20),
-                // margin: EdgeInsets.only(top: 100),
                 child: Center(
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

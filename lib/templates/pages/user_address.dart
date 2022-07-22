@@ -26,19 +26,8 @@ class UserAddress extends StatefulWidget {
 }
 
 class _UserAddressState extends State<UserAddress> {
-  String? currentLocationAddress = "",
-      currentAddressSaved = "",
-      currentCityLocation,
-      streetNumber,
-      street,
-      city,
-      zipCode,
-      idAddress,
-      userid;
-  double latitude = 0,
-      longitude = 0,
-      currentLocationLatitude = 0,
-      currentLocationLongitude = 0;
+  String? currentLocationAddress = "", currentAddressSaved = "", currentCityLocation, streetNumber, street, city, zipCode, idAddress, userid;
+  double latitude = 0, longitude = 0, currentLocationLatitude = 0, currentLocationLongitude = 0;
 
   LocationData? _locationData;
   Location location = Location();
@@ -55,7 +44,7 @@ class _UserAddressState extends State<UserAddress> {
   void initState() {
     super.initState();
     _determinePermission();
-    getCoordinates();
+    //getCoordinates();
   }
 
   @override
@@ -112,9 +101,7 @@ class _UserAddressState extends State<UserAddress> {
     // continue accessing the position of the device.
     _locationData = await location.getLocation();
 
-    List<geocoder.Placemark> addresses =
-        await geocoder.placemarkFromCoordinates(
-            _locationData!.latitude!, _locationData!.longitude!);
+    List<geocoder.Placemark> addresses = await geocoder.placemarkFromCoordinates(_locationData!.latitude!, _locationData!.longitude!);
     var first = addresses.first;
 
     setState(() {
@@ -134,17 +121,17 @@ class _UserAddressState extends State<UserAddress> {
     return true;
   }
 
-  getCoordinates() async {
-    final User user = await ProviderUserId().returnUser();
-    userid = user.uid;
-    QuerySnapshot querySnapshot =
-        await DatabaseMethods().getChosenAddress(userid);
-    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
-    idAddress = "${querySnapshot.docs[0]['idDoc']}";
-    chargementChecked = true;
-    setState(() {});
-  }
+  // getCoordinates(double latitude, longitude, String adAddress) async {
+  //   final User user = await ProviderUserId().returnUser();
+  //   userid = user.uid;
+  //   QuerySnapshot querySnapshot =
+  //       await DatabaseMethods().getChosenAddress(userid);
+  //   latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
+  //   longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+  //   idAddress = "${querySnapshot.docs[0]['idDoc']}";
+  //   chargementChecked = true;
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +141,17 @@ class _UserAddressState extends State<UserAddress> {
         ),
         child: SingleChildScrollView(
           child: Column(children: [
+            StreamBuilder<dynamic>(
+                stream: ProviderGetAddresses().returnChosenAddress(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    latitude = snapshot.data.docs[0]['latitude'];
+                    longitude = snapshot.data.docs[0]['longitude'];
+                    idAddress = snapshot.data.docs[0]['idDoc'];
+                    chargementChecked = true;
+                  }
+                  return const SizedBox.shrink();
+                }),
             Row(children: const [
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 15, 0, 5),
@@ -185,8 +183,7 @@ class _UserAddressState extends State<UserAddress> {
                     );
                     // This will change the text displayed in the TextField
                     if (result != null) {
-                      final placeDetails = await PlaceApiProvider(sessionToken)
-                          .getPlaceDetailFromId(result.placeId);
+                      final placeDetails = await PlaceApiProvider(sessionToken).getPlaceDetailFromId(result.placeId);
 
                       setState(() {
                         controller.text = result.description!;
@@ -199,8 +196,7 @@ class _UserAddressState extends State<UserAddress> {
                       //RECUPERE LA RECHERCHE DE L'UTILISATEUR ET LES CONVERTIT EN COORDONNEES
                       final query = "$street , $city";
 
-                      List<geocoder.Location> locations =
-                          await geocoder.locationFromAddress(query);
+                      List<geocoder.Location> locations = await geocoder.locationFromAddress(query);
                       var first = locations.first;
 
                       Navigator.of(context).pop();
@@ -281,31 +277,19 @@ class _UserAddressState extends State<UserAddress> {
                               onTap: () async {
                                 //RECUPERE LA LOCALISATION DE L'UTILISATEUR ET CONVERTIT LES COODORNEES EN ADRESSE
                                 List<geocoder.Placemark> addresses =
-                                    await geocoder.placemarkFromCoordinates(
-                                        currentLocationLatitude,
-                                        currentLocationLongitude,
-                                        localeIdentifier: 'fr_FR');
+                                    await geocoder.placemarkFromCoordinates(currentLocationLatitude, currentLocationLongitude, localeIdentifier: 'fr_FR');
                                 var first = addresses.first;
                                 setState(() {
                                   currentCityLocation = first.locality!;
-                                  currentLocationAddress =
-                                      first.name! + ', ' + first.locality!;
+                                  currentLocationAddress = first.name! + ', ' + first.locality!;
                                   //A CHANGER LORSQUE LE PROVIDER SERA MIS EN PLACE PREND EN COMPTE LA NOUVELLE ADRESSE ET RECHARGE L'APPLICATION
                                   geo = GeoFlutterFire();
-                                  GeoFirePoint center = geo!.point(
-                                      latitude: latitude, longitude: longitude);
+                                  GeoFirePoint center = geo!.point(latitude: latitude, longitude: longitude);
                                   stream = radius.switchMap((rad) {
-                                    var collectionReference = FirebaseFirestore
-                                        .instance
-                                        .collection('magasins');
+                                    var collectionReference = FirebaseFirestore.instance.collection('magasins');
                                     return geo!
-                                        .collection(
-                                            collectionRef: collectionReference)
-                                        .within(
-                                            center: center,
-                                            radius: 100,
-                                            field: 'position',
-                                            strictMode: true);
+                                        .collection(collectionRef: collectionReference)
+                                        .within(center: center, radius: 100, field: 'position', strictMode: true);
                                   });
                                 });
                                 Navigator.push(
@@ -318,8 +302,7 @@ class _UserAddressState extends State<UserAddress> {
                                             )));
                               },
                               child: Container(
-                                constraints: const BoxConstraints(
-                                    maxHeight: 57, minHeight: 50),
+                                constraints: const BoxConstraints(maxHeight: 57, minHeight: 50),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -329,15 +312,11 @@ class _UserAddressState extends State<UserAddress> {
                                     const Icon(Icons.near_me_rounded),
                                     const SizedBox(width: 15),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         const Text("Position actuelle"),
                                         SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              1.40,
+                                          width: MediaQuery.of(context).size.width / 1.40,
                                           child: Text(currentLocationAddress!),
                                         ),
                                       ],
@@ -362,21 +341,18 @@ class _UserAddressState extends State<UserAddress> {
                                 return showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title:
-                                        const Text("Localisation desactivée"),
+                                    title: const Text("Localisation desactivée"),
                                     content: const Text(
                                         "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                     actions: <Widget>[
                                       TextButton(
                                         child: const Text("Annuler"),
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
+                                        onPressed: () => Navigator.of(context).pop(false),
                                       ),
                                       TextButton(
                                           child: const Text("Activer"),
                                           onPressed: () async {
-                                            await Geolocator
-                                                .openLocationSettings();
+                                            await Geolocator.openLocationSettings();
                                             Navigator.of(context).pop(true);
                                           }),
                                     ],
@@ -388,8 +364,7 @@ class _UserAddressState extends State<UserAddress> {
                               return showCupertinoDialog(
                                   context: context,
                                   builder: (context) => CupertinoAlertDialog(
-                                        title: const Text(
-                                            "Localisation desactivée"),
+                                        title: const Text("Localisation desactivée"),
                                         content: const Text(
                                             "Afin d'obtenir votre position exacte vous devez activer la localisation depuis les paramètres de votre smartphone"),
                                         actions: [
@@ -403,8 +378,7 @@ class _UserAddressState extends State<UserAddress> {
                                           CupertinoButton(
                                             child: const Text('Activer'),
                                             onPressed: () async {
-                                              await Geolocator
-                                                  .openLocationSettings();
+                                              await Geolocator.openLocationSettings();
 
                                               // Then close the dialog
                                               Navigator.of(context).pop();
@@ -423,23 +397,14 @@ class _UserAddressState extends State<UserAddress> {
                                 children: [
                                   const Icon(Icons.near_me_rounded),
                                   const SizedBox(width: 10),
-                                  Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Position actuelle"),
-                                        const SizedBox(height: 10),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              100,
-                                          child: const Text(
-                                              "Vous devez activer la localisation sur votre téléphone"),
-                                        )
-                                      ]),
+                                  Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                    const Text("Position actuelle"),
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width - 100,
+                                      child: const Text("Vous devez activer la localisation sur votre téléphone"),
+                                    )
+                                  ]),
                                 ],
                               ),
                             ),
@@ -521,11 +486,7 @@ class _UserAddressState extends State<UserAddress> {
               ],
             ),
             StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(userid)
-                    .collection("Address")
-                    .snapshots(),
+                stream: ProviderGetAddresses().returnData(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -541,98 +502,60 @@ class _UserAddressState extends State<UserAddress> {
                           padding: EdgeInsets.zero,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount:
-                              (snapshot.data! as QuerySnapshot).docs.length,
+                          itemCount: (snapshot.data! as QuerySnapshot).docs.length,
                           itemBuilder: (context, index) {
                             return InkWell(
                               onTap: () async {
-                                List<geocoder.Placemark> addresses =
-                                    await geocoder.placemarkFromCoordinates(
-                                        (snapshot.data! as QuerySnapshot)
-                                            .docs[index]["latitude"],
-                                        (snapshot.data! as QuerySnapshot)
-                                            .docs[index]["longitude"]);
+                                List<geocoder.Placemark> addresses = await geocoder.placemarkFromCoordinates(
+                                    (snapshot.data! as QuerySnapshot).docs[index]["latitude"], (snapshot.data! as QuerySnapshot).docs[index]["longitude"]);
                                 var first = addresses.first;
 
-                                await DatabaseMethods().changeChosenAddress(
-                                    userid,
-                                    (snapshot.data! as QuerySnapshot)
-                                        .docs[index]["idDoc"],
-                                    idAddress);
+                                await DatabaseMethods().changeChosenAddress(userid, (snapshot.data! as QuerySnapshot).docs[index]["idDoc"], idAddress);
                                 setState(() {
                                   city = first.locality!;
-                                  idAddress = (snapshot.data! as QuerySnapshot)
-                                      .docs[index]["idDoc"];
-                                  latitude = (snapshot.data! as QuerySnapshot)
-                                      .docs[index]["latitude"];
-                                  longitude = (snapshot.data! as QuerySnapshot)
-                                      .docs[index]["longitude"];
-                                  currentAddressSaved =
-                                      first.name! + ", " + first.locality!;
+                                  idAddress = (snapshot.data! as QuerySnapshot).docs[index]["idDoc"];
+                                  latitude = (snapshot.data! as QuerySnapshot).docs[index]["latitude"];
+                                  longitude = (snapshot.data! as QuerySnapshot).docs[index]["longitude"];
+                                  currentAddressSaved = first.name! + ", " + first.locality!;
 
                                   geo = GeoFlutterFire();
                                   GeoFirePoint center = geo!.point(
-                                      latitude:
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["latitude"],
-                                      longitude:
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["longitude"]);
+                                      latitude: (snapshot.data! as QuerySnapshot).docs[index]["latitude"],
+                                      longitude: (snapshot.data! as QuerySnapshot).docs[index]["longitude"]);
                                   stream = radius.switchMap((rad) {
-                                    var collectionReference = FirebaseFirestore
-                                        .instance
-                                        .collection('magasins');
+                                    var collectionReference = FirebaseFirestore.instance.collection('magasins');
                                     return geo!
-                                        .collection(
-                                            collectionRef: collectionReference)
-                                        .within(
-                                            center: center,
-                                            radius: 100,
-                                            field: 'position',
-                                            strictMode: true);
+                                        .collection(collectionRef: collectionReference)
+                                        .within(center: center, radius: 100, field: 'position', strictMode: true);
                                   });
                                 });
                                 int count = 0;
 
                                 Navigator.of(context).pushAndRemoveUntil(
                                   PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation1, animation2) =>
-                                            const Accueil(),
-                                    transitionDuration:
-                                        const Duration(seconds: 0),
+                                    pageBuilder: (context, animation1, animation2) => const Accueil(),
+                                    transitionDuration: const Duration(seconds: 0),
                                   ),
-                                  (_) =>
-                                      count++ >=
-                                      3, //3 is count of your pages you want to pop
+                                  (_) => count++ >= 3, //3 is count of your pages you want to pop
                                 );
                               },
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
                                     const Icon(Icons.place_rounded),
                                     const SizedBox(width: 15),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          (snapshot.data! as QuerySnapshot)
-                                              .docs[index]["addressName"],
+                                          (snapshot.data! as QuerySnapshot).docs[index]["addressName"],
                                         ),
                                         Center(
                                           child: SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                1.57,
-                                            child: Text((snapshot.data!
-                                                    as QuerySnapshot)
-                                                .docs[index]["address"]),
+                                            width: MediaQuery.of(context).size.width / 1.57,
+                                            child: Text((snapshot.data! as QuerySnapshot).docs[index]["address"]),
                                           ),
                                         ),
                                       ],
@@ -643,41 +566,15 @@ class _UserAddressState extends State<UserAddress> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PageAddressEdit(
-                                                      adresse: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]["address"],
-                                                      adressTitle: (snapshot
-                                                                      .data!
-                                                                  as QuerySnapshot)
-                                                              .docs[index]
-                                                          ["addressName"],
-                                                      buildingDetails: (snapshot
-                                                                      .data!
-                                                                  as QuerySnapshot)
-                                                              .docs[index]
-                                                          ["buildingDetails"],
-                                                      buildingName: (snapshot
-                                                                      .data!
-                                                                  as QuerySnapshot)
-                                                              .docs[index]
-                                                          ["buildingName"],
-                                                      familyName: (snapshot
-                                                                      .data!
-                                                                  as QuerySnapshot)
-                                                              .docs[index]
-                                                          ["familyName"],
-                                                      lat: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]["latitude"],
-                                                      long: (snapshot.data!
-                                                                  as QuerySnapshot)
-                                                              .docs[index]
-                                                          ["longitude"],
-                                                      iD: (snapshot.data!
-                                                              as QuerySnapshot)
-                                                          .docs[index]["idDoc"],
+                                                builder: (context) => PageAddressEdit(
+                                                      adresse: (snapshot.data! as QuerySnapshot).docs[index]["address"],
+                                                      adressTitle: (snapshot.data! as QuerySnapshot).docs[index]["addressName"],
+                                                      buildingDetails: (snapshot.data! as QuerySnapshot).docs[index]["buildingDetails"],
+                                                      buildingName: (snapshot.data! as QuerySnapshot).docs[index]["buildingName"],
+                                                      familyName: (snapshot.data! as QuerySnapshot).docs[index]["familyName"],
+                                                      lat: (snapshot.data! as QuerySnapshot).docs[index]["latitude"],
+                                                      long: (snapshot.data! as QuerySnapshot).docs[index]["longitude"],
+                                                      iD: (snapshot.data! as QuerySnapshot).docs[index]["idDoc"],
                                                     )));
                                       },
                                     ),
@@ -697,12 +594,10 @@ class _UserAddressState extends State<UserAddress> {
                                 style: Theme.of(context).textTheme.bodyText2,
                                 children: const [
                                   TextSpan(
-                                      text:
-                                          "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
+                                      text: "Aucune adresse n'est enregistrée.\n\nEnregistrez en une depuis la page d'Accueil ou bien en cliquant sur la "),
                                   WidgetSpan(
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 2.0),
+                                      padding: EdgeInsets.symmetric(horizontal: 2.0),
                                       child: Icon(Icons.home),
                                     ),
                                   ),
