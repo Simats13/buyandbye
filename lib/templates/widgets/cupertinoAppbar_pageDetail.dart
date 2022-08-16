@@ -712,7 +712,7 @@ class _CupertinoSliverNavigationBarDetailState extends State<CupertinoSliverNavi
           actionsForegroundColor: CupertinoTheme.of(context).primaryColor,
           transitionBetweenRoutes: widget.transitionBetweenRoutes,
           heroTag: widget.heroTag,
-          persistentHeight: _kNavBarPersistentHeight + MediaQuery.of(context).padding.top,
+          persistentHeight: _kNavBarPersistentHeight + MediaQuery.of(context).padding.top + 10,
           alwaysShowMiddle: widget.middle != null,
           stretchConfiguration: widget.stretch ? OverScrollHeaderStretchConfiguration() : null,
         ),

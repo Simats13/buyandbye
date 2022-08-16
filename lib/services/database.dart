@@ -8,7 +8,6 @@ class DatabaseMethods {
   static DatabaseMethods get instance => DatabaseMethods();
   Map<String, dynamic>? paymentIntentData;
 
-
   // Future<QuerySnapshot> getMyInfo(String? userid) async {
   //   return await FirebaseFirestore.instance.collection("users").where("id", isEqualTo: userid).get();
   // }
@@ -270,7 +269,6 @@ class DatabaseMethods {
     await FirebaseFirestore.instance.collection('magasins').doc(sellerId).collection('commands').doc(commandId).update({"statut": newStatut});
   }
 
-
   /* Fonction permettant l'ajout de magasin en favoris
    * Elle récupère l'id de l'utilisateur, l'id du commerçant et si la variable est true ou false
    * Avec ses infos elle ajoute dans la collection de l'utilisateur les informations du magasins et les supprime s'il n'aime plus
@@ -474,11 +472,11 @@ class DatabaseMethods {
         .collection('cart')
         .doc(idCommercant)
         .collection('products')
-        .where("prixProduit")
+        //.where("prixProduit")
         .get();
   }
 
-  Future acceptPayment(String? idCommercant, double deliveryChoose, double? amount, String? userAdress, String idCommand) async {
+  Future acceptPayment(String? idCommercant, double deliveryChoose, num? amount, String? userAdress, String idCommand) async {
     int totalProduct = 0;
     String idProduit = "";
     final User user = await ProviderUserId().returnUser();

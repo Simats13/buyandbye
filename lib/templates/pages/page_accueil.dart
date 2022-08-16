@@ -3,6 +3,7 @@ import 'package:buyandbye/templates/pages/cart.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:buyandbye/templates/pages/user_address.dart';
 import 'package:buyandbye/templates/widgets/slide_items.dart';
+import 'package:buyandbye/templates/widgets/cupertinoAppbar_pageDetail.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -101,11 +102,9 @@ class _PageAccueilState extends State<PageAccueil> {
   }
 
   getCoordinates() async {
-    final User user = await ProviderUserId().returnUser();
-    userid = user.uid;
-    QuerySnapshot querySnapshot = await DatabaseMethods().getChosenAddress(userid);
-    latitude = double.parse("${querySnapshot.docs[0]['latitude']}");
-    longitude = double.parse("${querySnapshot.docs[0]['longitude']}");
+    QuerySnapshot querySnapshot = await DatabaseMethods().getChosenAddress(ProviderUserId().returnData());
+    latitude = querySnapshot.docs[0]['latitude'];
+    longitude = querySnapshot.docs[0]['longitude'];
     List<geocoder.Placemark> addresses = await geocoder.placemarkFromCoordinates(latitude, longitude);
 
     var first = addresses.first;
@@ -144,7 +143,7 @@ class _PageAccueilState extends State<PageAccueil> {
                       return <Widget>[
                         PreferredSize(
                           preferredSize: const Size.fromHeight(10),
-                          child: CupertinoSliverNavigationBar(
+                          child: CupertinoSliverNavigationBarDetail(
                             middle: Container(
                               height: 45,
                               width: MediaQuery.of(context).size.width - 70,
@@ -161,7 +160,7 @@ class _PageAccueilState extends State<PageAccueil> {
                                       width: 10,
                                     ),
                                     SizedBox(
-                                      height: 40,
+                                      height: 200,
                                       child: InkWell(
                                         onTapCancel: () {
                                           Navigator.of(context).pop();

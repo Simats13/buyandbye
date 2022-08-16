@@ -97,7 +97,7 @@ class ProviderGetAddresses with ChangeNotifier, DiagnosticableTreeMixin {
   Stream returnChosenAddress() {
     return _chosenAddress;
   }
-} // ProviderGetAddresses().returnChosenAddress()
+}
 
 class ProviderGetCart with ChangeNotifier, DiagnosticableTreeMixin {
   final Future _cart = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).collection('cart').get();
@@ -125,7 +125,7 @@ class GetShops with ChangeNotifier, DiagnosticableTreeMixin {
     return _sponsoredShops;
   }
 
-  // Sponsored shops
+  // Loved shops
   final Query _lovedShops = FirebaseFirestore.instance.collection('users').doc(ProviderUserId().returnData()).collection('loved');
   Query get lovedShops => _lovedShops;
 

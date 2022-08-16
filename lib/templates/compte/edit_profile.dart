@@ -875,7 +875,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                     color: Colors.blue,
                                                                   ),
                                                                 ),
-                                                                onPressed: () async {
+                                                                onPressed: (context) async {
                                                                   Navigator.of(context).pop(false);
                                                                   Navigator.push(
                                                                     context,
@@ -899,7 +899,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                                       color: Colors.red,
                                                                     ),
                                                                   ),
-                                                                  onPressed: () async {
+                                                                  onPressed: (context) async {
                                                                     String id = paymentIntentData!['paymentMethods']['data'][index]['id'];
                                                                     final url =
                                                                         "https://us-central1-oficium-11bf9.cloudfunctions.net/app/delete_cards?idCard=${paymentIntentData!['paymentMethods']['data'][index]['id']}";

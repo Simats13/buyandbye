@@ -283,24 +283,15 @@ class UserInfo extends StatefulWidget {
 
 class _UserInfoState extends State<UserInfo> {
   String? myUserName, myProfilePic;
-  getSellerName() async {
-    QuerySnapshot querySnapshot = await ProviderUserInfo().returnData();
-    myUserName = "${querySnapshot.docs[0]["name"]}";
-    myProfilePic = "${querySnapshot.docs[0]["imgUrl"]}";
-  }
-
-  @override
-  void initState() {
-    getSellerName();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<dynamic>(
       stream: ProviderUserInfo().returnData(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          myUserName = snapshot.data["name"];
+          myProfilePic = snapshot.data["imgUrl"];
           return Column(
             children: [
               Padding(

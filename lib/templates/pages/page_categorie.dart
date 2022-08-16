@@ -1,8 +1,6 @@
 import 'package:buyandbye/services/provider.dart';
-import 'package:buyandbye/services/database.dart';
 import 'package:buyandbye/templates/Pages/page_detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:buyandbye/templates/buyandbye_app_theme.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';

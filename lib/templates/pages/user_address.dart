@@ -5,7 +5,6 @@ import 'package:buyandbye/templates/pages/address_search.dart';
 import 'package:buyandbye/templates/widgets/loader.dart';
 import 'package:buyandbye/services/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';

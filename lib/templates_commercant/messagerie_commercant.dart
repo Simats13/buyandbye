@@ -1,5 +1,4 @@
 import 'package:buyandbye/services/provider.dart';
-import 'package:buyandbye/templates/Messagerie/Controllers/fb_messaging.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/image_controller.dart';
 import 'package:buyandbye/templates/Messagerie/Controllers/utils.dart';
 import 'package:buyandbye/templates/Messagerie/subWidgets/local_notification_view.dart';
@@ -19,29 +18,22 @@ class MessagerieCommercant extends StatefulWidget {
   _MessagerieCommercantState createState() => _MessagerieCommercantState();
 }
 
-class _MessagerieCommercantState extends State<MessagerieCommercant>
-    with LocalNotificationView {
-  String? myID;
-  String? myName, myUserName, myEmail;
-  String? myProfilePic;
+class _MessagerieCommercantState extends State<MessagerieCommercant> with LocalNotificationView {
+  String? myUserName, myProfilePic, userid;
   bool messageExist = false;
-  @override
-  void initState() {
-    super.initState();
-    NotificationController.instance.updateTokenToServer();
-    getMyInfoFromSharedPreference();
-  }
 
-  getMyInfoFromSharedPreference() async {
-    final User user = await ProviderUserId().returnUser();
-    final userid = user.uid;
-    myID = userid;
-    myName = user.displayName;
-    myProfilePic = user.photoURL;
-    myUserName = user.displayName;
-    myEmail = user.email;
-
-    setState(() {});
+  getMyInfo(context) async {
+    StreamBuilder<dynamic>(
+      stream: ProviderUserId().returnUser(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          userid = snapshot.data.uid;
+          myUserName = snapshot.data.displayName;
+          myProfilePic = snapshot.data.photoUrl;
+        }
+        return const Text('bla');
+      },
+    );
   }
 
   @override
@@ -57,7 +49,7 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('chatrooms')
-              .where("users", arrayContains: myID)
+              .where("users", arrayContains: ProviderUserId().returnData())
               .orderBy("timestamp", descending: true)
               .snapshots(),
           builder: (context, userSnapshot) {
@@ -69,42 +61,43 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
                 ),
               );
               //METTRE UN SHIMMER
+            } else if (!userSnapshot.hasData) {
+              return const ColorLoader3();
+            } else {
+              getMyInfo(context);
+              return countChatListUsers(myUserName, userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) > 0
+                  ? Stack(
+                      children: [
+                        ListView.builder(
+                          itemCount: userSnapshot.data!.docs.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot ds = userSnapshot.data!.docs[index];
+                            return ChatRoomListTile(ds["lastMessage"], ds.id, myUserName, ds["users"][0], index);
+                          },
+                        ),
+                      ],
+                    )
+                  : Center(
+                      child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.forum,
+                          color: Colors.grey[700],
+                          size: 64,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Vous n\'avez aucun nouveau message.\n\nVous pouvez contacter n\'importe quel utilisateur depuis la page commande.',
+                            style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ));
             }
-            if (!userSnapshot.hasData) return const ColorLoader3();
-            return countChatListUsers(myUserName, userSnapshot as AsyncSnapshot<QuerySnapshot<Object>>) > 0
-                ? Stack(
-                    children: [
-                      ListView.builder(
-                        itemCount: userSnapshot.data!.docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot ds = userSnapshot.data!.docs[index];
-                          return ChatRoomListTile(ds["lastMessage"], ds.id,
-                              myUserName, ds["users"][0], index);
-                        },
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.forum,
-                      color: Colors.grey[700],
-                      size: 64,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'Vous n\'avez aucun nouveau message.\n\nVous pouvez contacter n\'importe quel utilisateur depuis la page commande.',
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.grey[700]),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ));
           }),
     );
   }
@@ -113,21 +106,14 @@ class _MessagerieCommercantState extends State<MessagerieCommercant>
 class ChatRoomListTile extends StatefulWidget {
   final String? lastMessage, chatRoomId, myUsername, clientID;
   final int index;
-  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
-      this.clientID, this.index, {Key? key}) : super(key: key);
+  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername, this.clientID, this.index, {Key? key}) : super(key: key);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String? profilePicUrl = "",
-      fname,
-      lname,
-      token = "",
-      userid,
-      idTest,
-      myProfilePicUrl;
+  String? profilePicUrl = "", fname, lname, token = "", userid, idTest, myProfilePicUrl;
 
   bool isActive = false;
   getThisUserInfo() async {
@@ -159,12 +145,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       );
     } else {
       return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('magasins')
-            .doc(userid)
-            .collection('chatlist')
-            .orderBy("timestamp", descending: true)
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('magasins').doc(userid).collection('chatlist').orderBy("timestamp", descending: true).snapshots(),
         builder: (context, chatListSnapshot) {
           if (chatListSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -180,20 +161,14 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
               borderRadius: BorderRadius.circular(15),
               child: ImageController.instance.cachedImage(profilePicUrl!),
             ),
-            title: fname == null
-                ? const CircularProgressIndicator()
-                : Text(fname! + " " + lname!),
+            title: fname == null ? const CircularProgressIndicator() : Text(fname! + " " + lname!),
             subtitle: Text(
               widget.lastMessage!,
-              style: isActive == true
-                  ? const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
-                  : const TextStyle(),
+              style: isActive == true ? const TextStyle(color: Colors.black, fontWeight: FontWeight.bold) : const TextStyle(),
             ),
             trailing: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 4, 4),
-              child: (chatListSnapshot
-                      .hasData
-                  )
+              child: (chatListSnapshot.hasData)
                   ? SizedBox(
                       width: 80,
                       height: 50,

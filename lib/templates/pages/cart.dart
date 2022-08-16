@@ -53,6 +53,8 @@ class _CartPageState extends State<CartPage> {
           future: DatabaseMethods().allCartMoney(userid, idCommercant),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
+              print("no data");
+              //print(userid! + " - " + idCommercant!);
               return Container(
                 constraints: const BoxConstraints(maxHeight: 200),
                 child: const Center(
@@ -64,6 +66,7 @@ class _CartPageState extends State<CartPage> {
                 margin: const EdgeInsets.only(left: 12, right: 12),
               );
             }
+            print(snapshot.data.docs.toString());
             if (snapshot.data.docs.length > 0) {
               return StreamBuilder<dynamic>(
                   stream: ProviderUserInfo().returnData(),
@@ -172,7 +175,7 @@ class _CartPageState extends State<CartPage> {
                                               email: snapshot2.data["email"],
                                               idCommercant: idCommercant,
                                               total: cartTotal,
-                                              customerID: userid,
+                                              customerID: snapshot2.data["customerId"],
                                               userName: userName),
                                         ),
                                       );

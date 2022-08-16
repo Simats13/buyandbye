@@ -39,8 +39,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool checkEmailVerification = false;
-
   @override
   void initState() {
         Timer(const Duration(seconds: 2), () {
