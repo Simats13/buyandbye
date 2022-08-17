@@ -157,16 +157,10 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
         productReference: yup.string().required('Veuillez mettre une référence à votre produit'),
         productQuantity: yup.number().required('Veuillez mettre une quantité à votre produit'),
         productBrand: yup.string().required('Veuillez renseigner la marque de votre produit'),
-        productWeight: yup.number().required('Veuillez mettre un poids à votre produit'),
-        productDiscount: yup
-            .number()
-            .required('Veuillez mettre un pourcentage de réduction à votre produit')
-            .min(0)
-            .max(100)
-            .typeError('Veuillez mettre un pourcentage entre 0 et 100 de réduction à votre produit')
+        productWeight: yup.number().required('Veuillez mettre un poids à votre produit')
     });
     const formik = useFormik({
-        // validationSchema,
+        validationSchema,
         initialValues: {
             productName: '',
             productDescription: '',
@@ -199,6 +193,7 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
                     close: false
                 })
             );
+            formik.resetForm();
         }
     });
 
@@ -207,7 +202,10 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
             open={open}
             TransitionComponent={Transition}
             keepMounted
-            onClose={handleCloseDialog}
+            onClose={() => {
+                handleCloseDialog();
+                formik.resetForm();
+            }}
             sx={{
                 '&>div:nth-of-type(3)': {
                     justifyContent: 'flex-end',
@@ -380,7 +378,14 @@ const ProductAdd = ({ open, handleCloseDialog, tags, sellerID }) => {
                             </Grid>
                         </DialogContent>
                         <DialogActions>
-                            <Button variant="text" color="error" onClick={handleCloseDialog}>
+                            <Button
+                                variant="text"
+                                color="error"
+                                onClick={() => {
+                                    handleCloseDialog();
+                                    formik.resetForm();
+                                }}
+                            >
                                 Fermer
                             </Button>
                             <AnimateButton>

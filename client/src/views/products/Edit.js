@@ -74,7 +74,6 @@ const MenuProps = {
 };
 export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, handleCloseDialog }) {
     const theme = useTheme();
-    console.log('data', data);
     const [open, setOpen] = useState(false);
     const [category, setCategory] = useState('2');
     const handleClickOpen = () => {
@@ -82,11 +81,6 @@ export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, 
     };
 
     const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleDelete = () => {
-        // dispatch(deleteProducts(idSeller, idProduct));
         setOpen(false);
     };
 
@@ -104,7 +98,6 @@ export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, 
         productPrice: yup.number().required('Product price is required'),
         productCategory: yup.string().required('Product category is required'),
         productReference: yup.string().required('Product reference is required'),
-        productDiscount: yup.number().required('Product discount is required'),
         productQuantity: yup.number().required('Product quantity is required'),
         productBrand: yup.string().required('Product brand is required'),
         productWeight: yup.number().required('Product weight is required')
@@ -130,7 +123,6 @@ export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, 
         enableReinitialize: true,
         onSubmit: () => {
             const formData = new FormData();
-            console.log('formik.values', formik.values);
             formData.append('newPhotoProduct', formik.values.newPhotoProduct);
             formData.append('data', JSON.stringify(formik.values));
             dispatch(editProducts(sellerID, data.id, formData));
@@ -146,6 +138,7 @@ export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, 
                     close: false
                 })
             );
+            formik.resetForm();
         }
     });
 
@@ -156,7 +149,10 @@ export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, 
             </IconButton>
             <Dialog
                 open={open}
-                onClose={handleClose}
+                onClose={() => {
+                    handleClose();
+                    formik.resetForm();
+                }}
                 TransitionComponent={Transition}
                 keepMounted
                 aria-labelledby="alert-dialog-title"
@@ -315,7 +311,10 @@ export default function EditDialog({ idProduct, idSeller, data, tags, sellerID, 
                             <DialogActions sx={{ pr: 2.5 }}>
                                 <Button
                                     sx={{ color: theme.palette.error.dark, borderColor: theme.palette.error.dark }}
-                                    onClick={handleClose}
+                                    onClick={() => {
+                                        handleClose();
+                                        formik.resetForm();
+                                    }}
                                     color="secondary"
                                 >
                                     Fermer

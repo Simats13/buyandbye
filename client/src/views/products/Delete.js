@@ -13,7 +13,6 @@ import { openSnackbar } from 'store/slices/snackbar';
 
 export default function DeleteDialog({ idProduct, idSeller, setRows, products, indexProducts, handleCloseDialog }) {
     const theme = useTheme();
-    console.log('idProduct', idProduct);
     const [open, setOpen] = React.useState(false);
     const handleClickOpen = () => {
         setOpen(true);
