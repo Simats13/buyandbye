@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "gestion-buyandbye",
-    "public": "public",
+    "public": "build",
     "ignore": [
       "firebase.json",
       "**/.*",
