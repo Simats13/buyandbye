@@ -8,6 +8,7 @@ import {
     Button,
     CardContent,
     Checkbox,
+    Dialog,
     Fab,
     Grid,
     IconButton,
@@ -48,7 +49,7 @@ import AddIcon from '@mui/icons-material/AddTwoTone';
 import EditIcon from '@mui/icons-material/Edit';
 import useAuth from 'hooks/useAuth';
 import ProductAdd from './ProductAdd';
-import ProductEdit from './Edit';
+import EditDialog from './Edit';
 import { getEnterprise, editEnterpriseInfo } from 'store/slices/enterprise';
 import DeleteDialog from './Delete';
 import { collection, query } from 'firebase/firestore';
@@ -244,8 +245,6 @@ const Product = () => {
         setData(enterprise);
     }, [enterprise]);
 
-    // Object.keys(data).map((key, index) => <React.Fragment key={index} />);
-
     React.useEffect(() => {
         dispatch(getEnterprise(user.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -325,7 +324,11 @@ const Product = () => {
     // show a right sidebar when clicked on new product
     const [openAdd, setOpenAdd] = React.useState(false);
     const [openEdit, setOpenEdit] = React.useState(false);
-    const [infoEdit, setInfoEdit] = React.useState(false);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+    };
     const handleClickOpenDialogAdd = () => {
         setOpenAdd(true);
     };
@@ -333,12 +336,11 @@ const Product = () => {
         setOpenAdd(false);
     };
 
-    const handleClickOpenDialogEdit = (data) => {
-        setInfoEdit(data);
-        setOpenEdit(true);
+    const handleClickOpenDialogEdit = () => {
+        setIsModalOpen(true);
     };
     const handleCloseDialogEdit = () => {
-        setOpenEdit(false);
+        setIsModalOpen(false);
     };
 
     const handleRequestSort = (event, property) => {
@@ -511,16 +513,12 @@ const Product = () => {
                                                 />
                                             </TableCell>
                                             <TableCell align="center" sx={{ pr: 3 }}>
-                                                <IconButton onClick={() => handleClickOpenDialogEdit(row)} color="primary" size="large">
-                                                    <EditIcon sx={{ fontSize: '1.3rem' }} key={row.id} />
-                                                </IconButton>
-                                                <ProductEdit
-                                                    key={row.id}
+                                                <EditDialog
                                                     open={openEdit}
                                                     data={row}
                                                     tags={tagsCompany}
                                                     sellerID={user.id}
-                                                    handleCloseDialog={handleCloseDialogEdit}
+                                                    handleCloseDialog={handleCloseDialogAdd}
                                                 />
                                                 <DeleteDialog
                                                     idProduct={row.id}
