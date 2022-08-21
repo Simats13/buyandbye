@@ -2,12 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Buy&amp;Bye</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -69,20 +73,25 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Bye&amp;Bye souhaite accéder à votre galerie de medias afin de pouvoir envoyer n&apos;importe quelle photo/video à un commerçant</string>
+	<string>Bye&amp;Bye souhaite accéder à votre galerie de medias afin de pouvoir envoyer n'importe quelle photo/video à un commerçant</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Bye&amp;Bye souhaite accéder à votre caméra afin de pouvoir envoyer n&apos;importe quelle photo à un commerçant</string>
+	<string>Bye&amp;Bye souhaite accéder à votre caméra afin de pouvoir envoyer n'importe quelle photo à un commerçant</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Cette application nécessite la localisation lorsque l&apos;application est ouverte mais aussi en arrière-plan</string>
+	<string>Cette application nécessite la localisation lorsque l'application est ouverte mais aussi en arrière-plan</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Cette application nécessite la localisation lorsque l&apos;application est ouverte</string>
+	<string>Cette application nécessite la localisation lorsque l'application est ouverte</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Cette application nécessite la localisation lorsque l&apos;application est ouverte mais aussi en arrière-plan</string>
+	<string>Cette application nécessite la localisation lorsque l'application est ouverte mais aussi en arrière-plan</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bye&amp;Bye souhaite utiliser votre microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Bye&amp;Bye souhaite accéder à votre galerie de photographies afin de pouvoir envoyer n&apos;importe quelle photo à un commerçant</string>
+	<string>Bye&amp;Bye souhaite accéder à votre galerie de photographies afin de pouvoir envoyer n'importe quelle photo à un commerçant</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -95,6 +104,8 @@
 	<string>Main</string>
 	<key>UIStatusBarHidden</key>
 	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDarkContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -108,14 +119,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleGetInfoString</key>
-	<string></string>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
 </dict>
 </plist>

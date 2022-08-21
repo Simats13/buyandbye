@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>app-store</string>
+  <key>teamID</key>
+  <string>65FD5Q9J7C</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+  <key>provisioningProfiles</key>
+	<dict>
+		<key>com.buyandbye.off</key>
+		<string>8ae8a88a-1c36-4c8c-8430-3b1caa2e9c7e</string>
+	</dict>
+</dict>
+</plist>
