@@ -77,6 +77,7 @@ class _ChatRoomState extends State<ChatRoom>
 
   @override
   void initState() {
+    print('hello');
     super.initState();
     // print("J'avais raison");
     // print(widget.selectedUserToken);
